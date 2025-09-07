@@ -1,42 +1,79 @@
 {
   "expo": {
-    "name": "shelfcontrol",
-    "slug": "shelfcontrol",
+    "name": "ShelfControl",
+    "slug": "bookClock",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "shelfcontrol",
+    "icon": "./src/assets/images/icon.png",
+    "scheme": "shelfControl",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.grizzylabs.shelfControl",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you choose a profile picture.",
+        "NSCameraUsageDescription": "This app needs access to your camera to let you take a profile picture."
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./src/assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.grizzylabs.shelfControl"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./src/assets/images/icon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
+          "image": "./src/assets/images/splash.png",
+          "imageWidth": 1242,
+          "imageHeight": 2688,
+          "resizeMode": "cover",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./src/assets/fonts/SpaceMono-Regular.ttf",
+            "./src/assets/fonts/Inter-Regular.ttf",
+            "./src/assets/fonts/Nunito-Bold.ttf",
+            "./src/assets/fonts/Nunito-ExtraBold.ttf",
+            "./src/assets/fonts/Nunito-ExtraLight.ttf",
+            "./src/assets/fonts/Nunito-Light.ttf",
+            "./src/assets/fonts/Nunito-Medium.ttf",
+            "./src/assets/fonts/Nunito-Regular.ttf",
+            "./src/assets/fonts/Nunito-SemiBold.ttf"
+          ]
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c735e61c-15ad-41fd-b5d4-461bddd20381"
+      }
+    },
+    "owner": "grizzylabs"
   }
 }
