@@ -39,3 +39,8 @@ yarn-error.*
 app-example
 
 .env
+
+# ignore old folder
+old/
+supabase/.temp/
+ios/

@@ -5,11 +5,20 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import AuthProvider from '@/providers/AuthProvider';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    Inter: require('../assets/fonts/Inter-Regular.ttf'),
+    "Nunito-Bold": require('../assets/fonts/Nunito-Bold.ttf'),
+    "Nunito-ExtraBold": require('../assets/fonts/Nunito-ExtraBold.ttf'),
+    "Nunito-ExtraLight": require('../assets/fonts/Nunito-ExtraLight.ttf'),
+    "Nunito-Light": require('../assets/fonts/Nunito-Light.ttf'),
+    "Nunito-Medium": require('../assets/fonts/Nunito-Medium.ttf'),
+    "Nunito-Regular": require('../assets/fonts/Nunito-Regular.ttf'),
+    "Nunito-SemiBold": require('../assets/fonts/Nunito-SemiBold.ttf'),
   });
 
   if (!loaded) {
@@ -18,12 +27,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+    <AuthProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </ThemeProvider>
       <StatusBar style="auto" />
-    </ThemeProvider>
+    </AuthProvider>
   );
 }

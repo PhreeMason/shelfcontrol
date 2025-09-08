@@ -1,0 +1,505 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.4"
+  }
+  public: {
+    Tables: {
+      authors: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      book_authors: {
+        Row: {
+          author_id: string
+          book_id: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          book_id: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          book_id?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_authors_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_authors_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      books: {
+        Row: {
+          api_id: string | null
+          api_source: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          date_added: string | null
+          description: string | null
+          edition: Json | null
+          format: Database["public"]["Enums"]["book_format_enum"] | null
+          genres: string[] | null
+          id: string
+          isbn10: string | null
+          isbn13: string | null
+          language: string | null
+          metadata: Json | null
+          publication_date: string | null
+          publisher: string | null
+          rating: number | null
+          title: string
+          total_duration: number | null
+          total_pages: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          api_id?: string | null
+          api_source?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          date_added?: string | null
+          description?: string | null
+          edition?: Json | null
+          format?: Database["public"]["Enums"]["book_format_enum"] | null
+          genres?: string[] | null
+          id?: string
+          isbn10?: string | null
+          isbn13?: string | null
+          language?: string | null
+          metadata?: Json | null
+          publication_date?: string | null
+          publisher?: string | null
+          rating?: number | null
+          title: string
+          total_duration?: number | null
+          total_pages?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          api_id?: string | null
+          api_source?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          date_added?: string | null
+          description?: string | null
+          edition?: Json | null
+          format?: Database["public"]["Enums"]["book_format_enum"] | null
+          genres?: string[] | null
+          id?: string
+          isbn10?: string | null
+          isbn13?: string | null
+          language?: string | null
+          metadata?: Json | null
+          publication_date?: string | null
+          publisher?: string | null
+          rating?: number | null
+          title?: string
+          total_duration?: number | null
+          total_pages?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      deadline_progress: {
+        Row: {
+          created_at: string | null
+          current_progress: number
+          deadline_id: string
+          id: string
+          time_spent_reading: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_progress?: number
+          deadline_id: string
+          id?: string
+          time_spent_reading?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_progress?: number
+          deadline_id?: string
+          id?: string
+          time_spent_reading?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deadline_progress_deadline_id_fkey"
+            columns: ["deadline_id"]
+            isOneToOne: false
+            referencedRelation: "deadlines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deadline_status: {
+        Row: {
+          created_at: string | null
+          deadline_id: string | null
+          id: number
+          status: Database["public"]["Enums"]["deadline_status_enum"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          deadline_id?: string | null
+          id?: number
+          status?: Database["public"]["Enums"]["deadline_status_enum"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          deadline_id?: string | null
+          id?: number
+          status?: Database["public"]["Enums"]["deadline_status_enum"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deadline_status_deadline_id_fkey"
+            columns: ["deadline_id"]
+            isOneToOne: false
+            referencedRelation: "deadlines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deadlines: {
+        Row: {
+          author: string | null
+          book_id: string | null
+          book_title: string
+          created_at: string | null
+          deadline_date: string
+          flexibility: Database["public"]["Enums"]["deadline_flexibility"]
+          format: Database["public"]["Enums"]["book_format_enum"]
+          id: string
+          source: string
+          total_quantity: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          author?: string | null
+          book_id?: string | null
+          book_title: string
+          created_at?: string | null
+          deadline_date: string
+          flexibility: Database["public"]["Enums"]["deadline_flexibility"]
+          format?: Database["public"]["Enums"]["book_format_enum"]
+          id?: string
+          source: string
+          total_quantity: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          author?: string | null
+          book_id?: string | null
+          book_title?: string
+          created_at?: string | null
+          deadline_date?: string
+          flexibility?: Database["public"]["Enums"]["deadline_flexibility"]
+          format?: Database["public"]["Enums"]["book_format_enum"]
+          id?: string
+          source?: string
+          total_quantity?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deadlines_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deadlines_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          onboarding_complete: boolean | null
+          updated_at: string | null
+          username: string | null
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          onboarding_complete?: boolean | null
+          updated_at?: string | null
+          username?: string | null
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          onboarding_complete?: boolean | null
+          updated_at?: string | null
+          username?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      user_searches: {
+        Row: {
+          created_at: string | null
+          id: string
+          query: string
+          result_count: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          query: string
+          result_count: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          query?: string
+          result_count?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_searches_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      book_format_enum: "physical" | "ebook" | "audio"
+      deadline_flexibility: "flexible" | "strict"
+      deadline_status_enum:
+        | "requested"
+        | "approved"
+        | "reading"
+        | "rejected"
+        | "withdrew"
+        | "complete"
+        | "set_aside"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      book_format_enum: ["physical", "ebook", "audio"],
+      deadline_flexibility: ["flexible", "strict"],
+      deadline_status_enum: [
+        "requested",
+        "approved",
+        "reading",
+        "rejected",
+        "withdrew",
+        "complete",
+        "set_aside",
+      ],
+    },
+  },
+} as const

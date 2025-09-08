@@ -5,7 +5,7 @@ const expoConfig = require('eslint-config-expo/flat');
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*'],
+    ignores: ['dist/*', 'old/*'],
   },
   {
     files: ['**/__tests__/**/*', '**/__mocks__/**/*', '**/*.test.*', '**/*.spec.*'],
@@ -30,6 +30,7 @@ module.exports = defineConfig([
       }],
       'no-var': 'error',
       'no-implicit-globals': 'error',
+      'react/no-unescaped-entities': 'off',
     },
   },
 ]);
