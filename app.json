@@ -21,8 +21,7 @@
         "foregroundImage": "./src/assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
-      "package": "com.grizzylabs.shelfControl"
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "bundler": "metro",
@@ -67,13 +66,6 @@
     ],
     "experiments": {
       "typedRoutes": true
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "c735e61c-15ad-41fd-b5d4-461bddd20381"
-      }
-    },
-    "owner": "grizzylabs"
+    }
   }
 }

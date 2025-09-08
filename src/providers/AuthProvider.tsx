@@ -21,6 +21,8 @@ type AuthData = {
     signIn: (email: string, password: string) => Promise<AuthResponse>;
     signUp: (email: string, password: string, username: string) => Promise<AuthResponse>;
     updateProfile: (updates: Partial<Profile>) => Promise<{ data: Profile | null; error: Error | null }>;
+    uploadAvatar: (uri: string) => Promise<{ data: string | null; error: Error | null }>;
+    refreshProfile: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthData>({
@@ -31,6 +33,8 @@ const AuthContext = createContext<AuthData>({
     signIn: async () => ({ data: { user: null, session: null }, error: null }),
     signUp: async () => ({ data: { user: null, session: null }, error: null }),
     updateProfile: async () => ({ data: null, error: null }),
+    uploadAvatar: async () => ({ data: null, error: null }),
+    refreshProfile: async () => { },
 });
 
 // Tells Supabase Auth to continuously refresh the session automatically if
@@ -135,6 +139,67 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         }
     }
 
+    const uploadAvatar = async (uri: string) => {
+        if (!session?.user?.id) {
+            return { data: null, error: new Error('User not authenticated') };
+        }
+
+        try {
+            // First, remove any existing avatars for this user
+            const { data: existingFiles } = await supabase.storage
+                .from('avatars')
+                .list(session.user.id);
+
+            if (existingFiles && existingFiles.length > 0) {
+                const filesToRemove = existingFiles.map(file => `${session.user.id}/${file.name}`);
+                await supabase.storage.from('avatars').remove(filesToRemove);
+            }
+
+            // Fetch the image and convert to arraybuffer
+            const arraybuffer = await fetch(uri).then((res) => res.arrayBuffer());
+
+            // Get file extension from URI
+            const fileExt = uri.split('.').pop()?.toLowerCase() ?? 'jpeg';
+            const fileName = `avatar-${Date.now()}.${fileExt}`;
+            const path = `${session.user.id}/${fileName}`;
+            
+            // Upload to Supabase Storage
+            const { data, error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(path, arraybuffer, {
+                    contentType: `image/${fileExt}`,
+                    upsert: true,
+                });
+
+            if (uploadError) throw uploadError;
+            console.log('Upload data:', data);
+            
+            // Return the path to be stored in the database
+            return { data: data.path, error: null };
+        } catch (err) {
+            console.error('Avatar upload error:', err);
+            return { data: null, error: err as Error };
+        }
+    };
+
+    const refreshProfile = async () => {
+        if (!session?.user?.id) return;
+        
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+            
+            if (!error && data) {
+                setProfile(data);
+            }
+        } catch (err) {
+            console.error('Error refreshing profile:', err);
+        }
+    };
+
     const updateProfile = async (updates: Partial<Profile>) => {
         if (!profile?.id) {
             return { data: null, error: new Error('Profile not found') };
@@ -166,7 +231,9 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         signOut,
         signIn,
         signUp,
-        updateProfile
+        updateProfile,
+        uploadAvatar,
+        refreshProfile
     };
     return (
         <AuthContext.Provider value={providerValue}>
