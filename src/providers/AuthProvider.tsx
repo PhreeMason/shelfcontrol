@@ -19,7 +19,7 @@ type AuthData = {
     profile: Profile | null;
     signOut: () => Promise<void>;
     signIn: (email: string, password: string) => Promise<AuthResponse>;
-    signUp: (email: string, password: string, username: string, avatarBase64?: string) => Promise<AuthResponse>;
+    signUp: (email: string, password: string, username: string) => Promise<AuthResponse>;
     updateProfile: (updates: Partial<Profile>) => Promise<{ data: Profile | null; error: Error | null }>;
 };
 
@@ -115,7 +115,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         }
     };
 
-    const signUp = async (email: string, password: string, username: string, avatarBase64?: string) => {
+    const signUp = async (email: string, password: string, username: string) => {
         try {
             const { data, error }: AuthResponse = await supabase.auth.signUp({
                 email,
@@ -123,7 +123,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
                 options: {
                     data: {
                         username,
-                        avatar: avatarBase64
+                        email
                     }
                 }
             });
