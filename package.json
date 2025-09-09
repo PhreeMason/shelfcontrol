@@ -80,7 +80,8 @@
     "readable-stream": "^4.7.0",
     "stacktrace-parser": "^0.1.11",
     "uuid": "^12.0.0",
-    "zod": "^3.25.67"
+    "zod": "^3.25.67",
+    "expo-apple-authentication": "~7.2.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

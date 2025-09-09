@@ -44,3 +44,4 @@ app-example
 old/
 supabase/.temp/
 ios/
+android/

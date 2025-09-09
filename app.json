@@ -10,6 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
+      "usesAppleSignIn": true,
       "bundleIdentifier": "com.grizzylabs.shelfControl",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you choose a profile picture.",
@@ -21,7 +22,12 @@
         "foregroundImage": "./src/assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.grizzylabs.shelfControl"
     },
     "web": {
       "bundler": "metro",
@@ -29,6 +35,7 @@
       "favicon": "./src/assets/images/icon.png"
     },
     "plugins": [
+      "expo-apple-authentication",
       "expo-router",
       [
         "expo-splash-screen",

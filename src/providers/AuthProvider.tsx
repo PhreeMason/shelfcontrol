@@ -23,6 +23,7 @@ type AuthData = {
     updateProfile: (updates: Partial<Profile>) => Promise<{ data: Profile | null; error: Error | null }>;
     uploadAvatar: (uri: string) => Promise<{ data: string | null; error: Error | null }>;
     refreshProfile: () => Promise<void>;
+    updateProfileFromApple: (appleData: { email?: string | null; fullName?: any }) => Promise<{ data: Profile | null; error: Error | null }>;
 };
 
 const AuthContext = createContext<AuthData>({
@@ -35,6 +36,7 @@ const AuthContext = createContext<AuthData>({
     updateProfile: async () => ({ data: null, error: null }),
     uploadAvatar: async () => ({ data: null, error: null }),
     refreshProfile: async () => { },
+    updateProfileFromApple: async () => ({ data: null, error: null }),
 });
 
 // Tells Supabase Auth to continuously refresh the session automatically if
@@ -224,6 +226,53 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         }
     };
 
+    const updateProfileFromApple = async (appleData: { email?: string | null; fullName?: any }) => {
+        if (!session?.user?.id) {
+            return { data: null, error: new Error('User not authenticated') };
+        }
+
+        try {
+            // Build updates object only with values that exist
+            const updates: Partial<Profile> = {};
+
+            // Handle email - only update if it's a real email (not private relay)
+            if (appleData.email && !appleData.email.includes('@privaterelay.appleid.com')) {
+                updates.email = appleData.email;
+            }
+
+            // Handle name - extract first and last name if provided
+            if (appleData.fullName) {
+                if (appleData.fullName.givenName) {
+                    updates.first_name = appleData.fullName.givenName;
+                }
+                if (appleData.fullName.familyName) {
+                    updates.last_name = appleData.fullName.familyName;
+                }
+            }
+
+            // Only proceed if we have something to update
+            if (Object.keys(updates).length === 0) {
+                return { data: profile, error: null };
+            }
+
+            const { data, error } = await supabase
+                .from('profiles')
+                .update({
+                    ...updates,
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('id', session.user.id)
+                .select()
+                .single();
+
+            if (error) throw error;
+            setProfile(data);
+            return { data, error: null };
+        } catch (err) {
+            return { data: null, error: err as Error };
+        }
+    };
+
     const providerValue = {
         session,
         isLoading,
@@ -233,7 +282,8 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         signUp,
         updateProfile,
         uploadAvatar,
-        refreshProfile
+        refreshProfile,
+        updateProfileFromApple
     };
     return (
         <AuthContext.Provider value={providerValue}>

@@ -6,6 +6,7 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { z } from 'zod';
+import { AppleSSO } from '@/components/auth/AppleSSO';
 
 const signInSchema = z.object({
     email: z.string({ message: 'Email is required' }).email('Invalid email'),
@@ -118,6 +119,15 @@ export default function SignInScreen() {
                     </TouchableOpacity>
                 </ThemedView>
 
+                <ThemedView style={styles.divider}>
+                    <ThemedText style={styles.dividerText}>or</ThemedText>
+                </ThemedView>
+
+                <AppleSSO 
+                    onSuccess={() => router.replace('/')}
+                    onError={(error) => setError('root', { message: error.message || 'Apple sign-in failed' })}
+                />
+
                 <ThemedView style={styles.footer}>
                     <ThemedText>Don't have an account? </ThemedText>
                     <Link href="/(auth)/sign-up">
@@ -181,5 +191,16 @@ const styles = StyleSheet.create({
         color: '#ff0000',
         fontSize: 14,
         marginTop: 4,
+    },
+    divider: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 24,
+    },
+    dividerText: {
+        textAlign: 'center',
+        flex: 1,
+        fontSize: 14,
+        opacity: 0.7,
     },
 });
