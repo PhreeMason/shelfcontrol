@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ShelfControl",
-    "slug": "bookClock",
+    "slug": "shelfControl",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
@@ -15,7 +15,8 @@
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you choose a profile picture.",
         "NSCameraUsageDescription": "This app needs access to your camera to let you take a profile picture."
-      }
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,10 +25,10 @@
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "android.permission.RECORD_AUDIO",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.grizzylabs.shelfControl"
+      "package": "com.grizzylabs.shelfControl",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -69,10 +70,22 @@
             "./src/assets/fonts/Nunito-SemiBold.ttf"
           ]
         }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.592845961725-o3cl2fu1cb39hir9q6tsb1ro2t67hhhi"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a80d1ff7-b81c-43a2-9b3d-c7b3b958ac4c"
+      }
     }
   }
 }
