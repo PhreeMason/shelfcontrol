@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { z } from 'zod';
 import { AppleSSO } from '@/components/auth/AppleSSO';
+import { GoogleSSO } from '@/components/auth/GoogleSSO';
 
 const signInSchema = z.object({
     email: z.string({ message: 'Email is required' }).email('Invalid email'),
@@ -61,6 +62,12 @@ export default function SignInScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <ThemedView style={styles.innerContainer}>
+                <ThemedView style={styles.header}>
+                    <Link href="/(auth)/sign-up">
+                        <ThemedText type="link">Sign up</ThemedText>
+                    </Link>
+                </ThemedView>
+                
                 <ThemedText type="title" style={styles.title}>Sign in</ThemedText>
 
                 <ThemedView style={styles.form}>
@@ -123,16 +130,16 @@ export default function SignInScreen() {
                     <ThemedText style={styles.dividerText}>or</ThemedText>
                 </ThemedView>
 
-                <AppleSSO 
-                    onSuccess={() => router.replace('/')}
-                    onError={(error) => setError('root', { message: error.message || 'Apple sign-in failed' })}
-                />
-
-                <ThemedView style={styles.footer}>
-                    <ThemedText>Don't have an account? </ThemedText>
-                    <Link href="/(auth)/sign-up">
-                        <ThemedText type="link">Sign up</ThemedText>
-                    </Link>
+                <ThemedView style={styles.socialButtons}>
+                    <AppleSSO 
+                        onSuccess={() => router.replace('/')}
+                        onError={(error) => setError('root', { message: error.message || 'Apple sign-in failed' })}
+                    />
+                    
+                    <GoogleSSO 
+                        onSuccess={() => router.replace('/')}
+                        onError={(error) => setError('root', { message: error.message || 'Google sign-in failed' })}
+                    />
                 </ThemedView>
             </ThemedView>
         </KeyboardAvoidingView>
@@ -180,11 +187,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 4,
+    header: {
+        position: 'absolute',
+        top: 60,
+        right: 20,
+        zIndex: 1,
     },
     errorText: {
         textAlign: 'center',
@@ -202,5 +209,9 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 14,
         opacity: 0.7,
+    },
+    socialButtons: {
+        gap: 12,
+        marginBottom: 32,
     },
 });
