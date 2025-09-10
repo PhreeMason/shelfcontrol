@@ -145,28 +145,28 @@ export type Database = {
       }
       deadline_progress: {
         Row: {
-          created_at: string | null
+          created_at: string
           current_progress: number
           deadline_id: string
           id: string
           time_spent_reading: number | null
-          updated_at: string | null
+          updated_at: string
         }
         Insert: {
-          created_at?: string | null
+          created_at: string
           current_progress?: number
           deadline_id: string
           id?: string
           time_spent_reading?: number | null
-          updated_at?: string | null
+          updated_at: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           current_progress?: number
           deadline_id?: string
           id?: string
           time_spent_reading?: number | null
-          updated_at?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -180,25 +180,25 @@ export type Database = {
       }
       deadline_status: {
         Row: {
-          created_at: string | null
+          created_at: string
           deadline_id: string | null
           id: number
           status: Database["public"]["Enums"]["deadline_status_enum"] | null
-          updated_at: string | null
+          updated_at: string
         }
         Insert: {
-          created_at?: string | null
+          created_at: string
           deadline_id?: string | null
           id?: number
           status?: Database["public"]["Enums"]["deadline_status_enum"] | null
-          updated_at?: string | null
+          updated_at: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           deadline_id?: string | null
           id?: number
           status?: Database["public"]["Enums"]["deadline_status_enum"] | null
-          updated_at?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -215,42 +215,42 @@ export type Database = {
           author: string | null
           book_id: string | null
           book_title: string
-          created_at: string | null
+          created_at: string
           deadline_date: string
           flexibility: Database["public"]["Enums"]["deadline_flexibility"]
           format: Database["public"]["Enums"]["book_format_enum"]
           id: string
           source: string
           total_quantity: number
-          updated_at: string | null
+          updated_at: string
           user_id: string
         }
         Insert: {
           author?: string | null
           book_id?: string | null
           book_title: string
-          created_at?: string | null
+          created_at: string
           deadline_date: string
           flexibility: Database["public"]["Enums"]["deadline_flexibility"]
           format?: Database["public"]["Enums"]["book_format_enum"]
           id?: string
           source: string
           total_quantity: number
-          updated_at?: string | null
+          updated_at: string
           user_id: string
         }
         Update: {
           author?: string | null
           book_id?: string | null
           book_title?: string
-          created_at?: string | null
+          created_at?: string
           deadline_date?: string
           flexibility?: Database["public"]["Enums"]["deadline_flexibility"]
           format?: Database["public"]["Enums"]["book_format_enum"]
           id?: string
           source?: string
           total_quantity?: number
-          updated_at?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
