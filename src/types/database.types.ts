@@ -23,7 +23,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          id?: string
+          id: string
           name: string
           updated_at?: string | null
         }
@@ -105,7 +105,7 @@ export type Database = {
           edition?: Json | null
           format?: Database["public"]["Enums"]["book_format_enum"] | null
           genres?: string[] | null
-          id?: string
+          id: string
           isbn10?: string | null
           isbn13?: string | null
           language?: string | null
@@ -182,21 +182,21 @@ export type Database = {
         Row: {
           created_at: string
           deadline_id: string | null
-          id: number
+          id: string
           status: Database["public"]["Enums"]["deadline_status_enum"] | null
           updated_at: string
         }
         Insert: {
           created_at: string
           deadline_id?: string | null
-          id?: number
+          id?: string
           status?: Database["public"]["Enums"]["deadline_status_enum"] | null
           updated_at: string
         }
         Update: {
           created_at?: string
           deadline_id?: string | null
-          id?: number
+          id?: string
           status?: Database["public"]["Enums"]["deadline_status_enum"] | null
           updated_at?: string
         }
