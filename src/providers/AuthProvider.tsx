@@ -1,5 +1,5 @@
-import { Database } from '@/lib/database.types';
 import { supabase } from '@/lib/supabase';
+import { Database } from '@/types/database.types';
 import { AuthError, AuthResponse, Session } from '@supabase/supabase-js';
 import { router, useSegments } from 'expo-router';
 import {
