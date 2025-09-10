@@ -1,32 +1,30 @@
-import { View, type ViewProps } from 'react-native';
+import { ScrollView, type ScrollViewProps } from 'react-native';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { ComponentVariants, createThemedStyle, type SurfaceVariant, type ColorToken, type SpacingToken, type BorderRadiusToken } from '@/constants/Theme';
+import { ComponentVariants, createThemedStyle, type SurfaceVariant, type ColorToken, type SpacingToken } from '@/constants/Theme';
 
-export type ThemedViewProps = ViewProps & {
+export type ThemedScrollViewProps = ScrollViewProps & {
   variant?: SurfaceVariant;
   backgroundColor?: ColorToken;
   padding?: SpacingToken;
-  borderRadius?: BorderRadiusToken;
 };
 
-export function ThemedView({ 
+export function ThemedScrollView({ 
   style, 
   variant = 'default',
   backgroundColor,
   padding,
-  borderRadius,
   ...otherProps 
-}: ThemedViewProps) {
+}: ThemedScrollViewProps) {
   const surfaceVariant = ComponentVariants.surface[variant];
   
   const themeBackgroundColor = useThemeColor({}, backgroundColor || surfaceVariant.container);
-  const surfaceStyle = createThemedStyle.surface(variant, padding, borderRadius);
+  const scrollViewStyle = createThemedStyle.surface(variant, padding);
 
   return (
-    <View 
+    <ScrollView 
       style={[
-        surfaceStyle,
+        scrollViewStyle,
         { backgroundColor: themeBackgroundColor },
         style
       ]} 

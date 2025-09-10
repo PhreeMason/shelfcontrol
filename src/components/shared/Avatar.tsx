@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Alert } from 'react-native';
-import { Image } from 'expo-image';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ThemedText } from '@/components/themed';
-import * as ImagePicker from 'expo-image-picker';
-import { getAvatarUrl, getAvatarSignedUrl } from '@/utils/avatarUtils';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useAuth } from '@/providers/AuthProvider';
+import { getAvatarSignedUrl, getAvatarUrl } from '@/utils/avatarUtils';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
+import React, { useEffect, useState } from 'react';
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface AvatarProps {
     avatarUrl?: string | null | undefined;

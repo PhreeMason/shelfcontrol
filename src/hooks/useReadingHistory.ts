@@ -447,7 +447,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
     });
 
     return markedDates;
-  }, [query.data?.entries, dateRange]);
+  }, [query.data?.entries]);
 
   return {
     ...query,

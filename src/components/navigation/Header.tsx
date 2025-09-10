@@ -1,3 +1,4 @@
+import TodaysGoals from '@/components/progress/TodaysGoals';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import dayjs from 'dayjs';
@@ -5,7 +6,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-// import TodaysGoals from '../progress/TodaysGoals';
 
 const Header = () => {
     const today = Date.now();
@@ -32,7 +32,7 @@ const Header = () => {
                     <IconSymbol size={28} name="gearshape.fill" color={"rgba(222, 222, 222, 0.76)"} />
                 </TouchableOpacity>
             </ThemedView>
-            {/* <TodaysGoals /> */}
+            <TodaysGoals />
         </LinearGradient>
 
     );
@@ -72,5 +72,4 @@ const styles = StyleSheet.create({
         padding: 1,
         borderRadius: 50,
     }
-
 })

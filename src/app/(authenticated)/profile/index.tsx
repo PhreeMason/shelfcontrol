@@ -1,10 +1,10 @@
-import { ThemedText, ThemedView } from '@/components/themed';
-import { useAuth } from '@/providers/AuthProvider';
 import Avatar from '@/components/shared/Avatar';
-import React, { useCallback } from 'react';
-import { StyleSheet, TouchableOpacity, ScrollView, Alert, View, Linking } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useAuth } from '@/providers/AuthProvider';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback } from 'react';
+import { Alert, Linking, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function Profile() {
     const { profile, signOut, refreshProfile } = useAuth();
@@ -48,7 +48,7 @@ export default function Profile() {
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <ThemedView style={styles.innerContainer}>
-                <ThemedText type="title" style={styles.title}>Profile</ThemedText>
+                <ThemedText variant="headline" style={styles.title}>Profile</ThemedText>
 
                 <ThemedView style={styles.profileCard}>
                     <View style={styles.avatarSection}>

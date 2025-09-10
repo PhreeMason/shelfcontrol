@@ -63,11 +63,11 @@ export default function SignInScreen() {
             <ThemedView style={styles.innerContainer}>
                 <ThemedView style={styles.header}>
                     <Link href="/(auth)/sign-up">
-                        <ThemedText type="link">Sign up</ThemedText>
+                        <ThemedText variant="default" style={{ textDecorationLine: 'underline' }}>Sign up</ThemedText>
                     </Link>
                 </ThemedView>
                 
-                <ThemedText type="title" style={styles.title}>Sign in</ThemedText>
+                <ThemedText variant="headline" style={styles.title}>Sign in</ThemedText>
 
                 <ThemedView style={styles.form}>
                     <Controller
