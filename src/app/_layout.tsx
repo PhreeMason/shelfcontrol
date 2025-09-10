@@ -9,6 +9,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
 
 const queryClient = new QueryClient()
 
@@ -40,8 +41,9 @@ export default function RootLayout() {
             <Stack.Screen name="(authenticated)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
-        </ThemeProvider>
         <StatusBar style="auto" />
+        <Toast />
+        </ThemeProvider>
       </QueryClientProvider>
     </AuthProvider>
   );

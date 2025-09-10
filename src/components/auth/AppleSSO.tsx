@@ -1,9 +1,9 @@
-import { supabase } from '@/lib/supabase'
-import * as AppleAuthentication from 'expo-apple-authentication'
-import { Platform, StyleSheet, ViewStyle } from 'react-native'
 import { ThemedView } from '@/components/themed'
-import React, { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/providers/AuthProvider'
+import * as AppleAuthentication from 'expo-apple-authentication'
+import React, { useEffect, useState } from 'react'
+import { Platform, StyleSheet, ViewStyle } from 'react-native'
 
 interface AppleSSOProps {
   buttonType?: AppleAuthentication.AppleAuthenticationButtonType;

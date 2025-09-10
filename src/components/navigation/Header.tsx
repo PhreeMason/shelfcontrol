@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
         paddingBottom: 13,
     },
     dateRow: {
+        backgroundColor: 'transparent',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

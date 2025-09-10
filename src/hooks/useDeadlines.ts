@@ -291,7 +291,6 @@ export const useUpdateDeadlineProgress = () => {
                 throw new Error("User not authenticated");
             }
             
-            // Generate progress ID using RPC with crypto fallback
             const finalProgressId = generateId('rdp');
 
             // Create new progress entry
@@ -457,7 +456,6 @@ export const useCompleteDeadline = () => {
 
             // If current progress is not at max, update it to max first
             if (latestProgress < deadline.total_quantity) {
-                // Generate progress ID using RPC with crypto fallback
                 const finalProgressId = generateId('rdp');
 
                 // Create new progress entry at max progress
