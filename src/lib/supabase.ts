@@ -5,6 +5,7 @@ import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
+import { v4 as uuidv4 } from "uuid";
 import { Database } from '../types/database.types';
 
 // code came from here https://supabase.com/docs/guides/getting-started/tutorials/with-expo-react-native?queryGroups=auth-store&auth-store=secure-store
@@ -80,4 +81,12 @@ const supabase = createClient<Database>(
     },
 );
 
-export { supabase };
+const generateId = (prefix: string = '') => {
+    if (prefix && !prefix.endsWith('_')) {
+        prefix = prefix + '_';
+    }
+    return prefix + uuidv4();
+}
+
+export { generateId, supabase };
+
