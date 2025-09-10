@@ -15,8 +15,7 @@
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you choose a profile picture.",
         "NSCameraUsageDescription": "This app needs access to your camera to let you take a profile picture."
-      },
-      "googleServicesFile": "./GoogleService-Info.plist"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -24,11 +23,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ],
-      "package": "com.grizzylabs.shelfControl",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.grizzylabs.shelfControl"
     },
     "web": {
       "bundler": "metro",
@@ -69,12 +64,6 @@
             "./src/assets/fonts/Nunito-Regular.ttf",
             "./src/assets/fonts/Nunito-SemiBold.ttf"
           ]
-        }
-      ],
-      [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.googleusercontent.apps.592845961725-o3cl2fu1cb39hir9q6tsb1ro2t67hhhi"
         }
       ]
     ],

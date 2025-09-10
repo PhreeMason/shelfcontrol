@@ -1,13 +1,12 @@
+import { AppleSSO } from '@/components/auth/AppleSSO';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useRouter } from 'expo-router';
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { Controller, useForm } from 'react-hook-form';
+import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { z } from 'zod';
-import { AppleSSO } from '@/components/auth/AppleSSO';
-import { GoogleSSO } from '@/components/auth/GoogleSSO';
 
 const signInSchema = z.object({
     email: z.string({ message: 'Email is required' }).email('Invalid email'),
@@ -136,10 +135,10 @@ export default function SignInScreen() {
                         onError={(error) => setError('root', { message: error.message || 'Apple sign-in failed' })}
                     />
                     
-                    <GoogleSSO 
+                    {/* <GoogleSSO 
                         onSuccess={() => router.replace('/')}
                         onError={(error) => setError('root', { message: error.message || 'Google sign-in failed' })}
-                    />
+                    /> */}
                 </ThemedView>
             </ThemedView>
         </KeyboardAvoidingView>
