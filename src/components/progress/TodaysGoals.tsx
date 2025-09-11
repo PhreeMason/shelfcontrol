@@ -18,8 +18,6 @@ const TodaysGoals: React.FC = () => {
     }
   });
 
-  console.log(JSON.stringify({ audioDeadlines, readingDeadlines }));
-
   const totalAudioTimeForToday = audioDeadlines.reduce((total, deadline) => {
     const { unitsPerDay } = getDeadlineCalculations(deadline);
     return total + unitsPerDay;

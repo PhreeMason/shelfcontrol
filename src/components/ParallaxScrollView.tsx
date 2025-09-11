@@ -55,7 +55,9 @@ export default function ParallaxScrollView({
           ]}>
           {headerContent}
         </Animated.View>
-        <ThemedView style={styles.content}>{children}</ThemedView>
+        <ThemedView style={styles.content}>
+          {children}
+          </ThemedView>
       </Animated.ScrollView>
     </ThemedView>
   );
@@ -64,6 +66,7 @@ export default function ParallaxScrollView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   header: {
     height: HEADER_HEIGHT,
@@ -72,5 +75,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     overflow: 'hidden',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   },
 });

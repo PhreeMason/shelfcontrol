@@ -59,7 +59,7 @@ export default ActiveReads
 const styles = StyleSheet.create({
     container: {
         padding: 20,
-        gap: 20
+        gap: 20,
     },
     pageTitle: {
         fontSize: 16,

@@ -1,20 +1,15 @@
 import TodaysGoals from '@/components/progress/TodaysGoals';
 import { ThemedText, ThemedView } from '@/components/themed';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import dayjs from 'dayjs';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Header = () => {
     const today = Date.now();
     const formattedDate = dayjs(today).format('dddd, MMMM D');
     const insets = useSafeAreaInsets();
-    const handleSettingsPress = () => {
-        // router.push('/settings');
-        console.log('Settings button pressed');
-    };
 
     return (
         <LinearGradient
@@ -25,12 +20,6 @@ const Header = () => {
         >
             <ThemedView style={styles.dateRow}>
                 <ThemedText style={styles.dateText}>{formattedDate}</ThemedText>
-                <TouchableOpacity
-                    style={styles.settings}
-                    onPress={handleSettingsPress}
-                >
-                    <IconSymbol size={28} name="gearshape.fill" color={"rgba(222, 222, 222, 0.76)"} />
-                </TouchableOpacity>
             </ThemedView>
             <TodaysGoals />
         </LinearGradient>

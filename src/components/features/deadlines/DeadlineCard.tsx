@@ -1,8 +1,10 @@
 import { ThemedText } from '@/components/themed';
+import { useFetchBookById } from '@/hooks/useBooks';
 // import { useFetchBookById } from '@/hooks/useBooks';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, Platform, Pressable, StyleSheet, View } from 'react-native';
 
@@ -40,11 +42,10 @@ interface DeadlineCardProps {
 
 export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCardProps) {
   const { getDeadlineCalculations, formatUnitsPerDayForDisplay } = useDeadlines();
-  // const router = useRouter();
+  const router = useRouter();
 
   // Fetch book data if deadline has a book_id
-  // const { data: bookData } = useFetchBookById(deadline.book_id);
-  const bookData = null; // Placeholder until book fetching is implemented
+  const { data: bookData } = useFetchBookById(deadline.book_id);
 
   const {
     daysLeft,
@@ -82,8 +83,8 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
 
   const handlePress = () => {
     if (!disableNavigation) {
-      // router.push(`/deadline/${deadline.id}/view`);
-      console.log('Deadline pressed, navigation not yet implemented');
+      router.push(`/deadline/${deadline.id}/view`);
+      // console.log('Deadline pressed, navigation not yet implemented');
     }
   };
 
