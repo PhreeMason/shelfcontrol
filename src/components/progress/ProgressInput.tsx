@@ -1,3 +1,4 @@
+import { Typography } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
 import { Control, Controller } from 'react-hook-form';
@@ -55,8 +56,8 @@ export default ProgressInput;
 
 const styles = StyleSheet.create({
   input: {
-    fontSize: 22,
-    fontFamily: 'Nunito-Bold',
+    ...Typography.titleLarge,
+    fontSize: 22, // Override typography fontSize
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,

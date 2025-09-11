@@ -1,3 +1,4 @@
+import { Typography } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
@@ -206,8 +207,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    fontSize: 22,
-    fontFamily: 'Nunito-Bold',
+    ...Typography.titleLarge,
+    fontSize: 22, // Override typography fontSize
   },
   helpText: {
     fontSize: 12,

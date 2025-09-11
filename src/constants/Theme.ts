@@ -2,7 +2,7 @@
  * Centralized theme utilities for consistent component styling
  */
 
-import { Colors, Typography, Spacing, BorderRadius } from './Colors';
+import { Colors, Typography, Spacing, BorderRadius, FontFamily } from './Colors';
 import type { TextStyle, ViewStyle } from 'react-native';
 
 // Component variant definitions
@@ -11,55 +11,93 @@ export const ComponentVariants = {
     primary: {
       container: 'primary' as keyof typeof Colors.light,
       content: 'onPrimary' as keyof typeof Colors.light,
+      spacing: 'md' as keyof typeof Spacing,
+      borderRadius: 'md' as keyof typeof BorderRadius,
+      typography: 'labelLarge' as keyof typeof Typography,
     },
     secondary: {
       container: 'secondaryContainer' as keyof typeof Colors.light,
       content: 'onSecondaryContainer' as keyof typeof Colors.light,
+      spacing: 'md' as keyof typeof Spacing,
+      borderRadius: 'md' as keyof typeof BorderRadius,
+      typography: 'labelLarge' as keyof typeof Typography,
     },
     outline: {
       container: 'surface' as keyof typeof Colors.light,
       content: 'primary' as keyof typeof Colors.light,
       border: 'outline' as keyof typeof Colors.light,
+      spacing: 'md' as keyof typeof Spacing,
+      borderRadius: 'md' as keyof typeof BorderRadius,
+      typography: 'labelLarge' as keyof typeof Typography,
     },
     ghost: {
       container: 'surface' as keyof typeof Colors.light,
       content: 'primary' as keyof typeof Colors.light,
       transparent: true,
+      spacing: 'md' as keyof typeof Spacing,
+      borderRadius: 'md' as keyof typeof BorderRadius,
+      typography: 'labelLarge' as keyof typeof Typography,
     },
     error: {
       container: 'error' as keyof typeof Colors.light,
       content: 'onError' as keyof typeof Colors.light,
+      spacing: 'md' as keyof typeof Spacing,
+      borderRadius: 'md' as keyof typeof BorderRadius,
+      typography: 'labelLarge' as keyof typeof Typography,
     },
     success: {
       container: 'success' as keyof typeof Colors.light,
       content: 'onSuccess' as keyof typeof Colors.light,
+      spacing: 'md' as keyof typeof Spacing,
+      borderRadius: 'md' as keyof typeof BorderRadius,
+      typography: 'labelLarge' as keyof typeof Typography,
     },
     accent: {
       container: 'accent' as keyof typeof Colors.light,
       content: 'onAccent' as keyof typeof Colors.light,
+      spacing: 'md' as keyof typeof Spacing,
+      borderRadius: 'md' as keyof typeof BorderRadius,
+      typography: 'labelLarge' as keyof typeof Typography,
     },
     dangerOutline: {
       container: 'surface' as keyof typeof Colors.light,
       content: 'error' as keyof typeof Colors.light,
       border: 'error' as keyof typeof Colors.light,
+      spacing: 'md' as keyof typeof Spacing,
+      borderRadius: 'md' as keyof typeof BorderRadius,
+      typography: 'labelLarge' as keyof typeof Typography,
     },
   },
   surface: {
     default: {
       container: 'surface' as keyof typeof Colors.light,
       content: 'textOnSurface' as keyof typeof Colors.light,
+      spacing: 'md' as keyof typeof Spacing,
+      borderRadius: 'md' as keyof typeof BorderRadius,
     },
     variant: {
       container: 'surfaceVariant' as keyof typeof Colors.light,
       content: 'textOnSurface' as keyof typeof Colors.light,
+      spacing: 'md' as keyof typeof Spacing,
+      borderRadius: 'md' as keyof typeof BorderRadius,
     },
     container: {
       container: 'surfaceContainer' as keyof typeof Colors.light,
       content: 'textOnSurface' as keyof typeof Colors.light,
+      spacing: 'md' as keyof typeof Spacing,
+      borderRadius: 'md' as keyof typeof BorderRadius,
     },
     elevated: {
       container: 'surfaceContainerHighest' as keyof typeof Colors.light,
       content: 'textOnSurface' as keyof typeof Colors.light,
+      spacing: 'lg' as keyof typeof Spacing,
+      borderRadius: 'lg' as keyof typeof BorderRadius,
+    },
+    card: {
+      container: 'surface' as keyof typeof Colors.light,
+      content: 'textOnSurface' as keyof typeof Colors.light,
+      spacing: 'lg' as keyof typeof Spacing,
+      borderRadius: 'lg' as keyof typeof BorderRadius,
     },
   },
   text: {
@@ -153,7 +191,7 @@ export const createThemedStyle = {
 export const StyleMixins = {
   card: {
     borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
+    padding: Spacing.lg,
   },
   
   listItem: {
@@ -166,6 +204,7 @@ export const StyleMixins = {
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.md,
     borderWidth: 1,
+    ...Typography.bodyLarge,
   },
 
   shadow: {
@@ -191,6 +230,71 @@ export const StyleMixins = {
   column: {
     flexDirection: 'column' as const,
   },
+
+  // Typography mixins
+  typography: {
+    heading: {
+      ...Typography.headlineSmall,
+    },
+    title: {
+      ...Typography.titleLarge,
+    },
+    body: {
+      ...Typography.bodyLarge,
+    },
+    caption: {
+      ...Typography.bodySmall,
+    },
+    label: {
+      ...Typography.labelMedium,
+    },
+  },
+
+  // Spacing presets
+  spacing: {
+    tight: { padding: Spacing.sm, gap: Spacing.xs },
+    normal: { padding: Spacing.md, gap: Spacing.sm },
+    loose: { padding: Spacing.lg, gap: Spacing.md },
+    extraLoose: { padding: Spacing.xl, gap: Spacing.lg },
+  },
+
+  // Component presets
+  components: {
+    primaryButton: {
+      borderRadius: BorderRadius.md,
+      padding: Spacing.md,
+      minHeight: 44,
+      ...Typography.labelLarge,
+    },
+    secondaryButton: {
+      borderRadius: BorderRadius.md,
+      padding: Spacing.md,
+      minHeight: 44,
+      borderWidth: 1,
+      ...Typography.labelLarge,
+    },
+    textButton: {
+      borderRadius: BorderRadius.sm,
+      padding: Spacing.sm,
+      ...Typography.labelMedium,
+    },
+    card: {
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    modal: {
+      borderRadius: BorderRadius.xl,
+      padding: Spacing.xl,
+      margin: Spacing.lg,
+    },
+  },
 } as const;
 
 // Type exports for better TypeScript support
@@ -198,6 +302,7 @@ export type ColorToken = keyof typeof Colors.light;
 export type TypographyToken = keyof typeof Typography;
 export type SpacingToken = keyof typeof Spacing;
 export type BorderRadiusToken = keyof typeof BorderRadius;
+export type FontFamilyToken = keyof typeof FontFamily;
 export type ButtonVariant = keyof typeof ComponentVariants.button;
 export type SurfaceVariant = keyof typeof ComponentVariants.surface;
 export type TextVariant = keyof typeof ComponentVariants.text;

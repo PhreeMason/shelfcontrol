@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { Typography } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 // import { useFetchBookById } from '@/hooks/useBooks';
 import { useDeadlines } from '@/providers/DeadlineProvider';
@@ -251,9 +252,8 @@ const styles = StyleSheet.create({
   },
   bookTitle: {
     color: '#2B3D4F',
-    fontSize: 16,
     marginBottom: 2,
-    fontFamily: 'Nunito-Bold',
+    ...Typography.titleMedium,
   },
   bookDeadline: {
     color: '#6B7280',

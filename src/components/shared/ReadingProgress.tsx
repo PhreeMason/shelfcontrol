@@ -4,6 +4,7 @@ import ProgressInput from '@/components/progress/ProgressInput'
 import ProgressStats from '@/components/progress/ProgressStats'
 import QuickActionButtons from '@/components/progress/QuickActionButtons'
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed'
+import { Typography } from '@/constants/Colors'
 import { useDeleteFutureProgress, useUpdateDeadlineProgress } from '@/hooks/useDeadlines'
 import { useTheme } from '@/hooks/useThemeColor'
 import { useDeadlines } from '@/providers/DeadlineProvider'
@@ -322,8 +323,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   sessionText: {
-    fontSize: 16,
-    fontFamily: 'Nunito-SemiBold',
+    ...Typography.titleMedium,
   },
   progressSection: {
     borderWidth: 1,

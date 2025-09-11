@@ -1,5 +1,6 @@
 import TodaysGoals from '@/components/progress/TodaysGoals';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { Typography } from '@/constants/Colors';
 import dayjs from 'dayjs';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -45,8 +46,8 @@ const styles = StyleSheet.create({
         paddingTop: 18
     },
     dateText: {
-        fontSize: 26,
-        fontFamily: 'Nunito-Bold',
+        ...Typography.titleLarge,
+        fontSize: 26, // Override typography fontSize
         letterSpacing: -0.4,
         lineHeight: 30,
         color: 'rgba(250, 248, 245, 1)',
