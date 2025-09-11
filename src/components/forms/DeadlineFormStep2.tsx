@@ -1,6 +1,6 @@
 import CustomInput from '@/components/shared/CustomInput';
 import { ThemedText } from '@/components/themed';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
@@ -35,11 +35,7 @@ export const DeadlineFormStep2 = ({
     watchedValues,
     setValue
 }: DeadlineFormStep2Props) => {
-    const cardColor = useThemeColor({}, 'surface');
-    const borderColor = useThemeColor({}, 'border');
-    const dangerColor = useThemeColor({}, 'danger');
-    const primaryColor = useThemeColor({}, 'primary');
-    const dividerColor = useThemeColor({}, 'textMuted');
+    const { colors } = useTheme();
     
     const [showStartDatePicker, setShowStartDatePicker] = useState(false);
     
@@ -101,7 +97,7 @@ export const DeadlineFormStep2 = ({
                     render={({ field: { value } }) => (
                         <>
                             <TouchableOpacity
-                                style={[styles.dateInput, {backgroundColor: cardColor, borderColor: borderColor}]}
+                                style={[styles.dateInput, {backgroundColor: colors.surface, borderColor: colors.border}]}
                                 onPress={onDatePickerToggle}
                                 testID="date-picker-button"
                             >
@@ -131,7 +127,7 @@ export const DeadlineFormStep2 = ({
                 </ThemedText>
             </View>
 
-            <View style={[styles.sectionDivider, {backgroundColor: dividerColor}]} />
+            <View style={[styles.sectionDivider, {backgroundColor: colors.textMuted}]} />
 
             <View>
                 <ThemedText variant="title" style={{marginBottom: 8}}>{getProgressLabel()}</ThemedText>
@@ -163,7 +159,7 @@ export const DeadlineFormStep2 = ({
 
             {shouldShowStartDate && (
                 <>
-                    <View style={[styles.sectionDivider, {backgroundColor: dividerColor}]} />
+                    <View style={[styles.sectionDivider, {backgroundColor: colors.textMuted}]} />
                     <View>
                         <ThemedText variant="title" style={{marginBottom: 8}}>When did you start reading?</ThemedText>
                         <Controller
@@ -172,7 +168,7 @@ export const DeadlineFormStep2 = ({
                             render={({ field: { value } }) => (
                                 <>
                                     <TouchableOpacity
-                                        style={[styles.dateInput, {backgroundColor: cardColor, borderColor: borderColor}]}
+                                        style={[styles.dateInput, {backgroundColor: colors.surface, borderColor: colors.border}]}
                                         onPress={() => setShowStartDatePicker(!showStartDatePicker)}
                                         testID="start-date-picker-button"
                                     >
@@ -205,7 +201,7 @@ export const DeadlineFormStep2 = ({
                 </>
             )}
 
-            <View style={[styles.sectionDivider, {backgroundColor: dividerColor}]} />
+            <View style={[styles.sectionDivider, {backgroundColor: colors.textMuted}]} />
             <View>
                 <ThemedText variant="title" style={{marginBottom: 8}}>Deadline Flexibility</ThemedText>
                 <PrioritySelector
@@ -217,14 +213,14 @@ export const DeadlineFormStep2 = ({
                 </ThemedText>
             </View>
 
-            <View style={[styles.sectionDivider, {backgroundColor: dividerColor}]} />
+            <View style={[styles.sectionDivider, {backgroundColor: colors.textMuted}]} />
 
             {paceEstimate && (
                 <View style={[
                     styles.estimateContainer,
                     {
-                        backgroundColor: paceEstimate.includes('⚠️') ? `${dangerColor}20` : `${primaryColor}20`,
-                        borderColor: paceEstimate.includes('⚠️') ? dangerColor : primaryColor,
+                        backgroundColor: paceEstimate.includes('⚠️') ? `${colors.danger}20` : `${colors.primary}20`,
+                        borderColor: paceEstimate.includes('⚠️') ? colors.danger : colors.primary,
                     }
                 ]}>
                     <ThemedText color={paceEstimate.includes('⚠️') ? 'danger' : 'primary'}>
@@ -233,7 +229,7 @@ export const DeadlineFormStep2 = ({
                 </View>
             )}
 
-            <View style={[styles.summaryCard, {backgroundColor: cardColor, borderColor: borderColor}]}>
+            <View style={[styles.summaryCard, {backgroundColor: colors.surface, borderColor: colors.border}]}>
                 <ThemedText color="primary" style={styles.summaryTitle}>✓ Ready to Add</ThemedText>
                 <ThemedText color="textMuted" style={styles.summaryText}>
                     {watchedValues.bookTitle && watchedValues.deadline

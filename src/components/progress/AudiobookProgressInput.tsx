@@ -1,4 +1,4 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { ThemedText } from '../themed';
@@ -98,11 +98,7 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
   placeholder = "e.g., 3h 2m or 3:02",
   testID
 }) => {
-  const textMuted = useThemeColor({}, 'textMuted');
-  const background = useThemeColor({}, 'background');
-  const primary = useThemeColor({}, 'primary');
-  const border = useThemeColor({}, 'border');
-  const danger = useThemeColor({}, 'danger');
+  const { colors } = useTheme();
   const [displayValue, setDisplayValue] = useState('');
   const [isValid, setIsValid] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
@@ -182,19 +178,19 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
         onFocus={handleFocus}
         onBlur={handleBlur}
         placeholder={placeholder}
-        placeholderTextColor={textMuted}
+        placeholderTextColor={colors.textMuted}
         style={[
           styles.input,
           {
-            backgroundColor: background,
-            color: primary,
-            borderColor: isValid ? border : danger,
+            backgroundColor: colors.background,
+            color: colors.primary,
+            borderColor: isValid ? colors.border : colors.danger,
             borderWidth: isValid ? 1 : 2,
           }
         ]}
       />
       {!isValid && isFocused && (
-        <ThemedText variant="muted" style={[styles.helpText, { color: danger }]}>
+        <ThemedText variant="muted" style={[styles.helpText, { color: colors.danger }]}>
           Use formats like: 3h 2m, 3:02, or 45m
         </ThemedText>
       )}

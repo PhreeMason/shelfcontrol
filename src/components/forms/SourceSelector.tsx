@@ -1,5 +1,5 @@
 import { ThemedText } from '@/components/themed';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
@@ -9,10 +9,7 @@ interface SourceSelectorProps {
 }
 
 export const SourceSelector = ({ selectedSource, onSelectSource }: SourceSelectorProps) => {
-    const primary = useThemeColor({}, 'primary');
-    const surface = useThemeColor({}, 'surface');
-    const primaryColor = primary;
-    const cardColor = surface;
+    const { colors } = useTheme();
     
     const sources = [
         { key: 'arc', label: '📚 ARC' },
@@ -31,7 +28,7 @@ export const SourceSelector = ({ selectedSource, onSelectSource }: SourceSelecto
                         style={[
                             styles.sourceChip,
                             { 
-                                backgroundColor: isSelected ? `${primaryColor}20` : cardColor, // primary with opacity or card
+                                backgroundColor: isSelected ? `${colors.primary}20` : colors.surface, // primary with opacity or card
                             }
                         ]}
                         onPress={() => onSelectSource(source.key as 'arc' | 'library' | 'personal' | 'bookclub')}

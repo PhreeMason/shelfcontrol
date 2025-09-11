@@ -15,7 +15,7 @@ import {
     StepIndicators
 } from '@/components/forms';
 import AppHeader from '@/components/shared/AppHeader';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 
 import {
     calculateCurrentProgressFromForm,
@@ -39,7 +39,7 @@ const EditDeadline = () => {
     const [paceEstimate, setPaceEstimate] = useState<string>('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { deadlines, updateDeadline } = useDeadlines();
-    const backgroundColor = useThemeColor({}, 'background');
+    const { colors } = useTheme();
 
     // Find the deadline to edit
     const deadline = deadlines.find(d => d.id === id);
@@ -130,7 +130,7 @@ const EditDeadline = () => {
     // Show error if deadline not found
     if (!deadline) {
         return (
-            <SafeAreaView edges={['right', 'bottom', 'left']} style={{flex: 1, backgroundColor}}>
+            <SafeAreaView edges={['right', 'bottom', 'left']} style={{flex: 1, backgroundColor: colors.background}}>
                 <ThemedView style={styles.container}>
                     <AppHeader title="Edit Deadline" onBack={() => router.back()} />
                     <ThemedView style={styles.content}>
@@ -283,7 +283,7 @@ const EditDeadline = () => {
     };
 
     return (
-        <SafeAreaView edges={['right', 'bottom', 'left']} style={{flex: 1 , backgroundColor}}>
+        <SafeAreaView edges={['right', 'bottom', 'left']} style={{flex: 1 , backgroundColor: colors.background}}>
             <ThemedKeyboardAvoidingView style={styles.container}>
                 <AppHeader title="Edit Deadline" onBack={goBackToView} />
 

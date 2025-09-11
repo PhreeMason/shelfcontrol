@@ -1,18 +1,16 @@
 import React from 'react';
 import { KeyboardAvoidingView, KeyboardAvoidingViewProps, Platform } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
+import { type ColorToken } from '@/constants/Theme';
 
 export type ThemedKeyboardAvoidingViewProps = KeyboardAvoidingViewProps & {
-  lightColor?: string;
-  darkColor?: string;
+  backgroundColor?: ColorToken;
 };
 
 export function ThemedKeyboardAvoidingView(props: ThemedKeyboardAvoidingViewProps) {
-  const { style, lightColor, darkColor, ...otherProps } = props;
-  const colorOverrides: { light?: string; dark?: string } = {};
-  if (lightColor !== undefined) colorOverrides.light = lightColor;
-  if (darkColor !== undefined) colorOverrides.dark = darkColor;
-  const backgroundColor = useThemeColor(colorOverrides, 'background');
+  const { style, backgroundColor: bgColorProp, ...otherProps } = props;
+  const { colors } = useTheme();
+  const backgroundColor = colors[bgColorProp || 'background'];
 
   return (
     <KeyboardAvoidingView

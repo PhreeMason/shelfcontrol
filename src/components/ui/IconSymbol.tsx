@@ -25,6 +25,7 @@ const MAPPING = {
   'gearshape.fill': 'settings',
   'rectangle.portrait.and.arrow.right': 'logout',
   'chevron.left': 'keyboard-arrow-left',
+  'plus': 'add',
   // Stats page icons
   'chart.bar.fill': 'bar-chart',
   'speedometer': 'speed',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, type TouchableOpacityProps } from 'react-native';
 
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import { ThemedText } from './ThemedText';
 import { ComponentVariants, createThemedStyle, type ButtonVariant, type ColorToken } from '@/constants/Theme';
 
@@ -23,22 +23,23 @@ export function ThemedButton({
   disabled,
   ...rest
 }: ThemedButtonProps) {
+  const { colors } = useTheme();
   const buttonVariant = ComponentVariants.button[variant];
   
   // Resolve colors
-  const themeBackgroundColorResult = useThemeColor({}, backgroundColor || buttonVariant.container);
+  const themeBackgroundColorResult = colors[backgroundColor || buttonVariant.container];
   const themeBackgroundColor = ('transparent' in buttonVariant && buttonVariant.transparent) ? 'transparent' : themeBackgroundColorResult;
   
-  const themeTextColor = useThemeColor({}, textColor || buttonVariant.content);
+  const themeTextColor = colors[textColor || buttonVariant.content];
 
   // Resolve border color for outline variants
-  const borderColorResult = useThemeColor({}, 'border' in buttonVariant ? buttonVariant.border as ColorToken : 'outline');
+  const borderColorResult = colors['border' in buttonVariant ? buttonVariant.border as ColorToken : 'outline'];
   const borderColor = (variant === 'outline' || variant === 'dangerOutline') && 'border' in buttonVariant ? 
     borderColorResult : undefined;
 
   // Disabled colors
-  const disabledBackgroundColor = useThemeColor({}, 'disabled');
-  const disabledTextColor = useThemeColor({}, 'disabledText');
+  const disabledBackgroundColor = colors.disabled;
+  const disabledTextColor = colors.disabledText;
 
   const buttonStyle = createThemedStyle.button(variant, size);
 

@@ -1,4 +1,4 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -9,10 +9,9 @@ interface FormProgressBarProps {
 
 export const FormProgressBar = ({ currentStep, totalSteps }: FormProgressBarProps) => {
     const progress = (currentStep / totalSteps) * 100;
-    const primary = useThemeColor({}, 'primary');
-    const textMuted = useThemeColor({}, 'textMuted');
-    const progressBgColor = textMuted;
-    const progressFillColor = primary;
+    const { colors } = useTheme();
+    const progressBgColor = colors.textMuted;
+    const progressFillColor = colors.primary;
     
     return (
         <View style={styles.progressContainer} testID="progress-container">

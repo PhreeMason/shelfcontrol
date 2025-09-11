@@ -2,7 +2,7 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 
 import { ThemedText, ThemedView } from '@/components/themed';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 
 type ColorValue = string;
 
@@ -20,11 +20,11 @@ export function Loader({
     indicatorColor: _indicatorColor = 'primary'
 }: LoaderProps) {
     // Note: indicatorColor is ignored for now, always use primary
-    const color = useThemeColor({}, 'primary');
+    const { colors } = useTheme();
 
     return (
         <ThemedView style={[styles.container, fullScreen && styles.fullScreen]}>
-            <ActivityIndicator size={size} color={color} />
+            <ActivityIndicator size={size} color={colors.primary} />
             {text && (
                 <ThemedText style={styles.text} variant="label">
                     {text}

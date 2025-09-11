@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { useFetchBookData, useSearchBooksList } from '@/hooks/useBooks';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import { BookSearchResult, SelectedBook } from '@/types/bookSearch';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -28,11 +28,7 @@ const BookSearchInput: React.FC<BookSearchInputProps> = ({
     placeholder = 'Search for a book to link...',
     testID = 'book-search-input',
 }) => {
-    const border = useThemeColor({}, 'border');
-    const surface = useThemeColor({}, 'surface');
-    const primary = useThemeColor({}, 'primary');
-    const text = useThemeColor({}, 'text');
-    const textMuted = useThemeColor({}, 'textMuted');
+    const { colors } = useTheme();
     const [query, setQuery] = useState('');
     const [showResults, setShowResults] = useState(false);
     const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -107,7 +103,7 @@ const BookSearchInput: React.FC<BookSearchInputProps> = ({
         if (!selectedBook) return null;
 
         return (
-            <View style={[styles.selectedBookContainer, { backgroundColor: surface, borderColor: primary }]}>
+            <View style={[styles.selectedBookContainer, { backgroundColor: colors.surface, borderColor: colors.primary }]}>
                 <View style={styles.selectedBookContent}>
                     {selectedBook.cover_image_url && (
                         <Image 
@@ -135,7 +131,7 @@ const BookSearchInput: React.FC<BookSearchInputProps> = ({
                     onPress={handleClearSelection}
                     testID="clear-book-selection"
                 >
-                    <IconSymbol name="xmark.circle.fill" size={24} color={textMuted} />
+                    <IconSymbol name="xmark.circle.fill" size={24} color={colors.textMuted} />
                 </TouchableOpacity>
             </View>
         );
@@ -147,7 +143,7 @@ const BookSearchInput: React.FC<BookSearchInputProps> = ({
                 {renderSelectedBook()}
                 {bookLoading && (
                     <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="small" color={primary} />
+                        <ActivityIndicator size="small" color={colors.primary} />
                         <ThemedText color="textMuted" style={styles.loadingText}>
                             Loading book details...
                         </ThemedText>
@@ -163,15 +159,15 @@ const BookSearchInput: React.FC<BookSearchInputProps> = ({
                 style={[
                     styles.searchInput,
                     {
-                        backgroundColor: surface,
-                        borderColor: border,
-                        color: text,
+                        backgroundColor: colors.surface,
+                        borderColor: colors.border,
+                        color: colors.text,
                     }
                 ]}
                 value={query}
                 onChangeText={handleTextChange}
                 placeholder={placeholder}
-                placeholderTextColor={textMuted}
+                placeholderTextColor={colors.textMuted}
                 testID={testID}
                 autoCorrect={false}
                 autoCapitalize="words"
@@ -179,7 +175,7 @@ const BookSearchInput: React.FC<BookSearchInputProps> = ({
 
             {searchLoading && query.length > 2 && (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="small" color={primary} />
+                    <ActivityIndicator size="small" color={colors.primary} />
                     <ThemedText color="textMuted" style={styles.loadingText}>
                         Searching books...
                     </ThemedText>
@@ -195,7 +191,7 @@ const BookSearchInput: React.FC<BookSearchInputProps> = ({
             )}
 
             {showResults && searchResults?.bookList && searchResults.bookList.length > 0 && (
-                <View style={[styles.resultsContainer, { backgroundColor: surface, borderColor: border }]}>
+                <View style={[styles.resultsContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                     <ScrollView
                         style={styles.resultsList}
                         testID="book-search-results"
@@ -205,7 +201,7 @@ const BookSearchInput: React.FC<BookSearchInputProps> = ({
                         {searchResults.bookList.map((item) => (
                             <TouchableOpacity
                                 key={item.api_id || Math.random().toString()}
-                                style={[styles.resultItem, { borderBottomColor: border }]}
+                                style={[styles.resultItem, { borderBottomColor: colors.border }]}
                                 onPress={() => handleBookSelection(item)}
                                 testID={`book-result-${item.api_id}`}
                             >
@@ -235,7 +231,7 @@ const BookSearchInput: React.FC<BookSearchInputProps> = ({
             )}
 
             {showResults && searchResults?.bookList && searchResults.bookList.length === 0 && !searchLoading && (
-                <View style={[styles.noResultsContainer, { backgroundColor: surface, borderColor: border }]}>
+                <View style={[styles.noResultsContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                     <ThemedText color="textMuted" style={styles.noResultsText}>
                         No books found for "{query}"
                     </ThemedText>

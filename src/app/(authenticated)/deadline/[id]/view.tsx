@@ -6,7 +6,7 @@ import DeadlineViewHeader from '@/components/features/deadlines/DeadlineViewHead
 import ReadingProgress from '@/components/shared/ReadingProgress';
 import { ThemedButton, ThemedScrollView, ThemedText, ThemedView } from '@/components/themed';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
@@ -17,7 +17,7 @@ const DeadlineView = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const { deadlines } = useDeadlines();
-    const backgroundColor = useThemeColor({}, 'background');
+    const { colors } = useTheme();
 
     // First try to find deadline in context (for active deadlines)
     let deadline = deadlines.find(d => d.id === id);
@@ -35,7 +35,7 @@ const DeadlineView = () => {
         return (
             <SafeAreaView
                 edges={['right', 'bottom', 'left']}
-                style={{ flex: 1, backgroundColor }}>
+                style={{ flex: 1, backgroundColor: colors.background }}>
                 <ThemedView style={[styles.container, { padding: 20, justifyContent: 'center', alignItems: 'center' }]}>
                     <ThemedText>Loading deadline...</ThemedText>
                 </ThemedView>
@@ -48,7 +48,7 @@ const DeadlineView = () => {
         return (
             <SafeAreaView
                 edges={['right', 'bottom', 'left']}
-                style={{ flex: 1, backgroundColor }}>
+                style={{ flex: 1, backgroundColor: colors.background }}>
                 <ThemedView style={[styles.container, { padding: 20 }]}>
                     <ThemedText variant="title">Deadline not found</ThemedText>
                     <ThemedButton
@@ -82,7 +82,7 @@ const DeadlineView = () => {
     return (
         <SafeAreaView
             edges={['right', 'bottom', 'left']}
-            style={[styles.container, { backgroundColor }]}
+            style={[styles.container, { backgroundColor: colors.background }]}
         >
             <DeadlineViewHeader
                 onBack={handleBack}

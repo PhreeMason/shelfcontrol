@@ -1,5 +1,5 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Platform, StyleSheet, View } from 'react-native';
 
@@ -31,9 +31,7 @@ export function ReadingSessionTimer({ onSessionComplete, onCancel }: ReadingSess
   const pausedTimeRef = useRef<number>(0);
   const lastMessageIntervalRef = useRef<number>(0);
 
-  const textColor = useThemeColor({}, 'text');
-  const primaryColor = useThemeColor({}, 'primary');
-  const theme = { text: textColor, primary: primaryColor };
+  const { colors } = useTheme();
   useEffect(() => {
     if (isRunning && !isPaused) {
       startTimeRef.current = Date.now() - pausedTimeRef.current * 1000;
@@ -135,8 +133,8 @@ export function ReadingSessionTimer({ onSessionComplete, onCancel }: ReadingSess
   };
 
   const getTimerColor = () => {
-    if (!isRunning) return theme.text;
-    if (isPaused) return theme.primary;
+    if (!isRunning) return colors.text;
+    if (isPaused) return colors.primary;
     return '#4ADE80'; // Green for active
   };
 
@@ -192,7 +190,7 @@ export function ReadingSessionTimer({ onSessionComplete, onCancel }: ReadingSess
       </View>
 
       {elapsedTime < 60 && isRunning && (
-        <ThemedText style={[styles.encouragement, { color: theme.primary }]}>
+        <ThemedText style={[styles.encouragement, { color: colors.primary }]}>
           Keep reading! You need at least 1 minute to record your session.
         </ThemedText>
       )}

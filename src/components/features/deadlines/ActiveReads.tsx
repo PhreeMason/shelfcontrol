@@ -1,7 +1,6 @@
 import { DeadlineCard } from '@/components/features/deadlines/DeadlineCard'
-import { ThemedButton, ThemedScrollView, ThemedText, ThemedView } from '@/components/themed'
+import { ThemedScrollView, ThemedText, ThemedView } from '@/components/themed'
 import { useDeadlines } from '@/providers/DeadlineProvider'
-import { Link } from 'expo-router'
 import { StyleSheet } from 'react-native'
 
 const ActiveReads = () => {
@@ -27,30 +26,21 @@ const ActiveReads = () => {
     }
 
     return (
-        <ThemedScrollView>
-            <ThemedView style={styles.container}>
-                {activeDeadlines.length > 0 ? (
-                    activeDeadlines.map((deadline) => (
-                        <DeadlineCard
-                            key={deadline.id}
-                            deadline={deadline}
-                        />
-                    ))
-                ) : (
-                    <ThemedText
-                        style={styles.emptyText}
-                        variant='muted'
-                    >No active deadlines</ThemedText>
-                )}
-            </ThemedView>
-            <Link href="/deadline/new" asChild>
-                <ThemedButton
-                    title='+ Add New Book'
-                    style={styles.addNewButton}
-                    variant='primary'
-                />
-            </Link>
-        </ThemedScrollView>
+        <ThemedView style={styles.container}>
+            {activeDeadlines.length > 0 ? (
+                activeDeadlines.map((deadline) => (
+                    <DeadlineCard
+                        key={deadline.id}
+                        deadline={deadline}
+                    />
+                ))
+            ) : (
+                <ThemedText
+                    style={styles.emptyText}
+                    variant='muted'
+                >No active deadlines</ThemedText>
+            )}
+        </ThemedView>
     )
 }
 
@@ -72,8 +62,5 @@ const styles = StyleSheet.create({
     errorText: {
         fontSize: 14,
         textAlign: 'center'
-    },
-    addNewButton: {
-        margin: 20,
     },
 })

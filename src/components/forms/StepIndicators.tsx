@@ -1,4 +1,4 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -8,8 +8,8 @@ interface StepIndicatorsProps {
 }
 
 export const StepIndicators = ({ currentStep, totalSteps }: StepIndicatorsProps) => {
-    const primary = useThemeColor({}, 'primary');
-    const backgroundColor = primary;
+    const { colors } = useTheme();
+    const backgroundColor = colors.primary;
 
     return (
         <View style={styles.stepsContainer} testID="steps-container">

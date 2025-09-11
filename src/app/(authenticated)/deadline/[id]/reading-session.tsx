@@ -4,7 +4,7 @@ import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -15,10 +15,7 @@ const ReadingSession = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { deadlines } = useDeadlines();
-  const surface = useThemeColor({}, 'surface');
-  const background = useThemeColor({}, 'background');
-  const border = useThemeColor({}, 'border');
-  const primary = useThemeColor({}, 'primary');
+  const { colors } = useTheme();
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [sessionDuration, setSessionDuration] = useState(0);
 
@@ -39,7 +36,7 @@ const ReadingSession = () => {
   // Show loading state when using fallback
   if (!deadline && isFallbackLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: surface }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.surface }]}>
         <ThemedView style={[styles.loadingContainer]}>
           <ThemedText>Loading deadline...</ThemedText>
         </ThemedView>
@@ -50,7 +47,7 @@ const ReadingSession = () => {
   // Show error or not found state
   if (!deadline) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: surface }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.surface }]}>
         <ThemedView style={[styles.loadingContainer]}>
           <ThemedText variant="title">Deadline not found</ThemedText>
           <ThemedButton
@@ -109,17 +106,14 @@ const ReadingSession = () => {
     }
   };
 
-  const backgroundColor = background;
-  const borderColor = border;
-  const iconColor = primary;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={[styles.header, { borderBottomColor: borderColor }]}>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <IconSymbol name="chevron.left" size={Platform.OS === 'ios' ? 24 : 40} color={iconColor} />
+            <IconSymbol name="chevron.left" size={Platform.OS === 'ios' ? 24 : 40} color={colors.primary} />
           </TouchableOpacity>
           <ThemedText style={[styles.headerTitle, { fontWeight: '600' }]}>
             Reading Session

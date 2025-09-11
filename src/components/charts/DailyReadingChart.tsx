@@ -1,5 +1,5 @@
 import { ThemedText, ThemedView } from "@/components/themed";
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import { ReadingDeadlineWithProgress } from "@/types/deadline.types";
 import { calculateCutoffTime, calculateRequiredPace, minimumUnitsPerDayFromDeadline, processBookProgress } from "@/utils/paceCalculations";
 import dayjs from "dayjs";
@@ -45,11 +45,7 @@ const getBookReadingDays = (
 };
 
 const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
-  const border = useThemeColor({}, 'border');
-  const primary = useThemeColor({}, 'primary');
-  const text = useThemeColor({}, 'text');
-  const textMuted = useThemeColor({}, 'textMuted');
-  const accent = useThemeColor({}, 'accent');
+  const { colors } = useTheme();
 
   // Get format-specific labels (moved up before early return)
   const getUnitLabel = (format: string) => {
@@ -101,17 +97,17 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
   if (recentDays.length === 0) {
     return (
       <ThemedView style={styles.container}>
-        <ThemedText style={[styles.title, { color: text }]}>
+        <ThemedText style={[styles.title, { color: colors.text }]}>
           Required Daily Pace
         </ThemedText>
         <ThemedView style={styles.emptyState}>
           <ThemedText
-            style={[styles.emptyStateText, { color: textMuted }]}
+            style={[styles.emptyStateText, { color: colors.textMuted }]}
           >
             No reading activity recorded
           </ThemedText>
           <ThemedText
-            style={[styles.emptyStateSubtext, { color: textMuted }]}
+            style={[styles.emptyStateSubtext, { color: colors.textMuted }]}
           >
             Start reading to see your daily progress
           </ThemedText>
@@ -151,17 +147,17 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     return {
       value: Math.round(day.progressRead),
       label: label,
-      frontColor: primary,
+      frontColor: colors.primary,
       spacing: 2, // Changed: consistent spacing for all bars
       labelWidth: 40,
       labelTextStyle: {
-        color: text,
+        color: colors.text,
         fontSize: 9,
         fontWeight: "normal" as const,
       },
       topLabelComponent: () => (
         <ThemedText style={{
-          color: text,
+          color: colors.text,
           fontSize: 10,
           fontWeight: "bold",
           textAlign: 'center',
@@ -187,14 +183,14 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText style={[styles.title, { color: text }]}>
+      <ThemedText style={[styles.title, { color: colors.text }]}>
         {chartTitle}
       </ThemedText>
 
       <View style={styles.chartContainer}>
         {/* Line Chart - Required Daily Pace */}
         <View style={styles.lineChartSection} testID="line-chart">
-          <ThemedText style={[styles.chartSubtitle, { color: textMuted }]}>
+          <ThemedText style={[styles.chartSubtitle, { color: colors.textMuted }]}>
             Required Daily Pace
           </ThemedText>
           <LineChart
@@ -204,21 +200,21 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
             spacing={chartData.length > 1 ? 280 / (chartData.length - 1) : 280}
             hideRules
             hideDataPoints={false}
-            dataPointsColor={accent}
+            dataPointsColor={colors.accent}
             dataPointsRadius={3}
-            color={accent}
+            color={colors.accent}
             thickness={2}
             curved
             xAxisThickness={1}
             yAxisThickness={1}
-            xAxisColor={border}
-            yAxisColor={border}
+            xAxisColor={colors.border}
+            yAxisColor={colors.border}
             yAxisTextStyle={{
-              color: textMuted,
+              color: colors.textMuted,
               fontSize: 10,
             }}
             xAxisLabelTextStyle={{
-              color: textMuted,
+              color: colors.textMuted,
               fontSize: 9,
               textAlign: "center",
             }}
@@ -232,7 +228,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
 
         {/* Bar Chart - Daily Progress */}
         <View style={styles.barChartSection} testID="bar-chart">
-          <ThemedText style={[styles.chartSubtitle, { color: textMuted }]}>
+          <ThemedText style={[styles.chartSubtitle, { color: colors.textMuted }]}>
             Daily Progress
           </ThemedText>
           <BarChart
@@ -249,14 +245,14 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
             hideRules
             xAxisThickness={2}
             yAxisThickness={2}
-            xAxisColor={border}
-            yAxisColor={border}
+            xAxisColor={colors.border}
+            yAxisColor={colors.border}
             yAxisTextStyle={{
-              color: textMuted,
+              color: colors.textMuted,
               fontSize: 11,
             }}
             xAxisLabelTextStyle={{
-              color: textMuted,
+              color: colors.textMuted,
               fontSize: 10,
               textAlign: "left",
             }}
@@ -266,12 +262,12 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
             showReferenceLine1
             referenceLine1Position={displayDailyMinimum}
             referenceLine1Config={{
-              color: accent,
+              color: colors.accent,
               dashWidth: 3,
               dashGap: 2,
               thickness: 2,
               labelTextStyle: {
-                color: accent,
+                color: colors.accent,
                 fontSize: 10,
                 fontWeight: "bold",
               },
@@ -285,31 +281,31 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
       <View style={styles.legendContainer}>
         <View style={styles.legendItem}>
           <View
-            style={[styles.legendDot, { backgroundColor: accent }]}
+            style={[styles.legendDot, { backgroundColor: colors.accent }]}
           />
-          <ThemedText style={[styles.legendText, { color: textMuted }]}>
+          <ThemedText style={[styles.legendText, { color: colors.textMuted }]}>
             Cumulative Progress
           </ThemedText>
         </View>
         <View style={styles.legendItem}>
           <View
-            style={[styles.legendBar, { backgroundColor: primary }]}
+            style={[styles.legendBar, { backgroundColor: colors.primary }]}
           />
-          <ThemedText style={[styles.legendText, { color: textMuted }]}>
+          <ThemedText style={[styles.legendText, { color: colors.textMuted }]}>
             Daily Progress
           </ThemedText>
         </View>
         <View style={styles.legendItem}>
           <View
-            style={[styles.legendLine, { backgroundColor: accent }]}
+            style={[styles.legendLine, { backgroundColor: colors.accent }]}
           />
-          <ThemedText style={[styles.legendText, { color: textMuted }]}>
+          <ThemedText style={[styles.legendText, { color: colors.textMuted }]}>
             Daily Goal ({displayDailyMinimum} {unitLabel})
           </ThemedText>
         </View>
       </View>
 
-      <ThemedText style={[styles.subtitle, { color: textMuted }]}>
+      <ThemedText style={[styles.subtitle, { color: colors.textMuted }]}>
         {subtitle}
       </ThemedText>
     </ThemedView>

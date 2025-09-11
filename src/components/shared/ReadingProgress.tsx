@@ -5,7 +5,7 @@ import ProgressStats from '@/components/progress/ProgressStats'
 import QuickActionButtons from '@/components/progress/QuickActionButtons'
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed'
 import { useDeleteFutureProgress, useUpdateDeadlineProgress } from '@/hooks/useDeadlines'
-import { useThemeColor } from '@/hooks/useThemeColor'
+import { useTheme } from '@/hooks/useThemeColor'
 import { useDeadlines } from '@/providers/DeadlineProvider'
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types'
 import { formatProgressDisplay } from '@/utils/deadlineUtils'
@@ -26,7 +26,7 @@ const ReadingProgress = ({
   timeSpentReading?: number;
   onProgressSubmitted?: () => void;
 }) => {
-  const border = useThemeColor({}, 'border');
+  const { colors } = useTheme();
   const { getDeadlineCalculations, completeDeadline } = useDeadlines();
   const calculations = getDeadlineCalculations(deadline);
   const {
@@ -40,7 +40,6 @@ const ReadingProgress = ({
   const progressSchema = createProgressUpdateSchema(totalQuantity, deadline.format);
   const updateProgressMutation = useUpdateDeadlineProgress();
   const deleteFutureProgressMutation = useDeleteFutureProgress();
-  const borderColor = border;
 
   const {
     control,
@@ -242,7 +241,7 @@ const ReadingProgress = ({
   };
 
   return (
-    <ThemedView style={[styles.section, { borderColor }]}>
+    <ThemedView style={[styles.section, { borderColor: colors.border }]}>
       <ProgressHeader />
 
       <ThemedView style={[styles.progressSection, { borderColor: 'rgba(232, 194, 185, 0.15)' }]}>

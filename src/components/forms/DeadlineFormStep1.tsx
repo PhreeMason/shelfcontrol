@@ -4,7 +4,7 @@ import CustomInput from '@/components/shared/CustomInput';
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -25,7 +25,7 @@ export const DeadlineFormStep1 = ({
     isEditMode = false,
     setValue
 }: DeadlineFormStep1Props) => {
-    const primary = useThemeColor({}, 'primary');
+    const { colors } = useTheme();
     const [showBookSearch, setShowBookSearch] = useState(false);
     const [selectedBook, setSelectedBook] = useState<any>(null);
     
@@ -97,13 +97,13 @@ export const DeadlineFormStep1 = ({
                     <ThemedText variant="title" style={{marginBottom: 8}}>Find Book (Optional)</ThemedText>
                     <TouchableOpacity
                         onPress={() => setShowBookSearch(!showBookSearch)}
-                        style={[styles.toggleButton, { borderColor: primary }]}
+                        style={[styles.toggleButton, { borderColor: colors.primary }]}
                         testID="toggle-book-search"
                     >
                         <IconSymbol 
                             name={showBookSearch ? "chevron.up" : "chevron.down"} 
                             size={16} 
-                            color={primary} 
+                            color={colors.primary} 
                         />
                         <ThemedText color="primary" style={styles.toggleText}>
                             {showBookSearch ? 'Hide search' : 'Search library'}

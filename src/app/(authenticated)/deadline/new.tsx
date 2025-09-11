@@ -15,7 +15,7 @@ import {
     StepIndicators
 } from '@/components/forms';
 import AppHeader from '@/components/shared/AppHeader';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 
 import {
     calculateCurrentProgressFromForm,
@@ -36,7 +36,7 @@ const NewDeadLine = () => {
     const [paceEstimate, setPaceEstimate] = useState<string>('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { addDeadline } = useDeadlines();
-    const backgroundColor = useThemeColor({}, 'background');
+    const { colors } = useTheme();
 
     const formSteps = ['Book Details', 'Set Deadline'];
     const totalSteps = formSteps.length;
@@ -219,7 +219,7 @@ const NewDeadLine = () => {
     };
 
     return (
-        <SafeAreaView edges={['right', 'bottom', 'left']} style={{flex: 1 , backgroundColor}}>
+        <SafeAreaView edges={['right', 'bottom', 'left']} style={{flex: 1 , backgroundColor: colors.background}}>
             <ThemedKeyboardAvoidingView style={styles.container}>
                 <AppHeader title="New Deadline" onBack={goBackToIndex} />
 

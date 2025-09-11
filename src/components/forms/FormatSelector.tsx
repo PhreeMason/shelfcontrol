@@ -1,5 +1,5 @@
 import { ThemedText } from '@/components/themed';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
@@ -10,10 +10,9 @@ interface FormatSelectorProps {
 }
 
 export const FormatSelector = ({ selectedFormat, onSelectFormat, disabled = false }: FormatSelectorProps) => {
-    const primary = useThemeColor({}, 'primary');
-    const surface = useThemeColor({}, 'surface');
-    const primaryColor = primary;
-    const cardColor = surface;
+    const { colors } = useTheme();
+    const primaryColor = colors.primary;
+    const cardColor = colors.surface;
     
     const formats = [
         { key: 'physical', label: 'Physical' },

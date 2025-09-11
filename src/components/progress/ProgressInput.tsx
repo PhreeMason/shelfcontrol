@@ -1,4 +1,4 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
 import { Control, Controller } from 'react-hook-form';
 import { StyleSheet, TextInput } from 'react-native';
@@ -13,10 +13,7 @@ const ProgressInput: React.FC<ProgressInputProps> = ({
   format,
   control
 }) => {
-  const primary = useThemeColor({}, 'primary');
-  const background = useThemeColor({}, 'background');
-  const textMuted = useThemeColor({}, 'textMuted');
-  const border = useThemeColor({}, 'border');
+  const { colors } = useTheme();
 
   if (format === 'audio') {
     return (
@@ -45,9 +42,9 @@ const ProgressInput: React.FC<ProgressInputProps> = ({
           onChangeText={(text) => onChange(text ? parseInt(text, 10) : 0)}
           onBlur={onBlur}
           placeholder="Enter current progress"
-          placeholderTextColor={textMuted}
+          placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
-          style={[styles.input, { color: primary, backgroundColor: background, borderColor: border }]}
+          style={[styles.input, { color: colors.primary, backgroundColor: colors.background, borderColor: colors.border }]}
         />
       )}
     />
