@@ -8,22 +8,15 @@ import { ThemedButton, ThemedScrollView, ThemedText, ThemedView } from '@/compon
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
-import { useLocalSearchParams, useRouter, useSegments } from 'expo-router';
-import React, { useEffect } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DeadlineView = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
-    const segments = useSegments();
     const { deadlines } = useDeadlines();
     const { colors } = useTheme();
-
-    // Log the current route segments to see the navigation stack
-    useEffect(() => {
-        console.log('Current route segments:', segments);
-    }, [segments]);
 
     // First try to find deadline in context (for active deadlines)
     let deadline = deadlines.find(d => d.id === id);
