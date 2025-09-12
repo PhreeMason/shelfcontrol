@@ -6,7 +6,6 @@ export default function AuthLayout() {
     const { isLoading, session: isSignedIn } = useAuth();
 
     if (isLoading) {
-        // If Clerk is still loading, show a loader
         return <Loader />;
     }
     if (isSignedIn) {

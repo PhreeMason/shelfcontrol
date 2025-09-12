@@ -1,5 +1,6 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
 import AuthProvider from '@/providers/AuthProvider';
+import { DeadlineProvider } from '@/providers/DeadlineProvider';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import {
   QueryClient,
@@ -36,13 +37,20 @@ export default function RootLayout() {
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(authenticated)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        <StatusBar style="auto" />
-        <Toast />
+          <DeadlineProvider>
+            <Stack>
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(authenticated)" options={{ headerShown: false }} />
+              <Stack.Screen name="deadline" options={{ headerShown: false }} />
+              {/* <Stack.Screen name="deadline/new" options={{ headerShown: false }} />
+              <Stack.Screen name="deadline/[id]/index" options={{ headerShown: false }} />
+              <Stack.Screen name="deadline/[id]/reading-session" options={{ headerShown: false }} />
+              <Stack.Screen name="deadline/[id]/edit" options={{ headerShown: false }} /> */}
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </DeadlineProvider>
+          <StatusBar style="auto" />
+          <Toast />
         </ThemeProvider>
       </QueryClientProvider>
     </AuthProvider>

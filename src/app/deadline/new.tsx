@@ -196,7 +196,7 @@ const NewDeadLine = () => {
     };
 
     const goBackToIndex = () => {
-        router.push('/');
+        router.back();
     };
 
     const onDateChange = (_event: any, selectedDate?: Date) => {
@@ -219,7 +219,7 @@ const NewDeadLine = () => {
     };
 
     return (
-        <SafeAreaView edges={['right', 'bottom', 'left']} style={{flex: 1 , backgroundColor: colors.background}}>
+        <SafeAreaView edges={['right', 'bottom', 'left']} style={{ flex: 1, backgroundColor: colors.background }}>
             <ThemedKeyboardAvoidingView style={styles.container}>
                 <AppHeader title="New Deadline" onBack={goBackToIndex} />
 

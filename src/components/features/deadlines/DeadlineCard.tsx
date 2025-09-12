@@ -6,7 +6,7 @@ import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useRouter, useSegments } from 'expo-router';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
@@ -37,6 +37,7 @@ interface DeadlineCardProps {
 export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCardProps) {
   const { getDeadlineCalculations, formatUnitsPerDayForDisplay } = useDeadlines();
   const router = useRouter();
+  const segments = useSegments();
 
   // Fetch book data if deadline has a book_id
   const { data: bookData } = useFetchBookById(deadline.book_id);
@@ -77,8 +78,8 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
 
   const handlePress = () => {
     if (!disableNavigation) {
-      router.push(`/deadline/${deadline.id}/view`);
-      // console.log('Deadline pressed, navigation not yet implemented');
+      // Check if we're already in a deadline view
+      router.push(`/deadline/${deadline.id}`);
     }
   };
 

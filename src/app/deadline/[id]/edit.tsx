@@ -79,13 +79,13 @@ const EditDeadline = () => {
             setValue('deadline', new Date(deadline.deadline_date));
             setValue('flexibility', deadline.flexibility);
             setValue('book_id', deadline.book_id || undefined);
-            
+
             setSelectedFormat(deadline.format);
             setSelectedPriority(deadline.flexibility as 'flexible' | 'strict');
 
             // Get the latest progress entry
-            const latestProgress = deadline.progress && deadline.progress.length > 0 
-                ? deadline.progress[deadline.progress.length - 1] 
+            const latestProgress = deadline.progress && deadline.progress.length > 0
+                ? deadline.progress[deadline.progress.length - 1]
                 : null;
 
             // Set quantity/time based on format
@@ -94,7 +94,7 @@ const EditDeadline = () => {
                 const { hours, minutes } = convertMinutesToHoursAndMinutes(deadline.total_quantity);
                 setValue('totalQuantity', hours);
                 setValue('totalMinutes', minutes);
-                
+
                 // Convert current progress minutes to hours and minutes for form display
                 const currentProgressMinutes = latestProgress?.current_progress || 0;
                 const { hours: currentHours, minutes: currentMins } = convertMinutesToHoursAndMinutes(currentProgressMinutes);
@@ -130,12 +130,12 @@ const EditDeadline = () => {
     // Show error if deadline not found
     if (!deadline) {
         return (
-            <SafeAreaView edges={['right', 'bottom', 'left']} style={{flex: 1, backgroundColor: colors.background}}>
+            <SafeAreaView edges={['right', 'bottom', 'left']} style={{ flex: 1, backgroundColor: colors.background }}>
                 <ThemedView style={styles.container}>
                     <AppHeader title="Edit Deadline" onBack={() => router.back()} />
                     <ThemedView style={styles.content}>
                         <ThemedText>Deadline not found</ThemedText>
-                        <ThemedButton 
+                        <ThemedButton
                             title="Go Back"
                             onPress={() => router.back()}
                             style={{ marginTop: 16 }}
@@ -182,8 +182,8 @@ const EditDeadline = () => {
         );
 
         // Get the latest progress entry ID if it exists
-        const latestProgress = deadline.progress && deadline.progress.length > 0 
-            ? deadline.progress[deadline.progress.length - 1] 
+        const latestProgress = deadline.progress && deadline.progress.length > 0
+            ? deadline.progress[deadline.progress.length - 1]
             : null;
 
         const progressDetails: any = {
@@ -208,7 +208,7 @@ const EditDeadline = () => {
                     position: 'top',
                     onHide: () => {
                         // router.replace(`/deadline/${id}/view`);
-                        router.dismiss();
+                        router.back();
                     }
                 });
             },
@@ -254,14 +254,12 @@ const EditDeadline = () => {
     const goBack = () => {
         if (currentStep > 1) {
             setCurrentStep(currentStep - 1);
-        } else {
-            router.back();
         }
     };
 
     const goBackToView = () => {
         // router.replace(`/deadline/${id}/view`);
-        router.dismiss();
+        router.back();
     };
 
     const onDateChange = (_event: any, selectedDate?: Date) => {
@@ -283,7 +281,7 @@ const EditDeadline = () => {
     };
 
     return (
-        <SafeAreaView edges={['right', 'bottom', 'left']} style={{flex: 1 , backgroundColor: colors.background}}>
+        <SafeAreaView edges={['right', 'bottom', 'left']} style={{ flex: 1, backgroundColor: colors.background }}>
             <ThemedKeyboardAvoidingView style={styles.container}>
                 <AppHeader title="Edit Deadline" onBack={goBackToView} />
 
