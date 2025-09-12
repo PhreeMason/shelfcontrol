@@ -1,9 +1,9 @@
 import React from 'react';
 import { TouchableOpacity, type TouchableOpacityProps } from 'react-native';
 
+import { ComponentVariants, createThemedStyle, type ButtonVariant, type ColorToken } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
 import { ThemedText } from './ThemedText';
-import { ComponentVariants, createThemedStyle, type ButtonVariant, type ColorToken } from '@/constants/Theme';
 
 export type ThemedButtonProps = TouchableOpacityProps & {
   title: string;
@@ -58,7 +58,7 @@ export function ThemedButton({
       {...rest}
     >
       <ThemedText
-        variant="label"
+        variant="default"
         style={{ 
           color: disabled ? disabledTextColor : themeTextColor,
           textAlign: 'center',

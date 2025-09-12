@@ -18,7 +18,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   };
 
   return (
-    <View style={styles.progressBarContainer}>
+    <View >
       <LinearProgressBar 
         progressPercentage={progressPercentage}
         height={12}
@@ -36,9 +36,6 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
 };
 
 const styles = StyleSheet.create({
-  progressBarContainer: {
-    marginBottom: 20,
-  },
   progressText: {
     gap: 4,
     justifyContent: 'space-between',

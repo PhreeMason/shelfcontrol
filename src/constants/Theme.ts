@@ -2,8 +2,8 @@
  * Centralized theme utilities for consistent component styling
  */
 
-import { Colors, Typography, Spacing, BorderRadius, FontFamily } from './Colors';
 import type { TextStyle, ViewStyle } from 'react-native';
+import { BorderRadius, Colors, FontFamily, Spacing, Typography } from './Colors';
 
 // Component variant definitions
 export const ComponentVariants = {
@@ -107,7 +107,7 @@ export const ComponentVariants = {
     },
     secondary: {
       color: 'textSecondary' as keyof typeof Colors.light,
-      typography: 'bodyLarge' as keyof typeof Typography,
+      typography: 'bodyMedium' as keyof typeof Typography,
     },
     muted: {
       color: 'textMuted' as keyof typeof Colors.light,
@@ -115,7 +115,7 @@ export const ComponentVariants = {
     },
     title: {
       color: 'text' as keyof typeof Colors.light,
-      typography: 'headlineSmall' as keyof typeof Typography,
+      typography: 'titleMedium' as keyof typeof Typography,
     },
     headline: {
       color: 'text' as keyof typeof Colors.light,
@@ -171,7 +171,7 @@ export const createThemedStyle = {
   ): ViewStyle => {
     const sizeMap = {
       sm: { padding: Spacing.sm, minHeight: 32 },
-      md: { padding: Spacing.md, minHeight: 44 },
+      md: { padding: Spacing.md, minHeight: 40 },
       lg: { padding: Spacing.lg, minHeight: 56 },
     };
 
@@ -276,7 +276,7 @@ export const StyleMixins = {
     textButton: {
       borderRadius: BorderRadius.sm,
       padding: Spacing.sm,
-      ...Typography.labelMedium,
+      ...Typography.labelLarge,
     },
     card: {
       borderRadius: BorderRadius.lg,

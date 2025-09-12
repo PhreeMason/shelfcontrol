@@ -98,13 +98,13 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     return (
       <ThemedView style={styles.container}>
         <ThemedText style={[styles.title, { color: colors.text }]}>
-          Required Daily Pace
+          {chartTitle}
         </ThemedText>
         <ThemedView style={styles.emptyState}>
           <ThemedText
             style={[styles.emptyStateText, { color: colors.textMuted }]}
           >
-            No reading activity recorded
+            No activity recorded
           </ThemedText>
           <ThemedText
             style={[styles.emptyStateSubtext, { color: colors.textMuted }]}
@@ -190,9 +190,6 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
       <View style={styles.chartContainer}>
         {/* Line Chart - Required Daily Pace */}
         <View style={styles.lineChartSection} testID="line-chart">
-          <ThemedText style={[styles.chartSubtitle, { color: colors.textMuted }]}>
-            Required Daily Pace
-          </ThemedText>
           <LineChart
             data={lineChartRealData}
             width={300}
@@ -228,7 +225,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
 
         {/* Bar Chart - Daily Progress */}
         <View style={styles.barChartSection} testID="bar-chart">
-          <ThemedText style={[styles.chartSubtitle, { color: colors.textMuted }]}>
+          <ThemedText style={[styles.title, { color: colors.text }]}>
             Daily Progress
           </ThemedText>
           <BarChart
@@ -277,35 +274,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
           />
         </View>
       </View>
-
-      <View style={styles.legendContainer}>
-        <View style={styles.legendItem}>
-          <View
-            style={[styles.legendDot, { backgroundColor: colors.accent }]}
-          />
-          <ThemedText style={[styles.legendText, { color: colors.textMuted }]}>
-            Cumulative Progress
-          </ThemedText>
-        </View>
-        <View style={styles.legendItem}>
-          <View
-            style={[styles.legendBar, { backgroundColor: colors.primary }]}
-          />
-          <ThemedText style={[styles.legendText, { color: colors.textMuted }]}>
-            Daily Progress
-          </ThemedText>
-        </View>
-        <View style={styles.legendItem}>
-          <View
-            style={[styles.legendLine, { backgroundColor: colors.accent }]}
-          />
-          <ThemedText style={[styles.legendText, { color: colors.textMuted }]}>
-            Daily Goal ({displayDailyMinimum} {unitLabel})
-          </ThemedText>
-        </View>
-      </View>
-
-      <ThemedText style={[styles.subtitle, { color: colors.textMuted }]}>
+      <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
         {subtitle}
       </ThemedText>
     </ThemedView>
@@ -335,7 +304,6 @@ const styles = StyleSheet.create({
   },
   barChartSection: {
     alignItems: "center",
-    marginBottom: 8,
   },
   chartSubtitle: {
     fontSize: 14,

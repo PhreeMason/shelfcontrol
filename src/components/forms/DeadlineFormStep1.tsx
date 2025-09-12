@@ -3,8 +3,9 @@ import CustomDropdown from '@/components/shared/CustomDropdown';
 import CustomInput from '@/components/shared/CustomInput';
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import { useTheme } from '@/hooks/useThemeColor';
+import { DeadlineFormData } from '@/utils/deadlineFormSchema';
+import { toTitleCase } from '@/utils/stringUtils';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -94,7 +95,7 @@ export const DeadlineFormStep1 = ({
             {/* Book Search Section */}
             <View>
                 <View style={styles.sectionHeader}>
-                    <ThemedText variant="title" style={{marginBottom: 8}}>Find Book (Optional)</ThemedText>
+                    <ThemedText variant="default" style={{marginBottom: 8}}>Find Book (Optional)</ThemedText>
                     <TouchableOpacity
                         onPress={() => setShowBookSearch(!showBookSearch)}
                         style={[styles.toggleButton, { borderColor: colors.primary }]}
@@ -127,12 +128,13 @@ export const DeadlineFormStep1 = ({
             </View>
 
             <View>
-                <ThemedText variant="title" style={{marginBottom: 8}}>Book Title *</ThemedText>
+                <ThemedText variant="default" style={{marginBottom: 8}}>Book Title *</ThemedText>
                 <CustomInput
                     control={control}
                     name="bookTitle"
                     testID='input-bookTitle'
                     placeholder="Enter the book title"
+                    transformOnBlur={toTitleCase}
                 />
                 {selectedBook && (
                     <ThemedText color="primary" style={styles.autoFilledIndicator}>
@@ -142,7 +144,7 @@ export const DeadlineFormStep1 = ({
             </View>
 
             <View>
-                <ThemedText variant="title" style={{marginBottom: 8}}>Author</ThemedText>
+                <ThemedText variant="default" style={{marginBottom: 8}}>Author</ThemedText>
                 <CustomInput
                     control={control}
                     name="bookAuthor"
@@ -157,7 +159,7 @@ export const DeadlineFormStep1 = ({
             </View>
 
             <View>
-                <ThemedText variant="title" style={{marginBottom: 8}}>Format</ThemedText>
+                <ThemedText variant="default" style={{marginBottom: 8}}>Format</ThemedText>
                 <FormatSelector
                     selectedFormat={selectedFormat}
                     onSelectFormat={onFormatChange}
@@ -172,7 +174,7 @@ export const DeadlineFormStep1 = ({
             </View>
 
             <View>
-                <ThemedText variant="title" style={{marginBottom: 8}}>Where is this book from?</ThemedText>
+                <ThemedText variant="default" style={{marginBottom: 8}}>Where is this book from?</ThemedText>
                 <CustomDropdown
                     control={control}
                     name="source"
@@ -190,7 +192,7 @@ export const DeadlineFormStep1 = ({
             </View>
 
             <View>
-                <ThemedText variant="title" style={{marginBottom: 8}}>{getTotalQuantityLabel()}</ThemedText>
+                <ThemedText variant="default" style={{marginBottom: 8}}>{getTotalQuantityLabel()}</ThemedText>
                 <View style={{ flexDirection: 'row', gap: 10 }}>
                     <View style={{ flex: 1 }}>
                         <CustomInput
@@ -215,7 +217,7 @@ export const DeadlineFormStep1 = ({
                         </View> : null}
                 </View>
                 <ThemedText color="textMuted" style={{marginTop: 6, lineHeight: 18}}>
-                    We&apos;ll use this to calculate your daily reading pace
+                    We'll use this to calculate your daily reading pace
                 </ThemedText>
                 {selectedBook && (
                     (selectedFormat === 'audio' && selectedBook.total_duration) ||

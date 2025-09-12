@@ -90,7 +90,7 @@ export const DeadlineFormStep2 = ({
             </ThemedText>
 
             <View>
-                <ThemedText variant="title" style={{marginBottom: 8}}>Deadline Date *</ThemedText>
+                <ThemedText variant="default" style={{marginBottom: 8}}>Deadline Date *</ThemedText>
                 <Controller
                     control={control}
                     name="deadline"
@@ -130,7 +130,7 @@ export const DeadlineFormStep2 = ({
             <View style={[styles.sectionDivider, {backgroundColor: colors.textMuted}]} />
 
             <View>
-                <ThemedText variant="title" style={{marginBottom: 8}}>{getProgressLabel()}</ThemedText>
+                <ThemedText variant="default" style={{marginBottom: 8}}>{getProgressLabel()}</ThemedText>
                 <View style={{ flexDirection: 'row', gap: 10 }}>
                     <View style={{ flex: 1 }}>
                         <CustomInput
@@ -147,7 +147,7 @@ export const DeadlineFormStep2 = ({
                                 control={control}
                                 name="currentMinutes"
                                 inputType="integer"
-                                placeholder='0'
+                                placeholder='minutes'
                                 keyboardType="numeric"
                             />
                         </View> : null}
@@ -161,7 +161,7 @@ export const DeadlineFormStep2 = ({
                 <>
                     <View style={[styles.sectionDivider, {backgroundColor: colors.textMuted}]} />
                     <View>
-                        <ThemedText variant="title" style={{marginBottom: 8}}>When did you start reading?</ThemedText>
+                        <ThemedText variant="default" style={{marginBottom: 8}}>When did you start reading?</ThemedText>
                         <Controller
                             control={control}
                             name="startDate"
@@ -203,7 +203,7 @@ export const DeadlineFormStep2 = ({
 
             <View style={[styles.sectionDivider, {backgroundColor: colors.textMuted}]} />
             <View>
-                <ThemedText variant="title" style={{marginBottom: 8}}>Deadline Flexibility</ThemedText>
+                <ThemedText variant="default" style={{marginBottom: 8}}>Deadline Flexibility</ThemedText>
                 <PrioritySelector
                     selectedPriority={selectedPriority}
                     onSelectPriority={onPriorityChange}

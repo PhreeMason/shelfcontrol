@@ -41,7 +41,6 @@ const TodaysGoals: React.FC = () => {
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
-        <ThemedText style={styles.sparkle}>🎯</ThemedText>
         <ThemedText style={styles.title}>TODAY'S READING GOALS</ThemedText>
       </View>
 
@@ -49,6 +48,8 @@ const TodaysGoals: React.FC = () => {
         {readingDeadlines.length > 0 ? <TodaysProgress
           total={totalReadingTimeForToday}
           current={currentReadingTimeForToday}
+          // total={100}
+          // current={325}
           type="reading"
         /> : null}
 
@@ -83,10 +84,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     marginBottom: 16,
-  },
-  sparkle: {
-    fontSize: 16,
-    // animation: 'sparkle 2s ease-in-out infinite',
   },
   title: {
     color: '#8B5A8C',

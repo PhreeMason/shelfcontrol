@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     quickButtons: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 16,
+        marginBottom: 5,
         gap: 8,
     },
     quickBtn: {

@@ -242,10 +242,10 @@ const ReadingProgress = ({
   };
 
   return (
-    <ThemedView style={[styles.section, { borderColor: colors.border }]}>
+    <ThemedView style={[styles.section]}>
       <ProgressHeader />
 
-      <ThemedView style={[styles.progressSection, { borderColor: 'rgba(232, 194, 185, 0.15)' }]}>
+      <ThemedView style={[styles.progressSection, { borderColor: colors.border, borderWidth: 1 }]}>
         <ProgressStats
           currentProgress={currentProgress}
           totalQuantity={totalQuantity}
@@ -284,7 +284,6 @@ const ReadingProgress = ({
           <ThemedButton
             title={updateProgressMutation.isPending ? "Updating..." : "✏️ Update Progress"}
             variant="primary"
-            style={styles.updateProgressBtn}
             onPress={handleSubmit(onSubmitProgress)}
             disabled={updateProgressMutation.isPending}
           />
@@ -304,8 +303,7 @@ const styles = StyleSheet.create({
   },
   updateSection: {
     marginTop: 8,
-  },
-  updateProgressBtn: {
+    gap: 12,
   },
   sessionBtn: {
     flexDirection: 'row',
@@ -333,7 +331,6 @@ const styles = StyleSheet.create({
   },
   updateProgressBtns: {
     flexDirection: 'row',
-    marginTop: 8,
     justifyContent: 'space-between',
     gap: 12,
   }

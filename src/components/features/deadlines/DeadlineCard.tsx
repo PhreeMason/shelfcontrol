@@ -4,10 +4,11 @@ import { useFetchBookById } from '@/hooks/useBooks';
 // import { useFetchBookById } from '@/hooks/useBooks';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Image, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 const urgencyBorderColorMap = {
   'complete': '#3B82F6',
@@ -28,14 +29,6 @@ const urgencyTextColorMap = {
   'approaching': '#D4876A',
   'impossible': '#C8698A',
 }
-
-const backgroundImageUrl = {
-  default: 'https://images.unsplash.com/photo-1750712406219-549c4ba27210?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  desert: 'https://images.unsplash.com/photo-1750712406219-549c4ba27210?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  cherry: 'https://images.unsplash.com/photo-1750625991979-a008c832e04c?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-}
-
-
 interface DeadlineCardProps {
   deadline: ReadingDeadlineWithProgress;
   disableNavigation?: boolean;
@@ -89,16 +82,6 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
     }
   };
 
-  // Determine which background image to use
-  const getBackgroundImageUrl = () => {
-    // If we have book data and it has a cover image, use that
-    if (bookData?.cover_image_url) {
-      return bookData.cover_image_url;
-    }
-    // Otherwise, fall back to the default background
-    return backgroundImageUrl['default'];
-  };
-
   // Get random book cover icon from array
   const getBookCoverIcon = () => {
     const bookIcons = ['📕', '📗', '📘', '📙', '📔', '📓', '📚', '📖', '📑', '📜', '💰', '⚔️', '🏃', '🎭', '🔬', '🎨', '🏛️', '🌟', '🔮', '⭐'];
@@ -149,13 +132,13 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
   };
 
   // Book Cover Component
-  const BookCover = ({ resizeMode = 'cover' }: { resizeMode?: 'cover' | 'contain' }) => {
+  const BookCover = () => {
     if (bookData?.cover_image_url) {
       return (
         <Image
-          source={{ uri: getBackgroundImageUrl() }}
+          source={{ uri: bookData.cover_image_url }}
           style={styles.bookCover}
-          resizeMode={resizeMode}
+          contentFit='cover'
         />
       );
     }
@@ -205,7 +188,7 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
     ]}>
       <View style={[styles.cardContainer, isArchived && shadowStyle, { borderColor }]}>
         <View style={styles.bookContent}>
-          <BookCover resizeMode={isArchived ? 'contain' : 'cover'} />
+          <BookCover />
           <View style={styles.bookInfo}>
             <ThemedText style={styles.bookTitle} numberOfLines={2}>
               {deadline.book_title}
@@ -236,14 +219,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     flex: 3,
     minWidth: 0,
   },
   bookCover: {
-    width: 48,
-    height: 64,
-    borderRadius: 8,
+    width: 63,
+    height: 100,
+    borderRadius: 5,
     flexShrink: 0,
   },
   bookInfo: {
@@ -253,6 +237,7 @@ const styles = StyleSheet.create({
   bookTitle: {
     color: '#2B3D4F',
     marginBottom: 2,
+    marginLeft: 1,
     ...Typography.titleMedium,
   },
   bookDeadline: {
@@ -291,14 +276,14 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     textAlign: 'center',
     includeFontPadding: false,
-    marginBottom: -6,
+    paddingTop: 8,
   },
   countdownLabel: {
     fontSize: 11,
     fontWeight: '600',
-    marginTop: -4,
-    marginBottom: -2,
     opacity: 0.8,
+    marginTop: -5,
+
   },
   archivedIcon: {
     fontSize: 24,

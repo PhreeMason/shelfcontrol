@@ -1,6 +1,6 @@
 import React from 'react';
-import { TextInput, View, Text, StyleSheet } from 'react-native';
 import { Control, Controller } from 'react-hook-form';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface CustomInputProps {
   control: Control<any>;
@@ -8,10 +8,11 @@ interface CustomInputProps {
   placeholder?: string;
   label?: string;
   error?: any;
+  transformOnBlur?: (value: string) => string;
   [key: string]: any;
 }
 
-const CustomInput = ({ control, name, placeholder, label, error, ...props }: CustomInputProps) => {
+const CustomInput = ({ control, name, placeholder, label, error, transformOnBlur, ...props }: CustomInputProps) => {
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -21,7 +22,12 @@ const CustomInput = ({ control, name, placeholder, label, error, ...props }: Cus
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             style={styles.input}
-            onBlur={onBlur}
+            onBlur={() => {
+              if (transformOnBlur && value && typeof value === 'string') {
+                onChange(transformOnBlur(value));
+              }
+              onBlur();
+            }}
             onChangeText={onChange}
             value={value}
             placeholder={placeholder}

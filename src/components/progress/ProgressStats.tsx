@@ -1,5 +1,4 @@
 import { formatProgressDisplay } from '@/utils/deadlineUtils';
-import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '../themed';
 
@@ -28,17 +27,17 @@ const ProgressStats: React.FC<ProgressStatsProps> = ({
 
   return (
     <View style={styles.progressStats}>
-      <View style={styles.statItem}>
+      <View style={[styles.statItem]}>
         <ThemedText variant={urgencyTypeMap[urgencyLevel]} style={styles.statNumber}>
           {formatProgressDisplay(format, currentProgress)}
         </ThemedText>
         <ThemedText variant="muted" style={styles.statLabel}>
-         OF{' '}
-         <ThemedText variant="muted" style={{fontSize: 12}}>{formatProgressDisplay(format, totalQuantity)} </ThemedText>
-         {format === 'audio' ? 'LISTENED' : 'READ'}
+          OF{' '}
+            {formatProgressDisplay(format, totalQuantity)}
+          {format === 'audio' ? ' LISTENED' : ' READ'}
         </ThemedText>
       </View>
-      <View style={styles.statItem}>
+      <View style={[styles.statItem]}>
         <ThemedText variant={urgencyTypeMap[urgencyLevel]} style={styles.statNumber}>
           {formatProgressDisplay(format, remaining)}
         </ThemedText>
@@ -62,6 +61,7 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: 'bold',
+    lineHeight: 33,
     marginBottom: 4,
   },
   statLabel: {

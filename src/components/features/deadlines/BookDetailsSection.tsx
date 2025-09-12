@@ -21,25 +21,25 @@ const BookDetailsSection = (
 
             <ThemedView style={styles.detailsGrid}>
                 <ThemedView style={styles.detailRow}>
-                    <ThemedText variant="muted" style={styles.detailLabel}>Author</ThemedText>
+                    <ThemedText variant="secondary" style={styles.detailLabel}>Author</ThemedText>
                     <ThemedText style={styles.detailsValue}>{deadline.author || 'Unknown'}</ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.detailRow}>
-                    <ThemedText variant="muted" style={styles.detailLabel}>Format</ThemedText>
+                    <ThemedText variant="secondary" style={styles.detailLabel}>Format</ThemedText>
                     <ThemedText style={styles.detailsValue}>
                         {makeUpperCaseFirstLetter(deadline.format)}
                     </ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.detailRow}>
-                    <ThemedText variant="muted" style={styles.detailLabel}>Priority</ThemedText>
+                    <ThemedText variant="secondary" style={styles.detailLabel}>Priority</ThemedText>
                     <ThemedText style={styles.detailsValue}>{makeUpperCaseFirstLetter(deadline.flexibility)}</ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.detailRow}>
-                    <ThemedText variant="muted" style={styles.detailLabel}>Source</ThemedText>
+                    <ThemedText variant="secondary" style={styles.detailLabel}>Source</ThemedText>
                     <ThemedText style={styles.detailsValue}>{makeUpperCaseFirstLetter(deadline.source)}</ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.detailRow}>
-                    <ThemedText variant="muted" style={styles.detailLabel}>Added</ThemedText>
+                    <ThemedText variant="secondary" style={styles.detailLabel}>Added</ThemedText>
                     <ThemedText style={styles.detailsValue}>{dayjs(deadline.created_at || '').format('MMMM D, YYYY')}</ThemedText>
                 </ThemedView>
             </ThemedView>

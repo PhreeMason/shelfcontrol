@@ -231,6 +231,8 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
             style={styles.archiveBtn}
             onPress={handleSetAside}
             disabled={isSettingAside}
+            backgroundColor='warning'
+            textColor="textInverse"
           />
         </>
       )}
