@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.4"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -183,21 +183,21 @@ export type Database = {
           created_at: string
           deadline_id: string | null
           id: string
-          status: Database["public"]["Enums"]["deadline_status_enum"] | null
+          status: Database["public"]["Enums"]["deadline_status_enum"]
           updated_at: string
         }
         Insert: {
-          created_at: string
+          created_at?: string
           deadline_id?: string | null
           id?: string
-          status?: Database["public"]["Enums"]["deadline_status_enum"] | null
-          updated_at: string
+          status: Database["public"]["Enums"]["deadline_status_enum"]
+          updated_at?: string
         }
         Update: {
           created_at?: string
           deadline_id?: string | null
           id?: string
-          status?: Database["public"]["Enums"]["deadline_status_enum"] | null
+          status?: Database["public"]["Enums"]["deadline_status_enum"]
           updated_at?: string
         }
         Relationships: [
@@ -229,14 +229,14 @@ export type Database = {
           author?: string | null
           book_id?: string | null
           book_title: string
-          created_at: string
+          created_at?: string
           deadline_date: string
           flexibility: Database["public"]["Enums"]["deadline_flexibility"]
           format?: Database["public"]["Enums"]["book_format_enum"]
           id?: string
           source: string
           total_quantity: number
-          updated_at: string
+          updated_at?: string
           user_id: string
         }
         Update: {
@@ -349,7 +349,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_prefixed_id: {
+        Args: { prefix: string }
+        Returns: string
+      }
+      store_book_with_authors: {
+        Args: { book_data: Json }
+        Returns: string
+      }
     }
     Enums: {
       book_format_enum: "physical" | "ebook" | "audio"

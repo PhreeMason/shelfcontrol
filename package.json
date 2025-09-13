@@ -13,7 +13,7 @@
     "prebuild": "npx expo prebuild --clean",
     "build": "npx eas build --platform android --profile preview",
     "build:local": "npx eas build --platform android --profile preview --local",
-    "supabase:genTypes": "npx supabase gen types --lang=typescript --project-id \"npxxraogmtcaesjhzsun\" --schema public > src/types/database.types.ts",
+    "genTypes": "npx supabase gen types --lang=typescript --project-id \"npxxraogmtcaesjhzsun\" --schema public > src/types/database.types.ts",
     "test": "jest --runInBand",
     "test:ff": "jest --runInBand --bail",
     "test:coverage": "jest --runInBand --coverage",

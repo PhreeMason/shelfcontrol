@@ -60,22 +60,16 @@ const DeadlineView = () => {
         );
     }
 
+    const isArchived = deadline.status && deadline.status.length > 0
+        ? ['complete', 'set_aside'].includes(deadline.status[deadline.status.length - 1].status)
+        : false;
+
     const handleEdit = () => {
         router.push(`/deadline/${id}/edit`);
     };
 
     const handleBack = () => {
-        // Check if this is an archived deadline
-        // const latestStatus = deadline.status && deadline.status.length > 0 
-        //     ? deadline.status[deadline.status.length - 1].status 
-        //     : 'reading';
-        // const isArchived = latestStatus === 'complete' || latestStatus === 'set_aside';
         router.back();
-        // if (isArchived) {
-        //     router.push('/archive');
-        // } else {
-        //     router.push('/');
-        // }
     };
 
     return (
@@ -91,7 +85,7 @@ const DeadlineView = () => {
             <ThemedScrollView style={[styles.content, { backgroundColor: 'white' }]}>
                 <DeadlineHeroSection deadline={deadline} />
 
-                <ReadingProgress deadline={deadline} />
+                {isArchived ? <ReadingProgress deadline={deadline} /> : null}
 
                 <DailyReadingChart deadline={deadline} />
 
