@@ -19,10 +19,7 @@ export function toTitleCase(str: string): string {
     .map((word, index) => {
       // Preserve empty strings
       if (!word) return word;
-      
-      // Check if word contains special characters or numbers (like "1984" or "it's")
-      const hasSpecialChars = /[0-9'-]/.test(word);
-      
+            
       // If the word is all caps and longer than 3 chars, preserve it (likely an acronym)
       if (word.length > 3 && word === word.toUpperCase() && /[A-Z]/.test(word)) {
         return word;

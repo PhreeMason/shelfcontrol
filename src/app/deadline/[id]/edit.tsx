@@ -8,8 +8,8 @@ import { StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import {
-    DeadlineFormStep1,
     DeadlineFormStep2,
+    DeadlineFormStep3,
     FormHeader,
     FormProgressBar,
     StepIndicators
@@ -254,12 +254,13 @@ const EditDeadline = () => {
     const goBack = () => {
         if (currentStep > 1) {
             setCurrentStep(currentStep - 1);
+        } else {
+            if (router.canGoBack()) {
+                router.back();
+            } else {
+                router.replace('/');
+            }
         }
-    };
-
-    const goBackToView = () => {
-        // router.replace(`/deadline/${id}/view`);
-        router.back();
     };
 
     const onDateChange = (_event: any, selectedDate?: Date) => {
@@ -283,7 +284,7 @@ const EditDeadline = () => {
     return (
         <SafeAreaView edges={['right', 'bottom', 'left']} style={{ flex: 1, backgroundColor: colors.background }}>
             <ThemedKeyboardAvoidingView style={styles.container}>
-                <AppHeader title="Edit Deadline" onBack={goBackToView} />
+                <AppHeader title="Edit Deadline" onBack={goBack} />
 
                 <FormProgressBar currentStep={currentStep} totalSteps={totalSteps} />
                 <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
@@ -294,12 +295,10 @@ const EditDeadline = () => {
                 >
                     <FormHeader
                         title={formSteps[currentStep - 1]}
-                        onBack={goBack}
-                        showBack={currentStep > 1}
                     />
 
                     {currentStep === 1 ? (
-                        <DeadlineFormStep1
+                        <DeadlineFormStep2
                             control={control}
                             selectedFormat={selectedFormat}
                             onFormatChange={handleFormatChange}
@@ -307,7 +306,7 @@ const EditDeadline = () => {
                             isEditMode={true}
                         />
                     ) : (
-                        <DeadlineFormStep2
+                        <DeadlineFormStep3
                             control={control}
                             selectedFormat={selectedFormat}
                             selectedPriority={selectedPriority}

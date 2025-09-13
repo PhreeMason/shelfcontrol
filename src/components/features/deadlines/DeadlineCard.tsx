@@ -4,11 +4,10 @@ import { useFetchBookById } from '@/hooks/useBooks';
 // import { useFetchBookById } from '@/hooks/useBooks';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter, useSegments } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React from 'react';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 const urgencyBorderColorMap = {
   'complete': '#3B82F6',
@@ -37,7 +36,6 @@ interface DeadlineCardProps {
 export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCardProps) {
   const { getDeadlineCalculations, formatUnitsPerDayForDisplay } = useDeadlines();
   const router = useRouter();
-  const segments = useSegments();
 
   // Fetch book data if deadline has a book_id
   const { data: bookData } = useFetchBookById(deadline.book_id);
@@ -139,7 +137,7 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
         <Image
           source={{ uri: bookData.cover_image_url }}
           style={styles.bookCover}
-          contentFit='cover'
+          resizeMode="cover"
         />
       );
     }

@@ -25,7 +25,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             colors={['#E8C2B9', '#B8A9D9']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[styles.header, { paddingTop: Math.max(insets.top, 10) }]}
+            style={[styles.header, { paddingTop: Math.max(insets.top, 10) + 8 }]}
         >
             {showBackButton ? (
                 <TouchableOpacity onPress={onBack} style={styles.backButton}>

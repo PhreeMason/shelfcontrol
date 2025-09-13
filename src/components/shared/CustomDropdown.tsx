@@ -18,7 +18,7 @@ type CustomDropdownProps<T extends FieldValues> = {
   control: Control<T>;
   name: Path<T>;
   placeholder?: string;
-  options: Array<{ label: string; value: string }>;
+  options: { label: string; value: string }[];
   allowCustom?: boolean;
   customPlaceholder?: string;
   testID?: string;
@@ -35,7 +35,7 @@ const CustomDropdown = <T extends FieldValues>({
 }: CustomDropdownProps<T>) => {
   const { colors } = useTheme();
   const [query, setQuery] = useState('');
-  const [filteredData, setFilteredData] = useState<Array<{ label: string; value: string }>>([]);
+  const [filteredData, setFilteredData] = useState<{ label: string; value: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customValue, setCustomValue] = useState('');
@@ -48,7 +48,7 @@ const CustomDropdown = <T extends FieldValues>({
   const primaryColor = colors.primary;
 
   // Custom filter function for options
-  const filterFunction = (items: Array<{ label: string; value: string }>, searchText: string) => {
+  const filterFunction = (items: { label: string; value: string }[], searchText: string) => {
     if (!searchText.trim()) return [...items, { label: 'Other...', value: '__custom__' }];
     const filtered = items.filter(item =>
       item.label.toLowerCase().includes(searchText.toLowerCase())

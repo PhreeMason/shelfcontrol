@@ -10,6 +10,7 @@ import Toast from 'react-native-toast-message';
 import {
     DeadlineFormStep1,
     DeadlineFormStep2,
+    DeadlineFormStep3,
     FormHeader,
     FormProgressBar,
     StepIndicators
@@ -29,7 +30,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const NewDeadLine = () => {
     const [currentStep, setCurrentStep] = useState(1);
-    const [selectedFormat, setSelectedFormat] = useState<'physical' | 'ebook' | 'audio'>('physical');
+    const [selectedFormat, setSelectedFormat] = useState<'physical' | 'ebook' | 'audio'>('ebook');
     // Source is now handled directly by form control
     const [selectedPriority, setSelectedPriority] = useState<'flexible' | 'strict'>('flexible');
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -38,7 +39,7 @@ const NewDeadLine = () => {
     const { addDeadline } = useDeadlines();
     const { colors } = useTheme();
 
-    const formSteps = ['Book Details', 'Set Deadline'];
+    const formSteps = ['Find Book', 'Book Details', 'Set Deadline'];
     const totalSteps = formSteps.length;
 
     const {
@@ -52,7 +53,7 @@ const NewDeadLine = () => {
         defaultValues: {
             bookTitle: '',
             bookAuthor: '',
-            format: 'physical',
+            format: 'ebook',
             source: 'arc',
             deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
             flexibility: 'flexible'
@@ -165,24 +166,34 @@ const NewDeadLine = () => {
 
     const nextStep = async () => {
         if (currentStep < totalSteps) {
-            const fieldsToValidate: (keyof DeadlineFormData)[] = [
-                'bookTitle',
-                'format',
-                'source',
-                'totalQuantity',
-            ];
-
-            // Add totalMinutes validation for audio format
-            if (selectedFormat === 'audio') {
-                fieldsToValidate.push('totalMinutes');
+            // Step 1 -> Step 2: No validation needed, just proceed
+            if (currentStep === 1) {
+                setCurrentStep(2);
+                return;
             }
+            
+            // Step 2 -> Step 3: Validate book details
+            if (currentStep === 2) {
+                const fieldsToValidate: (keyof DeadlineFormData)[] = [
+                    'bookTitle',
+                    'format',
+                    'source',
+                    'totalQuantity',
+                ];
 
-            const result = await trigger(fieldsToValidate);
+                // Add totalMinutes validation for audio format
+                if (selectedFormat === 'audio') {
+                    fieldsToValidate.push('totalMinutes');
+                }
 
-            if (result) {
-                setCurrentStep(currentStep + 1);
+                const result = await trigger(fieldsToValidate);
+
+                if (result) {
+                    setCurrentStep(3);
+                }
             }
         } else {
+            // Step 3: Submit form
             handleSubmit(onSubmit)();
         }
     };
@@ -191,12 +202,12 @@ const NewDeadLine = () => {
         if (currentStep > 1) {
             setCurrentStep(currentStep - 1);
         } else {
-            router.back();
+            if (router.canGoBack()) {
+                router.back();
+            } else {
+                router.replace('/');
+            }
         }
-    };
-
-    const goBackToIndex = () => {
-        router.back();
     };
 
     const onDateChange = (_event: any, selectedDate?: Date) => {
@@ -221,7 +232,7 @@ const NewDeadLine = () => {
     return (
         <SafeAreaView edges={['right', 'bottom', 'left']} style={{ flex: 1, backgroundColor: colors.background }}>
             <ThemedKeyboardAvoidingView style={styles.container}>
-                <AppHeader title="New Deadline" onBack={goBackToIndex} />
+                <AppHeader title="New Deadline" onBack={goBack} />
 
                 <FormProgressBar currentStep={currentStep} totalSteps={totalSteps} />
                 <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
@@ -232,19 +243,27 @@ const NewDeadLine = () => {
                 >
                     <FormHeader
                         title={formSteps[currentStep - 1]}
-                        onBack={goBack}
-                        showBack={currentStep > 1}
                     />
 
                     {currentStep === 1 ? (
                         <DeadlineFormStep1
+                            onBookSelected={() => {
+                                setCurrentStep(2);
+                            }}
+                            onManualEntry={() => {
+                                setCurrentStep(2);
+                            }}
+                            setValue={setValue}
+                        />
+                    ) : currentStep === 2 ? (
+                        <DeadlineFormStep2
                             control={control}
                             selectedFormat={selectedFormat}
                             onFormatChange={handleFormatChange}
                             setValue={setValue}
                         />
                     ) : (
-                        <DeadlineFormStep2
+                        <DeadlineFormStep3
                             control={control}
                             selectedFormat={selectedFormat}
                             selectedPriority={selectedPriority}
