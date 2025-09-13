@@ -4,7 +4,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
-import { Alert, Linking, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function Profile() {
     const { profile, signOut, refreshProfile } = useAuth();
@@ -30,12 +30,6 @@ export default function Profile() {
 
     const handleEditProfile = () => {
         router.push('/profile/edit');
-    };
-
-    const handleWebsitePress = () => {
-        if (profile?.website) {
-            Linking.openURL(profile.website);
-        }
     };
 
     const getDisplayName = () => {
@@ -83,15 +77,6 @@ export default function Profile() {
                             {profile?.email || 'No email provided'}
                         </ThemedText>
                     </View>
-
-                    {profile?.website && (
-                        <TouchableOpacity style={styles.infoItem} onPress={handleWebsitePress}>
-                            <IconSymbol name="link" size={20} color="#666" />
-                            <ThemedText style={[styles.infoText, styles.linkText]}>
-                                {profile.website}
-                            </ThemedText>
-                        </TouchableOpacity>
-                    )}
 
                     <View style={styles.infoItem}>
                         <IconSymbol name="calendar" size={20} color="#666" />

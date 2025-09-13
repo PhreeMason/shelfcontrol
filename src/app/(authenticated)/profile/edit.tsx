@@ -1,12 +1,13 @@
 import Avatar from '@/components/shared/Avatar';
+import CustomInput from '@/components/shared/CustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { useForm } from 'react-hook-form';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { z } from 'zod';
 
 const profileSchema = z.object({
@@ -16,7 +17,6 @@ const profileSchema = z.object({
     first_name: z.string().optional(),
     last_name: z.string().optional(),
     email: z.string().email('Invalid email').optional(),
-    website: z.string().url('Invalid website URL').optional().or(z.literal('')),
 });
 
 type ProfileFields = z.infer<typeof profileSchema>;
@@ -31,7 +31,7 @@ export default function EditProfile() {
         control,
         handleSubmit,
         reset,
-        formState: { errors, isDirty },
+        formState: { isDirty },
     } = useForm<ProfileFields>({
         resolver: zodResolver(profileSchema),
     });
@@ -43,7 +43,6 @@ export default function EditProfile() {
                 first_name: profile.first_name || '',
                 last_name: profile.last_name || '',
                 email: profile.email || '',
-                website: profile.website || '',
             });
         }
     }, [profile, reset]);
@@ -71,7 +70,6 @@ export default function EditProfile() {
                 first_name: data.first_name || null,
                 last_name: data.last_name || null,
                 email: data.email || null,
-                website: data.website || null,
                 avatar_url: avatarPath, // Now storing the path, not the URL
             };
 
@@ -151,113 +149,47 @@ export default function EditProfile() {
                     </ThemedView>
 
                     <ThemedView style={styles.form}>
-                        <Controller
-                            control={control}
-                            name="username"
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <>
-                                    <ThemedText style={styles.label}>Username *</ThemedText>
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="Enter username"
-                                        value={value}
-                                        onChangeText={onChange}
-                                        onBlur={onBlur}
-                                        autoCapitalize="none"
-                                    />
-                                </>
-                            )}
-                        />
-                        {errors.username && (
-                            <ThemedText style={styles.errorText}>{errors.username.message}</ThemedText>
-                        )}
+                        <ThemedView style={styles.inputGroup}>
+                            <ThemedText style={styles.label}>Username *</ThemedText>
+                            <CustomInput
+                                control={control}
+                                name="username"
+                                placeholder="Enter username"
+                                autoCapitalize="none"
+                            />
+                        </ThemedView>
 
-                        <Controller
-                            control={control}
-                            name="first_name"
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <>
-                                    <ThemedText style={styles.label}>First Name</ThemedText>
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="Enter first name"
-                                        value={value}
-                                        onChangeText={onChange}
-                                        onBlur={onBlur}
-                                        autoCapitalize="words"
-                                    />
-                                </>
-                            )}
-                        />
-                        {errors.first_name && (
-                            <ThemedText style={styles.errorText}>{errors.first_name.message}</ThemedText>
-                        )}
+                        <ThemedView style={styles.inputGroup}>
+                            <ThemedText style={styles.label}>First Name</ThemedText>
+                            <CustomInput
+                                control={control}
+                                name="first_name"
+                                placeholder="Enter first name"
+                                autoCapitalize="words"
+                            />
+                        </ThemedView>
 
-                        <Controller
-                            control={control}
-                            name="last_name"
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <>
-                                    <ThemedText style={styles.label}>Last Name</ThemedText>
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="Enter last name"
-                                        value={value}
-                                        onChangeText={onChange}
-                                        onBlur={onBlur}
-                                        autoCapitalize="words"
-                                    />
-                                </>
-                            )}
-                        />
-                        {errors.last_name && (
-                            <ThemedText style={styles.errorText}>{errors.last_name.message}</ThemedText>
-                        )}
+                        <ThemedView style={styles.inputGroup}>
+                            <ThemedText style={styles.label}>Last Name</ThemedText>
+                            <CustomInput
+                                control={control}
+                                name="last_name"
+                                placeholder="Enter last name"
+                                autoCapitalize="words"
+                            />
+                        </ThemedView>
 
-                        <Controller
-                            control={control}
-                            name="email"
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <>
-                                    <ThemedText style={styles.label}>Email</ThemedText>
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="Enter email"
-                                        value={value}
-                                        onChangeText={onChange}
-                                        onBlur={onBlur}
-                                        autoCapitalize="none"
-                                        keyboardType="email-address"
-                                        autoComplete="email"
-                                    />
-                                </>
-                            )}
-                        />
-                        {errors.email && (
-                            <ThemedText style={styles.errorText}>{errors.email.message}</ThemedText>
-                        )}
-
-                        <Controller
-                            control={control}
-                            name="website"
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <>
-                                    <ThemedText style={styles.label}>Website</ThemedText>
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="https://example.com"
-                                        value={value}
-                                        onChangeText={onChange}
-                                        onBlur={onBlur}
-                                        autoCapitalize="none"
-                                        keyboardType="url"
-                                    />
-                                </>
-                            )}
-                        />
-                        {errors.website && (
-                            <ThemedText style={styles.errorText}>{errors.website.message}</ThemedText>
-                        )}
+                        <ThemedView style={styles.inputGroup}>
+                            <ThemedText style={styles.label}>Email</ThemedText>
+                            <CustomInput
+                                control={control}
+                                name="email"
+                                placeholder="Enter email"
+                                autoCapitalize="none"
+                                keyboardType="email-address"
+                                autoComplete="email"
+                            />
+                        </ThemedView>
                     </ThemedView>
                 </ThemedView>
             </ScrollView>
@@ -327,26 +259,15 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     form: {
-        gap: 20,
+        gap: 8,
         marginBottom: 32,
+    },
+    inputGroup: {
+        marginBottom: 4,
     },
     label: {
         fontSize: 16,
         fontWeight: '600',
         marginBottom: 8,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        padding: 16,
-        fontSize: 16,
-        backgroundColor: '#fff',
-    },
-    errorText: {
-        color: '#ff0000',
-        fontSize: 14,
-        marginTop: -16,
-        marginBottom: 4,
     },
 });
