@@ -1,14 +1,20 @@
+import { CalendarLegend } from '@/components/features/deadlines/CalendarLegend';
+import { DeadlineCalendar } from '@/components/features/deadlines/DeadlineCalendar';
+import AppHeader from '@/components/shared/AppHeader';
 import Avatar from '@/components/shared/Avatar';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useTheme } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
 import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Profile() {
     const { profile, signOut, refreshProfile } = useAuth();
     const router = useRouter();
+    const { colors } = useTheme();
 
     // Refresh profile when the screen comes into focus
     useFocusEffect(
@@ -39,10 +45,22 @@ export default function Profile() {
         return null;
     };
 
+    const editButton = (
+        <TouchableOpacity onPress={handleEditProfile} style={styles.editButton}>
+            <IconSymbol name="pencil" size={20} color="white" />
+        </TouchableOpacity>
+    );
+
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            <ThemedView style={styles.innerContainer}>
-                <ThemedText variant="headline" style={styles.title}>Profile</ThemedText>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['right', 'bottom', 'left']}>
+            <AppHeader 
+                title="Profile"
+                onBack={() => {}} // Not used since showBackButton is false
+                rightElement={editButton}
+                showBackButton={false}
+            />
+            <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+                <ThemedView style={styles.innerContainer}>
 
                 <ThemedView style={styles.profileCard}>
                     <View style={styles.avatarSection}>
@@ -63,11 +81,6 @@ export default function Profile() {
                             )}
                         </View>
                     </View>
-
-                    <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
-                        <IconSymbol name="pencil" size={18} color="#007AFF" />
-                        <ThemedText style={styles.editButtonText}>Edit Profile</ThemedText>
-                    </TouchableOpacity>
                 </ThemedView>
 
                 <ThemedView style={styles.infoSection}>
@@ -86,28 +99,37 @@ export default function Profile() {
                     </View>
                 </ThemedView>
 
+                <ThemedView style={styles.calendarSection}>
+                    <ThemedText variant="title" style={styles.sectionTitle}>Your Deadlines</ThemedText>
+                    <DeadlineCalendar />
+                    <CalendarLegend />
+                </ThemedView>
+
                 <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
                     <IconSymbol name="arrow.right.square" size={20} color="#ff4444" />
                     <ThemedText style={styles.signOutButtonText}>Sign Out</ThemedText>
                 </TouchableOpacity>
-            </ThemedView>
-        </ScrollView>
+                </ThemedView>
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingBottom: 50,
+    },
+    scrollContainer: {
+        flex: 1,
     },
     innerContainer: {
-        flex: 1,
         padding: 20,
-        paddingTop: 60,
     },
-    title: {
-        textAlign: 'center',
-        marginBottom: 30,
-        lineHeight: 38,
+    editButton: {
+        padding: 8,
+        borderRadius: 8,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
     },
     profileCard: {
         backgroundColor: '#f8f9fa',
@@ -132,20 +154,6 @@ const styles = StyleSheet.create({
     displayName: {
         fontSize: 16,
         color: '#666',
-    },
-    editButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#007AFF15',
-        paddingHorizontal: 20,
-        paddingVertical: 12,
-        borderRadius: 8,
-        gap: 8,
-    },
-    editButtonText: {
-        color: '#007AFF',
-        fontSize: 16,
-        fontWeight: '600',
     },
     infoSection: {
         backgroundColor: '#f8f9fa',
@@ -179,6 +187,16 @@ const styles = StyleSheet.create({
     signOutButtonText: {
         color: '#ff4444',
         fontSize: 16,
+        fontWeight: '600',
+    },
+    calendarSection: {
+        backgroundColor: '#f8f9fa',
+        borderRadius: 16,
+        padding: 20,
+        marginBottom: 24,
+    },
+    sectionTitle: {
+        marginBottom: 16,
         fontWeight: '600',
     },
 });

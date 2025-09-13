@@ -1,13 +1,15 @@
+import AppHeader from '@/components/shared/AppHeader';
 import Avatar from '@/components/shared/Avatar';
 import CustomInput from '@/components/shared/CustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useTheme } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
 const profileSchema = z.object({
@@ -26,6 +28,7 @@ export default function EditProfile() {
     const [isLoading, setIsLoading] = useState(false);
     const [newAvatarUri, setNewAvatarUri] = useState<string | null>(null);
     const router = useRouter();
+    const { colors } = useTheme();
 
     const {
         control,
@@ -90,7 +93,7 @@ export default function EditProfile() {
         }
     };
 
-    const handleCancel = () => {
+    const handleBack = () => {
         if (isDirty || newAvatarUri) {
             Alert.alert(
                 'Discard Changes',
@@ -109,27 +112,30 @@ export default function EditProfile() {
         setNewAvatarUri(uri);
     };
 
-    return (
-        <KeyboardAvoidingView 
-            style={styles.container} 
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    const saveButton = (
+        <TouchableOpacity
+            onPress={handleSubmit(onSavePress)}
+            disabled={(!isDirty && !newAvatarUri) || isLoading}
+            style={[styles.saveButton, ((!isDirty && !newAvatarUri) || isLoading) && styles.saveButtonDisabled]}
         >
-            <ThemedView style={styles.header}>
-                <TouchableOpacity onPress={handleCancel} style={styles.cancelButton}>
-                    <IconSymbol name="xmark" size={20} color="#007AFF" />
-                    <ThemedText style={styles.cancelText}>Cancel</ThemedText>
-                </TouchableOpacity>
-                <ThemedText style={styles.headerTitle}>Edit Profile</ThemedText>
-                <TouchableOpacity
-                    onPress={handleSubmit(onSavePress)}
-                    disabled={(!isDirty && !newAvatarUri) || isLoading}
-                    style={[styles.saveButton, ((!isDirty && !newAvatarUri) || isLoading) && styles.saveButtonDisabled]}
-                >
-                    <ThemedText style={[styles.saveText, ((!isDirty && !newAvatarUri) || isLoading) && styles.saveTextDisabled]}>
-                        {isLoading ? 'Saving...' : 'Save'}
-                    </ThemedText>
-                </TouchableOpacity>
-            </ThemedView>
+            <ThemedText style={[styles.saveText, ((!isDirty && !newAvatarUri) || isLoading) && styles.saveTextDisabled]}>
+                {isLoading ? 'Saving...' : 'Save'}
+            </ThemedText>
+        </TouchableOpacity>
+    );
+
+    return (
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['right', 'bottom', 'left']}>
+            <AppHeader 
+                title="Edit Profile"
+                onBack={handleBack}
+                rightElement={saveButton}
+                headerStyle={{ paddingTop: 10}}
+            />
+            <KeyboardAvoidingView 
+                style={styles.keyboardContainer} 
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
 
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 <ThemedView style={styles.innerContainer}>
@@ -193,7 +199,8 @@ export default function EditProfile() {
                     </ThemedView>
                 </ThemedView>
             </ScrollView>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 }
 
@@ -201,45 +208,25 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        paddingTop: 20,
-        paddingBottom: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
-    },
-    cancelButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-    },
-    cancelText: {
-        color: '#007AFF',
-        fontSize: 16,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: '600',
+    keyboardContainer: {
+        flex: 1,
     },
     saveButton: {
-        paddingHorizontal: 16,
-        paddingVertical: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
         borderRadius: 6,
-        backgroundColor: '#007AFF',
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
     },
     saveButtonDisabled: {
-        backgroundColor: '#ccc',
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
     saveText: {
-        color: '#fff',
+        color: 'white',
         fontSize: 16,
         fontWeight: '600',
     },
     saveTextDisabled: {
-        color: '#999',
+        color: 'rgba(255, 255, 255, 0.5)',
     },
     scrollView: {
         flex: 1,

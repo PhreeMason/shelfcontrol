@@ -1,7 +1,7 @@
 import { ThemedButton, ThemedKeyboardAvoidingView, ThemedKeyboardAwareScrollView, ThemedView } from '@/components/themed';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { StyleSheet } from 'react-native';
@@ -17,19 +17,21 @@ import {
 } from '@/components/forms';
 import AppHeader from '@/components/shared/AppHeader';
 import { useTheme } from '@/hooks/useThemeColor';
-
 import {
     calculateCurrentProgressFromForm,
     calculateRemainingFromForm,
     calculateTotalQuantityFromForm,
     getPaceEstimate
 } from '@/utils/deadlineCalculations';
-
 import { DeadlineFormData, deadlineFormSchema } from '@/utils/deadlineFormSchema';
+import { getInitialStepFromSearchParams } from '@/utils/deadlineUtils';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const NewDeadLine = () => {
-    const [currentStep, setCurrentStep] = useState(1);
+    const params = useLocalSearchParams();
+    const initialStep = getInitialStepFromSearchParams(params, { paramName: 'page', defaultStep: 1, minStep: 1, maxStep: 3 });
+
+    const [currentStep, setCurrentStep] = useState(initialStep);
     const [selectedFormat, setSelectedFormat] = useState<'physical' | 'ebook' | 'audio'>('ebook');
     // Source is now handled directly by form control
     const [selectedPriority, setSelectedPriority] = useState<'flexible' | 'strict'>('flexible');
@@ -59,6 +61,47 @@ const NewDeadLine = () => {
             flexibility: 'flexible'
         }
     });
+
+    useEffect(() => {
+        // Prefill from params (read again flow)
+        if (!params) return;
+
+        const str = (v: any) => (Array.isArray(v) ? v[0] : v);
+
+        const format = str(params.format);
+        if (format && ['physical', 'ebook', 'audio'].includes(format)) {
+            setSelectedFormat(format as any);
+            setValue('format', format as any);
+        }
+
+        const flexibility = str(params.flexibility);
+        if (flexibility && ['flexible', 'strict'].includes(flexibility)) {
+            setSelectedPriority(flexibility as any);
+            setValue('flexibility', flexibility as any);
+        }
+
+        const bookTitle = str(params.bookTitle);
+        if (bookTitle) setValue('bookTitle', bookTitle);
+
+        const bookAuthor = str(params.bookAuthor);
+        if (bookAuthor) setValue('bookAuthor', bookAuthor);
+
+        const totalQuantity = str(params.totalQuantity);
+        if (totalQuantity && !isNaN(Number(totalQuantity))) {
+            setValue('totalQuantity', Number(totalQuantity));
+        }
+
+        const totalMinutes = str(params.totalMinutes);
+        if (totalMinutes && !isNaN(Number(totalMinutes))) {
+            setValue('totalMinutes', Number(totalMinutes));
+        }
+
+        const book_id = str((params as any).book_id);
+        if (book_id) setValue('book_id', book_id);
+
+        const api_id = str((params as any).api_id);
+        if (api_id) setValue('api_id', api_id);
+    }, []);
 
     const watchedValues = watch();
 
@@ -171,7 +214,7 @@ const NewDeadLine = () => {
                 setCurrentStep(2);
                 return;
             }
-            
+
             // Step 2 -> Step 3: Validate book details
             if (currentStep === 2) {
                 const fieldsToValidate: (keyof DeadlineFormData)[] = [

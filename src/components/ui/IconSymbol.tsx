@@ -43,6 +43,7 @@ const MAPPING = {
   'slider.horizontal.3': 'tune',
   'book.fill': 'menu-book',
   'headphones': 'headphones',
+  'pencil': 'edit',
 } as IconMapping;
 
 /**
