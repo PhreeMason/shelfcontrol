@@ -10,16 +10,19 @@ export const deadlineFormSchema = z.object({
     deadline: z.date({
         required_error: 'Deadline is required'
     }),
-    totalQuantity: z.coerce.number().int().positive({
-        message: 'Total must be a positive number'
-    }),
-    totalMinutes: z.coerce.number().int().min(0, {
-        message: 'Minutes must be 0 or greater'
-    }).optional(),
-    currentMinutes: z.coerce.number().int().min(0, {
-        message: 'Minutes must be 0 or greater'
-    }).optional(),
-    currentProgress: z.coerce.number().int().min(0).optional(),
+    totalQuantity: z.coerce.number({
+        required_error: 'Please enter the total pages',
+        invalid_type_error: 'Please enter a valid number'
+    }).int('Please enter a whole number').positive('Total must be greater than 0'),
+    totalMinutes: z.coerce.number({
+        invalid_type_error: 'Please enter a valid number'
+    }).int('Please enter whole minutes').min(0, 'Minutes must be 0 or greater').optional(),
+    currentMinutes: z.coerce.number({
+        invalid_type_error: 'Please enter a valid number'
+    }).int('Please enter whole minutes').min(0, 'Minutes must be 0 or greater').optional(),
+    currentProgress: z.coerce.number({
+        invalid_type_error: 'Please enter a valid number'
+    }).int('Please enter a whole number').min(0, 'Progress cannot be negative').optional(),
     flexibility: z.enum(['flexible', 'strict'], {
         errorMap: () => ({ message: 'Please select deadline flexibility' })
     }),

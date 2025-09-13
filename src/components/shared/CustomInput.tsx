@@ -1,65 +1,94 @@
+import { ThemedText } from '@/components/themed';
+import { useTheme } from '@/hooks/useTheme';
 import React from 'react';
-import { Control, Controller } from 'react-hook-form';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Control, Controller, FieldValues, Path } from 'react-hook-form';
+import { StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 
-interface CustomInputProps {
-  control: Control<any>;
-  name: string;
-  placeholder?: string;
-  label?: string;
-  error?: any;
+type CustomInputProps<T extends FieldValues> = {
+  control: Control<T>;
+  name: Path<T>;
+  inputType?: 'string' | 'number' | 'integer';
   transformOnBlur?: (value: string) => string;
-  [key: string]: any;
-}
+} & Omit<TextInputProps, 'onChangeText' | 'onBlur' | 'value'>
 
-const CustomInput = ({ control, name, placeholder, label, error, transformOnBlur, ...props }: CustomInputProps) => {
+const CustomInput = <T extends FieldValues>({
+  control,
+  name,
+  inputType = 'string',
+  transformOnBlur,
+  ...props
+}: CustomInputProps<T>) => {
+  const { colors } = useTheme();
+  const textMutedColor = colors.textMuted;
+  const cardColor = colors.surface;
+  const textColor = colors.text;
+  const borderColor = colors.border;
+  const dangerColor = colors.danger;
+
   return (
-    <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
-      <Controller
-        control={control}
-        name={name}
-        render={({ field: { onChange, onBlur, value } }) => (
+    <Controller
+      control={control}
+      name={name}
+      render={({
+        field: { value, onChange, onBlur },
+        fieldState: { error },
+      }) => (
+        <View style={styles.container}>
           <TextInput
-            style={styles.input}
+            {...props}
+            value={
+              inputType === 'integer' || inputType === 'number'
+                ? (value === undefined || value === null ? '' : String(value))
+                : (typeof value === 'number' ? String(value) : (value ?? ''))
+            }
+            onChangeText={(text) => {
+              if (transformOnBlur) {
+                // Store the text as-is, transform only on blur
+                onChange(text);
+              } else {
+                onChange(text);
+              }
+            }}
             onBlur={() => {
               if (transformOnBlur && value && typeof value === 'string') {
                 onChange(transformOnBlur(value));
               }
               onBlur();
             }}
-            onChangeText={onChange}
-            value={value}
-            placeholder={placeholder}
-            {...props}
+            placeholderTextColor={textMutedColor}
+            style={[
+              styles.input,
+              {
+                backgroundColor: cardColor,
+                color: textColor,
+                borderColor: error ? dangerColor : borderColor
+              },
+              props.style,
+            ]}
           />
-        )}
-      />
-      {error && <Text style={styles.error}>{error.message}</Text>}
-    </View>
+          {error ? (
+            <ThemedText color="danger" style={styles.error}>{error.message}</ThemedText>
+          ) : (
+            <View style={{ height: 18 }} />
+          )}
+        </View>
+      )}
+    />
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
-  },
-  label: {
-    marginBottom: 8,
-    fontSize: 14,
-    fontWeight: '500',
+    gap: 4,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
+    borderWidth: 2,
+    padding: 16,
+    borderRadius: 12,
     fontSize: 16,
   },
   error: {
-    color: 'red',
-    fontSize: 12,
-    marginTop: 4,
+    minHeight: 18,
   },
 });
 
