@@ -1,4 +1,5 @@
 import { HapticTab } from '@/components/navigation/HapticTab';
+import Avatar from '@/components/shared/Avatar';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
@@ -11,7 +12,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const { session } = useAuth();
+  const { session, profile } = useAuth();
   const { colors } = useTheme();
   if (!session) {
     // If not signed in, don't render the tabs
@@ -50,7 +51,23 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          tabBarIcon: ({ focused }) => (
+            <View style={[
+              styles.profileIconContainer,
+              focused && { 
+                borderWidth: 2, 
+                borderColor: Colors[colorScheme ?? 'light'].tint 
+              }
+            ]}>
+              <Avatar 
+                avatarUrl={profile?.avatar_url}
+                username={profile?.username}
+                size={24}
+                showIcon={true}
+                editable={false}
+              />
+            </View>
+          ),
         }}
       />
     </Tabs>
@@ -64,5 +81,13 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  profileIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   }
 })
