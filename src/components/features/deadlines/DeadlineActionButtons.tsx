@@ -52,7 +52,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                   text1: 'Deadline completed!',
                   text2: `Congratulations on finishing "${deadline.book_title}"!`,
                   autoHide: true,
-                  visibilityTime: 3000,
+                  visibilityTime: 1000,
                   position: 'top'
                 });
               },
@@ -213,6 +213,35 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
     );
   };
 
+  const handleReadAgain = () => {
+    Alert.alert(
+      'Read Again?',
+      `Create a new deadline to read "${deadline.book_title}" again?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Yes',
+            onPress: () => {
+              router.push({
+                pathname: '/deadline/new',
+                params: {
+                  page: '3',
+                  bookTitle: deadline.book_title,
+                  bookAuthor: deadline.author || '',
+                  format: deadline.format,
+                  flexibility: (deadline as any).flexibility || 'flexible',
+                  ...(deadline.format === 'audio'
+                    ? { totalMinutes: String(deadline.total_quantity) }
+                    : { totalQuantity: String(deadline.total_quantity) }),
+                  book_id: (deadline as any).book_id || '',
+                }
+              });
+            }
+        }
+      ]
+    );
+  };
+
   return (
     <ThemedView style={styles.actionButtons}>
       {/* For active deadlines - show start reading session, complete and set aside */}
@@ -221,14 +250,14 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           <ThemedButton
             title={isCompleting ? "Completing..." : "✓ Mark as Complete"}
             variant="success"
-            style={styles.completeBtn}
+            style={styles.actionButton}
             onPress={handleComplete}
             disabled={isCompleting}
           />
           <ThemedButton
             title={isSettingAside ? "Pausing..." : "📚 Pause"}
             variant="secondary"
-            style={styles.archiveBtn}
+            style={styles.actionButton}
             onPress={handleSetAside}
             disabled={isSettingAside}
             backgroundColor='warning'
@@ -243,14 +272,14 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           <ThemedButton
             title={isReactivating ? "Reactivating..." : "📖 Resume Reading"}
             variant="primary"
-            style={styles.reactivateBtn}
+            style={styles.actionButton}
             onPress={handleReactivate}
             disabled={isReactivating}
           />
           <ThemedButton
             title={isCompleting ? "Completing..." : "✓ Mark as Complete"}
             variant="success"
-            style={styles.completeBtn}
+            style={styles.actionButton}
             onPress={handleComplete}
             disabled={isCompleting}
           />
@@ -260,10 +289,10 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       {/* For completed deadlines - show reactivate only */}
       {isCompleted && (
         <ThemedButton
-          title={isReactivating ? "Reactivating..." : "📖 Resume Reading"}
+          title={"🔁 Read Again?"}
           variant="primary"
-          style={styles.reactivateBtn}
-          onPress={handleReactivate}
+          style={styles.actionButton}
+          onPress={handleReadAgain}
           disabled={isReactivating}
         />
       )}
@@ -272,7 +301,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       <ThemedButton
         title={isDeleting ? "Deleting..." : "🗑️ Delete Deadline"}
         variant="dangerOutline"
-        style={styles.deleteBtn}
+        style={styles.actionButton}
         onPress={handleDelete}
         disabled={isDeleting}
       />
@@ -286,19 +315,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     paddingBottom: 32,
   },
-  startReadingBtn: {
-    marginBottom: 8,
-  },
-  completeBtn: {
-    marginBottom: 8,
-  },
-  archiveBtn: {
-    marginBottom: 8,
-  },
-  reactivateBtn: {
-    marginBottom: 8,
-  },
-  deleteBtn: {
+  actionButton: {
     marginBottom: 8,
   },
 });

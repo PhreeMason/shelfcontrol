@@ -27,11 +27,13 @@ import {
 import { convertMinutesToHoursAndMinutes } from '@/utils/audiobookTimeUtils';
 
 import { DeadlineFormData, deadlineFormSchema } from '@/utils/deadlineFormSchema';
+import { getInitialStepFromSearchParams } from '@/utils/deadlineUtils';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const EditDeadline = () => {
     const { id, page } = useLocalSearchParams<{ id: string; page?: string }>();
-    const initialStep = page === '2' ? 2 : 1; // Start on page 2 if specified, otherwise page 1
+    const initialStep = getInitialStepFromSearchParams({page}, { paramName: 'page', defaultStep: 1, minStep: 1, maxStep: 3 });
+
     const [currentStep, setCurrentStep] = useState(initialStep);
     const [selectedFormat, setSelectedFormat] = useState<'physical' | 'ebook' | 'audio'>('physical');
     const [selectedPriority, setSelectedPriority] = useState<'flexible' | 'strict'>('flexible');

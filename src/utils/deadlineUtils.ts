@@ -189,3 +189,44 @@ export const getTotalReadingPagesForDay = (
     }
     return `${minutes}m/day needed`;
 }; 
+
+
+/** * Extracts and validates an initial step number from search parameters.
+ * Ensures the step is within specified bounds.
+ * @param params - The search parameters object
+ * @param paramName - The name of the parameter to extract (default: 'page')
+ * @param defaultStep - The default step to return if parsing fails (default: 1)
+ * @param minStep - The minimum allowed step (default: 1)
+ * @param maxStep - The maximum allowed step (optional)
+ * @returns The validated initial step number
+ */
+
+export function getInitialStepFromSearchParams(
+  params: Record<string, any>,
+  {
+    paramName = 'page',
+    defaultStep = 1,
+    minStep = 1,
+    maxStep,
+  }: {
+    paramName?: string;
+    defaultStep?: number;
+    minStep?: number;
+    maxStep?: number;
+  } = {}
+): number {
+  if (!params) return defaultStep;
+
+  const raw = (params as any)[paramName];
+  if (raw == null) return defaultStep;
+
+  const valStr = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = parseInt(valStr, 10);
+
+  if (Number.isNaN(parsed)) return defaultStep;
+
+  let step = Math.max(minStep, parsed);
+  if (maxStep) step = Math.min(maxStep, step);
+
+  return step;
+}
