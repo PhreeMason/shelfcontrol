@@ -10,6 +10,7 @@ interface AppHeaderProps {
     onBack: () => void;
     rightElement?: React.ReactNode;
     showBackButton?: boolean;
+    headerStyle?: object;
 }
 
 const AppHeader: React.FC<AppHeaderProps> = ({
@@ -17,6 +18,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
     onBack,
     rightElement,
     showBackButton = true,
+    headerStyle = {},
 }) => {
     const insets = useSafeAreaInsets();
 
@@ -25,7 +27,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             colors={['#E8C2B9', '#B8A9D9']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[styles.header, { paddingTop: Math.max(insets.top, 10) + 8 }]}
+            style={[styles.header, { paddingTop: Math.max(insets.top, 10) + 8, ...headerStyle }]}
         >
             {showBackButton ? (
                 <TouchableOpacity onPress={onBack} style={styles.backButton}>
@@ -35,7 +37,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                 <View style={styles.backButton} />
             )}
 
-            <ThemedText variant="title" style={[styles.headerTitle, {color: 'white'}]}>
+            <ThemedText variant="headline" style={[styles.headerTitle, {color: 'white'}]}>
                 {title}
             </ThemedText>
 
@@ -55,7 +57,8 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     headerTitle: {
-        fontSize: 18,
+        fontSize: 24,
+        lineHeight: 32,
         flex: 1,
         textAlign: 'center',
     },
