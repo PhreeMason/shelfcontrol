@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 const legendItems = [
   { color: '#B8A9D9', label: 'Good pace' },
@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
   title: {
     marginBottom: 8,
     fontWeight: '600',
+    fontSize: 14,
   },
   legendItems: {
     flexDirection: 'row',

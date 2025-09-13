@@ -169,10 +169,17 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
           </>
         ) : (
           <>
-            <ThemedText style={[styles.countdownNumber, { color: countdownColor }]}>
+            <ThemedText style={
+              [
+                Platform.OS === 'android' ? styles.countdownNumberAndroid : styles.countdownNumber,
+              { color: countdownColor }
+              ]}>
               {daysLeft}
             </ThemedText>
-            <ThemedText style={[styles.countdownLabel, { color: countdownColor }]}>
+            <ThemedText style={[
+              Platform.OS === 'android' ? styles.countdownLabelAndroid : styles.countdownLabel,
+              { color: countdownColor }
+              ]}>
               days
             </ThemedText>
           </>
@@ -232,16 +239,18 @@ const styles = StyleSheet.create({
   bookInfo: {
     flex: 1,
     minWidth: 0,
+    gap: 10,
   },
   bookTitle: {
     color: '#2B3D4F',
     marginBottom: 2,
     marginLeft: 1,
     ...Typography.titleMedium,
+    fontSize: 18,
   },
   bookDeadline: {
     color: '#6B7280',
-    fontSize: 11,
+    fontSize: 13,
   },
   countdownContainer: {
     flexDirection: 'row',
@@ -277,12 +286,26 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
     paddingTop: 8,
   },
+  countdownNumberAndroid: {
+    fontSize: 28,
+    fontWeight: '800',
+    lineHeight: 30,
+    textAlign: 'center',
+    includeFontPadding: false,
+    paddingTop: 3,
+  },
   countdownLabel: {
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '600',
     opacity: 0.8,
     marginTop: -5,
 
+  },
+  countdownLabelAndroid: {
+    fontSize: 13,
+    fontWeight: '600',
+    opacity: 0.8,
+    marginTop: -2,
   },
   archivedIcon: {
     fontSize: 24,

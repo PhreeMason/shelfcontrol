@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   labelText: {
     color: '#2B3D4F',
-    ...Typography.titleSmall,
+    ...Typography.titleMedium,
   },
   statValue: {
     color: '#8B5A8C',
@@ -184,12 +184,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   encouragementText: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#6B7280',
   },
   remainingText: {
     color: '#C8698A',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
   },
 });
