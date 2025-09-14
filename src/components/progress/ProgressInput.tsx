@@ -6,7 +6,7 @@ import { StyleSheet, TextInput } from 'react-native';
 import AudiobookProgressInput from './AudiobookProgressInput';
 
 interface ProgressInputProps {
-  format: 'physical' | 'ebook' | 'audio';
+  format: 'physical' | 'eBook' | 'audio';
   control: Control<any>;
 }
 

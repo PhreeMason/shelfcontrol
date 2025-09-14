@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 export interface ReadingDay {
   date: string;
   pagesRead: number;
-  format: 'physical' | 'ebook' | 'audio';
+  format: 'physical' | 'eBook' | 'audio';
 }
 
 export interface ListeningDay {
@@ -83,7 +83,7 @@ export const processBookProgress = (
   book: ReadingDeadlineWithProgress,
   cutoffTime: number,
   dailyProgress: { [date: string]: number },
-  _format?: 'physical' | 'ebook' | 'audio'
+  _format?: 'physical' | 'eBook' | 'audio'
 ): void => {
   if (!book.progress || !Array.isArray(book.progress)) return;
 
@@ -141,8 +141,8 @@ export const getRecentReadingDays = (
 ): ReadingDay[] => {
   const dailyProgress: { [date: string]: number } = {};
 
-  // Filter to only physical and ebook deadlines (no audio mixing)
-  const readingDeadlines = deadlines.filter(d => d.format === 'physical' || d.format === 'ebook');
+  // Filter to only physical and eBook deadlines (no audio mixing)
+  const readingDeadlines = deadlines.filter(d => d.format === 'physical' || d.format === 'eBook');
 
   const cutoffTime = calculateCutoffTime(readingDeadlines);
   if (cutoffTime === null) {
@@ -168,7 +168,7 @@ export const getRecentReadingDays = (
  * The daily average of all non zero days within the last 14 days is used starting with the most recent non zero day.
  */
 export const calculateUserPace = (deadlines: ReadingDeadlineWithProgress[]): UserPaceData => {
-  // Only include physical and ebook reading, not audio
+  // Only include physical and eBook reading, not audio
   const recentReadingDays = getRecentReadingDays(deadlines);
 
   const readingDaysCount = recentReadingDays.length;
@@ -204,7 +204,7 @@ export const calculateRequiredPace = (
   totalQuantity: number,
   currentProgress: number,
   daysLeft: number,
-  _format: 'physical' | 'ebook' | 'audio'
+  _format: 'physical' | 'eBook' | 'audio'
 ): number => {
   const remaining = totalQuantity - currentProgress;
 
@@ -278,7 +278,7 @@ export const getPaceStatusMessage = (
   userPaceData: UserPaceData | UserListeningPaceData,
   requiredPace: number,
   status: PaceBasedStatus,
-  format: 'physical' | 'ebook' | 'audio' = 'physical'
+  format: 'physical' | 'eBook' | 'audio' = 'physical'
 ): string => {
   const paceDisplay = formatPaceDisplay(userPaceData.averagePace, format).replace('/day', '');
   const requiredPaceDisplay = formatPaceDisplay(requiredPace, format).replace('/day', '');
@@ -309,7 +309,7 @@ export const getPaceStatusMessage = (
 /**
  * Formats pace for display, handling different book formats.
  */
-export const formatPaceDisplay = (pace: number, format: 'physical' | 'ebook' | 'audio'): string => {
+export const formatPaceDisplay = (pace: number, format: 'physical' | 'eBook' | 'audio'): string => {
   if (format === 'audio') {
     // Audio pace is already in minutes, no conversion needed
     const minutes = Math.round(pace);

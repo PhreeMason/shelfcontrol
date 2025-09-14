@@ -23,7 +23,7 @@ export interface DeadlineStatusChange {
   status_id: string;
   book_title: string;
   author?: string;
-  format: 'physical' | 'ebook' | 'audio';
+  format: 'physical' | 'eBook' | 'audio';
   status: 'requested' | 'approved' | 'reading' | 'rejected' | 'withdrew' | 'complete' | 'set_aside';
   deadline_date: string;
   source: string;
@@ -37,7 +37,7 @@ export interface DailyDeadlineEntry {
     id: string;
     book_title: string;
     author?: string;
-    format: 'physical' | 'ebook' | 'audio';
+    format: 'physical' | 'eBook' | 'audio';
     progress_made: number; // progress made on this specific day
     total_progress: number; // cumulative progress as of this day
     total_quantity: number; // total pages/minutes to read
@@ -51,7 +51,7 @@ export interface DailyDeadlineEntry {
     id: string;
     book_title: string;
     author?: string;
-    format: 'physical' | 'ebook' | 'audio';
+    format: 'physical' | 'eBook' | 'audio';
     deadline_date: string;
     source: string;
     flexibility: string;
@@ -101,13 +101,13 @@ const getLocalDateString = (utcDateString: string): string => {
 const getFormatFilter = (filter: FormatFilter): string[] => {
   switch (filter) {
     case 'reading':
-      return ['physical', 'ebook'];
+      return ['physical', 'eBook'];
     case 'listening':
       return ['audio'];
     case 'combined':
     case 'all':
     default:
-      return ['physical', 'ebook', 'audio'];
+      return ['physical', 'eBook', 'audio'];
   }
 };
 
@@ -149,7 +149,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
           )
         `)
         .eq('user_id', user.id)
-        .in('format', formats as ('physical' | 'ebook' | 'audio')[])
+        .in('format', formats as ('physical' | 'eBook' | 'audio')[])
         .order('created_at', { ascending: false });
 
       const { data: deadlines, error } = await deadlineQuery;
@@ -392,7 +392,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
         
         // Add progress dot if there's progress
         if (hasProgress) {
-          const hasReadingDeadlines = entry.deadlines.some(d => d.format === 'physical' || d.format === 'ebook');
+          const hasReadingDeadlines = entry.deadlines.some(d => d.format === 'physical' || d.format === 'eBook');
           const hasListeningDeadlines = entry.deadlines.some(d => d.format === 'audio');
 
           let dotColor = '#8E8E93';

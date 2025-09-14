@@ -1,5 +1,4 @@
 import { useAddDeadline, useCompleteDeadline, useDeleteDeadline, useGetDeadlines, useReactivateDeadline, useSetAsideDeadline, useUpdateDeadline } from '@/hooks/useDeadlines';
-import { PaceProvider, usePace } from '@/providers/PaceProvider';
 import { ReadingDeadlineInsert, ReadingDeadlineProgressInsert, ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   calculateCurrentProgress,
@@ -9,8 +8,19 @@ import {
   getReadingEstimate
 } from '@/utils/deadlineCalculations';
 import { calculateDaysLeft, calculateProgress, calculateProgressPercentage, getTotalReadingPagesForDay, getUnitForFormat, separateDeadlines } from '@/utils/deadlineUtils';
+import {
+  calculateRequiredPace,
+  calculateUserListeningPace,
+  calculateUserPace,
+  formatPaceDisplay,
+  getPaceBasedStatus,
+  getPaceStatusMessage,
+  PaceBasedStatus,
+  UserListeningPaceData,
+  UserPaceData
+} from '@/utils/paceCalculations';
 import dayjs from 'dayjs';
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, { createContext, ReactNode, useContext, useMemo } from 'react';
 
 interface DeadlineContextType {
   // Data
@@ -20,7 +30,11 @@ interface DeadlineContextType {
   completedDeadlines: ReadingDeadlineWithProgress[];
   isLoading: boolean;
   error: Error | null;
-  
+
+  // Pace data (merged from PaceProvider)
+  userPaceData: UserPaceData;
+  userListeningPaceData: UserListeningPaceData;
+
   // Actions
   addDeadline: (params: {
     deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
@@ -57,16 +71,33 @@ interface DeadlineContextType {
     paceMessage: string;
   };
 
-  formatUnitsPerDay: (units: number, format: 'physical' | 'ebook' | 'audio') => string;
-  formatUnitsPerDayForDisplay: (units: number, format: 'physical' | 'ebook' | 'audio', remaining: number, daysLeft: number) => string;
-  
+  formatUnitsPerDay: (units: number, format: 'physical' | 'eBook' | 'audio') => string;
+  formatUnitsPerDayForDisplay: (units: number, format: 'physical' | 'eBook' | 'audio', remaining: number, daysLeft: number) => string;
+
+  // Pace functions (merged from PaceProvider)
+  getDeadlinePaceStatus: (deadline: ReadingDeadlineWithProgress) => {
+    userPace: number;
+    requiredPace: number;
+    status: PaceBasedStatus;
+    statusMessage: string;
+    paceDisplay: string;
+    requiredPaceDisplay: string;
+    daysLeft: number;
+    progressPercentage: number;
+  };
+  formatPaceForFormat: (pace: number, format: 'physical' | 'eBook' | 'audio') => string;
+  getUserPaceReliability: () => boolean;
+  getUserPaceMethod: () => 'recent_data' | 'default_fallback';
+  getUserListeningPaceReliability: () => boolean;
+  getUserListeningPaceMethod: () => 'recent_data' | 'default_fallback';
+
   // Counts
   activeCount: number;
   overdueCount: number;
-  
+
   // Summary calculations
   getTotalReadingPagesForDay: () => string;
-  
+
   // Progress calculations
   calculateProgressAsOfStartOfDay: (deadline: ReadingDeadlineWithProgress) => number;
   calculateProgressForToday: (deadline: ReadingDeadlineWithProgress) => number;
@@ -78,8 +109,8 @@ interface DeadlineProviderProps {
   children: ReactNode;
 }
 
-// Internal component that needs pace context
-const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children }) => {
+// Single, clean DeadlineProvider that handles all deadline and pace logic
+export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({ children }) => {
   const { data: deadlines = [], error, isLoading } = useGetDeadlines();
   const { mutate: addDeadlineMutation } = useAddDeadline();
   const { mutate: updateDeadlineMutation } = useUpdateDeadline();
@@ -87,19 +118,92 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
   const { mutate: completeDeadlineMutation } = useCompleteDeadline();
   const { mutate: setAsideDeadlineMutation } = useSetAsideDeadline();
   const { mutate: reactivateDeadlineMutation } = useReactivateDeadline();
-  
-  // Access pace calculations
-  const { getDeadlinePaceStatus } = usePace();
-  
+
   // Separate deadlines by active and overdue status
   const { active: activeDeadlines, overdue: overdueDeadlines, completed: completedDeadlines } = separateDeadlines(deadlines);
-  
+
+  // Calculate pace data (merged from PaceProvider)
+  const userPaceData = useMemo(() => {
+    return calculateUserPace(activeDeadlines);
+  }, [activeDeadlines]);
+
+  const userListeningPaceData = useMemo(() => {
+    return calculateUserListeningPace(activeDeadlines);
+  }, [activeDeadlines]);
+
+  // Pace calculation functions (merged from PaceProvider)
+  const getDeadlinePaceStatus = (deadline: ReadingDeadlineWithProgress) => {
+    const currentProgress = calculateProgress(deadline);
+    const totalQuantity = calculateTotalQuantity(deadline.format, deadline.total_quantity);
+    const daysLeft = calculateDaysLeft(deadline.deadline_date);
+    const progressPercentage = calculateProgressPercentage(deadline);
+
+    // Calculate required pace for this specific deadline
+    const requiredPace = calculateRequiredPace(
+      totalQuantity,
+      currentProgress,
+      daysLeft,
+      deadline.format
+    );
+
+    // Use appropriate pace data based on format
+    const relevantUserPaceData = deadline.format === 'audio' ? userListeningPaceData : userPaceData;
+    const userPace = relevantUserPaceData.averagePace;
+
+    // Get status based on user's pace vs required pace
+    const status = getPaceBasedStatus(
+      userPace,
+      requiredPace,
+      daysLeft,
+      progressPercentage
+    );
+
+    // Generate detailed status message
+    const statusMessage = getPaceStatusMessage(
+      relevantUserPaceData,
+      requiredPace,
+      status,
+      deadline.format
+    );
+
+    return {
+      userPace,
+      requiredPace,
+      status,
+      statusMessage,
+      paceDisplay: formatPaceDisplay(userPace, deadline.format),
+      requiredPaceDisplay: formatPaceDisplay(requiredPace, deadline.format),
+      daysLeft,
+      progressPercentage
+    };
+  };
+
+  const formatPaceForFormat = (pace: number, format: 'physical' | 'eBook' | 'audio'): string => {
+    return formatPaceDisplay(pace, format);
+  };
+
+  const getUserPaceReliability = (): boolean => {
+    return userPaceData.isReliable;
+  };
+
+  const getUserPaceMethod = (): 'recent_data' | 'default_fallback' => {
+    return userPaceData.calculationMethod;
+  };
+
+  const getUserListeningPaceReliability = (): boolean => {
+    return userListeningPaceData.isReliable;
+  };
+
+  const getUserListeningPaceMethod = (): 'recent_data' | 'default_fallback' => {
+    return userListeningPaceData.calculationMethod;
+  };
+
   // Calculate units per day needed based on format
   const calculateUnitsPerDay = (
     totalQuantity: number, 
     currentProgress: number, 
     daysLeft: number, 
-    format: 'physical' | 'ebook' | 'audio'
+    format: 'physical' | 'eBook' | 'audio'
   ): number => {
     const total = calculateTotalQuantity(format, totalQuantity);
     const current = calculateCurrentProgress(format, currentProgress);
@@ -144,7 +248,7 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
   };
 
   // Format the units per day display based on format (original version for general use)
-  const formatUnitsPerDay = (units: number, format: 'physical' | 'ebook' | 'audio'): string => {
+  const formatUnitsPerDay = (units: number, format: 'physical' | 'eBook' | 'audio'): string => {
     if (format === 'audio') {
       const hours = Math.floor(units / 60);
       const minutes = units % 60;
@@ -158,7 +262,7 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
   };
 
   // Special formatting for DeadlineCard display - handles < 1 unit/day cases
-  const formatUnitsPerDayForDisplay = (units: number, format: 'physical' | 'ebook' | 'audio', remaining: number, daysLeft: number): string => {
+  const formatUnitsPerDayForDisplay = (units: number, format: 'physical' | 'eBook' | 'audio', remaining: number, daysLeft: number): string => {
     // Calculate the actual decimal value for precise formatting
     const actualUnitsPerDay = daysLeft > 0 ? remaining / daysLeft : units;
     
@@ -193,7 +297,7 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
       return `${Math.round(units)} minutes/day needed`;
     }
     
-    // For physical/ebook: if less than 1 page per day, show in week format when appropriate
+    // For physical/eBook: if less than 1 page per day, show in week format when appropriate
     if (actualUnitsPerDay < 1 && daysLeft > 0) {
       const daysPerPage = Math.round(1 / actualUnitsPerDay);
       
@@ -320,7 +424,7 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
       onSuccess: () => {
         onSuccess?.();
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         console.error("Error adding deadline:", error);
         onError?.(error);
       }
@@ -336,7 +440,7 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
       onSuccess: () => {
         onSuccess?.();
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         console.error("Error updating deadline:", error);
         onError?.(error);
       }
@@ -348,7 +452,7 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
       onSuccess: () => {
         onSuccess?.();
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         console.error("Error deleting deadline:", error);
         onError?.(error);
       }
@@ -360,7 +464,7 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
       onSuccess: () => {
         onSuccess?.();
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         console.error("Error completing deadline:", error);
         onError?.(error);
       }
@@ -372,7 +476,7 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
       onSuccess: () => {
         onSuccess?.();
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         console.error("Error setting aside deadline:", error);
         onError?.(error);
       }
@@ -384,7 +488,7 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
       onSuccess: () => {
         onSuccess?.();
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         console.error("Error reactivating deadline:", error);
         onError?.(error);
       }
@@ -399,7 +503,11 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
     completedDeadlines,
     isLoading,
     error,
-    
+
+    // Pace data (merged from PaceProvider)
+    userPaceData,
+    userListeningPaceData,
+
     // Actions
     addDeadline,
     updateDeadline,
@@ -407,21 +515,29 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
     completeDeadline,
     setAsideDeadline,
     reactivateDeadline,
-    
+
     getDeadlineCalculations,
-    
+
     formatUnitsPerDay,
     formatUnitsPerDayForDisplay,
-    
+
+    // Pace functions (merged from PaceProvider)
+    getDeadlinePaceStatus,
+    formatPaceForFormat,
+    getUserPaceReliability,
+    getUserPaceMethod,
+    getUserListeningPaceReliability,
+    getUserListeningPaceMethod,
+
     // Counts
     activeCount: activeDeadlines.length,
     overdueCount: overdueDeadlines.length,
-    
+
     // Summary calculations
     getTotalReadingPagesForDay: () => {
       return getTotalReadingPagesForDay(activeDeadlines, getDeadlineCalculations);
     },
-    
+
     // Progress calculations
     calculateProgressAsOfStartOfDay,
     calculateProgressForToday,
@@ -431,20 +547,6 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
     <DeadlineContext.Provider value={value}>
       {children}
     </DeadlineContext.Provider>
-  );
-};
-
-// Main DeadlineProvider that wraps both pace and deadline logic
-export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({ children }) => {
-  const { data: deadlines = [] } = useGetDeadlines();
-  const { active: activeDeadlines } = separateDeadlines(deadlines);
-  
-  return (
-    <PaceProvider deadlines={activeDeadlines}>
-      <DeadlineProviderInternal>
-        {children}
-      </DeadlineProviderInternal>
-    </PaceProvider>
   );
 };
 

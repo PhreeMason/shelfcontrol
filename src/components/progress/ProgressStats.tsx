@@ -6,7 +6,7 @@ interface ProgressStatsProps {
   currentProgress: number;
   totalQuantity: number;
   remaining: number;
-  format: 'physical' | 'ebook' | 'audio';
+  format: 'physical' | 'eBook' | 'audio';
   urgencyLevel: 'overdue' | 'urgent' | 'good' | 'approaching' | 'impossible';
 }
 

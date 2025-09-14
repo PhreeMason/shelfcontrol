@@ -12,7 +12,7 @@ export const progressUpdateSchema = z.object({
 export type ProgressUpdateData = z.infer<typeof progressUpdateSchema>;
 
 // Dynamic schema factory for validation against total quantity
-export const createProgressUpdateSchema = (totalQuantity: number, format: 'physical' | 'ebook' | 'audio') => {
+export const createProgressUpdateSchema = (totalQuantity: number, format: 'physical' | 'eBook' | 'audio') => {
     const unitName = format === 'audio' ? 'minutes' : 'pages';
     
     return z.object({
