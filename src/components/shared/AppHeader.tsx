@@ -12,12 +12,14 @@ interface AppHeaderProps {
     rightElement?: React.ReactNode;
     showBackButton?: boolean;
     headerStyle?: object;
+    children?: React.ReactNode;
 }
 
 const AppHeader: React.FC<AppHeaderProps> = ({
     title,
     onBack,
     rightElement,
+    children,
     showBackButton = true,
     headerStyle = {},
 }) => {
@@ -30,29 +32,35 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             end={{ x: 1, y: 1 }}
             style={[styles.header, { paddingTop: Math.max(insets.top, 10) + 8, ...headerStyle }]}
         >
-            {showBackButton ? (
-                <TouchableOpacity onPress={onBack} style={styles.backButton}>
-                    <IconSymbol name="chevron.left" size={Platform.OS === 'ios' ? 24 : 40} color={"white"} />
-                </TouchableOpacity>
-            ) : (
-                <View style={styles.backButton} />
-            )}
+            <View style={styles.headerContent}>
 
-            <ThemedText variant="headline" style={[styles.headerTitle, { color: colors.textOnPrimary }]}>
-                {title}
-            </ThemedText>
+                {showBackButton ? (
+                    <TouchableOpacity onPress={onBack} style={styles.backButton}>
+                        <IconSymbol name="chevron.left" size={Platform.OS === 'ios' ? 24 : 40} color={"white"} />
+                    </TouchableOpacity>
+                ) : (
+                    <View style={styles.backButton} />
+                )}
 
-            {rightElement || <View style={styles.headerSpacer} />}
+                <ThemedText variant="headline" style={[styles.headerTitle, { color: colors.textOnPrimary }]}>
+                    {title}
+                </ThemedText>
+
+                {rightElement || <View style={styles.headerSpacer} />}
+            </View>
+            {children}
         </LinearGradient>
     );
 };
 
 const styles = StyleSheet.create({
     header: {
+        paddingBottom: 5
+    },
+    headerContent: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingBottom: 15,
     },
     backButton: {
         marginRight: 8,

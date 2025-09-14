@@ -26,7 +26,7 @@ const BookDetailsSection = (
                 <ThemedView style={styles.detailRow}>
                     <ThemedText variant="secondary" style={styles.detailLabel}>Format</ThemedText>
                     <ThemedText style={styles.detailsValue}>
-                        {makeUpperCaseFirstLetter(deadline.format)}
+                        {deadline.format}
                 </ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.detailRow}>

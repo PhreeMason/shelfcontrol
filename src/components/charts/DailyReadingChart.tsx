@@ -14,7 +14,7 @@ interface DailyReadingChartProps {
 interface ReadingDay {
   date: string;
   progressRead: number;
-  format: "physical" | "ebook" | "audio";
+  format: "physical" | "eBook" | "audio";
 }
 
 const getBookReadingDays = (
@@ -37,7 +37,7 @@ const getBookReadingDays = (
     .map(([date, progressRead]) => ({
       date,
       progressRead: Number(progressRead.toFixed(2)),
-      format: deadline.format as "physical" | "ebook" | "audio",
+      format: deadline.format as "physical" | "eBook" | "audio",
     }))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -52,7 +52,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     switch (format) {
       case "audio":
         return "min";
-      case "ebook":
+      case "eBook":
         return "%";
       case "physical":
         return "pg";
@@ -65,7 +65,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     switch (format) {
       case "audio":
         return "Daily Required Pace";
-      case "ebook":
+      case "eBook":
         return "Required Daily Pace";
       case "physical":
         return "Required Daily Pace";
@@ -78,7 +78,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     switch (format) {
       case "audio":
         return "Minutes listened per day";
-      case "ebook":
+      case "eBook":
         return "Percentage read per day";
       case "physical":
         return "Pages read per day";

@@ -99,7 +99,7 @@ const ReadingSession = () => {
         return 'Time to dive into your book! 📖'; // TODO: change this messaging
       case 'audio':
         return 'Ready to listen? Put on your headphones! 🎧';
-      case 'ebook':
+      case 'eBook':
         return 'Your digital reading session awaits! 📱';
       default:
         return 'Ready to start reading?';

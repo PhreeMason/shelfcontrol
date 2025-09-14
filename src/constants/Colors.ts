@@ -83,7 +83,9 @@ export const Colors = {
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: '#0a7ea4',
-    danger: '#E8B4B8',
+    danger: '#e85d75',
+    inputFocusBackground: '#FFFFFF',
+    inputBlurBackground: '#e8c2b926',
   },
   dark: {
     // Text colors
@@ -165,6 +167,7 @@ export const Colors = {
     tabIconDefault: '#687076',
     tabIconSelected: '#0a7ea4',
     danger: '#E8B4B8',
+    inputBlurBackground: '#FAF8F599',
   },
 };
 

@@ -105,6 +105,10 @@ export const ComponentVariants = {
       color: 'text' as keyof typeof Colors.light,
       typography: 'bodyLarge' as keyof typeof Typography,
     },
+    defaultSemiBold: {
+      color: 'text' as keyof typeof Colors.light,
+      typography: 'titleMedium' as keyof typeof Typography,
+    },
     secondary: {
       color: 'textSecondary' as keyof typeof Colors.light,
       typography: 'bodyMedium' as keyof typeof Typography,
