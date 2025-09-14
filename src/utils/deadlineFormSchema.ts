@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const deadlineFormSchema = z.object({
     bookTitle: z.string().min(1, 'Book title is required'),
     bookAuthor: z.string().optional(),
-    format: z.enum(['physical', 'ebook', 'audio'], {
+    format: z.enum(['physical', 'eBook', 'audio'], {
         errorMap: () => ({ message: 'Please select a format' })
     }),
     source: z.string().min(1, 'Please select or enter a source'),

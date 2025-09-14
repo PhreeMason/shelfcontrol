@@ -232,7 +232,7 @@ export type Database = {
           created_at?: string
           deadline_date: string
           flexibility: Database["public"]["Enums"]["deadline_flexibility"]
-          format?: Database["public"]["Enums"]["book_format_enum"]
+          format: Database["public"]["Enums"]["book_format_enum"]
           id?: string
           source: string
           total_quantity: number
@@ -359,7 +359,7 @@ export type Database = {
       }
     }
     Enums: {
-      book_format_enum: "physical" | "ebook" | "audio"
+      book_format_enum: "physical" | "eBook" | "audio"
       deadline_flexibility: "flexible" | "strict"
       deadline_status_enum:
         | "requested"
@@ -496,7 +496,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      book_format_enum: ["physical", "ebook", "audio"],
+      book_format_enum: ["physical", "eBook", "audio"],
       deadline_flexibility: ["flexible", "strict"],
       deadline_status_enum: [
         "requested",

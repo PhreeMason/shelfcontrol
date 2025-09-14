@@ -17,10 +17,10 @@ export const sortDeadlines = (a: ReadingDeadlineWithProgress, b: ReadingDeadline
         return aDueDate.getTime() - bDueDate.getTime();
     }
 
-    // If due dates are equal sort by priority level if available
+    // TODO: If due dates are equal sort by priority level if available
     // ....
 
-    // If priority is equal sort by urgency level if available
+    // TODO: If priority is equal sort by urgency level if available
     // ....
     
     // If due dates are equal, sort by updated_at
@@ -115,15 +115,15 @@ export const calculateProgressPercentage = (deadline: ReadingDeadlineWithProgres
 
 /**
  * Returns the appropriate unit for display based on the reading format.
- * @param format - The reading format (physical, ebook, or audio)
- * @returns The unit string ('minutes' for audio, 'pages' for physical/ebook)
+ * @param format - The reading format (physical, eBook, or audio)
+ * @returns The unit string ('minutes' for audio, 'pages' for physical/eBook)
  */
-export const getUnitForFormat = (format: 'physical' | 'ebook' | 'audio'): string => {
+export const getUnitForFormat = (format: 'physical' | 'eBook' | 'audio'): string => {
     switch (format) {
         case 'audio':
             return 'minutes';
         case 'physical':
-        case 'ebook':
+        case 'eBook':
         default:
             return 'pages';
     }
@@ -132,12 +132,12 @@ export const getUnitForFormat = (format: 'physical' | 'ebook' | 'audio'): string
 /**
  * Formats progress display based on the reading format.
  * For audio books, converts minutes to hours and minutes format.
- * For physical/ebook, returns the progress as-is.
- * @param format - The reading format (physical, ebook, or audio)
+ * For physical/eBook, returns the progress as-is.
+ * @param format - The reading format (physical, eBook, or audio)
  * @param progress - The progress value to format
  * @returns Formatted progress string
  */
-export const formatProgressDisplay = (format: 'physical' | 'ebook' | 'audio', progress: number): string => {
+export const formatProgressDisplay = (format: 'physical' | 'eBook' | 'audio', progress: number): string => {
     if (format === 'audio') {
         const hours = Math.floor(progress / 60);
         const minutes = progress % 60;
@@ -175,7 +175,7 @@ export const getTotalReadingPagesForDay = (
             // For audio, unitsPerDay is already in minutes
             totalMinutesPerDay += calculations.unitsPerDay;
         } else {
-            // For physical/ebook, convert pages to estimated minutes
+            // For physical/eBook, convert pages to estimated minutes
             // Assuming average reading speed of 40 pages per hour
             // So 1 page = 1.5 minutes (60 minutes / 40 pages = 1.5 minutes per page)
             const estimatedMinutesPerDay = calculations.unitsPerDay * 1.5;
