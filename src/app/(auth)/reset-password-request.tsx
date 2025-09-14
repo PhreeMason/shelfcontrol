@@ -1,24 +1,21 @@
-import { AppleSSO } from '@/components/auth/AppleSSO';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
+import * as Linking from 'expo-linking';
 import { Link, useRouter } from 'expo-router';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { z } from 'zod';
 
-const signInSchema = z.object({
+const resetPasswordRequestSchema = z.object({
   email: z.string({ message: 'Email is required' }).email('Invalid email'),
-  password: z
-    .string({ message: 'Password is required' })
-    .min(8, 'Password should be at least 8 characters long'),
 });
 
-type SignInFields = z.infer<typeof signInSchema>;
+type ResetPasswordRequestFields = z.infer<typeof resetPasswordRequestSchema>;
 
-export default function SignInScreen() {
-  const { signIn, isLoading } = useAuth();
+export default function ResetPasswordRequestScreen() {
+  const { requestResetPasswordEmail, isLoading } = useAuth();
   const router = useRouter();
 
   const {
@@ -26,47 +23,47 @@ export default function SignInScreen() {
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<SignInFields>({
-    resolver: zodResolver(signInSchema),
+  } = useForm<ResetPasswordRequestFields>({
+    resolver: zodResolver(resetPasswordRequestSchema),
   });
 
-  const onSignInPress = async (data: SignInFields) => {
+  const onResetPasswordRequest = async (data: ResetPasswordRequestFields) => {
     if (isLoading || isSubmitting) return;
 
     try {
-      const { error } = await signIn(data.email, data.password);
+      // Create the deep link URL for the password update screen
+      const resetPasswordURL = Linking.createURL('/reset-password-update');
+      const { error } = await requestResetPasswordEmail(data.email, resetPasswordURL);
 
       if (error) {
-        // Handle different Supabase auth errors
-        if (error.message.includes('Invalid login credentials')) {
-          setError('root', { message: 'Invalid email or password' });
-        } else if (error.message.includes('Email not confirmed')) {
-          setError('root', { message: 'Please confirm your email address' });
-        } else {
-          setError('root', { message: error.message || 'Sign in failed' });
-        }
+        setError('root', { message: error.message || 'Failed to send reset email' });
       } else {
-        // Success - AuthProvider will handle navigation
-        router.replace('/');
+        // Show success message and navigate back to sign-in
+        alert('Password reset email sent! Please check your email.');
+        router.replace('/sign-in');
       }
     } catch (err) {
-      console.error('Sign in error:', err);
+      console.error('Reset password request error:', err);
       setError('root', { message: 'An unexpected error occurred' });
     }
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
+    <KeyboardAvoidingView
+      style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ThemedView style={styles.innerContainer}>
-        <Link href="/sign-up" style={styles.header}>
-          <ThemedText>Sign up</ThemedText>
+        <Link href="/sign-in" style={styles.header}>
+          <ThemedText>Back to Sign In</ThemedText>
         </Link>
 
         <ThemedText style={[styles.title, { fontSize: 32, fontWeight: 'bold' }]}>
-          Sign in
+          Reset Password
+        </ThemedText>
+
+        <ThemedText style={styles.subtitle}>
+          Enter your email address and we'll send you a link to reset your password.
         </ThemedText>
 
         <ThemedView style={styles.form}>
@@ -93,29 +90,6 @@ export default function SignInScreen() {
             </ThemedText>
           )}
 
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
-                placeholderTextColor="#999"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                secureTextEntry
-                autoCapitalize="none"
-                autoComplete="current-password"
-              />
-            )}
-          />
-          {errors.password && (
-            <ThemedText style={styles.errorText}>
-              {errors.password.message}
-            </ThemedText>
-          )}
-
           {errors.root && (
             <ThemedText style={styles.errorText}>
               {errors.root.message}
@@ -124,33 +98,20 @@ export default function SignInScreen() {
 
           <TouchableOpacity
             style={[styles.button, (isLoading || isSubmitting) && styles.buttonDisabled]}
-            onPress={handleSubmit(onSignInPress)}
+            onPress={handleSubmit(onResetPasswordRequest)}
             disabled={isLoading || isSubmitting}
           >
             <ThemedText style={styles.buttonText}>
-              {isLoading || isSubmitting ? 'Signing in...' : 'Continue'}
+              {isLoading || isSubmitting ? 'Sending...' : 'Send Reset Email'}
             </ThemedText>
           </TouchableOpacity>
-
-          {/* Add Forgot Password Link */}
-          <Link href="/reset-password-request" style={styles.forgotPasswordLink}>
-            <ThemedText style={styles.forgotPasswordText}>
-              Forgot Password?
-            </ThemedText>
-          </Link>
         </ThemedView>
 
-        <ThemedView style={styles.divider} />
-
-        <ThemedView style={styles.socialButtons}>
-          <AppleSSO
-            onSuccess={() => router.replace('/')}
-            onError={(error) => setError('root', { message: error.message || 'Apple sign-in failed' })}
-          />
-          {/* <GoogleSSO
-            onSuccess={() => router.replace('/')}
-            onError={(error) => setError('root', { message: error.message || 'Google sign-in failed' })}
-          /> */}
+        <ThemedView style={styles.footer}>
+          <ThemedText>Remember your password? </ThemedText>
+          <Link href="/sign-in">
+            <ThemedText style={styles.linkText}>Sign In</ThemedText>
+          </Link>
         </ThemedView>
       </ThemedView>
     </KeyboardAvoidingView>
@@ -168,8 +129,15 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 16,
     lineHeight: 38,
+  },
+  subtitle: {
+    textAlign: 'center',
+    marginBottom: 40,
+    fontSize: 16,
+    opacity: 0.7,
+    lineHeight: 22,
   },
   form: {
     gap: 16,
@@ -201,7 +169,7 @@ const styles = StyleSheet.create({
   header: {
     position: 'absolute',
     top: 60,
-    right: 20,
+    left: 20,
     zIndex: 1,
   },
   errorText: {
@@ -210,28 +178,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 4,
   },
-  divider: {
+  footer: {
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 24,
   },
-  dividerText: {
-    textAlign: 'center',
-    flex: 1,
-    fontSize: 14,
-    opacity: 0.7,
-  },
-  socialButtons: {
-    gap: 12,
-    marginBottom: 32,
-  },
-  forgotPasswordLink: {
-    alignSelf: 'center',
-    marginTop: 16,
-  },
-  forgotPasswordText: {
+  linkText: {
     color: '#007AFF',
-    fontSize: 16,
     fontWeight: '600',
   },
 });

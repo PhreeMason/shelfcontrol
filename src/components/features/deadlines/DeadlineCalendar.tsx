@@ -21,13 +21,14 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
   const router = useRouter();
   const { colors } = useTheme();
   const { good, approaching, urgent, overdue, impossible } = colors
-  const urgencyColorMap = {
+
+  const urgencyColorMap = useMemo(() => ({
     good,
     approaching,
     urgent,
     overdue,
     impossible,
-  };
+  }), [good, approaching, urgent, overdue, impossible]);
   // Process deadlines to create marked dates
   const markedDates = useMemo(() => {
     const marked: any = {};
@@ -69,7 +70,7 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
     }
 
     return marked;
-  }, [activeDeadlines, overdueDeadlines, getDeadlineCalculations, selectedDate]);
+  }, [activeDeadlines, overdueDeadlines, getDeadlineCalculations, selectedDate, urgencyColorMap]);
 
   // Get deadlines for selected date
   const selectedDateDeadlines = selectedDate && markedDates[selectedDate]

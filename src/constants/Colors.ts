@@ -176,6 +176,7 @@ export const Colors = {
     tabIconDefault: '#687076',
     tabIconSelected: '#0a7ea4',
     danger: '#E8B4B8',
+    inputFocusBackground: '#FFFFFF',
     inputBlurBackground: '#FAF8F599',
 
      // Urgency levels

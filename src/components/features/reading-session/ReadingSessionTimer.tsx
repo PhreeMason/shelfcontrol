@@ -64,6 +64,7 @@ export function ReadingSessionTimer({ onSessionComplete, onCancel }: ReadingSess
         clearInterval(intervalRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRunning, isPaused]); // Removed elapsedTime dependency to prevent reset loop
 
   const formatTime = (seconds: number) => {

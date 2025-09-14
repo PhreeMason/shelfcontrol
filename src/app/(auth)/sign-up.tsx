@@ -148,9 +148,7 @@ export default function SignUpScreen() {
                     </TouchableOpacity>
                 </ThemedView>
 
-                <ThemedView style={styles.divider}>
-                    <ThemedText style={styles.dividerText}>or</ThemedText>
-                </ThemedView>
+                <ThemedView style={styles.divider} />
 
                 <ThemedView style={styles.socialButtons}>
                     <AppleSSO 

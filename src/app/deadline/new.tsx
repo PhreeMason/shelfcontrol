@@ -20,7 +20,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
@@ -98,7 +98,7 @@ const NewDeadLine = () => {
 
         const api_id = str((params as any).api_id);
         if (api_id) setValue('api_id', api_id);
-    }, []);
+    }, [params, setValue]);
 
     const watchedValues = watch();
 
@@ -273,14 +273,16 @@ const NewDeadLine = () => {
 
     return (
         <SafeAreaView edges={['right', 'bottom', 'left']} style={{ flex: 1, backgroundColor: colors.background }}>
-            <ThemedKeyboardAvoidingView style={styles.container}>
+            <ThemedKeyboardAvoidingView style={styles.container}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            >
                 <AppHeader title={formSteps[currentStep - 1]} onBack={goBack}>
                     <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
                 </AppHeader>
 
                 <ThemedKeyboardAwareScrollView
                     style={styles.content}
-                    contentContainerStyle={{ paddingBottom: 48 }}
+                    // contentContainerStyle={{ paddingBottom: 48 }}
                     keyboardShouldPersistTaps="handled"
                 >
                     {currentStep === 1 ? (

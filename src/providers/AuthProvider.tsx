@@ -24,6 +24,9 @@ type AuthData = {
     uploadAvatar: (uri: string) => Promise<{ data: string | null; error: Error | null }>;
     refreshProfile: () => Promise<void>;
     updateProfileFromApple: (appleData: { email?: string | null; fullName?: any }) => Promise<{ data: Profile | null; error: Error | null }>;
+    requestResetPasswordEmail: (email: string, redirectTo: string) => Promise<{ error: AuthError | null }>;
+    updatePassword: (password: string) => Promise<{ error: AuthError | null }>;
+    setSessionFromUrl: (accessToken: string, refreshToken: string) => Promise<{ error: AuthError | null }>;
 };
 
 const AuthContext = createContext<AuthData>({
@@ -37,6 +40,9 @@ const AuthContext = createContext<AuthData>({
     uploadAvatar: async () => ({ data: null, error: null }),
     refreshProfile: async () => { },
     updateProfileFromApple: async () => ({ data: null, error: null }),
+    requestResetPasswordEmail: async () => ({ error: null }),
+    updatePassword: async () => ({ error: null }),
+    setSessionFromUrl: async () => ({ error: null }),
 });
 
 // Tells Supabase Auth to continuously refresh the session automatically if
@@ -273,6 +279,56 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         }
     };
 
+    const requestResetPasswordEmail = async (email: string, redirectTo: string) => {
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo,
+            });
+
+            if (error) throw error;
+            return { error: null };
+        } catch (error) {
+            return { error: error as AuthError };
+        }
+    };
+
+    const setSessionFromUrl = async (accessToken: string, refreshToken: string) => {
+        try {
+            const { data, error } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken,
+            });
+
+            if (error) throw error;
+            if (data.session) {
+                setSession(data.session);
+                // Fetch profile for the new session
+                const response = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', data.session.user.id)
+                    .single();
+                setProfile(response.data || null);
+            }
+            return { error: null };
+        } catch (error) {
+            return { error: error as AuthError };
+        }
+    };
+
+    const updatePassword = async (password: string) => {
+        try {
+            const { error } = await supabase.auth.updateUser({
+                password,
+            });
+
+            if (error) throw error;
+            return { error: null };
+        } catch (error) {
+            return { error: error as AuthError };
+        }
+    };
+
     const providerValue = {
         session,
         isLoading,
@@ -283,7 +339,10 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         updateProfile,
         uploadAvatar,
         refreshProfile,
-        updateProfileFromApple
+        updateProfileFromApple,
+        requestResetPasswordEmail,
+        updatePassword,
+        setSessionFromUrl,
     };
     return (
         <AuthContext.Provider value={providerValue}>
