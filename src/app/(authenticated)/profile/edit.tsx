@@ -130,7 +130,7 @@ export default function EditProfile() {
                 title="Edit Profile"
                 onBack={handleBack}
                 rightElement={saveButton}
-                headerStyle={{ paddingTop: 10}}
+                headerStyle={Platform.OS === 'ios' ? {paddingTop: 10} : {} }
             />
             <KeyboardAvoidingView 
                 style={styles.keyboardContainer} 

@@ -8,8 +8,16 @@ import { useTheme } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
-import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+// TODO: "Books on track: X"
+// TODO: "Completed this month: X"
+
+// TODO: on the profile below the email and join date as its own stats card above the  calendar
+
+// TODO: we can make "urgent/overdue" just "urgent" in the calendar legend that way we can make the full thing bigger or bolder to make it easier to read
+
 
 export default function Profile() {
     const { profile, signOut, refreshProfile } = useAuth();
@@ -46,9 +54,9 @@ export default function Profile() {
     };
 
     const editButton = (
-        <TouchableOpacity onPress={handleEditProfile} style={styles.editButton}>
-            <IconSymbol name="pencil" size={20} color="white" />
-        </TouchableOpacity>
+        <Pressable onPress={handleEditProfile}>
+            <IconSymbol name="pencil" size={24} color="white" />
+        </Pressable>
     );
 
     return (
@@ -106,7 +114,6 @@ export default function Profile() {
                 </ThemedView>
 
                 <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-                    <IconSymbol name="arrow.right.square" size={20} color="#ff4444" />
                     <ThemedText style={styles.signOutButtonText}>Sign Out</ThemedText>
                 </TouchableOpacity>
                 </ThemedView>
@@ -125,11 +132,6 @@ const styles = StyleSheet.create({
     },
     innerContainer: {
         padding: 20,
-    },
-    editButton: {
-        padding: 8,
-        borderRadius: 8,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
     },
     profileCard: {
         backgroundColor: '#f8f9fa',
