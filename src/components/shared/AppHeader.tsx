@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useTheme } from '@/hooks/useTheme';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -21,10 +22,10 @@ const AppHeader: React.FC<AppHeaderProps> = ({
     headerStyle = {},
 }) => {
     const insets = useSafeAreaInsets();
-
+    const { colors } = useTheme();
     return (
         <LinearGradient
-            colors={['#E8C2B9', '#B8A9D9']}
+            colors={[colors.accent, colors.primary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={[styles.header, { paddingTop: Math.max(insets.top, 10) + 8, ...headerStyle }]}
@@ -37,7 +38,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                 <View style={styles.backButton} />
             )}
 
-            <ThemedText variant="headline" style={[styles.headerTitle, {color: 'white'}]}>
+            <ThemedText variant="headline" style={[styles.headerTitle, { color: colors.textOnPrimary }]}>
                 {title}
             </ThemedText>
 

@@ -20,7 +20,6 @@ const DeadlineView = () => {
 
     // First try to find deadline in context (for active deadlines)
     let deadline = deadlines.find(d => d.id === id);
-
     // If not found, use fallback hook (for archived deadlines)
     const { data: fallbackDeadline, isLoading: isFallbackLoading, error: fallbackError } = useGetDeadlineById(deadline ? undefined : id);
 
@@ -61,9 +60,7 @@ const DeadlineView = () => {
     }
 
     const isArchived = deadline.status && deadline.status.length > 0
-        ? ['complete', 'set_aside'].includes(deadline.status[deadline.status.length - 1].status)
-        : false;
-
+        && deadline.status[deadline.status.length - 1].status !== 'reading';
     const handleEdit = () => {
         router.push(`/deadline/${id}/edit`);
     };
@@ -85,7 +82,7 @@ const DeadlineView = () => {
             <ThemedScrollView style={[styles.content, { backgroundColor: 'white' }]}>
                 <DeadlineHeroSection deadline={deadline} />
 
-                {isArchived ? <ReadingProgress deadline={deadline} /> : null}
+                {isArchived ? null : <ReadingProgress deadline={deadline} />}
 
                 <DailyReadingChart deadline={deadline} />
 

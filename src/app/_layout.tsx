@@ -11,6 +11,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
+import { toastConfig } from '@/components/ui/ToastConfig';
 
 const queryClient = new QueryClient()
 
@@ -50,7 +51,7 @@ export default function RootLayout() {
             </Stack>
           </DeadlineProvider>
           <StatusBar style="auto" />
-          <Toast />
+          <Toast config={toastConfig} />
         </ThemeProvider>
       </QueryClientProvider>
     </AuthProvider>

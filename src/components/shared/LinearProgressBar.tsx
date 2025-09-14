@@ -54,7 +54,7 @@ const LinearProgressBar: React.FC<LinearProgressBarProps> = ({
             ]}
           >
             <LinearGradient
-              colors={['transparent', 'rgba(255, 255, 255, 0.6)', gradientColors[gradientColors.length - 1]]}
+              colors={[gradientColors[0] + '90', gradientColors[1] + '90', gradientColors[1] + '90']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.shimmerGradient}

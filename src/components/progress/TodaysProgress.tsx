@@ -1,5 +1,6 @@
 import LinearProgressBar from '@/components/shared/LinearProgressBar'
 import { Typography } from '@/constants/Colors'
+import { useTheme } from '@/hooks/useThemeColor'
 import { formatProgressDisplay } from '@/utils/deadlineUtils'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
@@ -52,6 +53,7 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
   const isListening = type === 'listening';
   const icon = isListening ? '🎧' : '📖';
   const label = isListening ? "Listening" : "Reading";
+  const { colors } = useTheme();
 
   const getDisplayValue = () => {
     if (isListening) {
@@ -115,8 +117,9 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
     };
   }
 
-  const { gradientColors, backgroundColor } = getProgressColors();
+  const { backgroundColor } = getProgressColors();
   const progressBarPercentageValue = Math.min(100, progressPercentage);
+  const gradientColors = progressBarPercentageValue === 100 ? ['#815ac0', '#4b2e83'] : ['#f8acff', colors.primary];
   return (
     <ThemedView style={styles.statCard}>
       <View style={styles.statHeader}>

@@ -46,6 +46,7 @@ export default function TabLayout() {
           tabBarIcon: () => <View style={[styles.newDeadlineButton, { backgroundColor: colors.primary }]}>
             <IconSymbol size={40} name="plus" color={colors.textOnPrimary} />
           </View>,
+          href: Platform.OS === 'android' ? null : '/new-deadline',
         }}
       />
       <Tabs.Screen
