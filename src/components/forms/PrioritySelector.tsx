@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface PrioritySelectorProps {
     selectedPriority: string;
@@ -15,8 +15,8 @@ export const PrioritySelector = ({ selectedPriority, onSelectPriority }: Priorit
     const textMutedColor = colors.textMuted;
     
     const priorities = [
-        { key: 'flexible', label: 'Flexible', icon: '🕐' },
-        { key: 'strict', label: 'Must Meet', icon: '⚡' }
+        { key: 'flexible', label: 'Flexible'},
+        { key: 'strict', label: 'Must Meet'}
     ];
 
     return (
@@ -36,9 +36,8 @@ export const PrioritySelector = ({ selectedPriority, onSelectPriority }: Priorit
                         ]}
                         onPress={() => onSelectPriority(priority.key as 'flexible' | 'strict')}
                     >
-                        <Text style={[styles.priorityIcon, !isSelected && { opacity: 0.5}]}>{priority.icon}</Text>
                         <ThemedText 
-                            color={isSelected ? 'primary' : 'textMuted'}
+                            color={isSelected ? 'text' : 'textMuted'}
                             style={[{fontWeight: '600'}, !isSelected && { opacity: 0.7 }]}
                         >
                             {priority.label}
@@ -61,6 +60,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 12,
         padding: 16,
+        paddingVertical: 20,
         alignItems: 'center',
     },
     priorityIcon: {

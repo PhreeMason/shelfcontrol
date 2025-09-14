@@ -8,6 +8,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     Image,
+    Platform,
     ScrollView,
     StyleSheet,
     TextInput,
@@ -56,7 +57,7 @@ export const DeadlineFormStep1 = ({
     // Handle book selection and fetch full data
     const handleBookSelection = useCallback(async (book: BookSearchResult) => {
         if (!book.api_id) return;
-        
+
         setSelectedApiId(book.api_id);
         setIsLoadingBookDetails(true);
     }, []);
@@ -73,18 +74,18 @@ export const DeadlineFormStep1 = ({
                 total_pages: fullBookData.total_pages || undefined,
                 total_duration: fullBookData.total_duration || null,
             };
-            
+
             // Set form values
             setValue('bookTitle', selectedBookData.title);
             setValue('bookAuthor', selectedBookData.author || '');
             setValue('book_id', selectedBookData.id);
             setValue('api_id', selectedBookData.api_id);
-            
+
             // Auto-populate total pages if available
             if (selectedBookData.total_pages) {
                 setValue('totalQuantity', selectedBookData.total_pages);
             }
-            
+
             setIsLoadingBookDetails(false);
             onBookSelected(selectedBookData);
         }
@@ -128,8 +129,8 @@ export const DeadlineFormStep1 = ({
                         >
                             <View style={styles.resultContent}>
                                 {item.cover_image_url ? (
-                                    <Image 
-                                        source={{ uri: item.cover_image_url }} 
+                                    <Image
+                                        source={{ uri: item.cover_image_url }}
                                         style={styles.bookCover}
                                     />
                                 ) : (
@@ -177,7 +178,7 @@ export const DeadlineFormStep1 = ({
                         Search for a book to get started
                     </ThemedText>
                     <ThemedText color="textMuted" style={styles.promptSubtext}>
-                        We'll auto-fill the details for you
+                        We'll grab the page count and details for you
                     </ThemedText>
                 </View>
             );
@@ -198,13 +199,22 @@ export const DeadlineFormStep1 = ({
     return (
         <View style={styles.container}>
             <ThemedText color="textMuted" style={styles.description}>
-                Search our library to automatically fill in book details
+                Let's add a book to track. We'll calculate your daily reading pace to keep you on schedule.
             </ThemedText>
 
-            <View style={[styles.searchContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={[styles.searchContainer,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+            Platform.OS === 'android' ? { paddingVertical: 9 } : {}
+            ]}>
                 <IconSymbol name="magnifyingglass" size={20} color={colors.textMuted} />
                 <TextInput
-                    style={[styles.searchInput, { color: colors.text }]}
+                    style={[
+                        styles.searchInput,
+                        { color: colors.text },
+                        Platform.OS === 'ios' ? { position: 'relative', bottom: 5 } : {
+                            lineHeight: 16
+                        }
+                    ]}
                     value={query}
                     onChangeText={setQuery}
                     placeholder="Search by title or author..."
@@ -228,7 +238,7 @@ export const DeadlineFormStep1 = ({
                 <View style={[styles.divider, { backgroundColor: colors.border }]}>
                     <ThemedText color="textMuted" style={styles.dividerText}>OR</ThemedText>
                 </View>
-                
+
                 <TouchableOpacity
                     style={[styles.manualEntryButton, { borderColor: colors.primary }]}
                     onPress={onManualEntry}
@@ -258,12 +268,14 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 12,
         paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingVertical: 13,
         gap: 12,
+        position: 'relative',
     },
     searchInput: {
         flex: 1,
         fontSize: 16,
+        lineHeight: 24,
     },
     resultsContainer: {
         flex: 1,

@@ -39,6 +39,7 @@ const CustomDropdown = <T extends FieldValues>({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customValue, setCustomValue] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   const textMutedColor = colors.textMuted;
   const cardColor = colors.surface;
@@ -126,7 +127,10 @@ const CustomDropdown = <T extends FieldValues>({
                 borderColor: error ? dangerColor : borderColor
               }
             ]}>
-              <View style={styles.inputContainer}>
+              <View style={[
+                styles.inputContainer,
+                { backgroundColor: isFocused ? cardColor : colors.inputBlurBackground }
+              ]}>
                 <TextInput
                   testID={testID}
                   style={[styles.textInput, { color: textColor }]}
@@ -135,6 +139,7 @@ const CustomDropdown = <T extends FieldValues>({
                   value={showSuggestions ? query : displayText}
                   onChangeText={(text) => handleTextChange(text, onChange)}
                   onFocus={() => {
+                    setIsFocused(true);
                     setQuery(displayText);
                     const filtered = filterFunction(options, '');
                     setFilteredData(filtered);
@@ -142,9 +147,12 @@ const CustomDropdown = <T extends FieldValues>({
                   }}
                   onBlur={() => {
                     setTimeout(() => setShowSuggestions(false), 150);
+                    setIsFocused(false);
                   }}
                 />
-                <Pressable onPress={() => setShowSuggestions(!showSuggestions)}>
+                <Pressable
+                  onPress={() => setShowSuggestions(!showSuggestions)}
+                >
                   <IconSymbol
                     name="chevron.down"
                     size={16}
@@ -271,8 +279,7 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    padding: 16,
   },
   chevronIcon: {
     marginLeft: 8,

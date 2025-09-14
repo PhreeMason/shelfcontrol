@@ -1,41 +1,37 @@
-import { ThemedButton, ThemedKeyboardAvoidingView, ThemedScrollView, ThemedText, ThemedView } from '@/components/themed';
-import { useDeadlines } from '@/providers/DeadlineProvider';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { StyleSheet } from 'react-native';
-import Toast from 'react-native-toast-message';
-
 import {
     DeadlineFormStep2,
     DeadlineFormStep3,
-    FormHeader,
-    FormProgressBar,
     StepIndicators
 } from '@/components/forms';
 import AppHeader from '@/components/shared/AppHeader';
+import { ThemedButton, ThemedKeyboardAvoidingView, ThemedScrollView, ThemedText, ThemedView } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
-
+import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
     calculateCurrentProgressFromForm,
     calculateRemainingFromForm,
     calculateTotalQuantityFromForm,
     getPaceEstimate
 } from '@/utils/deadlineCalculations';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { StyleSheet } from 'react-native';
 
 import { convertMinutesToHoursAndMinutes } from '@/utils/audiobookTimeUtils';
 
 import { DeadlineFormData, deadlineFormSchema } from '@/utils/deadlineFormSchema';
 import { getInitialStepFromSearchParams } from '@/utils/deadlineUtils';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 const EditDeadline = () => {
     const { id, page } = useLocalSearchParams<{ id: string; page?: string }>();
-    const initialStep = getInitialStepFromSearchParams({page}, { paramName: 'page', defaultStep: 1, minStep: 1, maxStep: 3 });
+    const initialStep = getInitialStepFromSearchParams({ page }, { paramName: 'page', defaultStep: 1, minStep: 1, maxStep: 3 });
 
     const [currentStep, setCurrentStep] = useState(initialStep);
-    const [selectedFormat, setSelectedFormat] = useState<'physical' | 'ebook' | 'audio'>('physical');
+    const [selectedFormat, setSelectedFormat] = useState<'physical' | 'eBook' | 'audio'>('physical');
     const [selectedPriority, setSelectedPriority] = useState<'flexible' | 'strict'>('flexible');
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [paceEstimate, setPaceEstimate] = useState<string>('');
@@ -203,6 +199,7 @@ const EditDeadline = () => {
             () => {
                 setIsSubmitting(false);
                 Toast.show({
+                    swipeable: true,
                     type: 'success',
                     text1: 'Deadline updated successfully!',
                     autoHide: true,
@@ -218,6 +215,7 @@ const EditDeadline = () => {
             (error) => {
                 setIsSubmitting(false);
                 Toast.show({
+                    swipeable: true,
                     type: 'error',
                     text1: 'Failed to update deadline',
                     text2: error.message || 'Please try again',
@@ -272,7 +270,7 @@ const EditDeadline = () => {
         }
     };
 
-    const handleFormatChange = (_format: 'physical' | 'ebook' | 'audio') => {
+    const handleFormatChange = (_format: 'physical' | 'eBook' | 'audio') => {
         // Format should not be changeable in edit mode
         // This function is kept for compatibility but does nothing
         return;
@@ -286,18 +284,14 @@ const EditDeadline = () => {
     return (
         <SafeAreaView edges={['right', 'bottom', 'left']} style={{ flex: 1, backgroundColor: colors.background }}>
             <ThemedKeyboardAvoidingView style={styles.container}>
-                <AppHeader title="Edit Deadline" onBack={goBack} />
-
-                <FormProgressBar currentStep={currentStep} totalSteps={totalSteps} />
-                <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
+                <AppHeader title={formSteps[currentStep - 1]} onBack={goBack}>
+                    <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
+                </AppHeader>
                 <ThemedScrollView
                     style={styles.content}
                     contentContainerStyle={{ paddingBottom: 48 }}
                     keyboardShouldPersistTaps="handled"
                 >
-                    <FormHeader
-                        title={formSteps[currentStep - 1]}
-                    />
 
                     {currentStep === 1 ? (
                         <DeadlineFormStep2

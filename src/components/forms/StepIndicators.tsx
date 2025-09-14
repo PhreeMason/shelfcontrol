@@ -9,7 +9,7 @@ interface StepIndicatorsProps {
 
 export const StepIndicators = ({ currentStep, totalSteps }: StepIndicatorsProps) => {
     const { colors } = useTheme();
-    const backgroundColor = colors.primary;
+    const backgroundColor = colors.textOnPrimary;
 
     return (
         <View style={styles.stepsContainer} testID="steps-container">
@@ -34,8 +34,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: 8,
         padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#404040',
     },
     step: {
         width: 8,

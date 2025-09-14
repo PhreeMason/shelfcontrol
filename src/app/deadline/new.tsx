@@ -1,22 +1,13 @@
-import { ThemedButton, ThemedKeyboardAvoidingView, ThemedKeyboardAwareScrollView, ThemedView } from '@/components/themed';
-import { useDeadlines } from '@/providers/DeadlineProvider';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { StyleSheet } from 'react-native';
-import Toast from 'react-native-toast-message';
-
 import {
     DeadlineFormStep1,
     DeadlineFormStep2,
     DeadlineFormStep3,
-    FormHeader,
-    FormProgressBar,
     StepIndicators
 } from '@/components/forms';
 import AppHeader from '@/components/shared/AppHeader';
+import { ThemedButton, ThemedKeyboardAvoidingView, ThemedKeyboardAwareScrollView, ThemedView } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
+import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
     calculateCurrentProgressFromForm,
     calculateRemainingFromForm,
@@ -25,14 +16,20 @@ import {
 } from '@/utils/deadlineCalculations';
 import { DeadlineFormData, deadlineFormSchema } from '@/utils/deadlineFormSchema';
 import { getInitialStepFromSearchParams } from '@/utils/deadlineUtils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 const NewDeadLine = () => {
     const params = useLocalSearchParams();
     const initialStep = getInitialStepFromSearchParams(params, { paramName: 'page', defaultStep: 1, minStep: 1, maxStep: 3 });
 
     const [currentStep, setCurrentStep] = useState(initialStep);
-    const [selectedFormat, setSelectedFormat] = useState<'physical' | 'ebook' | 'audio'>('ebook');
+    const [selectedFormat, setSelectedFormat] = useState<'physical' | 'eBook' | 'audio'>('eBook');
     // Source is now handled directly by form control
     const [selectedPriority, setSelectedPriority] = useState<'flexible' | 'strict'>('flexible');
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -55,7 +52,7 @@ const NewDeadLine = () => {
         defaultValues: {
             bookTitle: '',
             bookAuthor: '',
-            format: 'ebook',
+            format: 'eBook',
             source: 'ARC',
             deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
             flexibility: 'flexible'
@@ -69,7 +66,7 @@ const NewDeadLine = () => {
         const str = (v: any) => (Array.isArray(v) ? v[0] : v);
 
         const format = str(params.format);
-        if (format && ['physical', 'ebook', 'audio'].includes(format)) {
+        if (format && ['physical', 'eBook', 'audio'].includes(format)) {
             setSelectedFormat(format as any);
             setValue('format', format as any);
         }
@@ -182,6 +179,7 @@ const NewDeadLine = () => {
             () => {
                 setIsSubmitting(false);
                 Toast.show({
+                    swipeable: true,
                     type: 'success',
                     text1: 'Deadline added successfully!',
                     autoHide: true,
@@ -196,6 +194,7 @@ const NewDeadLine = () => {
             (error) => {
                 setIsSubmitting(false);
                 Toast.show({
+                    swipeable: true,
                     type: 'error',
                     text1: 'Failed to add deadline',
                     text2: error.message || 'Please try again',
@@ -260,7 +259,7 @@ const NewDeadLine = () => {
         }
     };
 
-    const handleFormatChange = (format: 'physical' | 'ebook' | 'audio') => {
+    const handleFormatChange = (format: 'physical' | 'eBook' | 'audio') => {
         setSelectedFormat(format);
         setValue('format', format);
     };
@@ -275,19 +274,15 @@ const NewDeadLine = () => {
     return (
         <SafeAreaView edges={['right', 'bottom', 'left']} style={{ flex: 1, backgroundColor: colors.background }}>
             <ThemedKeyboardAvoidingView style={styles.container}>
-                <AppHeader title="New Deadline" onBack={goBack} />
+                <AppHeader title={formSteps[currentStep - 1]} onBack={goBack}>
+                    <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
+                </AppHeader>
 
-                <FormProgressBar currentStep={currentStep} totalSteps={totalSteps} />
-                <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
                 <ThemedKeyboardAwareScrollView
                     style={styles.content}
                     contentContainerStyle={{ paddingBottom: 48 }}
                     keyboardShouldPersistTaps="handled"
                 >
-                    <FormHeader
-                        title={formSteps[currentStep - 1]}
-                    />
-
                     {currentStep === 1 ? (
                         <DeadlineFormStep1
                             onBookSelected={() => {

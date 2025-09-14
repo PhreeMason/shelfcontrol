@@ -3,6 +3,7 @@ import { ThemedText } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import { Control, Controller, useWatch } from 'react-hook-form';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -10,7 +11,7 @@ import { PrioritySelector } from './PrioritySelector';
 
 interface DeadlineFormStep3Props {
     control: Control<DeadlineFormData>;
-    selectedFormat: 'physical' | 'ebook' | 'audio';
+    selectedFormat: 'physical' | 'eBook' | 'audio';
     selectedPriority: 'flexible' | 'strict';
     onPriorityChange: (priority: 'flexible' | 'strict') => void;
     showDatePicker: boolean;
@@ -36,26 +37,26 @@ export const DeadlineFormStep3 = ({
     setValue
 }: DeadlineFormStep3Props) => {
     const { colors } = useTheme();
-    
+
     const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-    
+
     // Watch for changes in current progress
     const currentProgress = useWatch({ control, name: 'currentProgress' });
     const currentMinutes = useWatch({ control, name: 'currentMinutes' });
     const startDate = useWatch({ control, name: 'startDate' });
-    
+
     // Determine if we should show the start date field
-    const shouldShowStartDate = (currentProgress && currentProgress > 0) || 
-                                (selectedFormat === 'audio' && currentMinutes && currentMinutes > 0);
-    
+    const shouldShowStartDate = (currentProgress && currentProgress > 0) ||
+        (selectedFormat === 'audio' && currentMinutes && currentMinutes > 0);
+
     // Set default start date when progress is entered
     useEffect(() => {
         if (shouldShowStartDate && !startDate) {
             // Default to 7 days ago if significant progress, otherwise today
-            const significantProgress = selectedFormat === 'audio' 
+            const significantProgress = selectedFormat === 'audio'
                 ? (currentProgress || 0) > 2 || (currentMinutes || 0) > 30
                 : (currentProgress || 0) > 50;
-            
+
             const defaultDate = new Date();
             if (significantProgress) {
                 defaultDate.setDate(defaultDate.getDate() - 7);
@@ -66,14 +67,14 @@ export const DeadlineFormStep3 = ({
             setValue('startDate', undefined);
         }
     }, [shouldShowStartDate, startDate, currentProgress, currentMinutes, selectedFormat, setValue]);
-    
+
     const onStartDateChange = (_event: any, selectedDate?: Date) => {
         setShowStartDatePicker(false);
         if (selectedDate) {
             setValue('startDate', selectedDate);
         }
     };
-    
+
     const getProgressLabel = () => {
         switch (selectedFormat) {
             case 'audio':
@@ -84,20 +85,20 @@ export const DeadlineFormStep3 = ({
     };
 
     return (
-        <View style={{flex: 1, gap: 24}}>
-            <ThemedText color="textMuted" style={{fontSize: 16}}>
-                When do you need to finish, and what are the details?
+        <View style={{ flex: 1, gap: 24 }}>
+            <ThemedText color="textMuted" style={{ fontSize: 16 }}>
+                When do you need to finish? We'll calculate if it's feasible at your reading pace.
             </ThemedText>
 
             <View>
-                <ThemedText variant="default" style={{marginBottom: 8}}>Deadline Date *</ThemedText>
+                <ThemedText variant="default" style={{ marginBottom: 8 }}>Deadline Date *</ThemedText>
                 <Controller
                     control={control}
                     name="deadline"
                     render={({ field: { value } }) => (
                         <>
                             <TouchableOpacity
-                                style={[styles.dateInput, {backgroundColor: colors.surface, borderColor: colors.border}]}
+                                style={[styles.dateInput, { backgroundColor: colors.inputBlurBackground, borderColor: colors.border }]}
                                 onPress={onDatePickerToggle}
                                 testID="date-picker-button"
                             >
@@ -122,15 +123,15 @@ export const DeadlineFormStep3 = ({
                         </>
                     )}
                 />
-                <ThemedText color="textMuted" style={{marginTop: 6, lineHeight: 18}}>
-                    When do you need to finish reading this book? (Past dates will be marked as overdue)
+                <ThemedText color="textMuted" style={{ marginTop: 6, lineHeight: 18 }}>
+                    Past dates will be marked as overdue
                 </ThemedText>
             </View>
 
-            <View style={[styles.sectionDivider, {backgroundColor: colors.textMuted}]} />
+            <View style={[styles.sectionDivider, { backgroundColor: colors.textMuted }]} />
 
             <View>
-                <ThemedText variant="default" style={{marginBottom: 8}}>{getProgressLabel()}</ThemedText>
+                <ThemedText variant="default" style={{ marginBottom: 8 }}>{getProgressLabel()}</ThemedText>
                 <View style={{ flexDirection: 'row', gap: 10 }}>
                     <View style={{ flex: 1 }}>
                         <CustomInput
@@ -152,23 +153,23 @@ export const DeadlineFormStep3 = ({
                             />
                         </View> : null}
                 </View>
-                <ThemedText color="textMuted" style={{marginTop: 6, lineHeight: 18}}>
-                    How much have you already finished?
+                <ThemedText color="textMuted" style={{ marginTop: -18, lineHeight: 18 }}>
+                    Count towards today's reading progress
                 </ThemedText>
             </View>
 
             {shouldShowStartDate && (
                 <>
-                    <View style={[styles.sectionDivider, {backgroundColor: colors.textMuted}]} />
+                    <View style={[styles.sectionDivider, { backgroundColor: colors.textMuted }]} />
                     <View>
-                        <ThemedText variant="default" style={{marginBottom: 8}}>When did you start reading?</ThemedText>
+                        <ThemedText variant="default" style={{ marginBottom: 8 }}>When did you start reading?</ThemedText>
                         <Controller
                             control={control}
                             name="startDate"
                             render={({ field: { value } }) => (
                                 <>
                                     <TouchableOpacity
-                                        style={[styles.dateInput, {backgroundColor: colors.surface, borderColor: colors.border}]}
+                                        style={[styles.dateInput, { backgroundColor: colors.surface, borderColor: colors.border }]}
                                         onPress={() => setShowStartDatePicker(!showStartDatePicker)}
                                         testID="start-date-picker-button"
                                     >
@@ -194,49 +195,60 @@ export const DeadlineFormStep3 = ({
                                 </>
                             )}
                         />
-                        <ThemedText color="textMuted" style={{marginTop: 6, lineHeight: 18}}>
+                        <ThemedText color="textMuted" style={{ marginTop: 6, lineHeight: 18 }}>
                             Since you've already started, we'll track your progress from this date for accurate pacing
                         </ThemedText>
                     </View>
                 </>
             )}
 
-            <View style={[styles.sectionDivider, {backgroundColor: colors.textMuted}]} />
+            <View style={[styles.sectionDivider, { backgroundColor: colors.textMuted }]} />
             <View>
-                <ThemedText variant="default" style={{marginBottom: 8}}>Deadline Flexibility</ThemedText>
+                <ThemedText variant="default" style={{ marginBottom: 8 }}>Deadline Flexibility</ThemedText>
                 <PrioritySelector
                     selectedPriority={selectedPriority}
                     onSelectPriority={onPriorityChange}
                 />
-                <ThemedText color="textMuted" style={{marginTop: 6, lineHeight: 18}}>
+                <ThemedText color="textMuted" style={{ marginTop: 6, lineHeight: 18 }}>
                     Can this deadline be adjusted if needed?
                 </ThemedText>
             </View>
 
-            <View style={[styles.sectionDivider, {backgroundColor: colors.textMuted}]} />
+            <View style={[styles.sectionDivider, { backgroundColor: colors.textMuted }]} />
 
             {paceEstimate && (
-                <View style={[
-                    styles.estimateContainer,
+                <LinearGradient
+                    colors={[colors.accent, paceEstimate.includes('⚠️') ? `${colors.danger}20` : `${colors.primary}`]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.estimateContainer,
                     {
-                        backgroundColor: paceEstimate.includes('⚠️') ? `${colors.danger}20` : `${colors.primary}20`,
                         borderColor: paceEstimate.includes('⚠️') ? colors.danger : colors.primary,
                     }
-                ]}>
-                    <ThemedText color={paceEstimate.includes('⚠️') ? 'danger' : 'primary'}>
+                    ]}
+                >
+                    <ThemedText style={styles.paceEstimateStyle} variant="defaultSemiBold" color={paceEstimate.includes('⚠️') ? 'danger' : 'textOnPrimary'}>
                         {paceEstimate}
                     </ThemedText>
-                </View>
+                    <ThemedText variant="defaultSemiBold" color={paceEstimate.includes('⚠️') ? 'danger' : 'textOnPrimary'}>
+                        to finish on time
+                    </ThemedText>
+                </LinearGradient>
             )}
 
-            <View style={[styles.summaryCard, {backgroundColor: colors.surface, borderColor: colors.border}]}>
-                <ThemedText color="primary" style={styles.summaryTitle}>✓ Ready to Add</ThemedText>
-                <ThemedText color="textMuted" style={styles.summaryText}>
-                    {watchedValues.bookTitle && watchedValues.deadline
-                        ? `${watchedValues.bookTitle} • Due ${watchedValues.deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-                        : 'Complete the form above to see your reading plan'
-                    }
-                </ThemedText>
+            <View style={[styles.summaryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <ThemedText color="good" style={styles.summaryTitle}>✓ Ready to Add</ThemedText>
+                {watchedValues.bookTitle && watchedValues.deadline ?
+                    <ThemedText color="primary" style={styles.summaryText} variant='label'>
+                        {watchedValues.bookTitle} {' '}
+                        <ThemedText>
+                            • Due {watchedValues.deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </ThemedText>
+                    </ThemedText>
+                    : <ThemedText>
+                        'Complete the form above to see your reading plan'
+                    </ThemedText>
+                }
             </View>
         </View>
     );
@@ -245,7 +257,7 @@ export const DeadlineFormStep3 = ({
 const styles = StyleSheet.create({
     sectionDivider: {
         height: 1,
-        marginVertical: 16,
+        marginVertical: 2,
         opacity: 0.5,
     },
     estimateContainer: {
@@ -253,6 +265,13 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 14,
         marginTop: 16,
+        alignItems: 'center',
+    },
+    paceEstimateStyle: {
+        fontSize: 26,
+        lineHeight: 30,
+        fontWeight: 'bold',
+        marginBottom: 4,
     },
     summaryCard: {
         borderRadius: 16,
@@ -261,13 +280,14 @@ const styles = StyleSheet.create({
         borderWidth: 2,
     },
     summaryTitle: {
-        fontSize: 16,
-        fontWeight: '600',
+        fontSize: 18,
+        fontWeight: 'bold',
         marginBottom: 8,
     },
     summaryText: {
         fontSize: 14,
         lineHeight: 20,
+        fontWeight: 'bold'
     },
     dateInput: {
         borderWidth: 2,

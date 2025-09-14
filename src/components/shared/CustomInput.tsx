@@ -24,6 +24,9 @@ const CustomInput = <T extends FieldValues>({
   const textColor = colors.text;
   const borderColor = colors.border;
   const dangerColor = colors.danger;
+  const blurBackgroundColor = colors.inputBlurBackground;
+
+  const [isFocused, setIsFocused] = React.useState(false);
 
   return (
     <Controller
@@ -42,26 +45,25 @@ const CustomInput = <T extends FieldValues>({
                 : (typeof value === 'number' ? String(value) : (value ?? ''))
             }
             onChangeText={(text) => {
-              if (transformOnBlur) {
-                // Store the text as-is, transform only on blur
-                onChange(text);
-              } else {
-                onChange(text);
-              }
+              onChange(text);
             }}
             onBlur={() => {
+              setIsFocused(false);
               if (transformOnBlur && value && typeof value === 'string') {
                 onChange(transformOnBlur(value));
               }
               onBlur();
             }}
+            onFocus={() => {
+              setIsFocused(true);
+            }}
             placeholderTextColor={textMutedColor}
             style={[
               styles.input,
               {
-                backgroundColor: cardColor,
+                backgroundColor: isFocused ? cardColor : blurBackgroundColor,
                 color: textColor,
-                borderColor: error ? dangerColor : borderColor
+                borderColor: error ? dangerColor : isFocused ? borderColor : 'transparent',
               },
               props.style,
             ]}
