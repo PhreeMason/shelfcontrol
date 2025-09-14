@@ -64,7 +64,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                   text1: 'Failed to complete deadline',
                   text2: error.message || 'Please try again',
                   autoHide: true,
-                  visibilityTime: 3000,
+                  visibilityTime: 1500,
                   position: 'top'
                 });
               }
@@ -87,7 +87,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           text1: 'Book set aside',
           text2: `"${deadline.book_title}" has been set aside for later`,
           autoHide: true,
-          visibilityTime: 2000,
+          visibilityTime: 1500,
           position: 'top',
         });
       },
@@ -99,7 +99,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           text1: 'Failed to set aside deadline',
           text2: error.message || 'Please try again',
           autoHide: true,
-          visibilityTime: 3000,
+          visibilityTime: 1500,
           position: 'top'
         });
       }
@@ -131,7 +131,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                   text1: 'Deadline deleted',
                   text2: `"${deadline.book_title}" has been removed`,
                   autoHide: true,
-                  visibilityTime: 2000,
+                  visibilityTime: 1500,
                   position: 'top',
                   onHide: () => {
                     router.replace('/');
@@ -146,7 +146,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                   text1: 'Failed to delete deadline',
                   text2: error.message || 'Please try again',
                   autoHide: true,
-                  visibilityTime: 3000,
+                  visibilityTime: 1500,
                   position: 'top'
                 });
               }
@@ -169,7 +169,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           text1: 'Deadline reactivated!',
           text2: `"${deadline.book_title}" is now active again`,
           autoHide: true,
-          visibilityTime: 2000,
+          visibilityTime: 1500,
           position: 'top',
         });
         
@@ -206,7 +206,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           text1: 'Failed to reactivate deadline',
           text2: error.message || 'Please try again',
           autoHide: true,
-          visibilityTime: 3000,
+          visibilityTime: 1500,
           position: 'top'
         });
       }
@@ -248,14 +248,14 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       {isActive && (
         <>
           <ThemedButton
-            title={isCompleting ? "Completing..." : "✓ Mark as Complete"}
+            title={isCompleting ? "Completing..." : "Mark as Complete"}
             variant="success"
             style={styles.actionButton}
             onPress={handleComplete}
             disabled={isCompleting}
           />
           <ThemedButton
-            title={isSettingAside ? "Pausing..." : "📚 Pause"}
+            title={isSettingAside ? "Pausing..." : "Pause"}
             variant="secondary"
             style={styles.actionButton}
             onPress={handleSetAside}
@@ -270,14 +270,14 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       {isSetAside && (
         <>
           <ThemedButton
-            title={isReactivating ? "Reactivating..." : "📖 Resume Reading"}
+            title={isReactivating ? "Reactivating..." : "Resume Reading"}
             variant="primary"
             style={styles.actionButton}
             onPress={handleReactivate}
             disabled={isReactivating}
           />
           <ThemedButton
-            title={isCompleting ? "Completing..." : "✓ Mark as Complete"}
+            title={isCompleting ? "Completing..." : "Mark as Complete"}
             variant="success"
             style={styles.actionButton}
             onPress={handleComplete}
@@ -289,7 +289,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       {/* For completed deadlines - show reactivate only */}
       {isCompleted && (
         <ThemedButton
-          title={"🔁 Read Again?"}
+          title={"Read Again?"}
           variant="primary"
           style={styles.actionButton}
           onPress={handleReadAgain}
@@ -299,7 +299,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
 
       {/* Delete is always available */}
       <ThemedButton
-        title={isDeleting ? "Deleting..." : "🗑️ Delete Deadline"}
+        title={isDeleting ? "Deleting..." : "Delete Deadline"}
         variant="dangerOutline"
         style={styles.actionButton}
         onPress={handleDelete}

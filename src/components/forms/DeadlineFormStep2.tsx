@@ -103,7 +103,7 @@ export const DeadlineFormStep2 = ({
                     name="source"
                     placeholder="Select a source"
                     options={[
-                        { label: 'ARC', value: 'arc' },
+                        { label: 'ARC', value: 'ARC' },
                         { label: 'Library', value: 'library' },
                         { label: 'Personal', value: 'personal' },
                         { label: 'Book Club', value: 'bookclub' }

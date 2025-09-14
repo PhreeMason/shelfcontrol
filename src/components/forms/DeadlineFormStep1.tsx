@@ -190,7 +190,7 @@ export const DeadlineFormStep1 = ({
         return (
             <View style={styles.loadingOverlay}>
                 <ActivityIndicator size="large" color={colors.primary} />
-                <ThemedText style={styles.loadingOverlayText}>Loading book details...</ThemedText>
+                <ThemedText variant="muted" style={styles.loadingOverlayText}>Loading book details...</ThemedText>
             </View>
         );
     }
@@ -378,6 +378,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        marginTop: 20,
     },
     loadingOverlayText: {
         marginTop: 12,

@@ -1,13 +1,13 @@
-import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, Modal, Pressable } from 'react-native';
-import { Calendar, DateData } from 'react-native-calendars';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useDeadlines } from '@/providers/DeadlineProvider';
 import { Colors } from '@/constants/Colors';
+import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { useRouter } from 'expo-router';
 import dayjs from 'dayjs';
+import { useRouter } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import { Calendar, DateData } from 'react-native-calendars';
 
 const urgencyColorMap = {
   'good': '#B8A9D9',
@@ -78,9 +78,9 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
 
   const handleDayPress = (day: DateData) => {
     const dateStr = day.dateString;
-    setSelectedDate(dateStr);
     
     if (markedDates[dateStr]?.deadlines?.length > 0) {
+      setSelectedDate(dateStr);
       setModalVisible(true);
     }
   };

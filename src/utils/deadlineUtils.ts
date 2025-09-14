@@ -16,6 +16,12 @@ export const sortDeadlines = (a: ReadingDeadlineWithProgress, b: ReadingDeadline
     if (aDueDate.getTime() !== bDueDate.getTime()) {
         return aDueDate.getTime() - bDueDate.getTime();
     }
+
+    // If due dates are equal sort by priority level if available
+    // ....
+
+    // If priority is equal sort by urgency level if available
+    // ....
     
     // If due dates are equal, sort by updated_at
     const aUpdatedAt = a.updated_at ? new Date(a.updated_at) : new Date(0);

@@ -83,7 +83,7 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
 
   // Get random book cover icon from array
   const getBookCoverIcon = () => {
-    const bookIcons = ['📕', '📗', '📘', '📙', '📔', '📓', '📚', '📖', '📑', '📜', '💰', '⚔️', '🏃', '🎭', '🔬', '🎨', '🏛️', '🌟', '🔮', '⭐'];
+    const bookIcons = ['📕', '📗', '📘', '📙', '📔', '📓', '📑', '📜', '💰', '⚔️', '🏃', '🎭', '🔬', '🎨', '🏛️', '🌟', '🔮', '⭐'];
     
     // Create seed from multiple factors for better randomization
     const idSeed = typeof deadline.id === 'number' ? deadline.id : parseInt(deadline.id?.toString() || '0', 10) || 0;

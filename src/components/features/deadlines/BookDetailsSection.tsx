@@ -15,7 +15,6 @@ const BookDetailsSection = (
     return (
         <ThemedView  style={styles.section}>
             <ThemedView style={styles.sectionTitle}>
-                <ThemedText style={styles.sectionIcon}>📚</ThemedText>
                 <ThemedText variant="title">Book Details</ThemedText>
             </ThemedView>
 
@@ -28,14 +27,14 @@ const BookDetailsSection = (
                     <ThemedText variant="secondary" style={styles.detailLabel}>Format</ThemedText>
                     <ThemedText style={styles.detailsValue}>
                         {makeUpperCaseFirstLetter(deadline.format)}
-                    </ThemedText>
+                </ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.detailRow}>
                     <ThemedText variant="secondary" style={styles.detailLabel}>Priority</ThemedText>
                     <ThemedText style={styles.detailsValue}>{makeUpperCaseFirstLetter(deadline.flexibility)}</ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.detailRow}>
-                    <ThemedText variant="secondary" style={styles.detailLabel}>Source</ThemedText>
+                    <ThemedText variant="secondary" style={styles.detailLabel}>Type</ThemedText>
                     <ThemedText style={styles.detailsValue}>{makeUpperCaseFirstLetter(deadline.source)}</ThemedText>
                 </ThemedView>
                 <ThemedView style={styles.detailRow}>

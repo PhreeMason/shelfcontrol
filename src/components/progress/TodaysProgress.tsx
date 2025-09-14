@@ -116,7 +116,7 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
   }
 
   const { gradientColors, backgroundColor } = getProgressColors();
-  const progressBarPercentageValue = progressPercentage > 900 ? 900 : progressPercentage % 100;
+  const progressBarPercentageValue = Math.min(100, progressPercentage);
   return (
     <ThemedView style={styles.statCard}>
       <View style={styles.statHeader}>
@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
   },
   statIcon: {
     fontSize: 18,
+    lineHeight: 24,
   },
   labelText: {
     color: '#2B3D4F',

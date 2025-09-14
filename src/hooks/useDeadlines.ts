@@ -323,13 +323,12 @@ export const useUpdateDeadlineProgress = () => {
     })
 }
 
-export const useGetDeadlines = (options?: { includeNonActive?: boolean }) => {
+export const useGetDeadlines = () => {
     const { profile: user } = useAuth();
     const userId = user?.id;
-    const includeNonActive = options?.includeNonActive ?? false;
 
     return useQuery<ReadingDeadlineWithProgress[]>({
-        queryKey: ['deadlines', userId, includeNonActive],
+        queryKey: ['deadlines', userId],
         queryFn: async () => {
             if (!userId) throw new Error("User not authenticated");
             const { data, error } = await supabase
@@ -344,18 +343,9 @@ export const useGetDeadlines = (options?: { includeNonActive?: boolean }) => {
 
             if (error) throw new Error(error.message);
             
-            // Filter based on includeNonActive option
-            const filteredData = includeNonActive 
-                ? (data || [])
-                : (data?.filter(deadline => {
-                    const latestStatus = deadline.status?.[deadline.status.length - 1]?.status;
-                    return !latestStatus || latestStatus === 'reading';
-                }) || []);
-            
-            return filteredData as ReadingDeadlineWithProgress[];
+            return data as ReadingDeadlineWithProgress[];
         },
         enabled: !!userId,
-        refetchOnWindowFocus: false,
         // staleTime: 1000 * 60 * 60 * 5, // 5 hours
     })
 }

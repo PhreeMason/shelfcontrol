@@ -5,17 +5,17 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface SourceSelectorProps {
     selectedSource: string;
-    onSelectSource: (source: 'arc' | 'library' | 'personal' | 'bookclub') => void;
+    onSelectSource: (source: 'ARC' | 'library' | 'personal' | 'bookclub') => void;
 }
 
 export const SourceSelector = ({ selectedSource, onSelectSource }: SourceSelectorProps) => {
     const { colors } = useTheme();
     
     const sources = [
-        { key: 'arc', label: '📚 ARC' },
-        { key: 'library', label: '📖 Library' },
-        { key: 'personal', label: '📗 Personal' },
-        { key: 'bookclub', label: '📕 Book Club' }
+        { key: 'ARC', label: 'ARC' },
+        { key: 'library', label: 'Library' },
+        { key: 'personal', label: 'Personal' },
+        { key: 'bookclub', label: 'Book Club' }
     ];
 
     return (
@@ -31,7 +31,7 @@ export const SourceSelector = ({ selectedSource, onSelectSource }: SourceSelecto
                                 backgroundColor: isSelected ? `${colors.primary}20` : colors.surface, // primary with opacity or card
                             }
                         ]}
-                        onPress={() => onSelectSource(source.key as 'arc' | 'library' | 'personal' | 'bookclub')}
+                        onPress={() => onSelectSource(source.key as 'ARC' | 'library' | 'personal' | 'bookclub')}
                     >
                         <ThemedText 
                             color={isSelected ? 'primary' : 'textMuted'}

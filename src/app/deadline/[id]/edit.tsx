@@ -61,7 +61,7 @@ const EditDeadline = () => {
             bookTitle: '',
             bookAuthor: '',
             format: 'physical',
-            source: 'arc',
+            source: 'ARC',
             deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             totalQuantity: 0,
             totalMinutes: 0,
@@ -206,7 +206,7 @@ const EditDeadline = () => {
                     type: 'success',
                     text1: 'Deadline updated successfully!',
                     autoHide: true,
-                    visibilityTime: 2000,
+                    visibilityTime: 1500,
                     position: 'top',
                     onHide: () => {
                         // router.replace(`/deadline/${id}/view`);
@@ -222,7 +222,7 @@ const EditDeadline = () => {
                     text1: 'Failed to update deadline',
                     text2: error.message || 'Please try again',
                     autoHide: true,
-                    visibilityTime: 3000,
+                    visibilityTime: 1500,
                     position: 'top'
                 });
             }

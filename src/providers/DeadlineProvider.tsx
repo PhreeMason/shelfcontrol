@@ -436,10 +436,11 @@ const DeadlineProviderInternal: React.FC<DeadlineProviderProps> = ({ children })
 
 // Main DeadlineProvider that wraps both pace and deadline logic
 export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({ children }) => {
-  const { data: deadlines = [] } = useGetDeadlines({includeNonActive: true});
+  const { data: deadlines = [] } = useGetDeadlines();
+  const { active: activeDeadlines } = separateDeadlines(deadlines);
   
   return (
-    <PaceProvider deadlines={deadlines}>
+    <PaceProvider deadlines={activeDeadlines}>
       <DeadlineProviderInternal>
         {children}
       </DeadlineProviderInternal>

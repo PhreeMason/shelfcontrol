@@ -64,7 +64,7 @@ const ReadingProgress = ({
           text1: 'Deadline completed!',
           text2: `Congratulations on finishing "${bookTitle}"!`,
           autoHide: true,
-          visibilityTime: 3000,
+          visibilityTime: 1500,
           position: 'top'
         });
         onProgressSubmitted?.();
@@ -75,7 +75,7 @@ const ReadingProgress = ({
           text1: 'Failed to complete deadline',
           text2: error.message || 'Please try again',
           autoHide: true,
-          visibilityTime: 3000,
+          visibilityTime: 1500,
           position: 'top'
         });
       }

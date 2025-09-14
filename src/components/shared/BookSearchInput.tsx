@@ -122,7 +122,7 @@ const BookSearchInput: React.FC<BookSearchInputProps> = ({
                             </ThemedText>
                         )}
                         <ThemedText color="primary" style={styles.linkedBadge}>
-                            📚 Linked from library
+                            Linked from library
                         </ThemedText>
                     </View>
                 </View>

@@ -50,16 +50,27 @@ export const Colors = {
     errorContainer: '#FEF2F2',
     onError: '#FFFFFF',
     onErrorContainer: '#991B1B',
-    
+
     warning: '#E8B4A0',
     warningContainer: '#FFFBEB',
     onWarning: '#FFFFFF',
     onWarningContainer: '#92400E',
-    
+
     success: '#B8A9D9',
     successContainer: '#F0FDF4',
     onSuccess: '#FFFFFF',
     onSuccessContainer: '#064E3B',
+
+    // Additional gradient colors for toast messages
+    peach: '#E8C2B9',
+    darkPink: '#C8698A',
+    orange: '#F5C2A1',
+
+    // Info colors (using peach-orange theme)
+    info: '#E8C2B9',
+    infoContainer: '#FFF7ED',
+    onInfo: '#FFFFFF',
+    onInfoContainer: '#C2410C',
 
     // Interactive states
     hover: '#F8FAFC',
@@ -120,16 +131,27 @@ export const Colors = {
     errorContainer: '#FEF2F2',
     onError: '#FFFFFF',
     onErrorContainer: '#991B1B',
-    
+
     warning: '#E8B4A0',
     warningContainer: '#FFFBEB',
     onWarning: '#FFFFFF',
     onWarningContainer: '#92400E',
-    
+
     success: '#B8A9D9',
     successContainer: '#F0FDF4',
     onSuccess: '#FFFFFF',
     onSuccessContainer: '#064E3B',
+
+    // Additional gradient colors for toast messages
+    peach: '#E8C2B9',
+    darkPink: '#C8698A',
+    orange: '#F5C2A1',
+
+    // Info colors (using peach-orange theme)
+    info: '#E8C2B9',
+    infoContainer: '#FFF7ED',
+    onInfo: '#FFFFFF',
+    onInfoContainer: '#C2410C',
 
     // Interactive states
     hover: '#F8FAFC',

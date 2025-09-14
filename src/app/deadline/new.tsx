@@ -56,7 +56,7 @@ const NewDeadLine = () => {
             bookTitle: '',
             bookAuthor: '',
             format: 'ebook',
-            source: 'arc',
+            source: 'ARC',
             deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
             flexibility: 'flexible'
         }
@@ -185,7 +185,7 @@ const NewDeadLine = () => {
                     type: 'success',
                     text1: 'Deadline added successfully!',
                     autoHide: true,
-                    visibilityTime: 1000,
+                    visibilityTime: 1500,
                     position: 'top',
                     onHide: () => {
                         router.replace('/');
@@ -200,7 +200,7 @@ const NewDeadLine = () => {
                     text1: 'Failed to add deadline',
                     text2: error.message || 'Please try again',
                     autoHide: true,
-                    visibilityTime: 3000,
+                    visibilityTime: 1500,
                     position: 'top'
                 });
             }
