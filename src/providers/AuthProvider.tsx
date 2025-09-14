@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { authService, profileService, AppleProfileData } from '@/services';
 import { Database } from '@/types/database.types';
 import { AuthError, AuthResponse, Session } from '@supabase/supabase-js';
 import { router, useSegments } from 'expo-router';
@@ -9,7 +9,6 @@ import {
     useEffect,
     useState,
 } from 'react';
-import { AppState } from 'react-native';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -45,17 +44,6 @@ const AuthContext = createContext<AuthData>({
     setSessionFromUrl: async () => ({ error: null }),
 });
 
-// Tells Supabase Auth to continuously refresh the session automatically if
-// the app is in the foreground. When this is added, you will continue to receive
-// `onAuthStateChange` events with the `TOKEN_REFRESHED` or `SIGNED_OUT` event
-// if the user's session is terminated. This should only be registered once.
-AppState.addEventListener('change', (state) => {
-  if (state === 'active') {
-    supabase.auth.startAutoRefresh()
-  } else {
-    supabase.auth.stopAutoRefresh()
-  }
-})
 
 export default function AuthProvider({ children }: PropsWithChildren) {
     const [session, setSession] = useState<Session | null>(null);
@@ -65,24 +53,19 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
     useEffect(() => {
         const fetchSession = async () => {
-            const { data } = await supabase.auth.getSession();
-            const sess = data.session;
-            setSession(sess);
-            if (sess) {
+            const { session } = await authService.getSession();
+            setSession(session);
+            if (session) {
                 // fetch profile
-                const response = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', sess.user.id)
-                    .single();
-                setProfile(response.data || null);
+                const profileData = await profileService.getProfile(session.user.id);
+                setProfile(profileData);
             }
 
             setLoading(false);
         };
         fetchSession();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, authSession) => {
+        const { data: { subscription } } = authService.onAuthStateChange((_event, authSession) => {
             setSession(authSession ?? null);
         });
 
@@ -104,23 +87,12 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     }, [session, segments, isLoading]);
 
     const signIn = async (email: string, password: string) => {
-        try {
-            const { data, error }: AuthResponse = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-
-            if (error) throw error;
-            return { data: { user: data.user, session: data.session }, error: null };
-        } catch (error) {
-            return { data: { user: null, session: null }, error: error as AuthError };
-        }
+        return authService.signIn({ email, password });
     };
 
     const signOut = async () => {
         try {
-            const { error } = await supabase.auth.signOut();
-            if (error) throw error;
+            await authService.signOut();
             setProfile(null);
         } catch (error) {
             console.error('Error signing out:', error);
@@ -128,23 +100,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     };
 
     const signUp = async (email: string, password: string, username: string) => {
-        try {
-            const { data, error }: AuthResponse = await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    data: {
-                        username,
-                        email
-                    }
-                }
-            });
-
-            if (error) throw error;
-            return { data: { user: data.user, session: data.session }, error: null };
-        } catch (error) {
-            return { data: { user: null, session: null }, error: error as AuthError };
-        }
+        return authService.signUp({ email, password, username });
     }
 
     const uploadAvatar = async (uri: string) => {
@@ -153,37 +109,8 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         }
 
         try {
-            // First, remove any existing avatars for this user
-            const { data: existingFiles } = await supabase.storage
-                .from('avatars')
-                .list(session.user.id);
-
-            if (existingFiles && existingFiles.length > 0) {
-                const filesToRemove = existingFiles.map(file => `${session.user.id}/${file.name}`);
-                await supabase.storage.from('avatars').remove(filesToRemove);
-            }
-
-            // Fetch the image and convert to arraybuffer
-            const arraybuffer = await fetch(uri).then((res) => res.arrayBuffer());
-
-            // Get file extension from URI
-            const fileExt = uri.split('.').pop()?.toLowerCase() ?? 'jpeg';
-            const fileName = `avatar-${Date.now()}.${fileExt}`;
-            const path = `${session.user.id}/${fileName}`;
-            
-            // Upload to Supabase Storage
-            const { data, error: uploadError } = await supabase.storage
-                .from('avatars')
-                .upload(path, arraybuffer, {
-                    contentType: `image/${fileExt}`,
-                    upsert: true,
-                });
-
-            if (uploadError) throw uploadError;
-            console.log('Upload data:', data);
-            
-            // Return the path to be stored in the database
-            return { data: data.path, error: null };
+            const path = await profileService.uploadAvatar(session.user.id, uri);
+            return { data: path, error: null };
         } catch (err) {
             console.error('Avatar upload error:', err);
             return { data: null, error: err as Error };
@@ -192,15 +119,10 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
     const refreshProfile = async () => {
         if (!session?.user?.id) return;
-        
+
         try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
-            
-            if (!error && data) {
+            const data = await profileService.getProfile(session.user.id);
+            if (data) {
                 setProfile(data);
             }
         } catch (err) {
@@ -214,17 +136,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         };
 
         try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .update({
-                    ...updates,
-                    updated_at: new Date().toISOString(),
-                })
-                .eq('id', profile.id)
-                .select()
-                .single();
-
-            if (error) throw error;
+            const data = await profileService.updateProfile(profile.id, updates);
             setProfile(data);
             return { data, error: null };
         } catch (err) {
@@ -232,46 +144,13 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         }
     };
 
-    const updateProfileFromApple = async (appleData: { email?: string | null; fullName?: any }) => {
+    const updateProfileFromApple = async (appleData: AppleProfileData) => {
         if (!session?.user?.id) {
             return { data: null, error: new Error('User not authenticated') };
         }
 
         try {
-            // Build updates object only with values that exist
-            const updates: Partial<Profile> = {};
-
-            // Handle email - only update if it's a real email (not private relay)
-            if (appleData.email && !appleData.email.includes('@privaterelay.appleid.com')) {
-                updates.email = appleData.email;
-            }
-
-            // Handle name - extract first and last name if provided
-            if (appleData.fullName) {
-                if (appleData.fullName.givenName) {
-                    updates.first_name = appleData.fullName.givenName;
-                }
-                if (appleData.fullName.familyName) {
-                    updates.last_name = appleData.fullName.familyName;
-                }
-            }
-
-            // Only proceed if we have something to update
-            if (Object.keys(updates).length === 0) {
-                return { data: profile, error: null };
-            }
-
-            const { data, error } = await supabase
-                .from('profiles')
-                .update({
-                    ...updates,
-                    updated_at: new Date().toISOString(),
-                })
-                .eq('id', session.user.id)
-                .select()
-                .single();
-
-            if (error) throw error;
+            const data = await profileService.updateProfileFromApple(session.user.id, appleData);
             setProfile(data);
             return { data, error: null };
         } catch (err) {
@@ -281,11 +160,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
     const requestResetPasswordEmail = async (email: string, redirectTo: string) => {
         try {
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo,
-            });
-
-            if (error) throw error;
+            await authService.requestPasswordReset({ email, redirectTo });
             return { error: null };
         } catch (error) {
             return { error: error as AuthError };
@@ -294,21 +169,12 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
     const setSessionFromUrl = async (accessToken: string, refreshToken: string) => {
         try {
-            const { data, error } = await supabase.auth.setSession({
-                access_token: accessToken,
-                refresh_token: refreshToken,
-            });
-
-            if (error) throw error;
-            if (data.session) {
-                setSession(data.session);
+            const { session } = await authService.setSession({ accessToken, refreshToken });
+            if (session) {
+                setSession(session);
                 // Fetch profile for the new session
-                const response = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', data.session.user.id)
-                    .single();
-                setProfile(response.data || null);
+                const profileData = await profileService.getProfile(session.user.id);
+                setProfile(profileData);
             }
             return { error: null };
         } catch (error) {
@@ -318,11 +184,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
     const updatePassword = async (password: string) => {
         try {
-            const { error } = await supabase.auth.updateUser({
-                password,
-            });
-
-            if (error) throw error;
+            await authService.updatePassword(password);
             return { error: null };
         } catch (error) {
             return { error: error as AuthError };

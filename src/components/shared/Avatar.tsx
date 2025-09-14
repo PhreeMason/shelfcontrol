@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useAuth } from '@/providers/AuthProvider';
-import { getAvatarSignedUrl, getAvatarUrl } from '@/utils/avatarUtils';
+import { profileService } from '@/services';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
@@ -38,11 +38,11 @@ const Avatar: React.FC<AvatarProps> = ({
                     setDisplayUrl(newImageUri);
                 } else if (avatarUrl) {
                     // avatarUrl is now a path, get signed URL for it
-                    const signedUrl = await getAvatarSignedUrl(avatarUrl);
+                    const signedUrl = await profileService.getAvatarSignedUrl(avatarUrl);
                     setDisplayUrl(signedUrl);
                 } else if (session?.user?.id) {
                     // If no path is stored, try to find the latest avatar in user folder
-                    const url = await getAvatarUrl(session.user.id);
+                    const url = await profileService.getAvatarUrl(session.user.id);
                     setDisplayUrl(url);
                 } else {
                     setDisplayUrl(null);

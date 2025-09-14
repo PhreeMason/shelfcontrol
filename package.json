@@ -1,7 +1,7 @@
 {
   "name": "shelfcontrol",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -11,7 +11,9 @@
     "lint": "expo lint src",
     "typecheck": "npx tsc --noEmit",
     "prebuild": "npx expo prebuild --clean",
-    "build": "npx eas build --platform android --profile preview",
+    "build:android": "npx eas build --platform android --profile preview",
+    "build:ios": "npx eas build --platform ios",
+    "submit:ios": "npx eas submit --platform ios --latest",
     "build:local": "npx eas build --platform android --profile preview --local",
     "genTypes": "npx supabase gen types --lang=typescript --project-id \"npxxraogmtcaesjhzsun\" --schema public > src/types/database.types.ts",
     "test": "jest --runInBand",

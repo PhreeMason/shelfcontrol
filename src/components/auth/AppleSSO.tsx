@@ -1,5 +1,5 @@
 import { ThemedView } from '@/components/themed'
-import { supabase } from '@/lib/supabase'
+import { authService } from '@/services'
 import { useAuth } from '@/providers/AuthProvider'
 import * as AppleAuthentication from 'expo-apple-authentication'
 import React, { useEffect, useState } from 'react'
@@ -62,22 +62,15 @@ export function AppleSSO({
       console.log('Extracted Apple user data:', JSON.stringify(appleUserData, null, 2))
       
       if (credential.identityToken) {
-        const {
-          error,
-          data: { user },
-        } = await supabase.auth.signInWithIdToken({
-          provider: 'apple',
-          token: credential.identityToken,
+        const { user } = await authService.signInWithApple({
+          identityToken: credential.identityToken,
         })
         
-        console.log('Supabase auth result:', JSON.stringify({ error, user }, null, 2))
-        
-        if (error) {
-          console.error('Apple sign-in error:', error)
-          onError?.(error)
-        } else {
+        console.log('Apple sign-in result:', JSON.stringify({ user }, null, 2))
+
+        if (user) {
           console.log('Apple sign-in successful')
-          
+
           // Update profile with real Apple data after successful authentication
           try {
             const profileUpdateResult = await updateProfileFromApple(appleUserData)
@@ -86,7 +79,7 @@ export function AppleSSO({
             console.error('Error updating profile from Apple data:', profileError)
             // Don't fail the entire sign-in process if profile update fails
           }
-          
+
           onSuccess?.()
         }
       } else {

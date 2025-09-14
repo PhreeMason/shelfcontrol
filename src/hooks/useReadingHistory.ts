@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { deadlinesService } from '@/services';
 import { useAuth } from '@/providers/AuthProvider';
 import { utcToLocalDate } from '@/utils/dateUtils';
 import { useQuery } from '@tanstack/react-query';
@@ -124,37 +124,11 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
       const formats = getFormatFilter(formatFilter);
 
       // Query reading deadlines with their progress and status changes
-      const deadlineQuery = supabase
-        .from('deadlines')
-        .select(`
-          id,
-          book_title,
-          author,
-          format,
-          total_quantity,
-          deadline_date,
-          source,
-          flexibility,
-          created_at,
-          deadline_progress (
-            id,
-            current_progress,
-            created_at,
-            updated_at
-          ),
-          deadline_status (
-            id,
-            status,
-            created_at
-          )
-        `)
-        .eq('user_id', user.id)
-        .in('format', formats as ('physical' | 'eBook' | 'audio')[])
-        .order('created_at', { ascending: false });
-
-      const { data: deadlines, error } = await deadlineQuery;
-
-      if (error) throw error;
+      const deadlines = await deadlinesService.getDeadlineHistory({
+        userId: user.id,
+        dateRange: startDate,
+        formats: formats as ('physical' | 'eBook' | 'audio')[],
+      });
 
       // Process deadline progress data to extract daily activity
       const dailyEntries: { [date: string]: DailyDeadlineEntry } = {};

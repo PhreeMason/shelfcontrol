@@ -1,41 +1,20 @@
-import { supabase } from "@/lib/supabase";
+import { booksService } from "@/services";
 import { FullBookData, SearchBooksResponse } from "@/types/bookSearch";
 import { useQuery } from "@tanstack/react-query";
 
 export const searchBookList = async (query: string): Promise<SearchBooksResponse> => {
-   if (!query.trim()) return { bookList: [] };
-    const { data, error } = await supabase.functions.invoke('search-books', {
-        body: { query },
-    });
-
-    if (error) throw error;
-    return data;
+    return booksService.searchBooks(query);
 };
 
 export const fetchBookData = async (api_id: string): Promise<FullBookData> => {
-   const { data, error } = await supabase.functions.invoke('book-data', {
-        body: { api_id },
-    });
-
-    if (error) throw error;
-    return data;
+    return booksService.fetchBookData(api_id);
 };
 /**
  * Fetch book data directly from the books table by book_id
  * This is different from fetchBookData which uses api_id and edge functions
  */
 export const fetchBookById = async (book_id: string) => {
-    const { data, error } = await supabase
-        .from('books')
-        .select('*')
-        .eq('id', book_id)
-        .single();
-
-    if (error) {
-        throw new Error(`Failed to fetch book data: ${error.message}`);
-    }
-
-    return data;
+    return booksService.fetchBookById(book_id);
 };
 
 
