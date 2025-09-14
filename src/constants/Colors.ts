@@ -86,6 +86,15 @@ export const Colors = {
     danger: '#e85d75',
     inputFocusBackground: '#FFFFFF',
     inputBlurBackground: '#e8c2b926',
+
+    // Urgency levels
+    complete: '#3B82F6',
+    set_aside: '#9CA3AF',
+    overdue: '#e85d75',
+    urgent: '#e85d75',
+    good: '#7FB069',
+    approaching: '#F5C242',
+    impossible: '#e85d75',
   },
   dark: {
     // Text colors
@@ -168,6 +177,15 @@ export const Colors = {
     tabIconSelected: '#0a7ea4',
     danger: '#E8B4B8',
     inputBlurBackground: '#FAF8F599',
+
+     // Urgency levels
+    complete: '#3B82F6',
+    set_aside: '#9CA3AF',
+    overdue: '#e85d75',
+    urgent: '#e85d75',
+    good: '#7FB069',
+    approaching: '#F5C242',
+    impossible: '#e85d75',
   },
 };
 

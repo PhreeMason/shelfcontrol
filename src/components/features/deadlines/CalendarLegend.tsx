@@ -1,18 +1,20 @@
 import { ThemedText } from '@/components/themed';
+import { useTheme } from '@/hooks/useTheme';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-const legendItems = [
-  { color: '#B8A9D9', label: 'Good pace' },
-  { color: '#E8B4A0', label: 'Approaching' },
-  { color: '#E8B4B8', label: 'Urgent/Overdue' },
-];
 
 interface CalendarLegendProps {
   style?: any;
 }
 
 export function CalendarLegend({ style }: CalendarLegendProps) {
+  const { colors } = useTheme();
+  const legendItems = [
+    { color: colors.good, label: 'Good pace' },
+    { color: colors.approaching, label: 'Approaching' },
+    { color: colors.urgent, label: 'Urgent' }
+  ];
   return (
     <View style={[styles.container, style]}>
       <ThemedText variant="label" style={styles.title}>
@@ -62,6 +64,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   legendLabel: {
-    fontSize: 13,
+    fontSize: 14,
   },
 });

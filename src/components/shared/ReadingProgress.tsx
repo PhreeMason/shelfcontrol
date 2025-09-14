@@ -60,6 +60,7 @@ const ReadingProgress = ({
       deadlineId,
       () => {
         Toast.show({
+          swipeable: true,
           type: 'success',
           text1: 'Deadline completed!',
           text2: `Congratulations on finishing "${bookTitle}"!`,
@@ -71,6 +72,7 @@ const ReadingProgress = ({
       },
       (error) => {
         Toast.show({
+          swipeable: true,
           type: 'error',
           text1: 'Failed to complete deadline',
           text2: error.message || 'Please try again',
@@ -108,6 +110,7 @@ const ReadingProgress = ({
       showCompletionDialog(newProgress, deadline.book_title);
     } else {
       Toast.show({
+        swipeable: true,
         type: 'success',
         text1: 'Progress Updated!',
         text2: `Updated to ${formatProgressDisplay(deadline.format, newProgress)}`,
@@ -125,6 +128,7 @@ const ReadingProgress = ({
       onSuccess: () => handleProgressUpdateSuccess(newProgress),
       onError: (error) => {
         Toast.show({
+          swipeable: true,
           type: 'error',
           text1: 'Update Failed',
           text2: 'Please try again',
@@ -143,6 +147,7 @@ const ReadingProgress = ({
         },
         onError: (error) => {
           Toast.show({
+            swipeable: true,
             type: 'error',
             text1: 'Failed to Delete Future Progress',
             text2: 'Please try again',

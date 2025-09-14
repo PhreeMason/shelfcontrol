@@ -14,8 +14,6 @@ interface CustomToastProps {
 const CustomToast = ({
   text1,
   text2,
-  onHide,
-  gradientColors,
   iconGradientColors,
   icon,
 }: CustomToastProps & {
@@ -52,16 +50,6 @@ const CustomToast = ({
               <Text style={[styles.text2, { color: colors.textSecondary }]}>{text2}</Text>
             )}
           </View>
-
-          <Pressable
-            onPress={onHide}
-            style={({ pressed }) => [
-              styles.closeButton,
-              pressed && { backgroundColor: colors.pressed }
-            ]}
-          >
-            <Text style={[styles.closeText, { color: colors.textMuted }]}>×</Text>
-          </Pressable>
         </View>
       </LinearGradient>
     </View>

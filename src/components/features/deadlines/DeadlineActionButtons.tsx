@@ -20,10 +20,10 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   const [isReactivating, setIsReactivating] = useState(false);
 
   // Get current status
-  const latestStatus = deadline.status && deadline.status.length > 0 
-    ? deadline.status[deadline.status.length - 1].status 
+  const latestStatus = deadline.status && deadline.status.length > 0
+    ? deadline.status[deadline.status.length - 1].status
     : 'reading';
-  
+
   const isCompleted = latestStatus === 'complete';
   const isSetAside = latestStatus === 'set_aside';
   const isActive = latestStatus === 'reading';
@@ -48,6 +48,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
               () => {
                 setIsCompleting(false);
                 Toast.show({
+                  swipeable: true,
                   type: 'success',
                   text1: 'Deadline completed!',
                   text2: `Congratulations on finishing "${deadline.book_title}"!`,
@@ -60,6 +61,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
               (error) => {
                 setIsCompleting(false);
                 Toast.show({
+                  swipeable: true,
                   type: 'error',
                   text1: 'Failed to complete deadline',
                   text2: error.message || 'Please try again',
@@ -83,6 +85,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       () => {
         setIsSettingAside(false);
         Toast.show({
+          swipeable: true,
           type: 'success',
           text1: 'Book set aside',
           text2: `"${deadline.book_title}" has been set aside for later`,
@@ -95,6 +98,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       (error) => {
         setIsSettingAside(false);
         Toast.show({
+          swipeable: true,
           type: 'error',
           text1: 'Failed to set aside deadline',
           text2: error.message || 'Please try again',
@@ -127,6 +131,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
               () => {
                 setIsDeleting(false);
                 Toast.show({
+                  swipeable: true,
                   type: 'success',
                   text1: 'Deadline deleted',
                   text2: `"${deadline.book_title}" has been removed`,
@@ -142,6 +147,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
               (error) => {
                 setIsDeleting(false);
                 Toast.show({
+                  swipeable: true,
                   type: 'error',
                   text1: 'Failed to delete deadline',
                   text2: error.message || 'Please try again',
@@ -165,6 +171,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       () => {
         setIsReactivating(false);
         Toast.show({
+          swipeable: true,
           type: 'success',
           text1: 'Deadline reactivated!',
           text2: `"${deadline.book_title}" is now active again`,
@@ -172,7 +179,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           visibilityTime: 1500,
           position: 'top',
         });
-        
+
         // Only show update prompt for set-aside deadlines (not completed ones)
         if (isSetAside) {
           // Show prompt to update deadline after reactivation
@@ -202,6 +209,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       (error) => {
         setIsReactivating(false);
         Toast.show({
+          swipeable: true,
           type: 'error',
           text1: 'Failed to reactivate deadline',
           text2: error.message || 'Please try again',
@@ -221,22 +229,22 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Yes',
-            onPress: () => {
-              router.push({
-                pathname: '/deadline/new',
-                params: {
-                  page: '3',
-                  bookTitle: deadline.book_title,
-                  bookAuthor: deadline.author || '',
-                  format: deadline.format,
-                  flexibility: (deadline as any).flexibility || 'flexible',
-                  ...(deadline.format === 'audio'
-                    ? { totalMinutes: String(deadline.total_quantity) }
-                    : { totalQuantity: String(deadline.total_quantity) }),
-                  book_id: (deadline as any).book_id || '',
-                }
-              });
-            }
+          onPress: () => {
+            router.push({
+              pathname: '/deadline/new',
+              params: {
+                page: '3',
+                bookTitle: deadline.book_title,
+                bookAuthor: deadline.author || '',
+                format: deadline.format,
+                flexibility: (deadline as any).flexibility || 'flexible',
+                ...(deadline.format === 'audio'
+                  ? { totalMinutes: String(deadline.total_quantity) }
+                  : { totalQuantity: String(deadline.total_quantity) }),
+                book_id: (deadline as any).book_id || '',
+              }
+            });
+          }
         }
       ]
     );

@@ -1,6 +1,7 @@
 import { ThemedText } from '@/components/themed';
 import { Typography } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
+import { useTheme } from '@/hooks/useThemeColor';
 // import { useFetchBookById } from '@/hooks/useBooks';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -14,20 +15,10 @@ const urgencyBorderColorMap = {
   'set_aside': '#9CA3AF',
   'overdue': '#C17B7B',
   'urgent': '#C17B7B',
-  'good': '#B8A9D9',
-  'approaching': '#E8B4A0',
+  'good': '#7FB06999',
+  'approaching': '#F5C24299',
   'impossible': '#E8B4B8',
-}
-
-const urgencyTextColorMap = {
-  'complete': '#3B82F6',
-  'set_aside': '#9CA3AF',
-  'overdue': '#C8698A',
-  'urgent': '#C8698A',
-  'good': '#8B5A8C',
-  'approaching': '#D4876A',
-  'impossible': '#C8698A',
-}
+};
 interface DeadlineCardProps {
   deadline: ReadingDeadlineWithProgress;
   disableNavigation?: boolean;
@@ -36,7 +27,17 @@ interface DeadlineCardProps {
 export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCardProps) {
   const { getDeadlineCalculations, formatUnitsPerDayForDisplay } = useDeadlines();
   const router = useRouter();
-
+  const { colors } = useTheme();
+  const { good, approaching, urgent, overdue, impossible, complete, set_aside } = colors
+  const urgencyTextColorMap = {
+    complete,
+    set_aside,
+    overdue,
+    urgent,
+    good,
+    approaching,
+    impossible,
+  }
   // Fetch book data if deadline has a book_id
   const { data: bookData } = useFetchBookById(deadline.book_id);
 
@@ -84,16 +85,16 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
   // Get random book cover icon from array
   const getBookCoverIcon = () => {
     const bookIcons = ['📕', '📗', '📘', '📙', '📔', '📓', '📑', '📜', '💰', '⚔️', '🏃', '🎭', '🔬', '🎨', '🏛️', '🌟', '🔮', '⭐'];
-    
+
     // Create seed from multiple factors for better randomization
     const idSeed = typeof deadline.id === 'number' ? deadline.id : parseInt(deadline.id?.toString() || '0', 10) || 0;
     const titleSeed = deadline.book_title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const daysSeed = daysLeft * 7; // Multiply for more variation
-    const formatSeed = deadline.format === 'audio' ? 100 : deadline.format === 'ebook' ? 200 : 300;
-    
+    const formatSeed = deadline.format === 'audio' ? 100 : deadline.format === 'physical' ? 200 : 300;
+
     const combinedSeed = idSeed + titleSeed + daysSeed + formatSeed;
     const index = combinedSeed % bookIcons.length;
-    
+
     return bookIcons[index];
   };
 
@@ -116,17 +117,17 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
       ['#A78BFA', '#FFB366'], // Indigo to Orange
       ['#FB7185', '#74C0FC'], // Rose to Sky Blue
     ];
-    
+
     // Combine multiple factors for better randomization
     const idSeed = typeof deadline.id === 'number' ? deadline.id : parseInt(deadline.id?.toString() || '0', 10) || 0;
     const titleSeed = deadline.book_title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const daysSeed = daysLeft * 13; // Use prime number for better distribution
-    const formatSeed = deadline.format === 'audio' ? 137 : deadline.format === 'ebook' ? 239 : 349; // Prime numbers
+    const formatSeed = deadline.format === 'audio' ? 137 : deadline.format === 'physical' ? 239 : 349; // Prime numbers
     const dateSeed = new Date().getDate(); // Add some time-based variation
-    
+
     const combinedSeed = (titleSeed * 31 + daysSeed * 17 + idSeed * 7 + formatSeed * 3 + dateSeed) % 10000;
     const index = Math.abs(combinedSeed) % gradients.length;
-    
+
     return gradients[index] as [string, string];
   };
 
@@ -141,7 +142,7 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
         />
       );
     }
-    
+
     return (
       <LinearGradient
         colors={getGradientBackground()}
@@ -172,14 +173,14 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
             <ThemedText style={
               [
                 Platform.OS === 'android' ? styles.countdownNumberAndroid : styles.countdownNumber,
-              { color: countdownColor }
+                { color: countdownColor }
               ]}>
               {daysLeft}
             </ThemedText>
             <ThemedText style={[
               Platform.OS === 'android' ? styles.countdownLabelAndroid : styles.countdownLabel,
               { color: countdownColor }
-              ]}>
+            ]}>
               days
             </ThemedText>
           </>

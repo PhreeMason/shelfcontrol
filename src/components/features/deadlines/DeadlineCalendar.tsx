@@ -1,6 +1,7 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
+import { useTheme } from '@/hooks/useTheme';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import dayjs from 'dayjs';
@@ -8,14 +9,6 @@ import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { Calendar, DateData } from 'react-native-calendars';
-
-const urgencyColorMap = {
-  'good': '#B8A9D9',
-  'approaching': '#E8B4A0', 
-  'urgent': '#E8B4B8',
-  'overdue': '#E8B4B8',
-  'impossible': '#E8B4B8',
-};
 
 interface DeadlineCalendarProps {
   style?: any;
@@ -26,21 +19,28 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const router = useRouter();
-
-
+  const { colors } = useTheme();
+  const { good, approaching, urgent, overdue, impossible } = colors
+  const urgencyColorMap = {
+    good,
+    approaching,
+    urgent,
+    overdue,
+    impossible,
+  };
   // Process deadlines to create marked dates
   const markedDates = useMemo(() => {
     const marked: any = {};
-    
+
     // Combine active and overdue deadlines
     const allActiveDeadlines = [...activeDeadlines, ...overdueDeadlines];
-    
+
     allActiveDeadlines.forEach((deadline) => {
       if (deadline.deadline_date) {
         const dateStr = dayjs(deadline.deadline_date).format('YYYY-MM-DD');
         const { urgencyLevel } = getDeadlineCalculations(deadline);
         const color = urgencyColorMap[urgencyLevel] || urgencyColorMap.good;
-        
+
         if (!marked[dateStr]) {
           marked[dateStr] = {
             marked: true,
@@ -48,7 +48,7 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
             deadlines: []
           };
         }
-        
+
         marked[dateStr].dots.push({
           key: deadline.id,
           color: color,
@@ -72,13 +72,13 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
   }, [activeDeadlines, overdueDeadlines, getDeadlineCalculations, selectedDate]);
 
   // Get deadlines for selected date
-  const selectedDateDeadlines = selectedDate && markedDates[selectedDate] 
-    ? markedDates[selectedDate].deadlines 
+  const selectedDateDeadlines = selectedDate && markedDates[selectedDate]
+    ? markedDates[selectedDate].deadlines
     : [];
 
   const handleDayPress = (day: DateData) => {
     const dateStr = day.dateString;
-    
+
     if (markedDates[dateStr]?.deadlines?.length > 0) {
       setSelectedDate(dateStr);
       setModalVisible(true);
@@ -146,16 +146,17 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
               <ThemedText variant="title">
                 Deadlines for {selectedDate ? dayjs(selectedDate).format('MMM D, YYYY') : ''}
               </ThemedText>
-              <Pressable onPress={closeModal} style={styles.closeButton}>
+              <Pressable onPress={closeModal} style={styles.closeButton}>past
                 <IconSymbol name="xmark" size={20} color={Colors.light.text} />
               </Pressable>
             </View>
-            
+
             <View style={styles.deadlinesList}>
+              {/* // TODO: Sort by urgency level */}
               {selectedDateDeadlines.map((deadline: ReadingDeadlineWithProgress) => {
                 const { urgencyLevel, daysLeft } = getDeadlineCalculations(deadline);
                 const urgencyColor = urgencyColorMap[urgencyLevel];
-                
+
                 return (
                   <Pressable
                     key={deadline.id}
@@ -168,9 +169,9 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
                         {deadline.book_title}
                       </ThemedText>
                       <ThemedText variant="secondary" style={styles.deadlineSubtitle}>
-                        {daysLeft > 0 ? `${daysLeft} days left` : 
-                         daysLeft === 0 ? 'Due today' : 
-                         `${Math.abs(daysLeft)} days overdue`}
+                        {daysLeft > 0 ? `${daysLeft} days left` :
+                          daysLeft === 0 ? 'Due today' :
+                            `${Math.abs(daysLeft)} days overdue`}
                       </ThemedText>
                     </View>
                     <IconSymbol name="chevron.right" size={16} color={Colors.light.textMuted} />
