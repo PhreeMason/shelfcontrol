@@ -7,19 +7,11 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useGetDeadlines } from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
-import { getCompletedThisMonth, getOnTrackDeadlines, getUrgentDeadlines } from '@/utils/deadlineUtils';
+import { getCompletedThisMonth, getOnTrackDeadlines } from '@/utils/deadlineUtils';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// TODO: "Books on track: X"
-// TODO: "Completed this month: X"
-
-// TODO: on the profile below the email and join date as its own stats card above the  calendar
-
-// TODO: we can make "urgent/overdue" just "urgent" in the calendar legend that way we can make the full thing bigger or bolder to make it easier to read
-
 
 export default function Profile() {
     const { profile, signOut, refreshProfile } = useAuth();
@@ -29,7 +21,6 @@ export default function Profile() {
 
     const completedCount = getCompletedThisMonth(deadlines);
     const onTrackCount = getOnTrackDeadlines(deadlines);
-    const urgentCount = getUrgentDeadlines(deadlines);
 
     // Refresh profile when the screen comes into focus
     useFocusEffect(

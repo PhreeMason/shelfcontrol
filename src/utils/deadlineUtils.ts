@@ -236,3 +236,50 @@ export function getInitialStepFromSearchParams(
 
   return step;
 }
+
+/**
+ * Get count of deadlines completed this month
+ */
+export const getCompletedThisMonth = (deadlines: ReadingDeadlineWithProgress[]): number => {
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+
+  return deadlines.filter(deadline => {
+    const latestStatus = deadline.status && deadline.status.length > 0
+      ? deadline.status[deadline.status.length - 1]
+      : null;
+
+    if (latestStatus?.status !== 'complete') return false;
+
+    const completionDate = new Date(latestStatus.created_at);
+    return completionDate.getMonth() === currentMonth && completionDate.getFullYear() === currentYear;
+  }).length;
+};
+
+/**
+ * Get count of deadlines that are on track
+ * A deadline is "on track" if its progress percentage is >= expected percentage based on time elapsed
+ */
+export const getOnTrackDeadlines = (deadlines: ReadingDeadlineWithProgress[]): number => {
+  const activeDeadlines = deadlines.filter(deadline => {
+    const latestStatus = deadline.status && deadline.status.length > 0
+      ? deadline.status[deadline.status.length - 1]?.status
+      : 'reading';
+
+    return latestStatus === 'reading' && calculateDaysLeft(deadline.deadline_date) >= 0;
+  });
+
+  return activeDeadlines.filter(deadline => {
+    const progressPercentage = calculateProgressPercentage(deadline);
+    const daysLeft = calculateDaysLeft(deadline.deadline_date);
+
+    const createdDate = new Date(deadline.created_at);
+    const deadlineDate = new Date(deadline.deadline_date);
+    const totalDays = Math.max(1, Math.ceil((deadlineDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)));
+
+    const daysPassed = totalDays - daysLeft;
+    const timePassedPercentage = (daysPassed / totalDays) * 100;
+
+    return progressPercentage >= timePassedPercentage;
+  }).length;
+};
