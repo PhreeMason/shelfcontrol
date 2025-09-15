@@ -5,4 +5,5 @@ export { default as DeadlineActionButtons } from './DeadlineActionButtons';
 export { default as DeadlineCard } from './DeadlineCard';
 export { default as DeadlineHeroSection } from './DeadlineHeroSection';
 export { default as DeadlineViewHeader } from './DeadlineViewHeader';
+export { default as FilteredDeadlines } from './FilteredDeadlines';
 export { default as OverdueReads } from './OverdueReads';

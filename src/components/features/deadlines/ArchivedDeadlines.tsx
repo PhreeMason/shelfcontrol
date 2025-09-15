@@ -65,7 +65,7 @@ const ArchivedDeadlines = () => {
                 {ArchivedDeadlines.length > 0 ? (
                     <>
                         {renderSection('COMPLETED', completed)}
-                        {renderSection('SET ASIDE', setAside)}
+                        {renderSection('PAUSED', setAside)}
                     </>
                 ) : (
                     <ThemedText

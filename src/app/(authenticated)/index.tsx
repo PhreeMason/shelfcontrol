@@ -1,4 +1,4 @@
-import { ActiveReads } from '@/components/features/deadlines';
+import { FilteredDeadlines } from '@/components/features/deadlines';
 import { Header } from '@/components/navigation';
 import { ThemedScrollView, ThemedView } from '@/components/themed';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
@@ -10,7 +10,7 @@ export default function HomeScreen() {
     <ThemedView style={styles.container}>
       <ThemedScrollView contentContainerStyle={styles.scrollContainer}>
         <Header />
-        <ActiveReads />
+        <FilteredDeadlines />
       </ThemedScrollView>
       {Platform.OS === 'android' ?
         <Link href="/deadline/new" asChild>
