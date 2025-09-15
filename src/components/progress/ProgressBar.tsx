@@ -1,6 +1,6 @@
 import LinearProgressBar from '@/components/shared/LinearProgressBar';
 import { ThemedText } from '@/components/themed/ThemedText';
-import { formatDisplayDate } from '@/utils/dateUtils';
+import { formatDeadlineDate } from '@/utils/dateUtils';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -13,13 +13,9 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   progressPercentage,
   deadlineDate
 }) => {
-  const formatDeadlineDate = (dateString: string) => {
-    return formatDisplayDate(dateString, 'MMMM D');
-  };
-
   return (
     <View >
-      <LinearProgressBar 
+      <LinearProgressBar
         progressPercentage={progressPercentage}
         height={12}
         borderRadius={4}

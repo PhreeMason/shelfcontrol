@@ -48,3 +48,5 @@ android/
 
 GoogleService-Info.plist
 google-services.json
+
+coverage/

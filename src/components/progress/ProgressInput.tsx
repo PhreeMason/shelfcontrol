@@ -1,5 +1,6 @@
 import { Typography } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
+import { requiresAudiobookInput, transformProgressInputText, transformProgressValueToText } from '@/utils/formUtils';
 import React from 'react';
 import { Control, Controller } from 'react-hook-form';
 import { StyleSheet, TextInput } from 'react-native';
@@ -16,7 +17,7 @@ const ProgressInput: React.FC<ProgressInputProps> = ({
 }) => {
   const { colors } = useTheme();
 
-  if (format === 'audio') {
+  if (requiresAudiobookInput(format)) {
     return (
       <Controller
         control={control}
@@ -39,8 +40,8 @@ const ProgressInput: React.FC<ProgressInputProps> = ({
       name="currentProgress"
       render={({ field: { value, onChange, onBlur } }) => (
         <TextInput
-          value={value?.toString() || ''}
-          onChangeText={(text) => onChange(text ? parseInt(text, 10) : 0)}
+          value={transformProgressValueToText(value)}
+          onChangeText={(text) => onChange(transformProgressInputText(text))}
           onBlur={onBlur}
           placeholder="Enter current progress"
           placeholderTextColor={colors.textMuted}

@@ -37,3 +37,12 @@ export const calculateDaysLeft = (deadlineDate: string, fromDate: Date = new Dat
   const from = dayjs(fromDate).startOf('day');
   return deadline.diff(from, 'day');
 };
+
+/**
+ * Format a deadline date for display in "Month Day" format
+ * @param dateString - Date string to format
+ * @returns Formatted date string like "January 15"
+ */
+export const formatDeadlineDate = (dateString: string): string => {
+  return formatDisplayDate(dateString, 'MMMM D');
+};

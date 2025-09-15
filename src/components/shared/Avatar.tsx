@@ -2,10 +2,9 @@ import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useAuth } from '@/providers/AuthProvider';
 import { profileService } from '@/services';
-import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
-import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface AvatarProps {
     avatarUrl?: string | null | undefined;
@@ -123,7 +122,7 @@ const Avatar: React.FC<AvatarProps> = ({
         <Image
             source={{ uri: displayUrl }}
             style={[styles.image, { width: size, height: size, borderRadius: size / 2 }]}
-            contentFit="cover"
+            resizeMode='cover'
         />
     ) : (
         <View style={[styles.placeholder, { width: size, height: size, borderRadius: size / 2 }]}>
