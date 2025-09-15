@@ -100,155 +100,154 @@ export default function Profile() {
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['right', 'left']}>
-            <AppHeader 
+            <AppHeader
                 title="Profile"
-                onBack={() => {}} // Not used since showBackButton is false
+                onBack={() => { }} // Not used since showBackButton is false
                 rightElement={editButton}
                 showBackButton={false}
             />
             <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                 <ThemedView style={styles.innerContainer}>
 
-                <ThemedView style={styles.profileCard}>
-                    <View style={styles.avatarSection}>
-                        <Avatar 
-                            avatarUrl={profile?.avatar_url}
-                            size={120}
-                            username={profile?.username}
-                            showIcon={true}
-                        />
-                        <View style={styles.nameSection}>
-                            <ThemedText style={styles.username}>
-                                @{profile?.username || 'Unknown'}
-                            </ThemedText>
-                            {getDisplayName() && (
-                                <ThemedText style={styles.displayName}>
-                                    {getDisplayName()}
+                    <ThemedView style={styles.profileCard}>
+                        <View style={styles.avatarSection}>
+                            <Avatar
+                                avatarUrl={profile?.avatar_url}
+                                size={120}
+                                username={profile?.username}
+                                showIcon={true}
+                            />
+                            <View style={styles.nameSection}>
+                                <ThemedText style={styles.username}>
+                                    @{profile?.username || 'Unknown'}
                                 </ThemedText>
-                            )}
+                                {getDisplayName() && (
+                                    <ThemedText style={styles.displayName}>
+                                        {getDisplayName()}
+                                    </ThemedText>
+                                )}
+                            </View>
                         </View>
-                    </View>
-                </ThemedView>
+                    </ThemedView>
 
-                <ThemedView style={styles.statsCard}>
-                    <ThemedText variant="title" style={styles.sectionTitle}>This Month's Reading Progress</ThemedText>
-                    <View style={styles.statsContainer}>
-                        <View style={styles.statItem}>
-                            <ThemedText style={[styles.statNumber, { color: colors.complete }]}>
-                                {completedCount}
-                            </ThemedText>
-                            <ThemedText variant="muted" style={styles.statLabel}>
-                                COMPLETED
-                            </ThemedText>
-                        </View>
-                        <View style={styles.statItem}>
-                            <ThemedText style={[styles.statNumber, { color: colors.good }]}>
-                                {onTrackCount}
-                            </ThemedText>
-                            <ThemedText variant="muted" style={styles.statLabel}>
-                                ON TRACK
-                            </ThemedText>
-                        </View>
-                    </View>
-                </ThemedView>
-
-                <ThemedView style={styles.calendarSection}>
-                    <ThemedText variant="title" style={styles.sectionTitle}>Your Deadlines</ThemedText>
-                    <DeadlineCalendar />
-                    <CalendarLegend />
-                </ThemedView>
-
-                <ThemedView style={paceStyles.section}>
-                    <View style={styles.paceSectionHeader}>
-                        <IconSymbol name="speedometer" size={24} color={colors.icon} />
-                        <ThemedText style={styles.paceSectionTitle}>
-                            Reading & Listening Pace
-                        </ThemedText>
-                    </View>
-
-                    <View style={styles.paceRow}>
-                        {/* Reading Pace */}
-                        <View style={styles.paceColumn}>
-                            <View style={styles.paceHeader}>
-                                <IconSymbol name="book.fill" size={20} color={colors.primary} />
-                                <ThemedText style={styles.paceColumnTitle}>
-                                    Reading
+                    <ThemedView style={styles.statsCard}>
+                        <ThemedText variant="title" style={styles.sectionTitle}>This Month's Reading Progress</ThemedText>
+                        <View style={styles.statsContainer}>
+                            <View style={styles.statItem}>
+                                <ThemedText style={[styles.statNumber, { color: colors.complete }]}>
+                                    {completedCount}
+                                </ThemedText>
+                                <ThemedText variant="muted" style={styles.statLabel}>
+                                    COMPLETED
                                 </ThemedText>
                             </View>
-                            <ThemedText style={styles.paceValue}>
-                                {readingPaceData.averagePace > 0 ? formatPaceDisplay(readingPaceData.averagePace, 'physical') : '0 pages/day'}
-                            </ThemedText>
-                            <ThemedText style={paceStyles.paceDescription}>
-                                Based on recent reading activity
-                            </ThemedText>
-                            {readingPaceData.isReliable && (
-                                <ThemedText style={paceStyles.dataPointsTextSmall}>
-                                    {readingPaceData.readingDaysCount} reading days
+                            <View style={styles.statItem}>
+                                <ThemedText style={[styles.statNumber, { color: colors.good }]}>
+                                    {onTrackCount}
                                 </ThemedText>
-                            )}
-                        </View>
-
-                        {/* Listening Pace */}
-                        <View style={[styles.paceColumn, paceStyles.paceColumnRight]}>
-                            <View style={styles.paceHeader}>
-                                <IconSymbol name="headphones" size={20} color={colors.accent} />
-                                <ThemedText style={styles.paceColumnTitle}>
-                                    Listening
+                                <ThemedText variant="muted" style={styles.statLabel}>
+                                    ON TRACK
                                 </ThemedText>
                             </View>
-                            <ThemedText style={styles.paceValue}>
-                                {listeningPaceData.averagePace > 0 ? formatListeningPaceDisplay(listeningPaceData.averagePace) : '0m/day'}
-                            </ThemedText>
-                            <ThemedText style={paceStyles.paceDescription}>
-                                Based on recent listening activity
-                            </ThemedText>
-                            {listeningPaceData.isReliable && (
-                                <ThemedText style={paceStyles.dataPointsTextSmall}>
-                                    {listeningPaceData.listeningDaysCount} listening days
-                                </ThemedText>
-                            )}
                         </View>
-                    </View>
-                </ThemedView>
+                    </ThemedView>
 
-                {/* How Pace is Calculated - Educational info */}
-                <ThemedView style={paceStyles.section}>
-                    <View style={styles.paceSectionHeader}>
-                        <IconSymbol name="info.circle.fill" size={24} color={colors.icon} />
-                        <ThemedText style={styles.paceSectionTitle}>
-                            How Pace is Calculated
-                        </ThemedText>
-                    </View>
+                    <ThemedView style={styles.calendarSection}>
+                        <ThemedText variant="title" style={styles.sectionTitle}>Your Deadlines</ThemedText>
+                        <DeadlineCalendar />
+                        <CalendarLegend />
+                    </ThemedView>
 
-                    <View style={styles.paceInfoContainer}>
-                        <ThemedText style={paceStyles.infoText}>
-                            Your reading pace is based on the average pages read per day within the last 14 days starting from your most recent logged day.
-                        </ThemedText>
-                        <ThemedText style={paceStyles.infoText}>
-                            If today is December 25th and the last progress update was December 15th, your pace is calculated based on your average from December 2nd - December 15th.
-                        </ThemedText>
-                    </View>
-                </ThemedView>
+                    <ThemedView style={paceStyles.section}>
+                        <View style={styles.paceSectionHeader}>
+                            <ThemedText variant='defaultSemiBold' style={[styles.paceSectionTitle, { fontSize: 20 }]}>
+                                Reading & Listening Pace
+                            </ThemedText>
+                        </View>
 
-                <ThemedView style={styles.infoSection}>
-                    <View style={styles.infoItem}>
-                        <IconSymbol name="envelope" size={20} color="#666" />
-                        <ThemedText style={styles.infoText}>
-                            {profile?.email || 'No email provided'}
-                        </ThemedText>
-                    </View>
+                        <View style={styles.paceRow}>
+                            {/* Reading Pace */}
+                            <View style={styles.paceColumn}>
+                                <View style={styles.paceHeader}>
+                                    <IconSymbol name="book.fill" size={20} color={colors.primary} />
+                                    <ThemedText style={styles.paceColumnTitle}>
+                                        Reading
+                                    </ThemedText>
+                                </View>
+                                <ThemedText style={styles.paceValue}>
+                                    {readingPaceData.averagePace > 0 ? formatPaceDisplay(readingPaceData.averagePace, 'physical') : '0 pages/day'}
+                                </ThemedText>
+                                <ThemedText style={paceStyles.paceDescription}>
+                                    Based on recent reading activity
+                                </ThemedText>
+                                {readingPaceData.isReliable && (
+                                    <ThemedText style={paceStyles.dataPointsTextSmall}>
+                                        {readingPaceData.readingDaysCount} reading days
+                                    </ThemedText>
+                                )}
+                            </View>
 
-                    <View style={styles.infoItem}>
-                        <IconSymbol name="calendar" size={20} color="#666" />
-                        <ThemedText style={styles.infoText}>
-                            Joined {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'Unknown'}
-                        </ThemedText>
-                    </View>
-                </ThemedView>
+                            {/* Listening Pace */}
+                            <View style={[styles.paceColumn, paceStyles.paceColumnRight]}>
+                                <View style={styles.paceHeader}>
+                                    <IconSymbol name="headphones" size={20} color={colors.accent} />
+                                    <ThemedText style={styles.paceColumnTitle}>
+                                        Listening
+                                    </ThemedText>
+                                </View>
+                                <ThemedText style={styles.paceValue}>
+                                    {listeningPaceData.averagePace > 0 ? formatListeningPaceDisplay(listeningPaceData.averagePace) : '0m/day'}
+                                </ThemedText>
+                                <ThemedText style={paceStyles.paceDescription}>
+                                    Based on recent listening activity
+                                </ThemedText>
+                                {listeningPaceData.isReliable && (
+                                    <ThemedText style={paceStyles.dataPointsTextSmall}>
+                                        {listeningPaceData.listeningDaysCount} listening days
+                                    </ThemedText>
+                                )}
+                            </View>
+                        </View>
+                    </ThemedView>
 
-                <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-                    <ThemedText style={styles.signOutButtonText}>Sign Out</ThemedText>
-                </TouchableOpacity>
+                    {/* How Pace is Calculated - Educational info */}
+                    <ThemedView style={paceStyles.section}>
+                        <View style={[styles.paceSectionHeader, { justifyContent: 'flex-start' }]}>
+                            <IconSymbol name="info.circle.fill" size={24} color={colors.icon} />
+                            <ThemedText style={styles.paceSectionTitle}>
+                                How Pace is Calculated
+                            </ThemedText>
+                        </View>
+
+                        <View style={styles.paceInfoContainer}>
+                            <ThemedText style={paceStyles.infoText}>
+                                Your reading pace is based on the average pages read per day within the last 14 days starting from your most recent logged day.
+                            </ThemedText>
+                            <ThemedText style={paceStyles.infoText}>
+                                If today is December 25th and the last progress update was December 15th, your pace is calculated based on your average from December 2nd - December 15th.
+                            </ThemedText>
+                        </View>
+                    </ThemedView>
+
+                    <ThemedView style={styles.infoSection}>
+                        <View style={styles.infoItem}>
+                            <IconSymbol name="envelope" size={20} color="#666" />
+                            <ThemedText style={styles.infoText}>
+                                {profile?.email || 'No email provided'}
+                            </ThemedText>
+                        </View>
+
+                        <View style={styles.infoItem}>
+                            <IconSymbol name="calendar" size={20} color="#666" />
+                            <ThemedText style={styles.infoText}>
+                                Joined {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'Unknown'}
+                            </ThemedText>
+                        </View>
+                    </ThemedView>
+
+                    <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+                        <ThemedText style={styles.signOutButtonText}>Sign Out</ThemedText>
+                    </TouchableOpacity>
                 </ThemedView>
             </ScrollView>
         </SafeAreaView>
@@ -363,6 +362,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 16,
+        justifyContent: 'center',
     },
     paceSectionTitle: {
         fontSize: 18,
