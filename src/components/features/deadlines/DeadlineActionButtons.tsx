@@ -87,8 +87,8 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         Toast.show({
           swipeable: true,
           type: 'success',
-          text1: 'Book set aside',
-          text2: `"${deadline.book_title}" has been set aside for later`,
+          text1: 'Book paused',
+          text2: `"${deadline.book_title}" has been paused`,
           autoHide: true,
           visibilityTime: 1500,
           position: 'top',
@@ -100,7 +100,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         Toast.show({
           swipeable: true,
           type: 'error',
-          text1: 'Failed to set aside deadline',
+          text1: 'Failed to pause deadline',
           text2: error.message || 'Please try again',
           autoHide: true,
           visibilityTime: 1500,

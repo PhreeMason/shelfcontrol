@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
 import { DeadlineCard } from '@/components/features/deadlines/DeadlineCard';
-import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedScrollView, ThemedText, ThemedView } from '@/components/themed';
+import { ThemedButton } from '@/components/themed/ThemedButton';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 type FilterType = 'active' | 'overdue' | 'completed' | 'set_aside' | 'all';
 
@@ -17,7 +17,7 @@ const filterOptions: FilterOption[] = [
   { key: 'active', label: 'Active' },
   { key: 'overdue', label: 'Overdue' },
   { key: 'completed', label: 'Completed' },
-  { key: 'set_aside', label: 'Set Aside' },
+  { key: 'set_aside', label: 'Paused' },
   { key: 'all', label: 'All' },
 ];
 
@@ -64,7 +64,7 @@ const FilteredDeadlines = () => {
       case 'completed':
         return 'No completed deadlines';
       case 'set_aside':
-        return 'No deadlines set aside';
+        return 'No deadlines paused';
       case 'all':
         return 'No deadlines found';
       default:
