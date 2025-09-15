@@ -74,22 +74,8 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     }
   };
 
-  const getSubtitle = (format: string) => {
-    switch (format) {
-      case "audio":
-        return "Daily progress (bars) & required pace (line)";
-      case "eBook":
-        return "Daily progress (bars) & required pace (line)";
-      case "physical":
-        return "Daily progress (bars) & required pace (line)";
-      default:
-        return "Daily progress (bars) & required pace (line)";
-    }
-  };
-
   const unitLabel = getUnitLabel(deadline.format);
   const chartTitle = getChartTitle(deadline.format);
-  const subtitle = getSubtitle(deadline.format);
 
   const recentDays = getBookReadingDays(deadline);
 
