@@ -37,7 +37,7 @@ const TodaysGoals: React.FC = () => {
     const progress = calculateProgressForToday(deadline);
     return total + progress;
   }, 0);
-
+  console.log(JSON.stringify(readingDeadlines, null, 2));
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
