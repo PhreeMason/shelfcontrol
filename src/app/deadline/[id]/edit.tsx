@@ -73,7 +73,7 @@ const EditDeadline = () => {
             setValue('bookTitle', deadline.book_title);
             setValue('bookAuthor', deadline.author || '');
             setValue('format', deadline.format);
-            setValue('source', deadline.source || 'arc');
+            setValue('source', deadline.source || 'ARC');
             setValue('deadline', new Date(deadline.deadline_date));
             setValue('flexibility', deadline.flexibility);
             setValue('book_id', deadline.book_id || undefined);
