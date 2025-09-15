@@ -7,7 +7,6 @@ const ProgressHeader: React.FC = () => {
   const {colors, typography} = useTheme();
   return (
     <ThemedView style={styles.sectionTitle}>
-      <ThemedText style={styles.sectionIcon}>📊</ThemedText>
       <ThemedText style={[typography.bodyLarge, { color: colors.text, fontWeight: 'bold' }]}>Reading Progress</ThemedText>
     </ThemedView>
   );
@@ -19,10 +18,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
     gap: 8,
-  },
-  sectionIcon: {
-    fontSize: 20,
-  },
+  }
 });
 
 export default ProgressHeader;
