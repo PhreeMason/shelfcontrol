@@ -31,14 +31,13 @@
       "intentFilters": [
         {
           "action": "VIEW",
-          "autoVerify": true,
           "data": [
             {
               "scheme": "shelfControl"
             }
           ],
           "category": [
-            "BROWSABLE",
+            "BROWSABLE", 
             "DEFAULT"
           ]
         }
