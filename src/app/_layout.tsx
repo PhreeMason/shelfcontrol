@@ -1,7 +1,7 @@
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { toastConfig } from '@/components/ui/ToastConfig';
 import AuthProvider from '@/providers/AuthProvider';
 import { DeadlineProvider } from '@/providers/DeadlineProvider';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import {
   QueryClient,
   QueryClientProvider,
@@ -11,12 +11,10 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
-import { toastConfig } from '@/components/ui/ToastConfig';
 
 const queryClient = new QueryClient()
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     Inter: require('../assets/fonts/Inter-Regular.ttf'),
@@ -37,7 +35,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <ThemeProvider value={DefaultTheme}>
           <DeadlineProvider>
             <Stack>
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />

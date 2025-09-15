@@ -45,6 +45,9 @@ const MAPPING = {
   'book.fill': 'menu-book',
   'headphones': 'headphones',
   'pencil': 'edit',
+  // Calendar icons
+  'calendar': 'event',
+  'envelope': 'email',
 } as IconMapping;
 
 /**

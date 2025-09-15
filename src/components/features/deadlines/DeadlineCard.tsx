@@ -9,16 +9,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, Platform, Pressable, StyleSheet, View } from 'react-native';
-
-const urgencyBorderColorMap = {
-  'complete': '#3B82F6',
-  'set_aside': '#9CA3AF',
-  'overdue': '#C17B7B',
-  'urgent': '#C17B7B',
-  'good': '#7FB06999',
-  'approaching': '#F5C24299',
-  'impossible': '#E8B4B8',
-};
 interface DeadlineCardProps {
   deadline: ReadingDeadlineWithProgress;
   disableNavigation?: boolean;
@@ -61,7 +51,7 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
   });
 
   let countdownColor = urgencyTextColorMap[urgencyLevel];
-  let borderColor = urgencyBorderColorMap[urgencyLevel];
+  let borderColor = urgencyTextColorMap[urgencyLevel];
 
   // Check if deadline is archived (completed or set aside)
   const latestStatus = deadline.status && deadline.status.length > 0
@@ -70,8 +60,8 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
 
   const isArchived = latestStatus === 'complete' || latestStatus === 'set_aside';
   if (isArchived) {
-    borderColor = urgencyBorderColorMap[latestStatus];
-    countdownColor = urgencyBorderColorMap[latestStatus];
+    borderColor = urgencyTextColorMap[latestStatus];
+    countdownColor = urgencyTextColorMap[latestStatus];
   }
 
 
@@ -161,10 +151,16 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
       <View style={[styles.countdownSquare, { borderColor }]}>
         {isArchived ? (
           <>
-            <ThemedText style={[styles.archivedIcon, { color: countdownColor }]}>
-              {latestStatus === 'complete' ? '✓' : '📌'}
+            <ThemedText style={[
+              Platform.OS === 'android' ? styles.archivedIconAndroid : styles.archivedIcon,
+              { color: countdownColor }
+            ]}>
+              {latestStatus === 'complete' ? '✓' : '"'}
             </ThemedText>
-            <ThemedText style={[styles.countdownLabel, { color: countdownColor }]}>
+            <ThemedText style={[
+              Platform.OS === 'android' ? styles.countdownLabelAndroid : styles.countdownLabel,
+              { color: countdownColor }
+            ]}>
               {latestStatus === 'complete' ? 'Done' : 'Paused'}
             </ThemedText>
           </>
@@ -313,6 +309,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 28,
     marginBottom: 2,
+  },
+  archivedIconAndroid: {
+    fontSize: 24,
+    fontWeight: '700',
+    lineHeight: 28,
+    marginBottom: 0,
   },
 });
 

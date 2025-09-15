@@ -281,13 +281,12 @@ const ReadingProgress = ({
             onPress={handleStartReadingSession}
             disabled={updateProgressMutation.isPending}
           >
-            <ThemedText style={styles.sessionIcon}>⏱️</ThemedText>
             <ThemedText style={styles.sessionText}>
               {updateProgressMutation.isPending ? "Updating..." : "Start Session"}
             </ThemedText>
           </TouchableOpacity>
           <ThemedButton
-            title={updateProgressMutation.isPending ? "Updating..." : "✏️ Update Progress"}
+            title={updateProgressMutation.isPending ? "Updating..." : "Update Progress"}
             variant="primary"
             onPress={handleSubmit(onSubmitProgress)}
             disabled={updateProgressMutation.isPending}

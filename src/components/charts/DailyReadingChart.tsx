@@ -277,10 +277,6 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
           </View>
         </View>
       </View>
-      
-      <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
-        {subtitle}
-      </ThemedText>
     </ThemedView>
   );
 };
@@ -330,11 +326,6 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 12,
-  },
-  subtitle: {
-    fontSize: 12,
-    textAlign: "center",
-    fontStyle: "italic",
   },
   emptyState: {
     alignItems: "center",
