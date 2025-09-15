@@ -282,7 +282,7 @@ const NewDeadLine = () => {
 
                 <ThemedKeyboardAwareScrollView
                     style={styles.content}
-                    // contentContainerStyle={{ paddingBottom: 48 }}
+                    contentContainerStyle={{ paddingBottom: 48 }}
                     keyboardShouldPersistTaps="handled"
                 >
                     {currentStep === 1 ? (

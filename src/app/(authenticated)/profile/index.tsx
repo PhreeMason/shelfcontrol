@@ -4,8 +4,10 @@ import AppHeader from '@/components/shared/AppHeader';
 import Avatar from '@/components/shared/Avatar';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useGetDeadlines } from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
+import { getCompletedThisMonth, getOnTrackDeadlines, getUrgentDeadlines } from '@/utils/deadlineUtils';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -23,6 +25,11 @@ export default function Profile() {
     const { profile, signOut, refreshProfile } = useAuth();
     const router = useRouter();
     const { colors } = useTheme();
+    const { data: deadlines = [] } = useGetDeadlines();
+
+    const completedCount = getCompletedThisMonth(deadlines);
+    const onTrackCount = getOnTrackDeadlines(deadlines);
+    const urgentCount = getUrgentDeadlines(deadlines);
 
     // Refresh profile when the screen comes into focus
     useFocusEffect(
@@ -104,6 +111,28 @@ export default function Profile() {
                         <ThemedText style={styles.infoText}>
                             Joined {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'Unknown'}
                         </ThemedText>
+                    </View>
+                </ThemedView>
+
+                <ThemedView style={styles.statsCard}>
+                    <ThemedText variant="title" style={styles.sectionTitle}>This Month's Reading Progress</ThemedText>
+                    <View style={styles.statsContainer}>
+                        <View style={styles.statItem}>
+                            <ThemedText style={[styles.statNumber, { color: colors.complete }]}>
+                                {completedCount}
+                            </ThemedText>
+                            <ThemedText variant="muted" style={styles.statLabel}>
+                                COMPLETED
+                            </ThemedText>
+                        </View>
+                        <View style={styles.statItem}>
+                            <ThemedText style={[styles.statNumber, { color: colors.good }]}>
+                                {onTrackCount}
+                            </ThemedText>
+                            <ThemedText variant="muted" style={styles.statLabel}>
+                                ON TRACK
+                            </ThemedText>
+                        </View>
                     </View>
                 </ThemedView>
 
@@ -200,5 +229,30 @@ const styles = StyleSheet.create({
     sectionTitle: {
         marginBottom: 16,
         fontWeight: '600',
+    },
+    statsCard: {
+        backgroundColor: '#f8f9fa',
+        borderRadius: 16,
+        padding: 20,
+        marginBottom: 24,
+    },
+    statsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    statItem: {
+        alignItems: 'center',
+        flex: 1,
+    },
+    statNumber: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        lineHeight: 33,
+        marginBottom: 4,
+    },
+    statLabel: {
+        fontSize: 12,
+        letterSpacing: 1,
+        textAlign: 'center',
     },
 });

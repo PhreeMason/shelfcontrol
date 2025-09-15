@@ -6,7 +6,7 @@ import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
 const TodaysGoals: React.FC = () => {
-  const { deadlines, getDeadlineCalculations, calculateProgressForToday } = useDeadlines();
+  const { activeDeadlines: deadlines, getDeadlineCalculations, calculateProgressForToday } = useDeadlines();
   const audioDeadlines: ReadingDeadlineWithProgress[] = [];
   const readingDeadlines: ReadingDeadlineWithProgress[] = [];
 
@@ -37,7 +37,7 @@ const TodaysGoals: React.FC = () => {
     const progress = calculateProgressForToday(deadline);
     return total + progress;
   }, 0);
-  console.log(JSON.stringify(readingDeadlines, null, 2));
+
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
