@@ -5,7 +5,7 @@ import { calculateCutoffTime, calculateRequiredPace, minimumUnitsPerDayFromDeadl
 import dayjs from "dayjs";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { BarChart, LineChart } from "react-native-gifted-charts";
+import { BarChart } from "react-native-gifted-charts";
 
 interface DailyReadingChartProps {
   deadline: ReadingDeadlineWithProgress;
@@ -64,26 +64,26 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
   const getChartTitle = (format: string) => {
     switch (format) {
       case "audio":
-        return "Daily Required Pace";
+        return "Daily Reading Progress";
       case "eBook":
-        return "Required Daily Pace";
+        return "Daily Reading Progress";
       case "physical":
-        return "Required Daily Pace";
+        return "Daily Reading Progress";
       default:
-        return "Required Daily Pace";
+        return "Daily Reading Progress";
     }
   };
 
   const getSubtitle = (format: string) => {
     switch (format) {
       case "audio":
-        return "Minutes listened per day";
+        return "Daily progress (bars) & required pace (line)";
       case "eBook":
-        return "Percentage read per day";
+        return "Daily progress (bars) & required pace (line)";
       case "physical":
-        return "Pages read per day";
+        return "Daily progress (bars) & required pace (line)";
       default:
-        return "Progress per day";
+        return "Daily progress (bars) & required pace (line)";
     }
   };
 
@@ -148,7 +148,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
       value: Math.round(day.progressRead),
       label: label,
       frontColor: colors.primary,
-      spacing: 2, // Changed: consistent spacing for all bars
+      spacing: 2,
       labelWidth: 40,
       labelTextStyle: {
         color: colors.text,
@@ -169,17 +169,27 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     };
   });
 
-  // Prepare data for the line chart (required daily pace)
+  // Get the required daily pace data and align it with bar chart data
   const lineChartRealData = minimumUnitsPerDayFromDeadline(deadline);
+  
+  // Create line data that matches the bar chart dates
+  const lineData = recentDays.map((day) => {
+    // Find matching date in lineChartRealData or use the closest available value
+    const matchingLineData = lineChartRealData.find(lineDay => 
+      dayjs(lineDay.label).format("M/DD") === dayjs(day.date).format("M/DD")
+    );
+    
+    return {
+      value: matchingLineData ? matchingLineData.value : displayDailyMinimum,
+      label: dayjs(day.date).format("M/DD"),
+      dataPointText: matchingLineData ? `${Math.round(matchingLineData.value)}` : `${Math.round(displayDailyMinimum)}`,
+    };
+  });
 
-  const maxValue = Math.max(
-    ...chartData.map((d) => d.value),
-    displayDailyMinimum
-  );
+  const maxBarValue = Math.max(...chartData.map((d) => d.value));
+  const maxLineValue = Math.max(...lineData.map((d) => d.value));
+  const maxValue = Math.max(maxBarValue, maxLineValue, displayDailyMinimum);
   const yAxisMax = Math.ceil(maxValue * 1.2); // Add 20% padding
-
-  const lineMaxValue = Math.max(...lineChartRealData.map((d) => d.value));
-  const lineYAxisMax = Math.ceil(lineMaxValue * 1.1); // Add 10% padding
 
   return (
     <ThemedView style={styles.container}>
@@ -188,57 +198,42 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
       </ThemedText>
 
       <View style={styles.chartContainer}>
-        {/* Line Chart - Required Daily Pace */}
-        <View style={styles.lineChartSection} testID="line-chart">
-          <LineChart
-            data={lineChartRealData}
-            width={300}
-            height={120}
-            spacing={chartData.length > 1 ? 280 / (chartData.length - 1) : 280}
-            hideRules
-            hideDataPoints={false}
-            dataPointsColor={colors.accent}
-            dataPointsRadius={3}
-            color={colors.accent}
-            thickness={2}
-            curved
-            xAxisThickness={1}
-            yAxisThickness={1}
-            xAxisColor={colors.border}
-            yAxisColor={colors.border}
-            yAxisTextStyle={{
-              color: colors.textMuted,
-              fontSize: 10,
-            }}
-            xAxisLabelTextStyle={{
-              color: colors.textMuted,
-              fontSize: 9,
-              textAlign: "center",
-            }}
-            noOfSections={3}
-            maxValue={lineYAxisMax > 0 ? lineYAxisMax : 10}
-            yAxisLabelSuffix={` ${unitLabel}`}
-            isAnimated
-            animationDuration={1000}
-          />
-        </View>
-
-        {/* Bar Chart - Daily Progress */}
-        <View style={styles.barChartSection} testID="bar-chart">
-          <ThemedText style={[styles.title, { color: colors.text }]}>
-            Daily Progress
-          </ThemedText>
+        {/* Combined Bar Chart with Line Overlay */}
+        <View style={styles.combinedChartSection} testID="combined-chart">
           <BarChart
+            // Bar chart data
             data={chartData}
+            
+            // Enable line overlay
+            showLine={true}
+            lineData={lineData}
+            
+            // Chart dimensions
             width={350}
-            height={180}
+            height={200}
             initialSpacing={10}
             endSpacing={10}
+            
+            // Bar styling (maintain your existing styling)
             barWidth={(() => {
               const calculatedWidth = Math.max(20, Math.min(35, 320 / chartData.length));
               return calculatedWidth;
             })()}
             roundedTop
+            
+            // Line configuration (using your theme colors)
+            lineConfig={{
+              thickness: 3,
+              color: colors.accent,
+              curved: true,
+              dataPointsShape: 'circular',
+              dataPointsWidth: 6,
+              dataPointsHeight: 6,
+              dataPointsColor: colors.accent,
+              hideDataPoints: false,
+            }}
+            
+            // Axis styling (maintain your existing styling)
             hideRules
             xAxisThickness={2}
             yAxisThickness={2}
@@ -253,27 +248,36 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
               fontSize: 10,
               textAlign: "left",
             }}
+            
+            // Y-axis configuration
             noOfSections={4}
             maxValue={yAxisMax > 0 ? yAxisMax : 10}
-            yAxisLabelSuffix={` ${unitLabel}`}
-            showReferenceLine1
-            referenceLine1Position={displayDailyMinimum}
-            referenceLine1Config={{
-              color: colors.accent,
-              dashWidth: 3,
-              dashGap: 2,
-              thickness: 2,
-              labelTextStyle: {
-                color: colors.accent,
-                fontSize: 10,
-                fontWeight: "bold",
-              },
-            }}
+            yAxisLabelSuffix={` ${unitLabel}`}        
+            
+            // Animation
             isAnimated
-            animationDuration={800}
+            animationDuration={1000}
           />
         </View>
+        
+        {/* Legend */}
+        <View style={styles.legendContainer}>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendBar, { backgroundColor: colors.primary }]} />
+            <ThemedText style={[styles.legendText, { color: colors.textMuted }]}>
+              Daily Progress
+            </ThemedText>
+          </View>
+          
+          <View style={styles.legendItem}>
+            <View style={[styles.legendLine, { backgroundColor: colors.accent }]} />
+            <ThemedText style={[styles.legendText, { color: colors.textMuted }]}>
+              Required Pace
+            </ThemedText>
+          </View>
+        </View>
       </View>
+      
       <ThemedText style={[styles.subtitle, { color: colors.textSecondary }]}>
         {subtitle}
       </ThemedText>
@@ -298,18 +302,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
-  lineChartSection: {
+  combinedChartSection: {
     alignItems: "center",
     marginBottom: 16,
-  },
-  barChartSection: {
-    alignItems: "center",
-  },
-  chartSubtitle: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
-    textAlign: "center",
   },
   legendContainer: {
     flexDirection: "row",
@@ -331,11 +326,7 @@ const styles = StyleSheet.create({
   legendLine: {
     width: 12,
     height: 2,
-  },
-  legendDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    borderRadius: 1,
   },
   legendText: {
     fontSize: 12,
