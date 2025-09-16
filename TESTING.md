@@ -44,6 +44,29 @@ src/
 
 ## Test Infrastructure
 
+### Test Fixtures
+
+Test fixtures provide realistic mock data for testing. They are located in `src/__fixtures__/`.
+
+#### Available Fixtures
+
+- **`deadlines.mock.json`** - Contains sanitized production deadline data with:
+  - Multiple deadline objects with varying states (active, overdue, completed)
+  - Different formats (audio, eBook, physical)
+  - Progress tracking arrays
+  - Status history arrays
+  - All PII removed and IDs anonymized
+
+**Usage Example:**
+```typescript
+import deadlinesMockData from '@/__fixtures__/deadlines.mock.json';
+
+// Use in tests
+const mockDeadlines = deadlinesMockData as ReadingDeadlineWithProgress[];
+```
+
+This fixture data helps test real-world scenarios and edge cases that occur in production.
+
 ### Jest Configuration (`package.json`)
 
 ```json

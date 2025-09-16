@@ -13,32 +13,38 @@ import {
   ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
 import {
-  calculateCurrentProgress,
   calculateRemaining,
   calculateTotalQuantity,
-  getPaceEstimate,
-  getReadingEstimate,
 } from '@/utils/deadlineCalculations';
 import {
   calculateDaysLeft,
   calculateProgress,
   calculateProgressPercentage,
   getTotalReadingPagesForDay,
-  getUnitForFormat,
   separateDeadlines,
 } from '@/utils/deadlineUtils';
 import {
-  calculateRequiredPace,
   calculateUserListeningPace,
   calculateUserPace,
   formatPaceDisplay,
-  getPaceBasedStatus,
-  getPaceStatusMessage,
   PaceBasedStatus,
   UserListeningPaceData,
   UserPaceData,
 } from '@/utils/paceCalculations';
-import dayjs from 'dayjs';
+import {
+  calculateDeadlinePaceStatus,
+  calculateProgressAsOfStartOfDay,
+  calculateProgressForToday,
+  calculateUnitsPerDay,
+  createArchivedPaceData,
+  createDeadlineCalculationResult,
+  formatUnitsPerDay,
+  formatUnitsPerDayForDisplay,
+  getDeadlineStatus,
+  mapPaceColorToUrgencyColor,
+  mapPaceToUrgency,
+  DeadlineCalculationResult,
+} from '@/utils/deadlineProviderUtils';
 import React, { createContext, ReactNode, useContext, useMemo } from 'react';
 
 interface DeadlineContextType {
@@ -197,53 +203,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
 
   // Pace calculation functions (merged from PaceProvider)
   const getDeadlinePaceStatus = (deadline: ReadingDeadlineWithProgress) => {
-    const currentProgress = calculateProgress(deadline);
-    const totalQuantity = calculateTotalQuantity(
-      deadline.format,
-      deadline.total_quantity
-    );
-    const daysLeft = calculateDaysLeft(deadline.deadline_date);
-    const progressPercentage = calculateProgressPercentage(deadline);
-
-    // Calculate required pace for this specific deadline
-    const requiredPace = calculateRequiredPace(
-      totalQuantity,
-      currentProgress,
-      daysLeft,
-      deadline.format
-    );
-
-    // Use appropriate pace data based on format
-    const relevantUserPaceData =
-      deadline.format === 'audio' ? userListeningPaceData : userPaceData;
-    const userPace = relevantUserPaceData.averagePace;
-
-    // Get status based on user's pace vs required pace
-    const status = getPaceBasedStatus(
-      userPace,
-      requiredPace,
-      daysLeft,
-      progressPercentage
-    );
-
-    // Generate detailed status message
-    const statusMessage = getPaceStatusMessage(
-      relevantUserPaceData,
-      requiredPace,
-      status,
-      deadline.format
-    );
-
-    return {
-      userPace,
-      requiredPace,
-      status,
-      statusMessage,
-      paceDisplay: formatPaceDisplay(userPace, deadline.format),
-      requiredPaceDisplay: formatPaceDisplay(requiredPace, deadline.format),
-      daysLeft,
-      progressPercentage,
-    };
+    return calculateDeadlinePaceStatus(deadline, userPaceData, userListeningPaceData);
   };
 
   const formatPaceForFormat = (
@@ -269,153 +229,18 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     return userListeningPaceData.calculationMethod;
   };
 
-  // Calculate units per day needed based on format
-  const calculateUnitsPerDay = (
-    totalQuantity: number,
-    currentProgress: number,
-    daysLeft: number,
-    format: 'physical' | 'eBook' | 'audio'
-  ): number => {
-    const total = calculateTotalQuantity(format, totalQuantity);
-    const current = calculateCurrentProgress(format, currentProgress);
-    const remaining = total - current;
+  // Calculate units per day needed based on format (now using utility function)
 
-    if (daysLeft <= 0) return remaining;
-    return Math.ceil(remaining / daysLeft);
-  };
+  // Calculate progress as of the start of today (now using utility function)
 
-  // Calculate progress as of the start of today (local time)
-  const calculateProgressAsOfStartOfDay = (
-    deadline: ReadingDeadlineWithProgress
-  ): number => {
-    if (!deadline.progress || deadline.progress.length === 0) return 0;
+  // Calculate how much progress was made today (now using utility function)
 
-    // Get the start of today in local time
-    const startOfToday = dayjs().startOf('day').toDate();
+  // Format the units per day display (now using utility function)
 
-    // Filter progress entries to only include those from before or at the start of today
-    const progressBeforeToday = deadline.progress.filter(progress => {
-      const progressDate = new Date(
-        progress.updated_at || progress.created_at || ''
-      );
-      return progressDate <= startOfToday;
-    });
-
-    if (progressBeforeToday.length === 0) return 0;
-
-    // Find the most recent progress entry before or at the start of today
-    const latestProgress = progressBeforeToday.reduce((latest, current) => {
-      const currentDate = new Date(
-        current.updated_at || current.created_at || ''
-      );
-      const latestDate = new Date(latest.updated_at || latest.created_at || '');
-      return currentDate > latestDate ? current : latest;
-    });
-
-    return latestProgress.current_progress || 0;
-  };
-
-  // Calculate how much progress was made today (since start of day)
-  const calculateProgressForToday = (
-    deadline: ReadingDeadlineWithProgress
-  ): number => {
-    const currentProgress = calculateProgress(deadline);
-    const progressAtStartOfDay = calculateProgressAsOfStartOfDay(deadline);
-
-    // Return the difference (progress made today)
-    return Math.max(0, currentProgress - progressAtStartOfDay);
-  };
-
-  // Format the units per day display based on format (original version for general use)
-  const formatUnitsPerDay = (
-    units: number,
-    format: 'physical' | 'eBook' | 'audio'
-  ): string => {
-    if (format === 'audio') {
-      const hours = Math.floor(units / 60);
-      const minutes = units % 60;
-      if (hours > 0) {
-        return minutes > 0
-          ? `${hours}h ${minutes}m/day needed`
-          : `${hours}h/day needed`;
-      }
-      return `${minutes} minutes/day needed`;
-    }
-    const unit = getUnitForFormat(format);
-    return `${units} ${unit}/day needed`;
-  };
-
-  // Special formatting for DeadlineCard display - handles < 1 unit/day cases
-  const formatUnitsPerDayForDisplay = (
-    units: number,
-    format: 'physical' | 'eBook' | 'audio',
-    remaining: number,
-    daysLeft: number
-  ): string => {
-    // Calculate the actual decimal value for precise formatting
-    const actualUnitsPerDay = daysLeft > 0 ? remaining / daysLeft : units;
-
-    if (format === 'audio') {
-      // For audio: if less than 1 minute per day, show in week format when appropriate
-      if (actualUnitsPerDay < 1 && daysLeft > 0) {
-        const daysPerMinute = Math.round(1 / actualUnitsPerDay);
-
-        // Convert to weeks if it makes sense
-        if (daysPerMinute === 7) {
-          return '1 minute/week';
-        } else if (daysPerMinute === 14) {
-          return '1 minute/2 weeks';
-        } else if (daysPerMinute === 21) {
-          return '1 minute/3 weeks';
-        } else if (daysPerMinute === 28) {
-          return '1 minute/month';
-        } else if (daysPerMinute > 7 && daysPerMinute % 7 === 0) {
-          const weeks = daysPerMinute / 7;
-          return `1 minute/${weeks} weeks`;
-        }
-
-        return `1 minute every ${daysPerMinute} days`;
-      }
-
-      // For >= 1 minute/day, use standard formatting
-      const hours = Math.floor(units / 60);
-      const minutes = Math.round(units % 60);
-      if (hours > 0) {
-        return minutes > 0
-          ? `${hours}h ${minutes}m/day needed`
-          : `${hours}h/day needed`;
-      }
-      return `${Math.round(units)} minutes/day needed`;
-    }
-
-    // For physical/eBook: if less than 1 page per day, show in week format when appropriate
-    if (actualUnitsPerDay < 1 && daysLeft > 0) {
-      const daysPerPage = Math.round(1 / actualUnitsPerDay);
-
-      // Convert to weeks if it makes sense
-      if (daysPerPage === 7) {
-        return '1 page/week';
-      } else if (daysPerPage === 14) {
-        return '1 page/2 weeks';
-      } else if (daysPerPage === 21) {
-        return '1 page/3 weeks';
-      } else if (daysPerPage === 28) {
-        return '1 page/month';
-      } else if (daysPerPage > 7 && daysPerPage % 7 === 0) {
-        const weeks = daysPerPage / 7;
-        return `1 page/${weeks} weeks`;
-      }
-
-      return `1 page every ${daysPerPage} days`;
-    }
-
-    // For >= 1 page/day, use standard formatting
-    const unit = getUnitForFormat(format);
-    return `${Math.round(units)} ${unit}/day needed`;
-  };
+  // Special formatting for DeadlineCard display (now using utility function)
 
   // Comprehensive calculations for a single deadline (enhanced with pace-based logic)
-  const getDeadlineCalculations = (deadline: ReadingDeadlineWithProgress) => {
+  const getDeadlineCalculations = (deadline: ReadingDeadlineWithProgress): DeadlineCalculationResult => {
     const currentProgress = calculateProgress(deadline);
     const totalQuantity = calculateTotalQuantity(
       deadline.format,
@@ -429,43 +254,24 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
       undefined
     );
     const progressPercentage = calculateProgressPercentage(deadline);
-    const unit = getUnitForFormat(deadline.format);
 
     // Check if deadline is completed or set aside
-    const latestStatus =
-      deadline.status && deadline.status.length > 0
-        ? deadline.status[deadline.status.length - 1].status
-        : 'reading';
-
-    const isCompleted = latestStatus === 'complete';
-    const isSetAside = latestStatus === 'set_aside';
-    const isArchived = isCompleted || isSetAside;
+    const deadlineStatus = getDeadlineStatus(deadline);
 
     // For archived deadlines, don't calculate countdown-related metrics
-    let daysLeft,
-      unitsPerDay,
-      urgencyLevel,
-      urgencyColor,
-      statusMessage,
-      paceData;
+    let daysLeft, unitsPerDay, urgencyLevel, urgencyColor, statusMessage, paceData;
 
-    if (isArchived) {
-      daysLeft = 0; // No countdown for archived deadlines
-      unitsPerDay = 0; // No daily requirement
-      urgencyLevel = 'good' as const; // Neutral status for archived deadlines
-      urgencyColor = '#10b981'; // Green for completed/set aside
-      statusMessage = isCompleted ? 'Completed!' : 'Set aside';
-      paceData = {
-        userPace: 0,
-        requiredPace: 0,
-        status: { color: 'green' as const, level: 'good' },
-        statusMessage: statusMessage,
-      };
+    if (deadlineStatus.isArchived) {
+      daysLeft = 0;
+      unitsPerDay = 0;
+      urgencyLevel = 'good' as const;
+      urgencyColor = '#10b981';
+      statusMessage = deadlineStatus.isCompleted ? 'Completed!' : 'Set aside';
+      paceData = createArchivedPaceData(statusMessage);
     } else {
       // Calculate normally for active deadlines
       daysLeft = calculateDaysLeft(deadline.deadline_date);
-      const currentProgressAsOfStartOfDay =
-        calculateProgressAsOfStartOfDay(deadline);
+      const currentProgressAsOfStartOfDay = calculateProgressAsOfStartOfDay(deadline);
       unitsPerDay = calculateUnitsPerDay(
         deadline.total_quantity,
         currentProgressAsOfStartOfDay,
@@ -476,59 +282,23 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
       // Get pace-based calculations
       paceData = getDeadlinePaceStatus(deadline);
 
-      // Map pace status to urgency level for backward compatibility
-      const paceToUrgencyMap: Record<
-        string,
-        'overdue' | 'urgent' | 'good' | 'approaching' | 'impossible'
-      > = {
-        overdue: 'overdue',
-        impossible: 'impossible',
-        good: 'good',
-        approaching: 'approaching',
-      };
-
-      urgencyLevel =
-        paceToUrgencyMap[paceData.status.level] ||
-        (daysLeft <= 7 ? 'urgent' : 'good');
-
-      // Map pace color to urgency color
-      const paceColorToUrgencyColorMap: Record<string, string> = {
-        green: '#10b981',
-        orange: '#f59e0b',
-        red: '#ef4444',
-      };
-
-      urgencyColor =
-        paceColorToUrgencyColorMap[paceData.status.color] || '#7bc598';
+      // Map pace status to urgency level and color
+      urgencyLevel = mapPaceToUrgency(paceData.status, daysLeft);
+      urgencyColor = mapPaceColorToUrgencyColor(paceData.status.color);
       statusMessage = paceData.statusMessage;
     }
 
-    const readingEstimate = getReadingEstimate(deadline.format, remaining);
-    const paceEstimate = getPaceEstimate(
-      deadline.format,
-      new Date(deadline.deadline_date),
-      remaining
-    );
-
-    return {
-      currentProgress,
-      totalQuantity,
+    return createDeadlineCalculationResult(
+      deadline,
+      { currentProgress, totalQuantity, daysLeft, progressPercentage },
       remaining,
-      progressPercentage,
       daysLeft,
       unitsPerDay,
       urgencyLevel,
       urgencyColor,
       statusMessage,
-      readingEstimate,
-      paceEstimate,
-      unit,
-      // New pace-based fields
-      userPace: paceData.userPace,
-      requiredPace: paceData.requiredPace,
-      paceStatus: paceData.status.color,
-      paceMessage: paceData.statusMessage,
-    };
+      paceData
+    );
   };
 
   const addDeadline = (
