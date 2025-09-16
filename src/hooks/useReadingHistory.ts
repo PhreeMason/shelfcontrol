@@ -1,5 +1,5 @@
-import { deadlinesService } from '@/services';
 import { useAuth } from '@/providers/AuthProvider';
+import { deadlinesService } from '@/services';
 import { utcToLocalDate } from '@/utils/dateUtils';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -112,20 +112,21 @@ const getFormatFilter = (filter: FormatFilter): string[] => {
 };
 
 export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
-  const {profile: user} = useAuth();
+  const { session } = useAuth();
+    const userId = session?.user?.id;
   const { dateRange = '90d', formatFilter = 'all' } = options;
 
   const query = useQuery({
-    queryKey: ['deadlineHistory', user?.id, dateRange, formatFilter],
+    queryKey: ['deadlineHistory', userId, dateRange, formatFilter],
     queryFn: async (): Promise<DeadlineHistoryData> => {
-      if (!user?.id) throw new Error('User not authenticated');
+      if (!userId) throw new Error('User not authenticated');
 
       const startDate = getDateRangeStart(dateRange);
       const formats = getFormatFilter(formatFilter);
 
       // Query reading deadlines with their progress and status changes
       const deadlines = await deadlinesService.getDeadlineHistory({
-        userId: user.id,
+        userId: userId,
         dateRange: startDate,
         formats: formats as ('physical' | 'eBook' | 'audio')[],
       });
@@ -136,7 +137,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
       deadlines?.forEach((deadline: any) => {
         const progress = deadline.deadline_progress || [];
         const deadlineCreatedDate = getLocalDateString(deadline.created_at);
-        
+
         // Check if deadline creation date is within our date range
         if (!startDate || new Date(deadlineCreatedDate) >= startDate) {
           // If deadline has no progress entries, still show it on creation date
@@ -149,7 +150,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
                 totalProgressMade: 0,
               };
             }
-            
+
             dailyEntries[deadlineCreatedDate].deadlines.push({
               id: deadline.id,
               book_title: deadline.book_title,
@@ -164,7 +165,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
             });
           }
         }
-        
+
         // Sort progress by date to calculate daily differences
         const sortedProgress = progress.sort(
           (a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -179,28 +180,28 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
         });
 
         // Check if deadline was created on the same day as first progress
-        const firstProgressDate = sortedProgress.length > 0 
+        const firstProgressDate = sortedProgress.length > 0
           ? getLocalDateString(sortedProgress[0].created_at)
           : null;
-        
+
         const showDeadlineCreation = deadlineCreatedDate === firstProgressDate;
 
         // Process each date for this deadline
         const dates = Object.keys(progressByDate).sort();
         for (let dateIndex = 0; dateIndex < dates.length; dateIndex++) {
           const date = dates[dateIndex];
-          
+
           // Apply date filter
           if (!date || (startDate && new Date(date) < startDate)) continue;
 
           const dayProgress = progressByDate[date];
           if (!dayProgress || dayProgress.length === 0) continue;
-          
+
           // Use the last (most recent) progress entry for the day
           const currentProgress = dayProgress[dayProgress.length - 1];
-          
+
           let progressMade = 0;
-          
+
           if (dateIndex === 0) {
             // First date - if deadline was created this day, apply progress threshold logic
             if (showDeadlineCreation) {
@@ -256,13 +257,13 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
       // Process status changes for each deadline
       deadlines?.forEach((deadline: any) => {
         const statusChanges = deadline.deadline_status || [];
-        
+
         statusChanges.forEach((statusChange: any) => {
           const statusDate = getLocalDateString(statusChange.created_at);
-          
+
           // Apply date filter
           if (startDate && new Date(statusDate) < startDate) return;
-          
+
           if (!dailyEntries[statusDate]) {
             dailyEntries[statusDate] = {
               date: statusDate,
@@ -271,7 +272,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
               totalProgressMade: 0,
             };
           }
-          
+
           dailyEntries[statusDate].statusChanges.push({
             deadline_id: deadline.id,
             status_id: statusChange.id,
@@ -292,7 +293,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
       // Force create entries for ALL deadline dates to ensure they're clickable
       deadlines?.forEach((deadline: any) => {
         const deadlineDate = getLocalDateString(deadline.deadline_date);
-        
+
         // Apply date filter for deadline dates
         if (!startDate || new Date(deadlineDate) >= startDate) {
           // Always create entry if it doesn't exist, regardless of completion status
@@ -324,7 +325,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
 
       // Calculate summary stats
       const totalDays = entries.length;
-      
+
       // Count active vs completed deadlines
       const activeDeadlines = deadlines?.filter(d => {
         const progress = d.deadline_progress || [];
@@ -332,7 +333,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
         const latestProgress = progress[progress.length - 1];
         return latestProgress ? latestProgress.current_progress < d.total_quantity : true;
       }).length || 0;
-      
+
       const ArchivedDeadlines = (deadlines?.length || 0) - activeDeadlines;
 
       return {
@@ -344,7 +345,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
         },
       };
     },
-    enabled: !!user?.id,
+    enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
     refetchOnMount: false,
@@ -360,10 +361,10 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
     query.data.entries.forEach((entry: DailyDeadlineEntry) => {
       const hasProgress = entry.deadlines.length > 0;
       const hasStatusChanges = (entry.statusChanges || []).length > 0;
-      
+
       if (hasProgress || hasStatusChanges) {
         const dots: { key: string; color: string }[] = [];
-        
+
         // Add progress dot if there's progress
         if (hasProgress) {
           const hasReadingDeadlines = entry.deadlines.some(d => d.format === 'physical' || d.format === 'eBook');
@@ -377,20 +378,20 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
           } else if (hasListeningDeadlines) {
             dotColor = '#FF9500'; // Listening deadlines only
           }
-          
+
           dots.push({ key: 'progress', color: dotColor });
         }
-        
+
         // Add status dots for status changes (limit to 3 to avoid crowding)
         if (hasStatusChanges) {
           (entry.statusChanges || []).slice(0, 3).forEach((change) => {
-            dots.push({ 
-              key: `status_${change.status_id}`, 
-              color: getStatusColor(change.status) 
+            dots.push({
+              key: `status_${change.status_id}`,
+              color: getStatusColor(change.status)
             });
           });
         }
-        
+
         markedDates[entry.date] = {
           dots,
           selected: false,
@@ -411,7 +412,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
             selectedTextColor: 'white',
           };
         }
-        
+
         // Add deadline marker dot
         markedDates[entry.date].dots.push({
           key: 'deadline',
