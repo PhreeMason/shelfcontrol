@@ -14,11 +14,23 @@ interface DeadlineCardProps {
   disableNavigation?: boolean;
 }
 
-export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCardProps) {
-  const { getDeadlineCalculations, formatUnitsPerDayForDisplay } = useDeadlines();
+export function DeadlineCard({
+  deadline,
+  disableNavigation = false,
+}: DeadlineCardProps) {
+  const { getDeadlineCalculations, formatUnitsPerDayForDisplay } =
+    useDeadlines();
   const router = useRouter();
   const { colors } = useTheme();
-  const { good, approaching, urgent, overdue, impossible, complete, set_aside } = colors
+  const {
+    good,
+    approaching,
+    urgent,
+    overdue,
+    impossible,
+    complete,
+    set_aside,
+  } = colors;
   const urgencyTextColorMap = {
     complete,
     set_aside,
@@ -27,16 +39,12 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
     good,
     approaching,
     impossible,
-  }
+  };
   // Fetch book data if deadline has a book_id
   const { data: bookData } = useFetchBookById(deadline.book_id);
 
-  const {
-    daysLeft,
-    unitsPerDay,
-    urgencyLevel,
-    remaining
-  } = getDeadlineCalculations(deadline);
+  const { daysLeft, unitsPerDay, urgencyLevel, remaining } =
+    getDeadlineCalculations(deadline);
 
   const shadowStyle = Platform.select({
     ios: {
@@ -54,16 +62,17 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
   let borderColor = urgencyTextColorMap[urgencyLevel];
 
   // Check if deadline is archived (completed or set aside)
-  const latestStatus = deadline.status && deadline.status.length > 0
-    ? deadline.status[deadline.status.length - 1].status
-    : 'reading';
+  const latestStatus =
+    deadline.status && deadline.status.length > 0
+      ? deadline.status[deadline.status.length - 1].status
+      : 'reading';
 
-  const isArchived = latestStatus === 'complete' || latestStatus === 'set_aside';
+  const isArchived =
+    latestStatus === 'complete' || latestStatus === 'set_aside';
   if (isArchived) {
     borderColor = urgencyTextColorMap[latestStatus];
     countdownColor = urgencyTextColorMap[latestStatus];
   }
-
 
   const handlePress = () => {
     if (!disableNavigation) {
@@ -74,13 +83,42 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
 
   // Get random book cover icon from array
   const getBookCoverIcon = () => {
-    const bookIcons = ['📕', '📗', '📘', '📙', '📔', '📓', '📑', '📜', '💰', '⚔️', '🏃', '🎭', '🔬', '🎨', '🏛️', '🌟', '🔮', '⭐'];
+    const bookIcons = [
+      '📕',
+      '📗',
+      '📘',
+      '📙',
+      '📔',
+      '📓',
+      '📑',
+      '📜',
+      '💰',
+      '⚔️',
+      '🏃',
+      '🎭',
+      '🔬',
+      '🎨',
+      '🏛️',
+      '🌟',
+      '🔮',
+      '⭐',
+    ];
 
     // Create seed from multiple factors for better randomization
-    const idSeed = typeof deadline.id === 'number' ? deadline.id : parseInt(deadline.id?.toString() || '0', 10) || 0;
-    const titleSeed = deadline.book_title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const idSeed =
+      typeof deadline.id === 'number'
+        ? deadline.id
+        : parseInt(deadline.id?.toString() || '0', 10) || 0;
+    const titleSeed = deadline.book_title
+      .split('')
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const daysSeed = daysLeft * 7; // Multiply for more variation
-    const formatSeed = deadline.format === 'audio' ? 100 : deadline.format === 'physical' ? 200 : 300;
+    const formatSeed =
+      deadline.format === 'audio'
+        ? 100
+        : deadline.format === 'physical'
+          ? 200
+          : 300;
 
     const combinedSeed = idSeed + titleSeed + daysSeed + formatSeed;
     const index = combinedSeed % bookIcons.length;
@@ -92,7 +130,7 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
   const getGradientBackground = () => {
     const gradients = [
       ['#FF6B6B', '#4DABF7'], // Red to Blue
-      ['#9775FA', '#51CF66'], // Purple to Green  
+      ['#9775FA', '#51CF66'], // Purple to Green
       ['#FFD43B', '#FF6B6B'], // Yellow to Red
       ['#4DABF7', '#E599F7'], // Blue to Purple
       ['#51CF66', '#FFB366'], // Green to Orange
@@ -109,13 +147,29 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
     ];
 
     // Combine multiple factors for better randomization
-    const idSeed = typeof deadline.id === 'number' ? deadline.id : parseInt(deadline.id?.toString() || '0', 10) || 0;
-    const titleSeed = deadline.book_title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const idSeed =
+      typeof deadline.id === 'number'
+        ? deadline.id
+        : parseInt(deadline.id?.toString() || '0', 10) || 0;
+    const titleSeed = deadline.book_title
+      .split('')
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const daysSeed = daysLeft * 13; // Use prime number for better distribution
-    const formatSeed = deadline.format === 'audio' ? 137 : deadline.format === 'physical' ? 239 : 349; // Prime numbers
+    const formatSeed =
+      deadline.format === 'audio'
+        ? 137
+        : deadline.format === 'physical'
+          ? 239
+          : 349; // Prime numbers
     const dateSeed = new Date().getDate(); // Add some time-based variation
 
-    const combinedSeed = (titleSeed * 31 + daysSeed * 17 + idSeed * 7 + formatSeed * 3 + dateSeed) % 10000;
+    const combinedSeed =
+      (titleSeed * 31 +
+        daysSeed * 17 +
+        idSeed * 7 +
+        formatSeed * 3 +
+        dateSeed) %
+      10000;
     const index = Math.abs(combinedSeed) % gradients.length;
 
     return gradients[index] as [string, string];
@@ -140,7 +194,9 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <ThemedText style={styles.bookCoverIcon}>{getBookCoverIcon()}</ThemedText>
+        <ThemedText style={styles.bookCoverIcon}>
+          {getBookCoverIcon()}
+        </ThemedText>
       </LinearGradient>
     );
   };
@@ -151,32 +207,47 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
       <View style={[styles.countdownSquare, { borderColor }]}>
         {isArchived ? (
           <>
-            <ThemedText style={[
-              Platform.OS === 'android' ? styles.archivedIconAndroid : styles.archivedIcon,
-              { color: countdownColor }
-            ]}>
+            <ThemedText
+              style={[
+                Platform.OS === 'android'
+                  ? styles.archivedIconAndroid
+                  : styles.archivedIcon,
+                { color: countdownColor },
+              ]}
+            >
               {latestStatus === 'complete' ? '✓' : '"'}
             </ThemedText>
-            <ThemedText style={[
-              Platform.OS === 'android' ? styles.countdownLabelAndroid : styles.countdownLabel,
-              { color: countdownColor }
-            ]}>
+            <ThemedText
+              style={[
+                Platform.OS === 'android'
+                  ? styles.countdownLabelAndroid
+                  : styles.countdownLabel,
+                { color: countdownColor },
+              ]}
+            >
               {latestStatus === 'complete' ? 'Done' : 'Paused'}
             </ThemedText>
           </>
         ) : (
           <>
-            <ThemedText style={
-              [
-                Platform.OS === 'android' ? styles.countdownNumberAndroid : styles.countdownNumber,
-                { color: countdownColor }
-              ]}>
+            <ThemedText
+              style={[
+                Platform.OS === 'android'
+                  ? styles.countdownNumberAndroid
+                  : styles.countdownNumber,
+                { color: countdownColor },
+              ]}
+            >
               {daysLeft}
             </ThemedText>
-            <ThemedText style={[
-              Platform.OS === 'android' ? styles.countdownLabelAndroid : styles.countdownLabel,
-              { color: countdownColor }
-            ]}>
+            <ThemedText
+              style={[
+                Platform.OS === 'android'
+                  ? styles.countdownLabelAndroid
+                  : styles.countdownLabel,
+                { color: countdownColor },
+              ]}
+            >
               days
             </ThemedText>
           </>
@@ -186,10 +257,19 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
   );
 
   return (
-    <Pressable onPress={handlePress} style={({ pressed }) => [
-      { opacity: pressed ? 0.8 : 1, backgroundColor: 'transparent' },
-    ]}>
-      <View style={[styles.cardContainer, isArchived && shadowStyle, { borderColor }]}>
+    <Pressable
+      onPress={handlePress}
+      style={({ pressed }) => [
+        { opacity: pressed ? 0.8 : 1, backgroundColor: 'transparent' },
+      ]}
+    >
+      <View
+        style={[
+          styles.cardContainer,
+          isArchived && shadowStyle,
+          { borderColor },
+        ]}
+      >
         <View style={styles.bookContent}>
           <BookCover />
           <View style={styles.bookInfo}>
@@ -197,7 +277,12 @@ export function DeadlineCard({ deadline, disableNavigation = false }: DeadlineCa
               {deadline.book_title}
             </ThemedText>
             <ThemedText style={styles.bookDeadline}>
-              {formatUnitsPerDayForDisplay(unitsPerDay, deadline.format, remaining, daysLeft)}
+              {formatUnitsPerDayForDisplay(
+                unitsPerDay,
+                deadline.format,
+                remaining,
+                daysLeft
+              )}
             </ThemedText>
           </View>
         </View>
@@ -216,7 +301,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'stretch',
     overflow: 'hidden',
-    borderColor: 'rgba(232, 194, 185, 0.15)'
+    borderColor: 'rgba(232, 194, 185, 0.15)',
   },
   bookContent: {
     flexDirection: 'row',
@@ -296,7 +381,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     opacity: 0.8,
     marginTop: -5,
-
   },
   countdownLabelAndroid: {
     fontSize: 13,
@@ -318,4 +402,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DeadlineCard
+export default DeadlineCard;

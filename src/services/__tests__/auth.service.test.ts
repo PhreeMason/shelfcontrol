@@ -74,7 +74,10 @@ describe('AuthService', () => {
   describe('signIn', () => {
     it('should sign in successfully with valid credentials', async () => {
       const mockUser = { id: 'user123', email: 'test@example.com' };
-      const mockSession = { access_token: 'token123', refresh_token: 'refresh123' };
+      const mockSession = {
+        access_token: 'token123',
+        refresh_token: 'refresh123',
+      };
 
       (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
         data: { user: mockUser, session: mockSession },
@@ -118,7 +121,9 @@ describe('AuthService', () => {
 
     it('should catch and return thrown errors', async () => {
       const thrownError = new Error('Network error');
-      (supabase.auth.signInWithPassword as jest.Mock).mockRejectedValue(thrownError);
+      (supabase.auth.signInWithPassword as jest.Mock).mockRejectedValue(
+        thrownError
+      );
 
       const result = await authService.signIn({
         email: 'test@example.com',
@@ -135,7 +140,10 @@ describe('AuthService', () => {
   describe('signUp', () => {
     it('should sign up successfully with valid data', async () => {
       const mockUser = { id: 'user123', email: 'test@example.com' };
-      const mockSession = { access_token: 'token123', refresh_token: 'refresh123' };
+      const mockSession = {
+        access_token: 'token123',
+        refresh_token: 'refresh123',
+      };
 
       (supabase.auth.signUp as jest.Mock).mockResolvedValue({
         data: { user: mockUser, session: mockSession },
@@ -225,8 +233,14 @@ describe('AuthService', () => {
 
   describe('signInWithApple', () => {
     it('should sign in with Apple successfully', async () => {
-      const mockUser = { id: 'user123', email: 'test@privaterelay.appleid.com' };
-      const mockSession = { access_token: 'token123', refresh_token: 'refresh123' };
+      const mockUser = {
+        id: 'user123',
+        email: 'test@privaterelay.appleid.com',
+      };
+      const mockSession = {
+        access_token: 'token123',
+        refresh_token: 'refresh123',
+      };
 
       (supabase.auth.signInWithIdToken as jest.Mock).mockResolvedValue({
         data: { user: mockUser, session: mockSession },
@@ -318,16 +332,19 @@ describe('AuthService', () => {
         error: mockError,
       });
 
-      await expect(authService.updatePassword('newpassword123')).rejects.toThrow(
-        'Password update failed'
-      );
+      await expect(
+        authService.updatePassword('newpassword123')
+      ).rejects.toThrow('Password update failed');
     });
   });
 
   describe('setSession', () => {
     it('should set session successfully', async () => {
       const mockUser = { id: 'user123', email: 'test@example.com' };
-      const mockSession = { access_token: 'new-token', refresh_token: 'new-refresh' };
+      const mockSession = {
+        access_token: 'new-token',
+        refresh_token: 'new-refresh',
+      };
 
       (supabase.auth.setSession as jest.Mock).mockResolvedValue({
         data: { user: mockUser, session: mockSession },
@@ -377,7 +394,9 @@ describe('AuthService', () => {
 
       const result = authService.onAuthStateChange(mockCallback);
 
-      expect(supabase.auth.onAuthStateChange).toHaveBeenCalledWith(mockCallback);
+      expect(supabase.auth.onAuthStateChange).toHaveBeenCalledWith(
+        mockCallback
+      );
       expect(result).toEqual({ data: { subscription: mockUnsubscribe } });
     });
 
@@ -386,10 +405,13 @@ describe('AuthService', () => {
 
       authService.onAuthStateChange(mockCallback);
 
-      expect(supabase.auth.onAuthStateChange).toHaveBeenCalledWith(mockCallback);
+      expect(supabase.auth.onAuthStateChange).toHaveBeenCalledWith(
+        mockCallback
+      );
 
       // Simulate calling the callback
-      const callbackArg = (supabase.auth.onAuthStateChange as jest.Mock).mock.calls[0][0];
+      const callbackArg = (supabase.auth.onAuthStateChange as jest.Mock).mock
+        .calls[0][0];
       const mockSession = { access_token: 'token123' };
 
       callbackArg('SIGNED_IN', mockSession);
@@ -456,7 +478,9 @@ describe('AuthService', () => {
       expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalled();
 
       // Update password after reset
-      (supabase.auth.updateUser as jest.Mock).mockResolvedValue({ error: null });
+      (supabase.auth.updateUser as jest.Mock).mockResolvedValue({
+        error: null,
+      });
 
       await authService.updatePassword('newpassword123');
 

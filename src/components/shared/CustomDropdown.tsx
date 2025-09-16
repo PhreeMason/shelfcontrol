@@ -10,7 +10,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { IconSymbol } from '../ui/IconSymbol';
 
@@ -35,7 +35,9 @@ const CustomDropdown = <T extends FieldValues>({
 }: CustomDropdownProps<T>) => {
   const { colors } = useTheme();
   const [query, setQuery] = useState('');
-  const [filteredData, setFilteredData] = useState<{ label: string; value: string }[]>([]);
+  const [filteredData, setFilteredData] = useState<
+    { label: string; value: string }[]
+  >([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customValue, setCustomValue] = useState('');
@@ -49,8 +51,12 @@ const CustomDropdown = <T extends FieldValues>({
   const primaryColor = colors.primary;
 
   // Custom filter function for options
-  const filterFunction = (items: { label: string; value: string }[], searchText: string) => {
-    if (!searchText.trim()) return [...items, { label: 'Other...', value: '__custom__' }];
+  const filterFunction = (
+    items: { label: string; value: string }[],
+    searchText: string
+  ) => {
+    if (!searchText.trim())
+      return [...items, { label: 'Other...', value: '__custom__' }];
     const filtered = items.filter(item =>
       item.label.toLowerCase().includes(searchText.toLowerCase())
     );
@@ -63,7 +69,10 @@ const CustomDropdown = <T extends FieldValues>({
     return filtered;
   };
 
-  const handleTextChange = (text: string, onChange: (value: string) => void) => {
+  const handleTextChange = (
+    text: string,
+    onChange: (value: string) => void
+  ) => {
     setQuery(text);
 
     const filtered = filterFunction(options, text);
@@ -71,15 +80,18 @@ const CustomDropdown = <T extends FieldValues>({
     setShowSuggestions(text.length > 0);
 
     // If text exactly matches an option, select it
-    const exactMatch = options.find(option =>
-      option.label.toLowerCase() === text.toLowerCase()
+    const exactMatch = options.find(
+      option => option.label.toLowerCase() === text.toLowerCase()
     );
     if (exactMatch) {
       onChange(exactMatch.value);
     }
   };
 
-  const handleSelectItem = (item: { label: string; value: string }, onChange: (value: string) => void) => {
+  const handleSelectItem = (
+    item: { label: string; value: string },
+    onChange: (value: string) => void
+  ) => {
     if (item.value === '__custom__') {
       setShowCustomInput(true);
       setCustomValue('');
@@ -91,9 +103,12 @@ const CustomDropdown = <T extends FieldValues>({
     setShowSuggestions(false);
   };
 
-  const renderSuggestionItem = ({ item, onChange }: {
-    item: { label: string; value: string },
-    onChange: (value: string) => void
+  const renderSuggestionItem = ({
+    item,
+    onChange,
+  }: {
+    item: { label: string; value: string };
+    onChange: (value: string) => void;
   }) => (
     <TouchableOpacity
       style={[styles.suggestionItem, { borderBottomColor: borderColor }]}
@@ -109,35 +124,43 @@ const CustomDropdown = <T extends FieldValues>({
     <Controller
       control={control}
       name={name}
-      render={({
-        field: { value, onChange },
-        fieldState: { error },
-      }) => {
+      render={({ field: { value, onChange }, fieldState: { error } }) => {
         // Check if current value is a custom value (not in predefined options)
-        const isCustomValue = value && !options.find(opt => opt.value === value) && value !== '__custom__';
+        const isCustomValue =
+          value &&
+          !options.find(opt => opt.value === value) &&
+          value !== '__custom__';
         const selectedOption = options.find(opt => opt.value === value);
-        const displayText = isCustomValue ? value : (selectedOption?.label || '');
+        const displayText = isCustomValue ? value : selectedOption?.label || '';
 
         return (
           <View style={styles.container}>
-            <View style={[
-              styles.dropdownContainer,
-              {
-                backgroundColor: cardColor,
-                borderColor: error ? dangerColor : borderColor
-              }
-            ]}>
-              <View style={[
-                styles.inputContainer,
-                { backgroundColor: isFocused ? cardColor : colors.inputBlurBackground }
-              ]}>
+            <View
+              style={[
+                styles.dropdownContainer,
+                {
+                  backgroundColor: cardColor,
+                  borderColor: error ? dangerColor : borderColor,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.inputContainer,
+                  {
+                    backgroundColor: isFocused
+                      ? cardColor
+                      : colors.inputBlurBackground,
+                  },
+                ]}
+              >
                 <TextInput
                   testID={testID}
                   style={[styles.textInput, { color: textColor }]}
                   placeholder={placeholder}
                   placeholderTextColor={textMutedColor}
                   value={showSuggestions ? query : displayText}
-                  onChangeText={(text) => handleTextChange(text, onChange)}
+                  onChangeText={text => handleTextChange(text, onChange)}
                   onFocus={() => {
                     setIsFocused(true);
                     setQuery(displayText);
@@ -150,9 +173,7 @@ const CustomDropdown = <T extends FieldValues>({
                     setIsFocused(false);
                   }}
                 />
-                <Pressable
-                  onPress={() => setShowSuggestions(!showSuggestions)}
-                >
+                <Pressable onPress={() => setShowSuggestions(!showSuggestions)}>
                   <IconSymbol
                     name="chevron.down"
                     size={16}
@@ -165,17 +186,21 @@ const CustomDropdown = <T extends FieldValues>({
 
             {/* Suggestions dropdown */}
             {showSuggestions && filteredData.length > 0 && (
-              <View style={[
-                styles.suggestionsContainer,
-                {
-                  backgroundColor: cardColor,
-                  borderColor: borderColor
-                }
-              ]}>
+              <View
+                style={[
+                  styles.suggestionsContainer,
+                  {
+                    backgroundColor: cardColor,
+                    borderColor: borderColor,
+                  },
+                ]}
+              >
                 <FlatList
                   data={filteredData}
                   keyExtractor={(item, index) => `${item.value}-${index}`}
-                  renderItem={({ item }) => renderSuggestionItem({ item, onChange })}
+                  renderItem={({ item }) =>
+                    renderSuggestionItem({ item, onChange })
+                  }
                   style={styles.suggestionsList}
                   keyboardShouldPersistTaps="handled"
                   scrollEnabled={false}
@@ -201,7 +226,9 @@ const CustomDropdown = <T extends FieldValues>({
                 activeOpacity={1}
                 onPress={() => setShowCustomInput(false)}
               >
-                <View style={[styles.modalContent, { backgroundColor: cardColor }]}>
+                <View
+                  style={[styles.modalContent, { backgroundColor: cardColor }]}
+                >
                   <TouchableOpacity activeOpacity={1}>
                     <ThemedText variant="title" style={styles.modalTitle}>
                       Enter Custom Source
@@ -212,8 +239,8 @@ const CustomDropdown = <T extends FieldValues>({
                         {
                           backgroundColor: colors.background,
                           color: textColor,
-                          borderColor: borderColor
-                        }
+                          borderColor: borderColor,
+                        },
                       ]}
                       placeholder={customPlaceholder}
                       placeholderTextColor={textMutedColor}
@@ -225,7 +252,7 @@ const CustomDropdown = <T extends FieldValues>({
                       <TouchableOpacity
                         style={[
                           styles.modalButton,
-                          { backgroundColor: colors.background }
+                          { backgroundColor: colors.background },
                         ]}
                         onPress={() => setShowCustomInput(false)}
                       >
@@ -234,7 +261,7 @@ const CustomDropdown = <T extends FieldValues>({
                       <TouchableOpacity
                         style={[
                           styles.modalButton,
-                          { backgroundColor: primaryColor }
+                          { backgroundColor: primaryColor },
                         ]}
                         onPress={() => {
                           if (customValue.trim()) {

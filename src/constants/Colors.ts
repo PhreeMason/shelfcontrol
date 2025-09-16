@@ -179,7 +179,7 @@ export const Colors = {
     inputFocusBackground: '#FFFFFF',
     inputBlurBackground: '#FAF8F599',
 
-     // Urgency levels
+    // Urgency levels
     complete: '#B8A9D9',
     set_aside: '#9CA3AF',
     overdue: '#e85d75',
@@ -204,27 +204,102 @@ export const FontFamily = {
 // Typography scale with Nunito font families
 export const Typography = {
   // Headings
-  displayLarge: { fontSize: 57, lineHeight: 60, fontWeight: '400' as const, fontFamily: FontFamily.regular },
-  displayMedium: { fontSize: 44, lineHeight: 48, fontWeight: '400' as const, fontFamily: FontFamily.regular },
-  displaySmall: { fontSize: 36, lineHeight: 40, fontWeight: '400' as const, fontFamily: FontFamily.regular },
-  
-  headlineLarge: { fontSize: 32, lineHeight: 36, fontWeight: '600' as const, fontFamily: FontFamily.semiBold },
-  headlineMedium: { fontSize: 28, lineHeight: 32, fontWeight: '600' as const, fontFamily: FontFamily.semiBold },
-  headlineSmall: { fontSize: 24, lineHeight: 28, fontWeight: '600' as const, fontFamily: FontFamily.semiBold },
-  
-  titleLarge: { fontSize: 22, lineHeight: 26, fontWeight: '700' as const, fontFamily: FontFamily.bold },
-  titleMedium: { fontSize: 16, lineHeight: 20, fontWeight: '600' as const, fontFamily: FontFamily.semiBold },
-  titleSmall: { fontSize: 14, lineHeight: 18, fontWeight: '600' as const, fontFamily: FontFamily.semiBold },
+  displayLarge: {
+    fontSize: 57,
+    lineHeight: 60,
+    fontWeight: '400' as const,
+    fontFamily: FontFamily.regular,
+  },
+  displayMedium: {
+    fontSize: 44,
+    lineHeight: 48,
+    fontWeight: '400' as const,
+    fontFamily: FontFamily.regular,
+  },
+  displaySmall: {
+    fontSize: 36,
+    lineHeight: 40,
+    fontWeight: '400' as const,
+    fontFamily: FontFamily.regular,
+  },
+
+  headlineLarge: {
+    fontSize: 32,
+    lineHeight: 36,
+    fontWeight: '600' as const,
+    fontFamily: FontFamily.semiBold,
+  },
+  headlineMedium: {
+    fontSize: 28,
+    lineHeight: 32,
+    fontWeight: '600' as const,
+    fontFamily: FontFamily.semiBold,
+  },
+  headlineSmall: {
+    fontSize: 24,
+    lineHeight: 28,
+    fontWeight: '600' as const,
+    fontFamily: FontFamily.semiBold,
+  },
+
+  titleLarge: {
+    fontSize: 22,
+    lineHeight: 26,
+    fontWeight: '700' as const,
+    fontFamily: FontFamily.bold,
+  },
+  titleMedium: {
+    fontSize: 16,
+    lineHeight: 20,
+    fontWeight: '600' as const,
+    fontFamily: FontFamily.semiBold,
+  },
+  titleSmall: {
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: '600' as const,
+    fontFamily: FontFamily.semiBold,
+  },
 
   // Body text
-  bodyLarge: { fontSize: 16, lineHeight: 20, fontWeight: '400' as const, fontFamily: FontFamily.regular },
-  bodyMedium: { fontSize: 14, lineHeight: 18, fontWeight: '400' as const, fontFamily: FontFamily.regular },
-  bodySmall: { fontSize: 12, lineHeight: 16, fontWeight: '400' as const, fontFamily: FontFamily.regular },
+  bodyLarge: {
+    fontSize: 16,
+    lineHeight: 20,
+    fontWeight: '400' as const,
+    fontFamily: FontFamily.regular,
+  },
+  bodyMedium: {
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: '400' as const,
+    fontFamily: FontFamily.regular,
+  },
+  bodySmall: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '400' as const,
+    fontFamily: FontFamily.regular,
+  },
 
   // Labels
-  labelLarge: { fontSize: 14, lineHeight: 18, fontWeight: '500' as const, fontFamily: FontFamily.medium },
-  labelMedium: { fontSize: 12, lineHeight: 16, fontWeight: '500' as const, fontFamily: FontFamily.medium },
-  labelSmall: { fontSize: 10, lineHeight: 14, fontWeight: '500' as const, fontFamily: FontFamily.medium },
+  labelLarge: {
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: '500' as const,
+    fontFamily: FontFamily.medium,
+  },
+  labelMedium: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '500' as const,
+    fontFamily: FontFamily.medium,
+  },
+  labelSmall: {
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: '500' as const,
+    fontFamily: FontFamily.medium,
+  },
 };
 
 // Spacing scale

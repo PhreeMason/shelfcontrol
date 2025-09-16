@@ -3,7 +3,13 @@
  */
 
 import type { TextStyle, ViewStyle } from 'react-native';
-import { BorderRadius, Colors, FontFamily, Spacing, Typography } from './Colors';
+import {
+  BorderRadius,
+  Colors,
+  FontFamily,
+  Spacing,
+  Typography,
+} from './Colors';
 
 // Component variant definitions
 export const ComponentVariants = {
@@ -197,7 +203,7 @@ export const StyleMixins = {
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
   },
-  
+
   listItem: {
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,

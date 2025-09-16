@@ -1,27 +1,30 @@
-import ProgressBar from '@/components/progress/ProgressBar'
-import ProgressHeader from '@/components/progress/ProgressHeader'
-import ProgressInput from '@/components/progress/ProgressInput'
-import ProgressStats from '@/components/progress/ProgressStats'
-import QuickActionButtons from '@/components/progress/QuickActionButtons'
-import { ThemedButton, ThemedText, ThemedView } from '@/components/themed'
-import { Typography } from '@/constants/Colors'
-import { useDeleteFutureProgress, useUpdateDeadlineProgress } from '@/hooks/useDeadlines'
-import { useTheme } from '@/hooks/useThemeColor'
-import { useDeadlines } from '@/providers/DeadlineProvider'
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types'
-import { formatProgressDisplay } from '@/utils/deadlineUtils'
-import { createProgressUpdateSchema } from '@/utils/progressUpdateSchema'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { router } from 'expo-router'
-import { useCallback } from 'react'
-import { useForm } from 'react-hook-form'
-import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
-import Toast from 'react-native-toast-message'
+import ProgressBar from '@/components/progress/ProgressBar';
+import ProgressHeader from '@/components/progress/ProgressHeader';
+import ProgressInput from '@/components/progress/ProgressInput';
+import ProgressStats from '@/components/progress/ProgressStats';
+import QuickActionButtons from '@/components/progress/QuickActionButtons';
+import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
+import { Typography } from '@/constants/Colors';
+import {
+  useDeleteFutureProgress,
+  useUpdateDeadlineProgress,
+} from '@/hooks/useDeadlines';
+import { useTheme } from '@/hooks/useThemeColor';
+import { useDeadlines } from '@/providers/DeadlineProvider';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { formatProgressDisplay } from '@/utils/deadlineUtils';
+import { createProgressUpdateSchema } from '@/utils/progressUpdateSchema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { router } from 'expo-router';
+import { useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 const ReadingProgress = ({
   deadline,
   timeSpentReading,
-  onProgressSubmitted
+  onProgressSubmitted,
 }: {
   deadline: ReadingDeadlineWithProgress;
   timeSpentReading?: number;
@@ -35,19 +38,17 @@ const ReadingProgress = ({
     currentProgress,
     totalQuantity,
     remaining,
-    progressPercentage
+    progressPercentage,
   } = calculations;
 
-  const progressSchema = createProgressUpdateSchema(totalQuantity, deadline.format);
+  const progressSchema = createProgressUpdateSchema(
+    totalQuantity,
+    deadline.format
+  );
   const updateProgressMutation = useUpdateDeadlineProgress();
   const deleteFutureProgressMutation = useDeleteFutureProgress();
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    getValues,
-  } = useForm({
+  const { control, handleSubmit, setValue, getValues } = useForm({
     resolver: zodResolver(progressSchema),
     defaultValues: {
       currentProgress: currentProgress,
@@ -55,147 +56,185 @@ const ReadingProgress = ({
     mode: 'onSubmit',
   });
 
-  const handleBookCompletion = useCallback((deadlineId: string, bookTitle: string) => {
-    completeDeadline(
-      deadlineId,
-      () => {
-        Toast.show({
-          swipeable: true,
-          type: 'success',
-          text1: 'Deadline completed!',
-          text2: `Congratulations on finishing "${bookTitle}"!`,
-          autoHide: true,
-          visibilityTime: 1500,
-          position: 'top'
-        });
-        onProgressSubmitted?.();
-      },
-      (error) => {
-        Toast.show({
-          swipeable: true,
-          type: 'error',
-          text1: 'Failed to complete deadline',
-          text2: error.message || 'Please try again',
-          autoHide: true,
-          visibilityTime: 1500,
-          position: 'top'
-        });
-      }
-    );
-  }, [completeDeadline, onProgressSubmitted]);
-
-  const showCompletionDialog = useCallback((newProgress: number, bookTitle: string) => {
-    Alert.alert(
-      'Book Complete! 🎉',
-      `Progress updated to ${formatProgressDisplay(deadline.format, newProgress)}.\n\nYou've reached the end of "${bookTitle}". Would you like to mark this book as complete?`,
-      [
-        {
-          text: 'Not Yet',
-          style: 'cancel',
-          onPress: () => onProgressSubmitted?.(),
+  const handleBookCompletion = useCallback(
+    (deadlineId: string, bookTitle: string) => {
+      completeDeadline(
+        deadlineId,
+        () => {
+          Toast.show({
+            swipeable: true,
+            type: 'success',
+            text1: 'Deadline completed!',
+            text2: `Congratulations on finishing "${bookTitle}"!`,
+            autoHide: true,
+            visibilityTime: 1500,
+            position: 'top',
+          });
+          onProgressSubmitted?.();
         },
-        {
-          text: 'Mark Complete',
-          style: 'default',
-          onPress: () => handleBookCompletion(deadline.id, bookTitle),
-        },
-      ]
-    );
-  }, [deadline.format, deadline.id, handleBookCompletion, onProgressSubmitted]);
-
-  const handleProgressUpdateSuccess = useCallback((newProgress: number) => {
-    const isBookComplete = newProgress >= totalQuantity;
-
-    if (isBookComplete) {
-      showCompletionDialog(newProgress, deadline.book_title);
-    } else {
-      Toast.show({
-        swipeable: true,
-        type: 'success',
-        text1: 'Progress Updated!',
-        text2: `Updated to ${formatProgressDisplay(deadline.format, newProgress)}`,
-      });
-      onProgressSubmitted?.();
-    }
-  }, [totalQuantity, showCompletionDialog, deadline.book_title, deadline.format, onProgressSubmitted]);
-
-  const handleProgressUpdate = useCallback((newProgress: number) => {
-    updateProgressMutation.mutate({
-      deadlineId: deadline.id,
-      currentProgress: newProgress,
-      ...(timeSpentReading !== undefined && { timeSpentReading }),
-    }, {
-      onSuccess: () => handleProgressUpdateSuccess(newProgress),
-      onError: (error) => {
-        Toast.show({
-          swipeable: true,
-          type: 'error',
-          text1: 'Update Failed',
-          text2: 'Please try again',
-        });
-        console.error('Progress update error:', error);
-      }
-    });
-  }, [updateProgressMutation, deadline.id, timeSpentReading, handleProgressUpdateSuccess]);
-
-  const handleBackwardProgressDeletion = useCallback((newProgress: number) => {
-    deleteFutureProgressMutation.mutate(
-      { deadlineId: deadline.id, newProgress },
-      {
-        onSuccess: () => {
-          handleProgressUpdate(newProgress);
-        },
-        onError: (error) => {
+        error => {
           Toast.show({
             swipeable: true,
             type: 'error',
-            text1: 'Failed to Delete Future Progress',
-            text2: 'Please try again',
+            text1: 'Failed to complete deadline',
+            text2: error.message || 'Please try again',
+            autoHide: true,
+            visibilityTime: 1500,
+            position: 'top',
           });
-          console.error('Delete future progress error:', error);
         }
+      );
+    },
+    [completeDeadline, onProgressSubmitted]
+  );
+
+  const showCompletionDialog = useCallback(
+    (newProgress: number, bookTitle: string) => {
+      Alert.alert(
+        'Book Complete! 🎉',
+        `Progress updated to ${formatProgressDisplay(deadline.format, newProgress)}.\n\nYou've reached the end of "${bookTitle}". Would you like to mark this book as complete?`,
+        [
+          {
+            text: 'Not Yet',
+            style: 'cancel',
+            onPress: () => onProgressSubmitted?.(),
+          },
+          {
+            text: 'Mark Complete',
+            style: 'default',
+            onPress: () => handleBookCompletion(deadline.id, bookTitle),
+          },
+        ]
+      );
+    },
+    [deadline.format, deadline.id, handleBookCompletion, onProgressSubmitted]
+  );
+
+  const handleProgressUpdateSuccess = useCallback(
+    (newProgress: number) => {
+      const isBookComplete = newProgress >= totalQuantity;
+
+      if (isBookComplete) {
+        showCompletionDialog(newProgress, deadline.book_title);
+      } else {
+        Toast.show({
+          swipeable: true,
+          type: 'success',
+          text1: 'Progress Updated!',
+          text2: `Updated to ${formatProgressDisplay(deadline.format, newProgress)}`,
+        });
+        onProgressSubmitted?.();
       }
-    );
-  }, [deleteFutureProgressMutation, deadline.id, handleProgressUpdate]);
+    },
+    [
+      totalQuantity,
+      showCompletionDialog,
+      deadline.book_title,
+      deadline.format,
+      onProgressSubmitted,
+    ]
+  );
 
-  const showBackwardProgressWarning = useCallback((newProgress: number) => {
-    const progressUnit = deadline.format === 'audio' ? 'time' : 'page';
-    const currentDisplay = formatProgressDisplay(deadline.format, currentProgress);
-    const newDisplay = formatProgressDisplay(deadline.format, newProgress);
-
-    Alert.alert(
-      'Backward Progress Warning',
-      `You're updating from ${currentDisplay} to ${newDisplay}. This will delete all progress entries greater than the new ${progressUnit}. Are you sure?`,
-      [
+  const handleProgressUpdate = useCallback(
+    (newProgress: number) => {
+      updateProgressMutation.mutate(
         {
-          text: 'Cancel',
-          style: 'cancel',
+          deadlineId: deadline.id,
+          currentProgress: newProgress,
+          ...(timeSpentReading !== undefined && { timeSpentReading }),
         },
         {
-          text: 'Update',
-          style: 'destructive',
-          onPress: () => handleBackwardProgressDeletion(newProgress),
-        },
-      ]
-    );
-  }, [deadline.format, currentProgress, handleBackwardProgressDeletion]);
+          onSuccess: () => handleProgressUpdateSuccess(newProgress),
+          onError: error => {
+            Toast.show({
+              swipeable: true,
+              type: 'error',
+              text1: 'Update Failed',
+              text2: 'Please try again',
+            });
+            console.error('Progress update error:', error);
+          },
+        }
+      );
+    },
+    [
+      updateProgressMutation,
+      deadline.id,
+      timeSpentReading,
+      handleProgressUpdateSuccess,
+    ]
+  );
 
-  const onSubmitProgress = useCallback((data: any) => {
-    const newProgress = data.currentProgress;
+  const handleBackwardProgressDeletion = useCallback(
+    (newProgress: number) => {
+      deleteFutureProgressMutation.mutate(
+        { deadlineId: deadline.id, newProgress },
+        {
+          onSuccess: () => {
+            handleProgressUpdate(newProgress);
+          },
+          onError: error => {
+            Toast.show({
+              swipeable: true,
+              type: 'error',
+              text1: 'Failed to Delete Future Progress',
+              text2: 'Please try again',
+            });
+            console.error('Delete future progress error:', error);
+          },
+        }
+      );
+    },
+    [deleteFutureProgressMutation, deadline.id, handleProgressUpdate]
+  );
 
-    // Check if the new progress is the same as current progress
-    if (newProgress === currentProgress) {
-      return; // Do nothing if values are the same
-    }
+  const showBackwardProgressWarning = useCallback(
+    (newProgress: number) => {
+      const progressUnit = deadline.format === 'audio' ? 'time' : 'page';
+      const currentDisplay = formatProgressDisplay(
+        deadline.format,
+        currentProgress
+      );
+      const newDisplay = formatProgressDisplay(deadline.format, newProgress);
 
-    // Check if the new progress is lower than current progress
-    if (newProgress < currentProgress) {
-      showBackwardProgressWarning(newProgress);
-    } else {
-      // Normal forward progress update
-      handleProgressUpdate(newProgress);
-    }
-  }, [currentProgress, showBackwardProgressWarning, handleProgressUpdate]);
+      Alert.alert(
+        'Backward Progress Warning',
+        `You're updating from ${currentDisplay} to ${newDisplay}. This will delete all progress entries greater than the new ${progressUnit}. Are you sure?`,
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Update',
+            style: 'destructive',
+            onPress: () => handleBackwardProgressDeletion(newProgress),
+          },
+        ]
+      );
+    },
+    [deadline.format, currentProgress, handleBackwardProgressDeletion]
+  );
+
+  const onSubmitProgress = useCallback(
+    (data: any) => {
+      const newProgress = data.currentProgress;
+
+      // Check if the new progress is the same as current progress
+      if (newProgress === currentProgress) {
+        return; // Do nothing if values are the same
+      }
+
+      // Check if the new progress is lower than current progress
+      if (newProgress < currentProgress) {
+        showBackwardProgressWarning(newProgress);
+      } else {
+        // Normal forward progress update
+        handleProgressUpdate(newProgress);
+      }
+    },
+    [currentProgress, showBackwardProgressWarning, handleProgressUpdate]
+  );
 
   const handleQuickUpdate = (increment: number) => {
     const currentFormValue = getValues('currentProgress');
@@ -212,12 +251,18 @@ const ReadingProgress = ({
       numericValue = currentProgress;
     }
 
-    const newProgress = Math.max(0, Math.min(totalQuantity, numericValue + increment));
+    const newProgress = Math.max(
+      0,
+      Math.min(totalQuantity, numericValue + increment)
+    );
 
     // Check if the new progress would be lower than current progress
     if (newProgress < currentProgress) {
       const progressUnit = deadline.format === 'audio' ? 'time' : 'page';
-      const currentDisplay = formatProgressDisplay(deadline.format, currentProgress);
+      const currentDisplay = formatProgressDisplay(
+        deadline.format,
+        currentProgress
+      );
       const newDisplay = formatProgressDisplay(deadline.format, newProgress);
 
       Alert.alert(
@@ -232,7 +277,9 @@ const ReadingProgress = ({
             text: 'Update',
             style: 'destructive',
             onPress: () => {
-              setValue('currentProgress', newProgress, { shouldValidate: false });
+              setValue('currentProgress', newProgress, {
+                shouldValidate: false,
+              });
             },
           },
         ]
@@ -250,7 +297,12 @@ const ReadingProgress = ({
     <ThemedView style={[styles.section]}>
       <ProgressHeader />
 
-      <ThemedView style={[styles.progressSection, { borderColor: colors.border, borderWidth: 1 }]}>
+      <ThemedView
+        style={[
+          styles.progressSection,
+          { borderColor: colors.border, borderWidth: 1 },
+        ]}
+      >
         <ProgressStats
           currentProgress={currentProgress}
           totalQuantity={totalQuantity}
@@ -266,14 +318,9 @@ const ReadingProgress = ({
       </ThemedView>
 
       <View style={styles.updateSection}>
-        <ProgressInput
-          format={deadline.format}
-          control={control}
-        />
+        <ProgressInput format={deadline.format} control={control} />
 
-        <QuickActionButtons
-          onQuickUpdate={handleQuickUpdate}
-        />
+        <QuickActionButtons onQuickUpdate={handleQuickUpdate} />
 
         <ThemedView style={styles.updateProgressBtns}>
           <TouchableOpacity
@@ -282,11 +329,17 @@ const ReadingProgress = ({
             disabled={updateProgressMutation.isPending}
           >
             <ThemedText style={styles.sessionText}>
-              {updateProgressMutation.isPending ? "Updating..." : "Start Session"}
+              {updateProgressMutation.isPending
+                ? 'Updating...'
+                : 'Start Session'}
             </ThemedText>
           </TouchableOpacity>
           <ThemedButton
-            title={updateProgressMutation.isPending ? "Updating..." : "Update Progress"}
+            title={
+              updateProgressMutation.isPending
+                ? 'Updating...'
+                : 'Update Progress'
+            }
             variant="primary"
             onPress={handleSubmit(onSubmitProgress)}
             disabled={updateProgressMutation.isPending}
@@ -294,10 +347,10 @@ const ReadingProgress = ({
         </ThemedView>
       </View>
     </ThemedView>
-  )
-}
+  );
+};
 
-export default ReadingProgress
+export default ReadingProgress;
 
 const styles = StyleSheet.create({
   section: {
@@ -337,5 +390,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 12,
-  }
+  },
 });

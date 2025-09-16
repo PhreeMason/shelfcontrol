@@ -7,15 +7,18 @@
  * @param totalMinutes - Total time in minutes
  * @returns Object with hours and minutes
  */
-export function convertMinutesToHoursAndMinutes(totalMinutes: number): { hours: number; minutes: number } {
-    if (totalMinutes < 0) {
-        throw new Error('Total minutes cannot be negative');
-    }
-    
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    
-    return { hours, minutes };
+export function convertMinutesToHoursAndMinutes(totalMinutes: number): {
+  hours: number;
+  minutes: number;
+} {
+  if (totalMinutes < 0) {
+    throw new Error('Total minutes cannot be negative');
+  }
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  return { hours, minutes };
 }
 
 /**
@@ -24,14 +27,17 @@ export function convertMinutesToHoursAndMinutes(totalMinutes: number): { hours: 
  * @param minutes - Number of minutes (optional, defaults to 0)
  * @returns Total time in minutes
  */
-export function convertHoursAndMinutesToTotalMinutes(hours: number, minutes: number = 0): number {
-    if (hours < 0 || minutes < 0) {
-        throw new Error('Hours and minutes cannot be negative');
-    }
-    
-    if (minutes >= 60) {
-        throw new Error('Minutes must be less than 60');
-    }
-    
-    return hours * 60 + minutes;
+export function convertHoursAndMinutesToTotalMinutes(
+  hours: number,
+  minutes: number = 0
+): number {
+  if (hours < 0 || minutes < 0) {
+    throw new Error('Hours and minutes cannot be negative');
+  }
+
+  if (minutes >= 60) {
+    throw new Error('Minutes must be less than 60');
+  }
+
+  return hours * 60 + minutes;
 }

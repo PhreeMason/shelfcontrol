@@ -58,7 +58,9 @@ describe('BooksService', () => {
         error: mockError,
       });
 
-      await expect(booksService.searchBooks('test')).rejects.toThrow('Search failed');
+      await expect(booksService.searchBooks('test')).rejects.toThrow(
+        'Search failed'
+      );
 
       expect(supabase.functions.invoke).toHaveBeenCalledWith('search-books', {
         body: { query: 'test' },
@@ -69,7 +71,9 @@ describe('BooksService', () => {
       const networkError = new Error('Network error');
       (supabase.functions.invoke as jest.Mock).mockRejectedValue(networkError);
 
-      await expect(booksService.searchBooks('test')).rejects.toThrow('Network error');
+      await expect(booksService.searchBooks('test')).rejects.toThrow(
+        'Network error'
+      );
     });
   });
 
@@ -119,7 +123,9 @@ describe('BooksService', () => {
         error: mockError,
       });
 
-      await expect(booksService.fetchBookData('invalid-id')).rejects.toThrow('Fetch failed');
+      await expect(booksService.fetchBookData('invalid-id')).rejects.toThrow(
+        'Fetch failed'
+      );
 
       expect(supabase.functions.invoke).toHaveBeenCalledWith('book-data', {
         body: { api_id: 'invalid-id' },
@@ -130,7 +136,9 @@ describe('BooksService', () => {
       const networkError = new Error('Network timeout');
       (supabase.functions.invoke as jest.Mock).mockRejectedValue(networkError);
 
-      await expect(booksService.fetchBookData('test-123')).rejects.toThrow('Network timeout');
+      await expect(booksService.fetchBookData('test-123')).rejects.toThrow(
+        'Network timeout'
+      );
     });
   });
 
@@ -241,7 +249,9 @@ describe('BooksService', () => {
         error: mockError,
       });
 
-      await expect(booksService.getBookByApiId('api-123')).rejects.toEqual(mockError);
+      await expect(booksService.getBookByApiId('api-123')).rejects.toEqual(
+        mockError
+      );
     });
   });
 
@@ -407,13 +417,19 @@ describe('BooksService', () => {
         error: mockError,
       });
 
-      await expect(booksService.insertBook(bookId, bookData)).rejects.toThrow('Insert failed');
+      await expect(booksService.insertBook(bookId, bookData)).rejects.toThrow(
+        'Insert failed'
+      );
 
       expect(supabase.from).toHaveBeenCalledWith('books');
     });
 
     it('should handle different format types correctly', async () => {
-      const formatTests: ('physical' | 'eBook' | 'audio')[] = ['physical', 'eBook', 'audio'];
+      const formatTests: ('physical' | 'eBook' | 'audio')[] = [
+        'physical',
+        'eBook',
+        'audio',
+      ];
 
       for (const format of formatTests) {
         const bookData: FullBookData = {

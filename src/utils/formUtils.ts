@@ -14,7 +14,9 @@ export const transformProgressInputText = (text: string): number => {
  * @param value - Numeric value
  * @returns String representation or empty string if falsy
  */
-export const transformProgressValueToText = (value: number | null | undefined): string => {
+export const transformProgressValueToText = (
+  value: number | null | undefined
+): string => {
   return value?.toString() || '';
 };
 
@@ -23,6 +25,8 @@ export const transformProgressValueToText = (value: number | null | undefined): 
  * @param format - Book format type
  * @returns true if format needs AudiobookProgressInput
  */
-export const requiresAudiobookInput = (format: 'physical' | 'eBook' | 'audio'): boolean => {
+export const requiresAudiobookInput = (
+  format: 'physical' | 'eBook' | 'audio'
+): boolean => {
   return format === 'audio';
 };

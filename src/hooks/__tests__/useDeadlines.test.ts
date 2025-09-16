@@ -45,7 +45,9 @@ const mockUseAuth = useAuth as jest.Mock;
 const mockUseMutation = useMutation as jest.Mock;
 const mockUseQuery = useQuery as jest.Mock;
 const mockUseQueryClient = useQueryClient as jest.Mock;
-const mockDeadlinesService = deadlinesService as jest.Mocked<typeof deadlinesService>;
+const mockDeadlinesService = deadlinesService as jest.Mocked<
+  typeof deadlinesService
+>;
 
 const mockUser = {
   id: 'user-123',
@@ -121,7 +123,10 @@ describe('useDeadlines hooks', () => {
       const mutationConfig = mockUseMutation.mock.calls[0][0];
       await mutationConfig.mutationFn(mockAddParams);
 
-      expect(mockDeadlinesService.addDeadline).toHaveBeenCalledWith('user-123', mockAddParams);
+      expect(mockDeadlinesService.addDeadline).toHaveBeenCalledWith(
+        'user-123',
+        mockAddParams
+      );
     });
 
     it('should throw error when user not authenticated', async () => {
@@ -133,9 +138,15 @@ describe('useDeadlines hooks', () => {
       useAddDeadline();
 
       const mutationConfig = mockUseMutation.mock.calls[0][0];
-      const mockParams = { book_id: 'book-123', deadline_date: '2024-12-31', priority: 'medium' as const };
+      const mockParams = {
+        book_id: 'book-123',
+        deadline_date: '2024-12-31',
+        priority: 'medium' as const,
+      };
 
-      await expect(mutationConfig.mutationFn(mockParams)).rejects.toThrow('User not authenticated');
+      await expect(mutationConfig.mutationFn(mockParams)).rejects.toThrow(
+        'User not authenticated'
+      );
     });
 
     it('should invalidate queries on success', () => {
@@ -144,7 +155,9 @@ describe('useDeadlines hooks', () => {
       const mutationConfig = mockUseMutation.mock.calls[0][0];
       mutationConfig.onSuccess();
 
-      expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: ['deadlines', 'user-123'] });
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({
+        queryKey: ['deadlines', 'user-123'],
+      });
     });
   });
 
@@ -174,7 +187,10 @@ describe('useDeadlines hooks', () => {
       const mutationConfig = mockUseMutation.mock.calls[0][0];
       await mutationConfig.mutationFn(mockUpdateParams);
 
-      expect(mockDeadlinesService.updateDeadline).toHaveBeenCalledWith('user-123', mockUpdateParams);
+      expect(mockDeadlinesService.updateDeadline).toHaveBeenCalledWith(
+        'user-123',
+        mockUpdateParams
+      );
     });
 
     it('should throw error when user not authenticated', async () => {
@@ -186,9 +202,15 @@ describe('useDeadlines hooks', () => {
       useUpdateDeadline();
 
       const mutationConfig = mockUseMutation.mock.calls[0][0];
-      const mockParams = { deadline_id: 'deadline-123', deadline_date: '2024-12-31', priority: 'high' as const };
+      const mockParams = {
+        deadline_id: 'deadline-123',
+        deadline_date: '2024-12-31',
+        priority: 'high' as const,
+      };
 
-      await expect(mutationConfig.mutationFn(mockParams)).rejects.toThrow('User not authenticated');
+      await expect(mutationConfig.mutationFn(mockParams)).rejects.toThrow(
+        'User not authenticated'
+      );
     });
   });
 
@@ -212,7 +234,10 @@ describe('useDeadlines hooks', () => {
       const mutationConfig = mockUseMutation.mock.calls[0][0];
       await mutationConfig.mutationFn('deadline-123');
 
-      expect(mockDeadlinesService.deleteDeadline).toHaveBeenCalledWith('user-123', 'deadline-123');
+      expect(mockDeadlinesService.deleteDeadline).toHaveBeenCalledWith(
+        'user-123',
+        'deadline-123'
+      );
     });
 
     it('should throw error when user not authenticated', async () => {
@@ -225,7 +250,9 @@ describe('useDeadlines hooks', () => {
 
       const mutationConfig = mockUseMutation.mock.calls[0][0];
 
-      await expect(mutationConfig.mutationFn('deadline-123')).rejects.toThrow('User not authenticated');
+      await expect(mutationConfig.mutationFn('deadline-123')).rejects.toThrow(
+        'User not authenticated'
+      );
     });
   });
 
@@ -255,7 +282,9 @@ describe('useDeadlines hooks', () => {
       const mutationConfig = mockUseMutation.mock.calls[0][0];
       await mutationConfig.mutationFn(mockProgressDetails);
 
-      expect(mockDeadlinesService.updateDeadlineProgress).toHaveBeenCalledWith(mockProgressDetails);
+      expect(mockDeadlinesService.updateDeadlineProgress).toHaveBeenCalledWith(
+        mockProgressDetails
+      );
     });
 
     it('should throw error when user not authenticated', async () => {
@@ -272,7 +301,9 @@ describe('useDeadlines hooks', () => {
         currentProgress: 150,
       };
 
-      await expect(mutationConfig.mutationFn(mockProgressDetails)).rejects.toThrow('User not authenticated');
+      await expect(
+        mutationConfig.mutationFn(mockProgressDetails)
+      ).rejects.toThrow('User not authenticated');
     });
   });
 
@@ -295,7 +326,9 @@ describe('useDeadlines hooks', () => {
       const queryConfig = mockUseQuery.mock.calls[0][0];
       await queryConfig.queryFn();
 
-      expect(mockDeadlinesService.getDeadlines).toHaveBeenCalledWith('user-123');
+      expect(mockDeadlinesService.getDeadlines).toHaveBeenCalledWith(
+        'user-123'
+      );
     });
 
     it('should use session user id when profile not available', () => {
@@ -331,7 +364,9 @@ describe('useDeadlines hooks', () => {
       useGetDeadlines();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      await expect(queryConfig.queryFn()).rejects.toThrow('User not authenticated');
+      await expect(queryConfig.queryFn()).rejects.toThrow(
+        'User not authenticated'
+      );
     });
   });
 
@@ -355,7 +390,10 @@ describe('useDeadlines hooks', () => {
       const mutationConfig = mockUseMutation.mock.calls[0][0];
       await mutationConfig.mutationFn('deadline-123');
 
-      expect(mockDeadlinesService.completeDeadline).toHaveBeenCalledWith('user-123', 'deadline-123');
+      expect(mockDeadlinesService.completeDeadline).toHaveBeenCalledWith(
+        'user-123',
+        'deadline-123'
+      );
     });
 
     it('should throw error when user not authenticated', async () => {
@@ -368,7 +406,9 @@ describe('useDeadlines hooks', () => {
 
       const mutationConfig = mockUseMutation.mock.calls[0][0];
 
-      await expect(mutationConfig.mutationFn('deadline-123')).rejects.toThrow('User not authenticated');
+      await expect(mutationConfig.mutationFn('deadline-123')).rejects.toThrow(
+        'User not authenticated'
+      );
     });
   });
 
@@ -392,7 +432,10 @@ describe('useDeadlines hooks', () => {
       const mutationConfig = mockUseMutation.mock.calls[0][0];
       await mutationConfig.mutationFn('deadline-123');
 
-      expect(mockDeadlinesService.updateDeadlineStatus).toHaveBeenCalledWith('deadline-123', 'set_aside');
+      expect(mockDeadlinesService.updateDeadlineStatus).toHaveBeenCalledWith(
+        'deadline-123',
+        'set_aside'
+      );
     });
   });
 
@@ -416,7 +459,10 @@ describe('useDeadlines hooks', () => {
       const mutationConfig = mockUseMutation.mock.calls[0][0];
       await mutationConfig.mutationFn('deadline-123');
 
-      expect(mockDeadlinesService.updateDeadlineStatus).toHaveBeenCalledWith('deadline-123', 'reading');
+      expect(mockDeadlinesService.updateDeadlineStatus).toHaveBeenCalledWith(
+        'deadline-123',
+        'reading'
+      );
     });
   });
 
@@ -440,7 +486,9 @@ describe('useDeadlines hooks', () => {
       const queryConfig = mockUseQuery.mock.calls[0][0];
       await queryConfig.queryFn();
 
-      expect(mockDeadlinesService.getArchivedDeadlines).toHaveBeenCalledWith('user-123');
+      expect(mockDeadlinesService.getArchivedDeadlines).toHaveBeenCalledWith(
+        'user-123'
+      );
     });
 
     it('should be disabled when user not authenticated', () => {
@@ -477,7 +525,10 @@ describe('useDeadlines hooks', () => {
       const queryConfig = mockUseQuery.mock.calls[0][0];
       await queryConfig.queryFn();
 
-      expect(mockDeadlinesService.getDeadlineById).toHaveBeenCalledWith('user-123', 'deadline-123');
+      expect(mockDeadlinesService.getDeadlineById).toHaveBeenCalledWith(
+        'user-123',
+        'deadline-123'
+      );
     });
 
     it('should return null when deadlineId is undefined', async () => {
@@ -532,7 +583,10 @@ describe('useDeadlines hooks', () => {
       const mutationConfig = mockUseMutation.mock.calls[0][0];
       await mutationConfig.mutationFn(params);
 
-      expect(mockDeadlinesService.deleteFutureProgress).toHaveBeenCalledWith('deadline-123', 100);
+      expect(mockDeadlinesService.deleteFutureProgress).toHaveBeenCalledWith(
+        'deadline-123',
+        100
+      );
     });
 
     it('should throw error when user not authenticated', async () => {
@@ -546,7 +600,9 @@ describe('useDeadlines hooks', () => {
       const mutationConfig = mockUseMutation.mock.calls[0][0];
       const params = { deadlineId: 'deadline-123', newProgress: 100 };
 
-      await expect(mutationConfig.mutationFn(params)).rejects.toThrow('User not authenticated');
+      await expect(mutationConfig.mutationFn(params)).rejects.toThrow(
+        'User not authenticated'
+      );
     });
   });
 });

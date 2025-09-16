@@ -13,16 +13,22 @@ interface DeadlineActionButtonsProps {
 const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   deadline,
 }) => {
-  const { deleteDeadline, completeDeadline, setAsideDeadline, reactivateDeadline } = useDeadlines();
+  const {
+    deleteDeadline,
+    completeDeadline,
+    setAsideDeadline,
+    reactivateDeadline,
+  } = useDeadlines();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const [isSettingAside, setIsSettingAside] = useState(false);
   const [isReactivating, setIsReactivating] = useState(false);
 
   // Get current status
-  const latestStatus = deadline.status && deadline.status.length > 0
-    ? deadline.status[deadline.status.length - 1].status
-    : 'reading';
+  const latestStatus =
+    deadline.status && deadline.status.length > 0
+      ? deadline.status[deadline.status.length - 1].status
+      : 'reading';
 
   const isCompleted = latestStatus === 'complete';
   const isSetAside = latestStatus === 'set_aside';
@@ -54,11 +60,11 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                   text2: `Congratulations on finishing "${deadline.book_title}"!`,
                   autoHide: true,
                   visibilityTime: 1000,
-                  position: 'top'
+                  position: 'top',
                 });
               },
               // Error callback
-              (error) => {
+              error => {
                 setIsCompleting(false);
                 Toast.show({
                   swipeable: true,
@@ -67,7 +73,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                   text2: error.message || 'Please try again',
                   autoHide: true,
                   visibilityTime: 1500,
-                  position: 'top'
+                  position: 'top',
                 });
               }
             );
@@ -95,7 +101,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         });
       },
       // Error callback
-      (error) => {
+      error => {
         setIsSettingAside(false);
         Toast.show({
           swipeable: true,
@@ -104,7 +110,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           text2: error.message || 'Please try again',
           autoHide: true,
           visibilityTime: 1500,
-          position: 'top'
+          position: 'top',
         });
       }
     );
@@ -140,11 +146,11 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                   position: 'top',
                   onHide: () => {
                     router.replace('/');
-                  }
+                  },
                 });
               },
               // Error callback
-              (error) => {
+              error => {
                 setIsDeleting(false);
                 Toast.show({
                   swipeable: true,
@@ -153,7 +159,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                   text2: error.message || 'Please try again',
                   autoHide: true,
                   visibilityTime: 1500,
-                  position: 'top'
+                  position: 'top',
                 });
               }
             );
@@ -186,7 +192,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           setTimeout(() => {
             Alert.alert(
               'Update Deadline?',
-              'Would you like to update the deadline date since you\'re resuming this book?',
+              "Would you like to update the deadline date since you're resuming this book?",
               [
                 {
                   text: 'Not Now',
@@ -198,15 +204,15 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                     // Navigate to edit form page 3 (deadline page)
                     // @ts-ignore
                     router.push(`/deadline/${deadline.id}/edit?page=3`);
-                  }
-                }
+                  },
+                },
               ]
             );
           }, 2500); // Wait for toast to show first
         }
       },
       // Error callback
-      (error) => {
+      error => {
         setIsReactivating(false);
         Toast.show({
           swipeable: true,
@@ -215,7 +221,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           text2: error.message || 'Please try again',
           autoHide: true,
           visibilityTime: 1500,
-          position: 'top'
+          position: 'top',
         });
       }
     );
@@ -242,10 +248,10 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                   ? { totalMinutes: String(deadline.total_quantity) }
                   : { totalQuantity: String(deadline.total_quantity) }),
                 book_id: (deadline as any).book_id || '',
-              }
+              },
             });
-          }
-        }
+          },
+        },
       ]
     );
   };
@@ -256,19 +262,19 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       {isActive && (
         <>
           <ThemedButton
-            title={isCompleting ? "Completing..." : "Mark as Complete"}
+            title={isCompleting ? 'Completing...' : 'Mark as Complete'}
             variant="success"
             style={styles.actionButton}
             onPress={handleComplete}
             disabled={isCompleting}
           />
           <ThemedButton
-            title={isSettingAside ? "Pausing..." : "Pause"}
+            title={isSettingAside ? 'Pausing...' : 'Pause'}
             variant="secondary"
             style={styles.actionButton}
             onPress={handleSetAside}
             disabled={isSettingAside}
-            backgroundColor='warning'
+            backgroundColor="warning"
             textColor="textInverse"
           />
         </>
@@ -278,14 +284,14 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       {isSetAside && (
         <>
           <ThemedButton
-            title={isReactivating ? "Reactivating..." : "Resume Reading"}
+            title={isReactivating ? 'Reactivating...' : 'Resume Reading'}
             variant="primary"
             style={styles.actionButton}
             onPress={handleReactivate}
             disabled={isReactivating}
           />
           <ThemedButton
-            title={isCompleting ? "Completing..." : "Mark as Complete"}
+            title={isCompleting ? 'Completing...' : 'Mark as Complete'}
             variant="success"
             style={styles.actionButton}
             onPress={handleComplete}
@@ -297,7 +303,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       {/* For completed deadlines - show reactivate only */}
       {isCompleted && (
         <ThemedButton
-          title={"Read Again?"}
+          title={'Read Again?'}
           variant="primary"
           style={styles.actionButton}
           onPress={handleReadAgain}
@@ -307,7 +313,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
 
       {/* Delete is always available */}
       <ThemedButton
-        title={isDeleting ? "Deleting..." : "Delete Deadline"}
+        title={isDeleting ? 'Deleting...' : 'Delete Deadline'}
         variant="dangerOutline"
         style={styles.actionButton}
         onPress={handleDelete}

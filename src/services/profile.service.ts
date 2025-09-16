@@ -57,7 +57,10 @@ class ProfileService {
     const updates: Partial<Profile> = {};
 
     // Handle email - only update if it's a real email (not private relay)
-    if (appleData.email && !appleData.email.includes('@privaterelay.appleid.com')) {
+    if (
+      appleData.email &&
+      !appleData.email.includes('@privaterelay.appleid.com')
+    ) {
       updates.email = appleData.email;
     }
 
@@ -101,12 +104,14 @@ class ProfileService {
         .list(userId);
 
       if (existingFiles && existingFiles.length > 0) {
-        const filesToRemove = existingFiles.map(file => `${userId}/${file.name}`);
+        const filesToRemove = existingFiles.map(
+          file => `${userId}/${file.name}`
+        );
         await supabase.storage.from('avatars').remove(filesToRemove);
       }
 
       // Fetch the image and convert to arraybuffer
-      const arraybuffer = await fetch(uri).then((res) => res.arrayBuffer());
+      const arraybuffer = await fetch(uri).then(res => res.arrayBuffer());
 
       // Get file extension from URI
       const fileExt = uri.split('.').pop()?.toLowerCase() ?? 'jpeg';

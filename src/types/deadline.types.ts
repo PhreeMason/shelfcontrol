@@ -1,8 +1,4 @@
-import {
-    Tables,
-    TablesInsert,
-    TablesUpdate
-} from '@/types/database.types';
+import { Tables, TablesInsert, TablesUpdate } from '@/types/database.types';
 
 export type ReadingDeadline = Tables<'deadlines'>;
 export type ReadingDeadlineInsert = TablesInsert<'deadlines'>;
@@ -16,10 +12,10 @@ export type ReadingDeadlineStatusInsert = TablesInsert<'deadline_status'>;
 
 // Type for reading deadline with progress - matches the actual data structure from useGetDeadlines
 export type ReadingDeadlineWithProgress = ReadingDeadline & {
-    progress: ReadingDeadlineProgress[];
-    status?: ReadingDeadlineStatus[];
+  progress: ReadingDeadlineProgress[];
+  status?: ReadingDeadlineStatus[];
 };
 
 export type ReadingDeadlineInsertWithProgress = ReadingDeadlineInsert & {
-    progress?: ReadingDeadlineProgressInsert[];
+  progress?: ReadingDeadlineProgressInsert[];
 };

@@ -9,7 +9,7 @@ type CustomInputProps<T extends FieldValues> = {
   name: Path<T>;
   inputType?: 'string' | 'number' | 'integer';
   transformOnBlur?: (value: string) => string;
-} & Omit<TextInputProps, 'onChangeText' | 'onBlur' | 'value'>
+} & Omit<TextInputProps, 'onChangeText' | 'onBlur' | 'value'>;
 
 const CustomInput = <T extends FieldValues>({
   control,
@@ -41,10 +41,14 @@ const CustomInput = <T extends FieldValues>({
             {...props}
             value={
               inputType === 'integer' || inputType === 'number'
-                ? (value === undefined || value === null ? '' : String(value))
-                : (typeof value === 'number' ? String(value) : (value ?? ''))
+                ? value === undefined || value === null
+                  ? ''
+                  : String(value)
+                : typeof value === 'number'
+                  ? String(value)
+                  : (value ?? '')
             }
-            onChangeText={(text) => {
+            onChangeText={text => {
               onChange(text);
             }}
             onBlur={() => {
@@ -63,13 +67,19 @@ const CustomInput = <T extends FieldValues>({
               {
                 backgroundColor: isFocused ? cardColor : blurBackgroundColor,
                 color: textColor,
-                borderColor: error ? dangerColor : isFocused ? borderColor : 'transparent',
+                borderColor: error
+                  ? dangerColor
+                  : isFocused
+                    ? borderColor
+                    : 'transparent',
               },
               props.style,
             ]}
           />
           {error ? (
-            <ThemedText color="danger" style={styles.error}>{error.message}</ThemedText>
+            <ThemedText color="danger" style={styles.error}>
+              {error.message}
+            </ThemedText>
           ) : (
             <View style={{ height: 18 }} />
           )}

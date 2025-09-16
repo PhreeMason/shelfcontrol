@@ -65,7 +65,9 @@ jest.mock('@/lib/supabase', () => ({
       invoke: jest.fn().mockResolvedValue({ data: null, error: null }),
     },
     auth: {
-      getSession: jest.fn().mockResolvedValue({ data: { session: null }, error: null }),
+      getSession: jest
+        .fn()
+        .mockResolvedValue({ data: { session: null }, error: null }),
       signInWithOAuth: jest.fn(),
       signOut: jest.fn(),
     },
@@ -89,7 +91,8 @@ jest.mock('@tanstack/react-query', () => ({
     invalidateQueries: jest.fn(),
     setQueryData: jest.fn(),
   })),
-  QueryClientProvider: ({ children }: { children: React.ReactNode }) => children,
+  QueryClientProvider: ({ children }: { children: React.ReactNode }) =>
+    children,
 }));
 
 // Mock Toast
@@ -109,4 +112,3 @@ global.console = {
   warn: jest.fn(),
   error: jest.fn(),
 };
-

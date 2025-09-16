@@ -29,7 +29,7 @@ const FilteredDeadlines = () => {
     overdueDeadlines,
     completedDeadlines,
     isLoading,
-    error
+    error,
   } = useDeadlines();
 
   const getFilteredDeadlines = (): ReadingDeadlineWithProgress[] => {
@@ -40,12 +40,14 @@ const FilteredDeadlines = () => {
         return overdueDeadlines;
       case 'completed':
         return completedDeadlines.filter(deadline => {
-          const latestStatus = deadline.status?.[deadline.status.length - 1]?.status;
+          const latestStatus =
+            deadline.status?.[deadline.status.length - 1]?.status;
           return latestStatus === 'complete';
         });
       case 'set_aside':
         return completedDeadlines.filter(deadline => {
-          const latestStatus = deadline.status?.[deadline.status.length - 1]?.status;
+          const latestStatus =
+            deadline.status?.[deadline.status.length - 1]?.status;
           return latestStatus === 'set_aside';
         });
       case 'all':
@@ -104,7 +106,7 @@ const FilteredDeadlines = () => {
         style={styles.filterContainer}
         contentContainerStyle={styles.filterContentContainer}
       >
-        {filterOptions.map((option) => (
+        {filterOptions.map(option => (
           <ThemedButton
             key={option.key}
             title={option.label}
@@ -118,17 +120,11 @@ const FilteredDeadlines = () => {
 
       <View style={styles.deadlinesContainer}>
         {filteredDeadlines.length > 0 ? (
-          filteredDeadlines.map((deadline) => (
-            <DeadlineCard
-              key={deadline.id}
-              deadline={deadline}
-            />
+          filteredDeadlines.map(deadline => (
+            <DeadlineCard key={deadline.id} deadline={deadline} />
           ))
         ) : (
-          <ThemedText
-            style={styles.emptyText}
-            variant="muted"
-          >
+          <ThemedText style={styles.emptyText} variant="muted">
             {getEmptyMessage()}
           </ThemedText>
         )}

@@ -1,15 +1,15 @@
-import { LinearGradient } from 'expo-linear-gradient'
-import React, { useEffect, useRef } from 'react'
-import { Animated, StyleSheet, View } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 
 type LinearProgressBarProps = {
-  progressPercentage: number
-  height?: number
-  backgroundColor?: string
-  borderRadius?: number
-  showShimmer?: boolean
-  gradientColors?: string[]
-}
+  progressPercentage: number;
+  height?: number;
+  backgroundColor?: string;
+  borderRadius?: number;
+  showShimmer?: boolean;
+  gradientColors?: string[];
+};
 
 const LinearProgressBar: React.FC<LinearProgressBarProps> = ({
   progressPercentage,
@@ -17,12 +17,12 @@ const LinearProgressBar: React.FC<LinearProgressBarProps> = ({
   backgroundColor = 'rgba(232, 194, 185, 0.2)',
   borderRadius = 100,
   showShimmer = true,
-  gradientColors = ['#E8C2B9', '#B8A9D9']
+  gradientColors = ['#E8C2B9', '#B8A9D9'],
 }) => {
-  const shimmerTranslateX = useRef(new Animated.Value(-40)).current
+  const shimmerTranslateX = useRef(new Animated.Value(-40)).current;
 
   useEffect(() => {
-    if (!showShimmer) return
+    if (!showShimmer) return;
 
     const shimmerAnimation = Animated.loop(
       Animated.timing(shimmerTranslateX, {
@@ -30,19 +30,24 @@ const LinearProgressBar: React.FC<LinearProgressBarProps> = ({
         duration: 1800,
         useNativeDriver: true,
       })
-    )
-    shimmerAnimation.start()
+    );
+    shimmerAnimation.start();
 
-    return () => shimmerAnimation.stop()
-  }, [shimmerTranslateX, showShimmer])
+    return () => shimmerAnimation.stop();
+  }, [shimmerTranslateX, showShimmer]);
 
   return (
-    <View style={[styles.progressBar, { height, backgroundColor, borderRadius }]}>
-      <LinearGradient 
+    <View
+      style={[styles.progressBar, { height, backgroundColor, borderRadius }]}
+    >
+      <LinearGradient
         colors={gradientColors as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        style={[styles.progressFill, { width: `${progressPercentage}%`, borderRadius }]}
+        style={[
+          styles.progressFill,
+          { width: `${progressPercentage}%`, borderRadius },
+        ]}
       >
         {showShimmer && (
           <Animated.View
@@ -54,7 +59,11 @@ const LinearProgressBar: React.FC<LinearProgressBarProps> = ({
             ]}
           >
             <LinearGradient
-              colors={[gradientColors[0] + '90', gradientColors[1] + '90', gradientColors[1] + '90']}
+              colors={[
+                gradientColors[0] + '90',
+                gradientColors[1] + '90',
+                gradientColors[1] + '90',
+              ]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.shimmerGradient}
@@ -63,8 +72,8 @@ const LinearProgressBar: React.FC<LinearProgressBarProps> = ({
         )}
       </LinearGradient>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   progressBar: {
@@ -85,6 +94,6 @@ const styles = StyleSheet.create({
   shimmerGradient: {
     flex: 1,
   },
-})
+});
 
-export default LinearProgressBar
+export default LinearProgressBar;

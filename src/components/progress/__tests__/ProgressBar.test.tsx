@@ -16,19 +16,23 @@ jest.mock('@/components/themed/ThemedText', () => {
   const { Text } = require('react-native');
   return {
     ThemedText: function MockThemedText({ children, variant }: any) {
-      return React.createElement(Text, { testID: `themed-text-${variant || 'default'}` }, children);
-    }
+      return React.createElement(
+        Text,
+        { testID: `themed-text-${variant || 'default'}` },
+        children
+      );
+    },
   };
 });
 
 jest.mock('@/utils/dateUtils', () => ({
-  formatDeadlineDate: jest.fn((date: string) => `FormattedDate-${date}`)
+  formatDeadlineDate: jest.fn((date: string) => `FormattedDate-${date}`),
 }));
 
 describe('ProgressBar', () => {
   const defaultProps = {
     progressPercentage: 75,
-    deadlineDate: '2024-01-20'
+    deadlineDate: '2024-01-20',
   };
 
   beforeEach(() => {

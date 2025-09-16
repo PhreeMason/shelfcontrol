@@ -12,7 +12,7 @@ export default function HomeScreen() {
         <Header />
         <FilteredDeadlines />
       </ThemedScrollView>
-      {Platform.OS === 'android' ?
+      {Platform.OS === 'android' ? (
         <Link href="/deadline/new" asChild>
           <ThemedIconButton
             icon="plus"
@@ -20,7 +20,8 @@ export default function HomeScreen() {
             variant="primary"
             size="lg"
           />
-        </Link> : null}
+        </Link>
+      ) : null}
     </ThemedView>
   );
 }

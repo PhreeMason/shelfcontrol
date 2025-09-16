@@ -5,7 +5,13 @@ import * as Linking from 'expo-linking';
 import { Link, useRouter } from 'expo-router';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import { z } from 'zod';
 
 const resetPasswordRequestSchema = z.object({
@@ -33,10 +39,15 @@ export default function ResetPasswordRequestScreen() {
     try {
       // Create the deep link URL for the password update screen
       const resetPasswordURL = Linking.createURL('/reset-password-update');
-      const { error } = await requestResetPasswordEmail(data.email, resetPasswordURL);
+      const { error } = await requestResetPasswordEmail(
+        data.email,
+        resetPasswordURL
+      );
 
       if (error) {
-        setError('root', { message: error.message || 'Failed to send reset email' });
+        setError('root', {
+          message: error.message || 'Failed to send reset email',
+        });
       } else {
         // Show success message and navigate back to sign-in
         alert('Password reset email sent! Please check your email.');
@@ -58,12 +69,15 @@ export default function ResetPasswordRequestScreen() {
           <ThemedText>Back to Sign In</ThemedText>
         </Link>
 
-        <ThemedText style={[styles.title, { fontSize: 32, fontWeight: 'bold' }]}>
+        <ThemedText
+          style={[styles.title, { fontSize: 32, fontWeight: 'bold' }]}
+        >
           Reset Password
         </ThemedText>
 
         <ThemedText style={styles.subtitle}>
-          Enter your email address and we'll send you a link to reset your password.
+          Enter your email address and we'll send you a link to reset your
+          password.
         </ThemedText>
 
         <ThemedView style={styles.form}>
@@ -97,7 +111,10 @@ export default function ResetPasswordRequestScreen() {
           )}
 
           <TouchableOpacity
-            style={[styles.button, (isLoading || isSubmitting) && styles.buttonDisabled]}
+            style={[
+              styles.button,
+              (isLoading || isSubmitting) && styles.buttonDisabled,
+            ]}
             onPress={handleSubmit(onResetPasswordRequest)}
             disabled={isLoading || isSubmitting}
           >

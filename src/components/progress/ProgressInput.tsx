@@ -1,6 +1,10 @@
 import { Typography } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
-import { requiresAudiobookInput, transformProgressInputText, transformProgressValueToText } from '@/utils/formUtils';
+import {
+  requiresAudiobookInput,
+  transformProgressInputText,
+  transformProgressValueToText,
+} from '@/utils/formUtils';
 import React from 'react';
 import { Control, Controller } from 'react-hook-form';
 import { StyleSheet, TextInput } from 'react-native';
@@ -11,10 +15,7 @@ interface ProgressInputProps {
   control: Control<any>;
 }
 
-const ProgressInput: React.FC<ProgressInputProps> = ({
-  format,
-  control
-}) => {
+const ProgressInput: React.FC<ProgressInputProps> = ({ format, control }) => {
   const { colors } = useTheme();
 
   if (requiresAudiobookInput(format)) {
@@ -41,12 +42,19 @@ const ProgressInput: React.FC<ProgressInputProps> = ({
       render={({ field: { value, onChange, onBlur } }) => (
         <TextInput
           value={transformProgressValueToText(value)}
-          onChangeText={(text) => onChange(transformProgressInputText(text))}
+          onChangeText={text => onChange(transformProgressInputText(text))}
           onBlur={onBlur}
           placeholder="Enter current progress"
           placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
-          style={[styles.input, { color: colors.primary, backgroundColor: colors.background, borderColor: colors.border }]}
+          style={[
+            styles.input,
+            {
+              color: colors.primary,
+              backgroundColor: colors.background,
+              borderColor: colors.border,
+            },
+          ]}
         />
       )}
     />
@@ -63,5 +71,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderWidth: 2,
-  }
+  },
 });

@@ -11,8 +11,8 @@ jest.mock('@/hooks/useThemeColor', () => ({
       background: '#ffffff',
       border: '#cccccc',
       textMuted: '#666666',
-    }
-  })
+    },
+  }),
 }));
 
 jest.mock('@/constants/Colors', () => ({
@@ -20,15 +20,17 @@ jest.mock('@/constants/Colors', () => ({
     titleLarge: {
       fontSize: 18,
       fontWeight: 'bold',
-    }
-  }
+    },
+  },
 }));
 
 jest.mock('../AudiobookProgressInput', () => {
   const React = require('react');
   const { View } = require('react-native');
   return function MockAudiobookProgressInput(props: any) {
-    return React.createElement(View, { testID: props.testID || 'audiobook-progress-input' });
+    return React.createElement(View, {
+      testID: props.testID || 'audiobook-progress-input',
+    });
   };
 });
 
@@ -79,10 +81,16 @@ describe('ProgressInput', () => {
 
   describe('when format is not audio', () => {
     beforeEach(() => {
-      const { requiresAudiobookInput, transformProgressValueToText, transformProgressInputText } = require('@/utils/formUtils');
+      const {
+        requiresAudiobookInput,
+        transformProgressValueToText,
+        transformProgressInputText,
+      } = require('@/utils/formUtils');
       requiresAudiobookInput.mockReturnValue(false);
       transformProgressValueToText.mockReturnValue('50');
-      transformProgressInputText.mockImplementation((text: string) => parseInt(text) || 0);
+      transformProgressInputText.mockImplementation(
+        (text: string) => parseInt(text) || 0
+      );
     });
 
     it('should render TextInput for physical format', () => {
@@ -107,11 +115,15 @@ describe('ProgressInput', () => {
     it('should have correct placeholder text', () => {
       render(<ProgressInput format="physical" control={mockControl} />);
 
-      expect(screen.getByPlaceholderText('Enter current progress')).toBeTruthy();
+      expect(
+        screen.getByPlaceholderText('Enter current progress')
+      ).toBeTruthy();
     });
 
     it('should have numeric keyboard type', () => {
-      const { getByDisplayValue } = render(<ProgressInput format="physical" control={mockControl} />);
+      const { getByDisplayValue } = render(
+        <ProgressInput format="physical" control={mockControl} />
+      );
       const textInput = getByDisplayValue('50');
 
       expect(textInput.props.keyboardType).toBe('numeric');
@@ -119,7 +131,9 @@ describe('ProgressInput', () => {
 
     it('should handle text input changes', () => {
       const { transformProgressInputText } = require('@/utils/formUtils');
-      const { getByDisplayValue } = render(<ProgressInput format="physical" control={mockControl} />);
+      const { getByDisplayValue } = render(
+        <ProgressInput format="physical" control={mockControl} />
+      );
       const textInput = getByDisplayValue('50');
 
       fireEvent.changeText(textInput, '75');
@@ -128,7 +142,9 @@ describe('ProgressInput', () => {
     });
 
     it('should apply correct styling', () => {
-      const { getByDisplayValue } = render(<ProgressInput format="physical" control={mockControl} />);
+      const { getByDisplayValue } = render(
+        <ProgressInput format="physical" control={mockControl} />
+      );
       const textInput = getByDisplayValue('50');
 
       expect(textInput.props.style).toEqual(
@@ -144,13 +160,15 @@ describe('ProgressInput', () => {
             color: '#000000',
             backgroundColor: '#ffffff',
             borderColor: '#cccccc',
-          })
+          }),
         ])
       );
     });
 
     it('should have correct placeholder text color', () => {
-      const { getByPlaceholderText } = render(<ProgressInput format="physical" control={mockControl} />);
+      const { getByPlaceholderText } = render(
+        <ProgressInput format="physical" control={mockControl} />
+      );
       const textInput = getByPlaceholderText('Enter current progress');
 
       expect(textInput.props.placeholderTextColor).toBe('#666666');

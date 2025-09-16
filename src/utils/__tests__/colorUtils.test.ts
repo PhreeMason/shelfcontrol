@@ -6,7 +6,7 @@ import {
   lighten,
   darken,
   adjustHue,
-  getContrastColor
+  getContrastColor,
 } from '../colorUtils';
 
 describe('colorUtils', () => {
@@ -75,7 +75,15 @@ describe('colorUtils', () => {
 
   describe('round-trip hex/RGB conversions', () => {
     it('should convert back and forth accurately', () => {
-      const testColors = ['#ff0000', '#00ff00', '#0000ff', '#ffffff', '#000000', '#808080', '#123456'];
+      const testColors = [
+        '#ff0000',
+        '#00ff00',
+        '#0000ff',
+        '#ffffff',
+        '#000000',
+        '#808080',
+        '#123456',
+      ];
 
       testColors.forEach(color => {
         const rgb = hexToRgb(color);
@@ -246,7 +254,14 @@ describe('colorUtils', () => {
     });
 
     it('should maintain color validity through transformations', () => {
-      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+      const colors = [
+        '#ff0000',
+        '#00ff00',
+        '#0000ff',
+        '#ffff00',
+        '#ff00ff',
+        '#00ffff',
+      ];
 
       colors.forEach(color => {
         const lightened = lighten(color, 0.3);

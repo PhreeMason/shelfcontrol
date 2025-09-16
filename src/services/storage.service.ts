@@ -7,22 +7,31 @@ class StorageService {
   async setupAvatarsBucket() {
     try {
       // Check if bucket exists
-      const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+      const { data: buckets, error: listError } =
+        await supabase.storage.listBuckets();
 
       if (listError) {
         console.error('Error listing buckets:', listError);
         return { success: false, error: listError };
       }
 
-      const avatarsBucketExists = buckets?.some(bucket => bucket.id === 'avatars');
+      const avatarsBucketExists = buckets?.some(
+        bucket => bucket.id === 'avatars'
+      );
 
       if (!avatarsBucketExists) {
         // Create the avatars bucket
-        const { data, error: createError } = await supabase.storage.createBucket('avatars', {
-          public: true,
-          allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-          fileSizeLimit: 5242880, // 5MB
-        });
+        const { data, error: createError } =
+          await supabase.storage.createBucket('avatars', {
+            public: true,
+            allowedMimeTypes: [
+              'image/jpeg',
+              'image/png',
+              'image/gif',
+              'image/webp',
+            ],
+            fileSizeLimit: 5242880, // 5MB
+          });
 
         if (createError) {
           console.error('Error creating avatars bucket:', createError);
@@ -35,11 +44,17 @@ class StorageService {
         console.log('Avatars bucket already exists');
 
         // Update bucket to ensure it's public
-        const { data, error: updateError } = await supabase.storage.updateBucket('avatars', {
-          public: true,
-          allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-          fileSizeLimit: 5242880, // 5MB
-        });
+        const { data, error: updateError } =
+          await supabase.storage.updateBucket('avatars', {
+            public: true,
+            allowedMimeTypes: [
+              'image/jpeg',
+              'image/png',
+              'image/gif',
+              'image/webp',
+            ],
+            fileSizeLimit: 5242880, // 5MB
+          });
 
         if (updateError) {
           console.error('Error updating avatars bucket:', updateError);
@@ -87,10 +102,15 @@ class StorageService {
   /**
    * Upload a file to a bucket
    */
-  async uploadFile(bucket: string, path: string, file: ArrayBuffer | Blob, options?: {
-    contentType?: string;
-    upsert?: boolean;
-  }) {
+  async uploadFile(
+    bucket: string,
+    path: string,
+    file: ArrayBuffer | Blob,
+    options?: {
+      contentType?: string;
+      upsert?: boolean;
+    }
+  ) {
     const { data, error } = await supabase.storage
       .from(bucket)
       .upload(path, file, options);
@@ -103,9 +123,7 @@ class StorageService {
    * Remove files from a bucket
    */
   async removeFiles(bucket: string, paths: string[]) {
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .remove(paths);
+    const { data, error } = await supabase.storage.from(bucket).remove(paths);
 
     if (error) throw error;
     return data;

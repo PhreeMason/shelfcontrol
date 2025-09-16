@@ -3,7 +3,7 @@ import {
   formatDisplayDate,
   isDateBefore,
   calculateDaysLeft,
-  formatDeadlineDate
+  formatDeadlineDate,
 } from '../dateUtils';
 
 describe('dateUtils', () => {
@@ -47,7 +47,6 @@ describe('dateUtils', () => {
   });
 
   describe('isDateBefore', () => {
-
     it('should return true when date1 is before date2', () => {
       const result = isDateBefore('2024-01-10', '2024-01-15');
       expect(result).toBe(true);
@@ -77,13 +76,15 @@ describe('dateUtils', () => {
     });
 
     it('should ignore time components when comparing', () => {
-      const result = isDateBefore('2024-01-10T23:59:59Z', '2024-01-11T00:00:01Z');
+      const result = isDateBefore(
+        '2024-01-10T23:59:59Z',
+        '2024-01-11T00:00:01Z'
+      );
       expect(result).toBe(false);
     });
   });
 
   describe('calculateDaysLeft', () => {
-
     it('should return positive days when deadline is in the future', () => {
       const fromDate = new Date('2024-01-15');
       const result = calculateDaysLeft('2024-01-20', fromDate);

@@ -3,7 +3,7 @@ import { AuthError, AuthResponse, Session } from '@supabase/supabase-js';
 import { AppState } from 'react-native';
 
 // Setup auto-refresh for session management
-AppState.addEventListener('change', (state) => {
+AppState.addEventListener('change', state => {
   if (state === 'active') {
     supabase.auth.startAutoRefresh();
   } else {
@@ -65,7 +65,11 @@ class AuthService {
   /**
    * Sign up with email, password, and username
    */
-  async signUp({ email, password, username }: SignUpParams): Promise<AuthResponse> {
+  async signUp({
+    email,
+    password,
+    username,
+  }: SignUpParams): Promise<AuthResponse> {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -146,7 +150,9 @@ class AuthService {
   /**
    * Subscribe to auth state changes
    */
-  onAuthStateChange(callback: (event: string, session: Session | null) => void) {
+  onAuthStateChange(
+    callback: (event: string, session: Session | null) => void
+  ) {
     return supabase.auth.onAuthStateChange(callback);
   }
 }

@@ -72,8 +72,18 @@ describe('deadlineUtils', () => {
     });
 
     it('should sort by updated_at when deadline dates are equal', () => {
-      const deadline1 = createMockDeadline('1', '2024-01-01', '2024-01-01T00:00:00Z', '2024-01-02T00:00:00Z');
-      const deadline2 = createMockDeadline('2', '2024-01-01', '2024-01-01T00:00:00Z', '2024-01-03T00:00:00Z');
+      const deadline1 = createMockDeadline(
+        '1',
+        '2024-01-01',
+        '2024-01-01T00:00:00Z',
+        '2024-01-02T00:00:00Z'
+      );
+      const deadline2 = createMockDeadline(
+        '2',
+        '2024-01-01',
+        '2024-01-01T00:00:00Z',
+        '2024-01-03T00:00:00Z'
+      );
 
       const result = [deadline1, deadline2].sort(sortDeadlines);
 
@@ -82,8 +92,16 @@ describe('deadlineUtils', () => {
     });
 
     it('should sort by created_at when deadline dates and updated_at are equal', () => {
-      const deadline1 = createMockDeadline('1', '2024-01-01', '2024-01-02T00:00:00Z');
-      const deadline2 = createMockDeadline('2', '2024-01-01', '2024-01-03T00:00:00Z');
+      const deadline1 = createMockDeadline(
+        '1',
+        '2024-01-01',
+        '2024-01-02T00:00:00Z'
+      );
+      const deadline2 = createMockDeadline(
+        '2',
+        '2024-01-01',
+        '2024-01-03T00:00:00Z'
+      );
 
       const result = [deadline1, deadline2].sort(sortDeadlines);
 
@@ -92,9 +110,18 @@ describe('deadlineUtils', () => {
     });
 
     it('should handle missing updated_at', () => {
-      const deadline1 = createMockDeadline('1', '2024-01-01', '2024-01-01T00:00:00Z');
+      const deadline1 = createMockDeadline(
+        '1',
+        '2024-01-01',
+        '2024-01-01T00:00:00Z'
+      );
       deadline1.updated_at = '';
-      const deadline2 = createMockDeadline('2', '2024-01-01', '2024-01-01T00:00:00Z', '2024-01-02T00:00:00Z');
+      const deadline2 = createMockDeadline(
+        '2',
+        '2024-01-01',
+        '2024-01-01T00:00:00Z',
+        '2024-01-02T00:00:00Z'
+      );
 
       const result = [deadline1, deadline2].sort(sortDeadlines);
 
@@ -107,14 +134,29 @@ describe('deadlineUtils', () => {
     it('should separate deadlines into active, overdue, and completed', () => {
       const activeDeadline = createMockDeadline('1', '2025-12-31');
       const overdueDeadline = createMockDeadline('2', '2023-01-01');
-      const completedDeadline = createMockDeadline('3', '2024-12-31', '2024-01-01T00:00:00Z', undefined, [], [
-        { status: 'complete', created_at: '2024-01-15T00:00:00Z' }
-      ]);
-      const setAsideDeadline = createMockDeadline('4', '2024-12-31', '2024-01-01T00:00:00Z', undefined, [], [
-        { status: 'set_aside', created_at: '2024-01-15T00:00:00Z' }
-      ]);
+      const completedDeadline = createMockDeadline(
+        '3',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [],
+        [{ status: 'complete', created_at: '2024-01-15T00:00:00Z' }]
+      );
+      const setAsideDeadline = createMockDeadline(
+        '4',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [],
+        [{ status: 'set_aside', created_at: '2024-01-15T00:00:00Z' }]
+      );
 
-      const result = separateDeadlines([activeDeadline, overdueDeadline, completedDeadline, setAsideDeadline]);
+      const result = separateDeadlines([
+        activeDeadline,
+        overdueDeadline,
+        completedDeadline,
+        setAsideDeadline,
+      ]);
 
       expect(result.active).toHaveLength(1);
       expect(result.active[0].id).toBe('1');
@@ -126,10 +168,17 @@ describe('deadlineUtils', () => {
     });
 
     it('should use latest status when multiple status entries exist', () => {
-      const deadline = createMockDeadline('1', '2025-12-31', '2024-01-01T00:00:00Z', undefined, [], [
-        { status: 'reading', created_at: '2024-01-10T00:00:00Z' },
-        { status: 'complete', created_at: '2024-01-15T00:00:00Z' }
-      ]);
+      const deadline = createMockDeadline(
+        '1',
+        '2025-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [],
+        [
+          { status: 'reading', created_at: '2024-01-10T00:00:00Z' },
+          { status: 'complete', created_at: '2024-01-15T00:00:00Z' },
+        ]
+      );
 
       const result = separateDeadlines([deadline]);
 
@@ -149,12 +198,22 @@ describe('deadlineUtils', () => {
     });
 
     it('should sort completed by most recently updated', () => {
-      const deadline1 = createMockDeadline('1', '2024-12-31', '2024-01-01T00:00:00Z', '2024-01-10T00:00:00Z', [], [
-        { status: 'complete', created_at: '2024-01-15T00:00:00Z' }
-      ]);
-      const deadline2 = createMockDeadline('2', '2024-12-31', '2024-01-01T00:00:00Z', '2024-01-20T00:00:00Z', [], [
-        { status: 'complete', created_at: '2024-01-15T00:00:00Z' }
-      ]);
+      const deadline1 = createMockDeadline(
+        '1',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        '2024-01-10T00:00:00Z',
+        [],
+        [{ status: 'complete', created_at: '2024-01-15T00:00:00Z' }]
+      );
+      const deadline2 = createMockDeadline(
+        '2',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        '2024-01-20T00:00:00Z',
+        [],
+        [{ status: 'complete', created_at: '2024-01-15T00:00:00Z' }]
+      );
 
       const result = separateDeadlines([deadline1, deadline2]);
 
@@ -197,37 +256,63 @@ describe('deadlineUtils', () => {
     });
 
     it('should return 0 for empty progress array', () => {
-      const deadline = createMockDeadline('1', '2024-12-31', '2024-01-01T00:00:00Z', undefined, []);
+      const deadline = createMockDeadline(
+        '1',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        []
+      );
 
       const result = calculateProgress(deadline);
       expect(result).toBe(0);
     });
 
     it('should return progress from single entry', () => {
-      const deadline = createMockDeadline('1', '2024-12-31', '2024-01-01T00:00:00Z', undefined, [
-        { current_progress: 150, created_at: '2024-01-05T00:00:00Z' }
-      ]);
+      const deadline = createMockDeadline(
+        '1',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 150, created_at: '2024-01-05T00:00:00Z' }]
+      );
 
       const result = calculateProgress(deadline);
       expect(result).toBe(150);
     });
 
     it('should return latest progress from multiple entries', () => {
-      const deadline = createMockDeadline('1', '2024-12-31', '2024-01-01T00:00:00Z', undefined, [
-        { current_progress: 100, created_at: '2024-01-05T00:00:00Z' },
-        { current_progress: 150, created_at: '2024-01-10T00:00:00Z' },
-        { current_progress: 120, created_at: '2024-01-08T00:00:00Z' }
-      ]);
+      const deadline = createMockDeadline(
+        '1',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [
+          { current_progress: 100, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 150, created_at: '2024-01-10T00:00:00Z' },
+          { current_progress: 120, created_at: '2024-01-08T00:00:00Z' },
+        ]
+      );
 
       const result = calculateProgress(deadline);
       expect(result).toBe(150);
     });
 
     it('should use updated_at if available and later than created_at', () => {
-      const deadline = createMockDeadline('1', '2024-12-31', '2024-01-01T00:00:00Z', undefined, [
-        { current_progress: 100, created_at: '2024-01-05T00:00:00Z', updated_at: '2024-01-12T00:00:00Z' },
-        { current_progress: 150, created_at: '2024-01-10T00:00:00Z' }
-      ]);
+      const deadline = createMockDeadline(
+        '1',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [
+          {
+            current_progress: 100,
+            created_at: '2024-01-05T00:00:00Z',
+            updated_at: '2024-01-12T00:00:00Z',
+          },
+          { current_progress: 150, created_at: '2024-01-10T00:00:00Z' },
+        ]
+      );
 
       const result = calculateProgress(deadline);
       expect(result).toBe(100);
@@ -236,9 +321,13 @@ describe('deadlineUtils', () => {
 
   describe('calculateProgressPercentage', () => {
     it('should calculate percentage correctly', () => {
-      const deadline = createMockDeadline('1', '2024-12-31', '2024-01-01T00:00:00Z', undefined, [
-        { current_progress: 150, created_at: '2024-01-05T00:00:00Z' }
-      ]);
+      const deadline = createMockDeadline(
+        '1',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 150, created_at: '2024-01-05T00:00:00Z' }]
+      );
 
       const result = calculateProgressPercentage(deadline);
       expect(result).toBe(50);
@@ -252,18 +341,26 @@ describe('deadlineUtils', () => {
     });
 
     it('should handle 100% progress', () => {
-      const deadline = createMockDeadline('1', '2024-12-31', '2024-01-01T00:00:00Z', undefined, [
-        { current_progress: 300, created_at: '2024-01-05T00:00:00Z' }
-      ]);
+      const deadline = createMockDeadline(
+        '1',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 300, created_at: '2024-01-05T00:00:00Z' }]
+      );
 
       const result = calculateProgressPercentage(deadline);
       expect(result).toBe(100);
     });
 
     it('should round to nearest whole number', () => {
-      const deadline = createMockDeadline('1', '2024-12-31', '2024-01-01T00:00:00Z', undefined, [
-        { current_progress: 100, created_at: '2024-01-05T00:00:00Z' }
-      ]);
+      const deadline = createMockDeadline(
+        '1',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 100, created_at: '2024-01-05T00:00:00Z' }]
+      );
 
       const result = calculateProgressPercentage(deadline);
       expect(result).toBe(33);
@@ -320,12 +417,17 @@ describe('deadlineUtils', () => {
   });
 
   describe('getTotalReadingPagesForDay', () => {
-    const mockGetDeadlineCalculations = (deadline: ReadingDeadlineWithProgress) => ({
+    const mockGetDeadlineCalculations = (
+      deadline: ReadingDeadlineWithProgress
+    ) => ({
       unitsPerDay: deadline.format === 'audio' ? 60 : 40,
     });
 
     it('should return message for no active deadlines', () => {
-      const result = getTotalReadingPagesForDay([], mockGetDeadlineCalculations);
+      const result = getTotalReadingPagesForDay(
+        [],
+        mockGetDeadlineCalculations
+      );
       expect(result).toBe('No active deadlines');
     });
 
@@ -335,7 +437,10 @@ describe('deadlineUtils', () => {
       const deadline2 = createMockDeadline('2', '2025-12-31');
       deadline2.format = 'physical';
 
-      const result = getTotalReadingPagesForDay([deadline1, deadline2], mockGetDeadlineCalculations);
+      const result = getTotalReadingPagesForDay(
+        [deadline1, deadline2],
+        mockGetDeadlineCalculations
+      );
       expect(result).toBe('2h/day needed');
     });
 
@@ -345,7 +450,10 @@ describe('deadlineUtils', () => {
       const deadline2 = createMockDeadline('2', '2025-12-31');
       deadline2.format = 'audio';
 
-      const result = getTotalReadingPagesForDay([deadline1, deadline2], mockGetDeadlineCalculations);
+      const result = getTotalReadingPagesForDay(
+        [deadline1, deadline2],
+        mockGetDeadlineCalculations
+      );
       expect(result).toBe('2h/day needed');
     });
 
@@ -355,7 +463,10 @@ describe('deadlineUtils', () => {
       const audioDeadline = createMockDeadline('2', '2025-12-31');
       audioDeadline.format = 'audio';
 
-      const result = getTotalReadingPagesForDay([physicalDeadline, audioDeadline], mockGetDeadlineCalculations);
+      const result = getTotalReadingPagesForDay(
+        [physicalDeadline, audioDeadline],
+        mockGetDeadlineCalculations
+      );
       expect(result).toBe('2h/day needed');
     });
 
@@ -395,7 +506,10 @@ describe('deadlineUtils', () => {
     });
 
     it('should use custom param name', () => {
-      const result = getInitialStepFromSearchParams({ step: '3' }, { paramName: 'step' });
+      const result = getInitialStepFromSearchParams(
+        { step: '3' },
+        { paramName: 'step' }
+      );
       expect(result).toBe(3);
     });
 
@@ -405,12 +519,18 @@ describe('deadlineUtils', () => {
     });
 
     it('should enforce minimum step', () => {
-      const result = getInitialStepFromSearchParams({ page: '-5' }, { minStep: 1 });
+      const result = getInitialStepFromSearchParams(
+        { page: '-5' },
+        { minStep: 1 }
+      );
       expect(result).toBe(1);
     });
 
     it('should enforce maximum step', () => {
-      const result = getInitialStepFromSearchParams({ page: '20' }, { maxStep: 10 });
+      const result = getInitialStepFromSearchParams(
+        { page: '20' },
+        { maxStep: 10 }
+      );
       expect(result).toBe(10);
     });
 
@@ -441,14 +561,27 @@ describe('deadlineUtils', () => {
       const currentYear = new Date().getFullYear();
       const thisMonth = new Date(currentYear, currentMonth, 15);
 
-      const completedThisMonth = createMockDeadline('1', '2024-12-31', '2024-01-01T00:00:00Z', undefined, [], [
-        { status: 'complete', created_at: thisMonth.toISOString() }
-      ]);
-      const completedLastMonth = createMockDeadline('2', '2024-12-31', '2024-01-01T00:00:00Z', undefined, [], [
-        { status: 'complete', created_at: '2024-01-15T00:00:00Z' }
-      ]);
+      const completedThisMonth = createMockDeadline(
+        '1',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [],
+        [{ status: 'complete', created_at: thisMonth.toISOString() }]
+      );
+      const completedLastMonth = createMockDeadline(
+        '2',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [],
+        [{ status: 'complete', created_at: '2024-01-15T00:00:00Z' }]
+      );
 
-      const result = getCompletedThisMonth([completedThisMonth, completedLastMonth]);
+      const result = getCompletedThisMonth([
+        completedThisMonth,
+        completedLastMonth,
+      ]);
       expect(result).toBe(1);
     });
 
@@ -457,9 +590,14 @@ describe('deadlineUtils', () => {
       const currentYear = new Date().getFullYear();
       const thisMonth = new Date(currentYear, currentMonth, 15);
 
-      const readingDeadline = createMockDeadline('1', '2024-12-31', '2024-01-01T00:00:00Z', undefined, [], [
-        { status: 'reading', created_at: thisMonth.toISOString() }
-      ]);
+      const readingDeadline = createMockDeadline(
+        '1',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [],
+        [{ status: 'reading', created_at: thisMonth.toISOString() }]
+      );
 
       const result = getCompletedThisMonth([readingDeadline]);
       expect(result).toBe(0);
@@ -470,10 +608,17 @@ describe('deadlineUtils', () => {
       const currentYear = new Date().getFullYear();
       const thisMonth = new Date(currentYear, currentMonth, 15);
 
-      const deadline = createMockDeadline('1', '2024-12-31', '2024-01-01T00:00:00Z', undefined, [], [
-        { status: 'reading', created_at: thisMonth.toISOString() },
-        { status: 'complete', created_at: thisMonth.toISOString() }
-      ]);
+      const deadline = createMockDeadline(
+        '1',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [],
+        [
+          { status: 'reading', created_at: thisMonth.toISOString() },
+          { status: 'complete', created_at: thisMonth.toISOString() },
+        ]
+      );
 
       const result = getCompletedThisMonth([deadline]);
       expect(result).toBe(1);
@@ -493,9 +638,13 @@ describe('deadlineUtils', () => {
       const pastDate = new Date();
       pastDate.setDate(pastDate.getDate() - 10);
 
-      const onTrackDeadline = createMockDeadline('1', futureDate.toISOString().split('T')[0], pastDate.toISOString(), undefined, [
-        { current_progress: 150, created_at: '2024-01-05T00:00:00Z' }
-      ]);
+      const onTrackDeadline = createMockDeadline(
+        '1',
+        futureDate.toISOString().split('T')[0],
+        pastDate.toISOString(),
+        undefined,
+        [{ current_progress: 150, created_at: '2024-01-05T00:00:00Z' }]
+      );
 
       const result = getOnTrackDeadlines([onTrackDeadline]);
       expect(result).toBe(1);
@@ -505,7 +654,10 @@ describe('deadlineUtils', () => {
       const pastDate = new Date();
       pastDate.setDate(pastDate.getDate() - 5);
 
-      const overdueDeadline = createMockDeadline('1', pastDate.toISOString().split('T')[0]);
+      const overdueDeadline = createMockDeadline(
+        '1',
+        pastDate.toISOString().split('T')[0]
+      );
 
       const result = getOnTrackDeadlines([overdueDeadline]);
       expect(result).toBe(0);
@@ -515,9 +667,14 @@ describe('deadlineUtils', () => {
       const futureDate = new Date();
       futureDate.setDate(futureDate.getDate() + 10);
 
-      const completedDeadline = createMockDeadline('1', futureDate.toISOString().split('T')[0], '2024-01-01T00:00:00Z', undefined, [], [
-        { status: 'complete', created_at: '2024-01-15T00:00:00Z' }
-      ]);
+      const completedDeadline = createMockDeadline(
+        '1',
+        futureDate.toISOString().split('T')[0],
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [],
+        [{ status: 'complete', created_at: '2024-01-15T00:00:00Z' }]
+      );
 
       const result = getOnTrackDeadlines([completedDeadline]);
       expect(result).toBe(0);
@@ -530,9 +687,13 @@ describe('deadlineUtils', () => {
       const pastDate = new Date();
       pastDate.setDate(pastDate.getDate() - 5);
 
-      const deadline = createMockDeadline('1', futureDate.toISOString().split('T')[0], pastDate.toISOString(), undefined, [
-        { current_progress: 150, created_at: '2024-01-05T00:00:00Z' }
-      ]);
+      const deadline = createMockDeadline(
+        '1',
+        futureDate.toISOString().split('T')[0],
+        pastDate.toISOString(),
+        undefined,
+        [{ current_progress: 150, created_at: '2024-01-05T00:00:00Z' }]
+      );
 
       const result = getOnTrackDeadlines([deadline]);
       expect(result).toBe(1);
@@ -545,9 +706,13 @@ describe('deadlineUtils', () => {
       const pastDate = new Date();
       pastDate.setDate(pastDate.getDate() - 10);
 
-      const behindDeadline = createMockDeadline('1', futureDate.toISOString().split('T')[0], pastDate.toISOString(), undefined, [
-        { current_progress: 10, created_at: '2024-01-05T00:00:00Z' }
-      ]);
+      const behindDeadline = createMockDeadline(
+        '1',
+        futureDate.toISOString().split('T')[0],
+        pastDate.toISOString(),
+        undefined,
+        [{ current_progress: 10, created_at: '2024-01-05T00:00:00Z' }]
+      );
 
       const result = getOnTrackDeadlines([behindDeadline]);
       expect(result).toBe(0);

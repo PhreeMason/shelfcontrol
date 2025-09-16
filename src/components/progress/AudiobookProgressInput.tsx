@@ -24,12 +24,12 @@ interface AudiobookProgressInputProps {
  */
 export function parseAudiobookTime(input: string): number | null {
   if (typeof input !== 'string') return null;
-  
+
   // Remove extra spaces and trim
   const normalized = input.toString().replace(/\s+/g, ' ').trim();
-  
+
   if (!normalized) return 0;
-  
+
   // Try colon format first (e.g., "3:02", "03:02:15")
   const colonMatch = normalized.match(/^(\d+):(\d+)(?::(\d+))?$/);
   if (colonMatch) {
@@ -38,7 +38,7 @@ export function parseAudiobookTime(input: string): number | null {
     // Ignore seconds (colonMatch[3]) - round down
     return hours * 60 + minutes;
   }
-  
+
   // Try decimal hours (e.g., "2.5h", "2,5h")
   const decimalHoursMatch = normalized.match(/^(\d+)[.,](\d+)\s*h(?:ours?)?$/i);
   if (decimalHoursMatch) {
@@ -49,31 +49,31 @@ export function parseAudiobookTime(input: string): number | null {
     const fraction = decimal / Math.pow(10, decimalPlaces);
     return Math.floor(hours * 60 + fraction * 60);
   }
-  
+
   // Try hours and minutes format
   // This regex handles: "3h 2m", "3 hours 2 minutes", "3hr 2min", etc.
   const hoursAndMinutesMatch = normalized.match(
     /^(\d+)\s*(?:h|hours?|hrs?)\s*(?:(\d+)\s*(?:m|minutes?|mins?))?$/i
   );
-  
+
   if (hoursAndMinutesMatch) {
     const hours = parseInt(hoursAndMinutesMatch[1]) || 0;
     const minutes = parseInt(hoursAndMinutesMatch[2]) || 0;
     return hours * 60 + minutes;
   }
-  
+
   // Try minutes only format (e.g., "45m", "45 minutes")
   const minutesOnlyMatch = normalized.match(/^(\d+)\s*(?:m|minutes?|mins?)$/i);
   if (minutesOnlyMatch) {
     return parseInt(minutesOnlyMatch[1]) || 0;
   }
-  
+
   // Try plain number (assume minutes for audiobooks)
   const plainNumberMatch = normalized.match(/^(\d+)$/);
   if (plainNumberMatch) {
     return parseInt(plainNumberMatch[1]) || 0;
   }
-  
+
   // If no pattern matches, return null (invalid)
   return null;
 }
@@ -83,10 +83,10 @@ export function parseAudiobookTime(input: string): number | null {
  */
 export function formatAudiobookTime(minutes: number): string {
   if (!minutes || minutes < 0) return '0m';
-  
+
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  
+
   if (hours === 0) return `${mins}m`;
   if (mins === 0) return `${hours}h`;
   return `${hours}h ${mins}m`;
@@ -96,24 +96,24 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
   value,
   onChange,
   onBlur,
-  placeholder = "e.g., 3h 2m or 3:02",
-  testID
+  placeholder = 'e.g., 3h 2m or 3:02',
+  testID,
 }) => {
   const { colors } = useTheme();
   const [displayValue, setDisplayValue] = useState('');
   const [isValid, setIsValid] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
   const displayValueRef = useRef(displayValue);
-  
+
   // Keep ref in sync with state
   useEffect(() => {
     displayValueRef.current = displayValue;
   }, [displayValue]);
-  
+
   // Update display when value prop changes
   useEffect(() => {
     const formattedValue = formatAudiobookTime(value);
-    
+
     if (!isFocused) {
       // When not focused, always update to the formatted value
       setDisplayValue(formattedValue);
@@ -126,30 +126,30 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
       }
     }
   }, [value, isFocused]);
-  
+
   const handleChangeText = (text: string) => {
     setDisplayValue(text);
-    
+
     // Parse in real-time to show validation
     const parsed = parseAudiobookTime(text);
     setIsValid(parsed !== null);
-    
+
     // Only update parent if valid
     if (parsed !== null) {
       onChange(parsed);
     }
   };
-  
+
   const handleFocus = () => {
     setIsFocused(true);
   };
-  
+
   const handleBlur = () => {
     setIsFocused(false);
-    
+
     // Parse and validate
     const parsed = parseAudiobookTime(displayValue);
-    
+
     if (parsed !== null) {
       // Update with parsed value
       onChange(parsed);
@@ -166,10 +166,10 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
       setDisplayValue(formatAudiobookTime(value));
       setIsValid(true);
     }
-    
+
     onBlur?.();
   };
-  
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -187,11 +187,14 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
             color: colors.primary,
             borderColor: isValid ? colors.border : colors.danger,
             borderWidth: isValid ? 1 : 2,
-          }
+          },
         ]}
       />
       {!isValid && isFocused && (
-        <ThemedText variant="muted" style={[styles.helpText, { color: colors.danger }]}>
+        <ThemedText
+          variant="muted"
+          style={[styles.helpText, { color: colors.danger }]}
+        >
           Use formats like: 3h 2m, 3:02, or 45m
         </ThemedText>
       )}

@@ -11,17 +11,20 @@ interface ReadingSessionTimerProps {
 const encouragingMessages = [
   "Great job! You've been reading for",
   "Amazing focus! You've been reading for",
-  "Keep going! You've been reading for", 
+  "Keep going! You've been reading for",
   "Fantastic progress! You've been reading for",
   "You're crushing it! You've been reading for",
   "Way to stay focused! You've been reading for",
   "Reading champion! You've been reading for",
   "Impressive dedication! You've been reading for",
   "Look at you go! You've been reading for",
-  "Outstanding effort! You've been reading for"
+  "Outstanding effort! You've been reading for",
 ];
 
-export function ReadingSessionTimer({ onSessionComplete, onCancel }: ReadingSessionTimerProps) {
+export function ReadingSessionTimer({
+  onSessionComplete,
+  onCancel,
+}: ReadingSessionTimerProps) {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0); // in seconds
   const [isPaused, setIsPaused] = useState(false);
@@ -37,15 +40,22 @@ export function ReadingSessionTimer({ onSessionComplete, onCancel }: ReadingSess
       startTimeRef.current = Date.now() - pausedTimeRef.current * 1000;
       intervalRef.current = setInterval(() => {
         if (startTimeRef.current) {
-          const newElapsedTime = Math.floor((Date.now() - startTimeRef.current) / 1000);
+          const newElapsedTime = Math.floor(
+            (Date.now() - startTimeRef.current) / 1000
+          );
           setElapsedTime(newElapsedTime);
-          
+
           // Change message every 5 minutes (300 seconds)
           const currentMinutes = Math.floor(newElapsedTime / 60);
           const fiveMinuteIntervals = Math.floor(currentMinutes / 5);
-          if (fiveMinuteIntervals > 0 && fiveMinuteIntervals !== lastMessageIntervalRef.current) {
+          if (
+            fiveMinuteIntervals > 0 &&
+            fiveMinuteIntervals !== lastMessageIntervalRef.current
+          ) {
             lastMessageIntervalRef.current = fiveMinuteIntervals;
-            setCurrentMessageIndex(Math.floor(Math.random() * encouragingMessages.length));
+            setCurrentMessageIndex(
+              Math.floor(Math.random() * encouragingMessages.length)
+            );
           }
         }
       }, 1000);
@@ -96,7 +106,7 @@ export function ReadingSessionTimer({ onSessionComplete, onCancel }: ReadingSess
   const handleStop = () => {
     setIsRunning(false);
     setIsPaused(false);
-    
+
     if (elapsedTime < 60) {
       Alert.alert(
         'Session Too Short',
@@ -118,7 +128,7 @@ export function ReadingSessionTimer({ onSessionComplete, onCancel }: ReadingSess
       );
       return;
     }
-    
+
     const durationInMinutes = Math.round(elapsedTime / 60);
     onSessionComplete(durationInMinutes);
   };
@@ -142,13 +152,14 @@ export function ReadingSessionTimer({ onSessionComplete, onCancel }: ReadingSess
   return (
     <ThemedView style={styles.container}>
       <View style={styles.timerContainer}>
-        <ThemedText variant="title" style={[styles.timer, { color: getTimerColor() }]}>
+        <ThemedText
+          variant="title"
+          style={[styles.timer, { color: getTimerColor() }]}
+        >
           {formatTime(elapsedTime)}
         </ThemedText>
-        
-        {isPaused && (
-          <ThemedText style={styles.pausedLabel}>Paused</ThemedText>
-        )}
+
+        {isPaused && <ThemedText style={styles.pausedLabel}>Paused</ThemedText>}
       </View>
 
       <View style={styles.buttonContainer}>
@@ -195,10 +206,12 @@ export function ReadingSessionTimer({ onSessionComplete, onCancel }: ReadingSess
           Keep reading! You need at least 1 minute to record your session.
         </ThemedText>
       )}
-      
+
       {elapsedTime >= 60 && (
         <ThemedText style={styles.encouragement}>
-          {encouragingMessages[currentMessageIndex]} {Math.round(elapsedTime / 60)} minute{Math.round(elapsedTime / 60) !== 1 ? 's' : ''}!
+          {encouragingMessages[currentMessageIndex]}{' '}
+          {Math.round(elapsedTime / 60)} minute
+          {Math.round(elapsedTime / 60) !== 1 ? 's' : ''}!
         </ThemedText>
       )}
     </ThemedView>

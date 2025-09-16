@@ -33,19 +33,29 @@ export default function TabLayout() {
           },
           default: {},
         }),
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="house.fill" color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="new-deadline"
         options={{
-          tabBarIcon: () => <View style={[styles.newDeadlineButton, { backgroundColor: colors.primary }]}>
-            <IconSymbol size={40} name="plus" color={colors.textOnPrimary} />
-          </View>,
+          tabBarIcon: () => (
+            <View
+              style={[
+                styles.newDeadlineButton,
+                { backgroundColor: colors.primary },
+              ]}
+            >
+              <IconSymbol size={40} name="plus" color={colors.textOnPrimary} />
+            </View>
+          ),
           href: Platform.OS === 'android' ? null : '/new-deadline',
         }}
       />
@@ -53,14 +63,16 @@ export default function TabLayout() {
         name="profile"
         options={{
           tabBarIcon: ({ focused }) => (
-            <View style={[
-              styles.profileIconContainer,
-              focused && { 
-                borderWidth: 2, 
-                borderColor: Colors[colorScheme ?? 'light'].tint 
-              }
-            ]}>
-              <Avatar 
+            <View
+              style={[
+                styles.profileIconContainer,
+                focused && {
+                  borderWidth: 2,
+                  borderColor: Colors[colorScheme ?? 'light'].tint,
+                },
+              ]}
+            >
+              <Avatar
                 avatarUrl={profile?.avatar_url}
                 username={profile?.username}
                 size={24}
@@ -90,5 +102,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-  }
-})
+  },
+});

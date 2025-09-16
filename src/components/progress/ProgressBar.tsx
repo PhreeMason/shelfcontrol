@@ -11,10 +11,10 @@ interface ProgressBarProps {
 
 const ProgressBar: React.FC<ProgressBarProps> = ({
   progressPercentage,
-  deadlineDate
+  deadlineDate,
 }) => {
   return (
-    <View >
+    <View>
       <LinearProgressBar
         progressPercentage={progressPercentage}
         height={12}

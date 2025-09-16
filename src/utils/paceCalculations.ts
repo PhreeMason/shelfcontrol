@@ -54,7 +54,10 @@ const calculatePaceFromActivityDays = (activityDays: ActivityDay[]): number => {
   // Count the number of days between the first and the last day
   const firstDay = new Date(activityDays[0].date);
   const lastDay = new Date(activityDays[activityDaysCount - 1].date);
-  const daysBetween = Math.max(1, Math.ceil((lastDay.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24)));
+  const daysBetween = Math.max(
+    1,
+    Math.ceil((lastDay.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24))
+  );
 
   return totalAmount / daysBetween;
 };
@@ -62,13 +65,16 @@ const calculatePaceFromActivityDays = (activityDays: ActivityDay[]): number => {
 /**
  * Calculates the cutoff date based on the most recent progress across all filtered deadlines
  */
-export const calculateCutoffTime = (deadlines: ReadingDeadlineWithProgress[]): number | null => {
+export const calculateCutoffTime = (
+  deadlines: ReadingDeadlineWithProgress[]
+): number | null => {
   const allProgressUpdates = deadlines.flatMap(d => d.progress || []);
   if (allProgressUpdates.length === 0) {
     return null;
   }
   const allProgressUpdatesSorted = allProgressUpdates.sort(
-    (a, b) => new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
+    (a, b) =>
+      new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
   );
 
   const cutoffDate = new Date(allProgressUpdatesSorted[0].created_at);
@@ -87,9 +93,12 @@ export const processBookProgress = (
 ): void => {
   if (!book.progress || !Array.isArray(book.progress)) return;
 
-  const progress = book.progress.slice().sort(
-    (a, b) => new Date(a.created_at!).getTime() - new Date(b.created_at!).getTime()
-  );
+  const progress = book.progress
+    .slice()
+    .sort(
+      (a, b) =>
+        new Date(a.created_at!).getTime() - new Date(b.created_at!).getTime()
+    );
 
   if (progress.length === 0) return;
 
@@ -106,7 +115,7 @@ export const processBookProgress = (
   // Handle the first remaining progress entry
   const firstProgress = progress[0];
   const firstDate = new Date(firstProgress.created_at);
-  
+
   if (firstDate.getTime() >= cutoffTime) {
     const dateStr = firstDate.toISOString().slice(0, 10);
     const amount = firstProgress.current_progress - baselineProgress;
@@ -142,7 +151,9 @@ export const getRecentReadingDays = (
   const dailyProgress: { [date: string]: number } = {};
 
   // Filter to only physical and eBook deadlines (no audio mixing)
-  const readingDeadlines = deadlines.filter(d => d.format === 'physical' || d.format === 'eBook');
+  const readingDeadlines = deadlines.filter(
+    d => d.format === 'physical' || d.format === 'eBook'
+  );
 
   const cutoffTime = calculateCutoffTime(readingDeadlines);
   if (cutoffTime === null) {
@@ -158,7 +169,7 @@ export const getRecentReadingDays = (
     .map(([date, pagesRead]) => ({
       date,
       pagesRead: Number(pagesRead.toFixed(2)),
-      format: 'physical' as const
+      format: 'physical' as const,
     }))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 };
@@ -167,7 +178,9 @@ export const getRecentReadingDays = (
  * Calculates user's reading pace based on the two-tier system from README.
  * The daily average of all non zero days within the last 14 days is used starting with the most recent non zero day.
  */
-export const calculateUserPace = (deadlines: ReadingDeadlineWithProgress[]): UserPaceData => {
+export const calculateUserPace = (
+  deadlines: ReadingDeadlineWithProgress[]
+): UserPaceData => {
   // Only include physical and eBook reading, not audio
   const recentReadingDays = getRecentReadingDays(deadlines);
 
@@ -177,14 +190,14 @@ export const calculateUserPace = (deadlines: ReadingDeadlineWithProgress[]): Use
       averagePace: 0,
       readingDaysCount,
       isReliable: false,
-      calculationMethod: 'default_fallback'
+      calculationMethod: 'default_fallback',
     };
   }
 
   // Convert ReadingDay[] to ActivityDay[] format
   const activityDays: ActivityDay[] = recentReadingDays.map(day => ({
     date: day.date,
-    amount: day.pagesRead
+    amount: day.pagesRead,
   }));
 
   const averagePace = calculatePaceFromActivityDays(activityDays);
@@ -193,7 +206,7 @@ export const calculateUserPace = (deadlines: ReadingDeadlineWithProgress[]): Use
     averagePace,
     readingDaysCount,
     isReliable: true,
-    calculationMethod: 'recent_data'
+    calculationMethod: 'recent_data',
   };
 };
 
@@ -231,7 +244,7 @@ export const getPaceBasedStatus = (
     return {
       color: 'red',
       level: 'overdue',
-      message: 'Return or renew'
+      message: 'Return or renew',
     };
   }
 
@@ -239,7 +252,7 @@ export const getPaceBasedStatus = (
     return {
       color: 'red',
       level: 'impossible',
-      message: 'Start reading now'
+      message: 'Start reading now',
     };
   }
 
@@ -251,7 +264,7 @@ export const getPaceBasedStatus = (
       return {
         color: 'red',
         level: 'impossible',
-        message: 'Pace too slow'
+        message: 'Pace too slow',
       };
     }
 
@@ -259,7 +272,7 @@ export const getPaceBasedStatus = (
     return {
       color: 'orange',
       level: 'approaching',
-      message: 'Pick up the pace'
+      message: 'Pick up the pace',
     };
   }
 
@@ -267,7 +280,7 @@ export const getPaceBasedStatus = (
   return {
     color: 'green',
     level: 'good',
-    message: "You're on track"
+    message: "You're on track",
   };
 };
 
@@ -280,8 +293,14 @@ export const getPaceStatusMessage = (
   status: PaceBasedStatus,
   format: 'physical' | 'eBook' | 'audio' = 'physical'
 ): string => {
-  const paceDisplay = formatPaceDisplay(userPaceData.averagePace, format).replace('/day', '');
-  const requiredPaceDisplay = formatPaceDisplay(requiredPace, format).replace('/day', '');
+  const paceDisplay = formatPaceDisplay(
+    userPaceData.averagePace,
+    format
+  ).replace('/day', '');
+  const requiredPaceDisplay = formatPaceDisplay(requiredPace, format).replace(
+    '/day',
+    ''
+  );
 
   switch (status.level) {
     case 'overdue':
@@ -299,7 +318,10 @@ export const getPaceStatusMessage = (
       }
       return `On track at ${paceDisplay}/day`;
     case 'approaching':
-      const difference = formatPaceDisplay(requiredPace - userPaceData.averagePace, format);
+      const difference = formatPaceDisplay(
+        requiredPace - userPaceData.averagePace,
+        format
+      );
       return `Read ~${difference} more`;
     default:
       return 'Good';
@@ -309,7 +331,10 @@ export const getPaceStatusMessage = (
 /**
  * Formats pace for display, handling different book formats.
  */
-export const formatPaceDisplay = (pace: number, format: 'physical' | 'eBook' | 'audio'): string => {
+export const formatPaceDisplay = (
+  pace: number,
+  format: 'physical' | 'eBook' | 'audio'
+): string => {
   if (format === 'audio') {
     // Audio pace is already in minutes, no conversion needed
     const minutes = Math.round(pace);
@@ -351,7 +376,7 @@ export const getRecentListeningDays = (
     .map(([date, minutesListened]) => ({
       date,
       minutesListened: Number(minutesListened.toFixed(2)),
-      format: 'audio' as const
+      format: 'audio' as const,
     }))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 };
@@ -360,7 +385,9 @@ export const getRecentListeningDays = (
  * Calculates user's listening pace based on recent audio book activity.
  * Uses the same algorithm as reading pace: total minutes divided by days between first and last listening day.
  */
-export const calculateUserListeningPace = (deadlines: ReadingDeadlineWithProgress[]): UserListeningPaceData => {
+export const calculateUserListeningPace = (
+  deadlines: ReadingDeadlineWithProgress[]
+): UserListeningPaceData => {
   const recentDays = getRecentListeningDays(deadlines);
   const listeningDaysCount = recentDays.length;
 
@@ -369,14 +396,14 @@ export const calculateUserListeningPace = (deadlines: ReadingDeadlineWithProgres
       averagePace: 0,
       listeningDaysCount,
       isReliable: false,
-      calculationMethod: 'default_fallback'
+      calculationMethod: 'default_fallback',
     };
   }
 
   // Convert ListeningDay[] to ActivityDay[] format
   const activityDays: ActivityDay[] = recentDays.map(day => ({
     date: day.date,
-    amount: day.minutesListened
+    amount: day.minutesListened,
   }));
 
   const averagePace = calculatePaceFromActivityDays(activityDays);
@@ -385,9 +412,9 @@ export const calculateUserListeningPace = (deadlines: ReadingDeadlineWithProgres
     averagePace,
     listeningDaysCount,
     isReliable: true,
-    calculationMethod: 'recent_data'
+    calculationMethod: 'recent_data',
   };
-}
+};
 
 /**
  * Formats listening pace for display.
@@ -403,10 +430,11 @@ export const formatListeningPaceDisplay = (pace: number): string => {
   return `${minutes}m/day`;
 };
 
+type PacePerDay = { value: number; label: string };
 
-type PacePerDay = { value: number, label: string }
-
-export const minimumUnitsPerDayFromDeadline = (deadline: ReadingDeadlineWithProgress): PacePerDay[] => {
+export const minimumUnitsPerDayFromDeadline = (
+  deadline: ReadingDeadlineWithProgress
+): PacePerDay[] => {
   if (!deadline.progress || deadline.progress.length === 0) {
     return [];
   }
@@ -416,48 +444,55 @@ export const minimumUnitsPerDayFromDeadline = (deadline: ReadingDeadlineWithProg
   const total = deadline.total_quantity;
 
   // Sort progress entries by date
-  const sortedProgress = [...deadline.progress].sort((a, b) => 
-    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  const sortedProgress = [...deadline.progress].sort(
+    (a, b) =>
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   );
 
   // Filter progress entries to only include those before today
   const today = new Date().getTime();
-  const progressBeforeToday = sortedProgress.filter(p => 
-    new Date(p.created_at).getTime() <= today
+  const progressBeforeToday = sortedProgress.filter(
+    p => new Date(p.created_at).getTime() <= today
   );
 
   // Group by date and keep only the latest progress for each day
-  const progressByDate = new Map<string, typeof progressBeforeToday[0]>();
-  
+  const progressByDate = new Map<string, (typeof progressBeforeToday)[0]>();
+
   for (const progress of progressBeforeToday) {
     const dateKey = dayjs(progress.created_at).format('YYYY-MM-DD');
     const existing = progressByDate.get(dateKey);
-    
+
     // Keep the progress entry with the latest timestamp for each date
-    if (!existing || new Date(progress.created_at).getTime() > new Date(existing.created_at).getTime()) {
+    if (
+      !existing ||
+      new Date(progress.created_at).getTime() >
+        new Date(existing.created_at).getTime()
+    ) {
       progressByDate.set(dateKey, progress);
     }
   }
 
   // Convert back to array and sort by date
-  const uniqueProgress = Array.from(progressByDate.values()).sort((a, b) => 
-    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  const uniqueProgress = Array.from(progressByDate.values()).sort(
+    (a, b) =>
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   );
 
   for (const progress of uniqueProgress) {
     const progressDate = new Date(progress.created_at).getTime();
-    const daysLeft = Math.ceil((deadlineDate - progressDate) / (1000 * 60 * 60 * 24));
+    const daysLeft = Math.ceil(
+      (deadlineDate - progressDate) / (1000 * 60 * 60 * 24)
+    );
     let value = 0;
-    
+
     if (daysLeft > 0) {
       const remainingUnits = Math.max(0, total - progress.current_progress);
       value = Math.ceil(remainingUnits / daysLeft);
     }
-    
+
     const label = dayjs(progress.created_at).format('M/D');
     pacePerDay.push({ value, label });
   }
 
   return pacePerDay;
 };
-

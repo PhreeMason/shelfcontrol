@@ -1,4 +1,9 @@
-import { deadlinesService, AddDeadlineParams, UpdateDeadlineParams, UpdateProgressParams } from '../deadlines.service';
+import {
+  deadlinesService,
+  AddDeadlineParams,
+  UpdateDeadlineParams,
+  UpdateProgressParams,
+} from '../deadlines.service';
 import { booksService } from '../books.service';
 import { supabase, generateId } from '@/lib/supabase';
 
@@ -66,8 +71,12 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn()
-        .mockResolvedValueOnce({ data: { id: 'rd-123', ...mockParams.deadlineDetails }, error: null })
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValueOnce({
+          data: { id: 'rd-123', ...mockParams.deadlineDetails },
+          error: null,
+        })
         .mockResolvedValueOnce({ data: mockProgressData, error: null })
         .mockResolvedValueOnce({ data: mockStatusData, error: null });
 
@@ -82,9 +91,14 @@ describe('DeadlinesService', () => {
         bookData: { api_id: 'book-api-123' },
       };
 
-      const result = await deadlinesService.addDeadline(userId, paramsWithBookData);
+      const result = await deadlinesService.addDeadline(
+        userId,
+        paramsWithBookData
+      );
 
-      expect(mockBooksService.getBookByApiId).toHaveBeenCalledWith('book-api-123');
+      expect(mockBooksService.getBookByApiId).toHaveBeenCalledWith(
+        'book-api-123'
+      );
       expect(mockSupabaseFrom).toHaveBeenCalledWith('deadlines');
       expect(mockSupabaseFrom).toHaveBeenCalledWith('deadline_progress');
       expect(mockSupabaseFrom).toHaveBeenCalledWith('deadline_status');
@@ -103,8 +117,12 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn()
-        .mockResolvedValueOnce({ data: { id: 'rd-123', ...mockParams.deadlineDetails }, error: null })
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValueOnce({
+          data: { id: 'rd-123', ...mockParams.deadlineDetails },
+          error: null,
+        })
         .mockResolvedValueOnce({ data: mockProgressData, error: null })
         .mockResolvedValueOnce({ data: mockStatusData, error: null });
 
@@ -154,7 +172,8 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn()
+      const mockSingle = jest
+        .fn()
         .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
         .mockResolvedValueOnce({ data: { id: 'rdp-123' }, error: null })
         .mockResolvedValueOnce({ data: { id: 'status-123' }, error: null });
@@ -172,18 +191,28 @@ describe('DeadlinesService', () => {
 
       await deadlinesService.addDeadline(userId, paramsWithBookData);
 
-      expect(mockBooksService.getBookByApiId).toHaveBeenCalledWith('new-book-api-123');
-      expect(mockBooksService.fetchBookData).toHaveBeenCalledWith('new-book-api-123');
-      expect(mockBooksService.insertBook).toHaveBeenCalledWith('book-123', mockBookResponse);
+      expect(mockBooksService.getBookByApiId).toHaveBeenCalledWith(
+        'new-book-api-123'
+      );
+      expect(mockBooksService.fetchBookData).toHaveBeenCalledWith(
+        'new-book-api-123'
+      );
+      expect(mockBooksService.insertBook).toHaveBeenCalledWith(
+        'book-123',
+        mockBookResponse
+      );
     });
 
     it('should handle book fetch error gracefully', async () => {
       mockBooksService.getBookByApiId.mockResolvedValue(null);
-      mockBooksService.fetchBookData.mockRejectedValue(new Error('Fetch failed'));
+      mockBooksService.fetchBookData.mockRejectedValue(
+        new Error('Fetch failed')
+      );
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn()
+      const mockSingle = jest
+        .fn()
         .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
         .mockResolvedValueOnce({ data: { id: 'rdp-123' }, error: null })
         .mockResolvedValueOnce({ data: { id: 'status-123' }, error: null });
@@ -203,7 +232,10 @@ describe('DeadlinesService', () => {
 
       await deadlinesService.addDeadline(userId, paramsWithBookData);
 
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch/insert book data:', expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to fetch/insert book data:',
+        expect.any(Error)
+      );
       consoleSpy.mockRestore();
     });
 
@@ -212,7 +244,9 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: null, error: mockError });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
@@ -220,7 +254,9 @@ describe('DeadlinesService', () => {
         single: mockSingle,
       });
 
-      await expect(deadlinesService.addDeadline(userId, mockParams)).rejects.toThrow('Deadline insertion failed');
+      await expect(
+        deadlinesService.addDeadline(userId, mockParams)
+      ).rejects.toThrow('Deadline insertion failed');
     });
 
     it('should throw error when progress insertion fails', async () => {
@@ -228,7 +264,8 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn()
+      const mockSingle = jest
+        .fn()
         .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
         .mockResolvedValueOnce({ data: null, error: mockError });
 
@@ -238,7 +275,9 @@ describe('DeadlinesService', () => {
         single: mockSingle,
       });
 
-      await expect(deadlinesService.addDeadline(userId, mockParams)).rejects.toThrow('Progress insertion failed');
+      await expect(
+        deadlinesService.addDeadline(userId, mockParams)
+      ).rejects.toThrow('Progress insertion failed');
     });
 
     it('should throw error when status insertion fails', async () => {
@@ -246,7 +285,8 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn()
+      const mockSingle = jest
+        .fn()
         .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
         .mockResolvedValueOnce({ data: { id: 'rdp-123' }, error: null })
         .mockResolvedValueOnce({ data: null, error: mockError });
@@ -257,13 +297,16 @@ describe('DeadlinesService', () => {
         single: mockSingle,
       });
 
-      await expect(deadlinesService.addDeadline(userId, mockParams)).rejects.toThrow('Status insertion failed');
+      await expect(
+        deadlinesService.addDeadline(userId, mockParams)
+      ).rejects.toThrow('Status insertion failed');
     });
 
     it('should use provided book_id when available', async () => {
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn()
+      const mockSingle = jest
+        .fn()
         .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
         .mockResolvedValueOnce({ data: { id: 'rdp-123' }, error: null })
         .mockResolvedValueOnce({ data: { id: 'status-123' }, error: null });
@@ -282,9 +325,11 @@ describe('DeadlinesService', () => {
       await deadlinesService.addDeadline(userId, paramsWithBookId);
 
       expect(mockBooksService.getBookByApiId).not.toHaveBeenCalled();
-      expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({
-        book_id: 'existing-book-123',
-      }));
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          book_id: 'existing-book-123',
+        })
+      );
     });
   });
 
@@ -318,7 +363,8 @@ describe('DeadlinesService', () => {
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn()
+      const mockSingle = jest
+        .fn()
         .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
         .mockResolvedValueOnce({ data: mockProgressData, error: null });
 
@@ -332,15 +378,19 @@ describe('DeadlinesService', () => {
 
       const result = await deadlinesService.updateDeadline(userId, mockParams);
 
-      expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({
-        ...mockParams.deadlineDetails,
-        updated_at: expect.any(String),
-      }));
-      expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({
-        id: 'rdp-123',
-        deadline_id: 'rd-123',
-        current_progress: 100,
-      }));
+      expect(mockUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ...mockParams.deadlineDetails,
+          updated_at: expect.any(String),
+        })
+      );
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'rdp-123',
+          deadline_id: 'rd-123',
+          current_progress: 100,
+        })
+      );
       expect(result).toEqual({
         ...mockDeadlineData,
         progress: mockProgressData,
@@ -354,7 +404,8 @@ describe('DeadlinesService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn()
+      const mockSingle = jest
+        .fn()
         .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
         .mockResolvedValueOnce({ data: mockProgressData, error: null });
 
@@ -376,7 +427,10 @@ describe('DeadlinesService', () => {
         },
       };
 
-      const result = await deadlinesService.updateDeadline(userId, paramsWithExistingProgress);
+      const result = await deadlinesService.updateDeadline(
+        userId,
+        paramsWithExistingProgress
+      );
 
       expect(mockUpdate).toHaveBeenCalledTimes(2);
       expect(result).toEqual({
@@ -391,7 +445,9 @@ describe('DeadlinesService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: null, error: mockError });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
@@ -400,7 +456,9 @@ describe('DeadlinesService', () => {
         single: mockSingle,
       });
 
-      await expect(deadlinesService.updateDeadline(userId, mockParams)).rejects.toThrow('Deadline update failed');
+      await expect(
+        deadlinesService.updateDeadline(userId, mockParams)
+      ).rejects.toThrow('Deadline update failed');
     });
 
     it('should throw error when progress update fails', async () => {
@@ -411,7 +469,8 @@ describe('DeadlinesService', () => {
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn()
+      const mockSingle = jest
+        .fn()
         .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
         .mockResolvedValueOnce({ data: null, error: mockProgressError });
 
@@ -423,10 +482,11 @@ describe('DeadlinesService', () => {
         single: mockSingle,
       });
 
-      await expect(deadlinesService.updateDeadline(userId, mockParams)).rejects.toThrow('Progress update failed');
+      await expect(
+        deadlinesService.updateDeadline(userId, mockParams)
+      ).rejects.toThrow('Progress update failed');
     });
   });
-
 
   describe('updateDeadlineProgress', () => {
     const mockParams: UpdateProgressParams = {
@@ -445,7 +505,9 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: mockProgressData, error: null });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: mockProgressData, error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
@@ -481,7 +543,9 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: mockProgressData, error: null });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: mockProgressData, error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
@@ -489,11 +553,14 @@ describe('DeadlinesService', () => {
         single: mockSingle,
       });
 
-      const result = await deadlinesService.updateDeadlineProgress(paramsWithoutTime);
+      const result =
+        await deadlinesService.updateDeadlineProgress(paramsWithoutTime);
 
-      expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({
-        time_spent_reading: null,
-      }));
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          time_spent_reading: null,
+        })
+      );
       expect(result).toEqual(mockProgressData);
     });
 
@@ -502,7 +569,9 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: null, error: mockError });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
@@ -510,7 +579,9 @@ describe('DeadlinesService', () => {
         single: mockSingle,
       });
 
-      await expect(deadlinesService.updateDeadlineProgress(mockParams)).rejects.toThrow('Progress insertion failed');
+      await expect(
+        deadlinesService.updateDeadlineProgress(mockParams)
+      ).rejects.toThrow('Progress insertion failed');
     });
   });
 
@@ -535,7 +606,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockOrder = jest.fn().mockResolvedValue({ data: mockDeadlines, error: null });
+      const mockOrder = jest
+        .fn()
+        .mockResolvedValue({ data: mockDeadlines, error: null });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -551,7 +624,9 @@ describe('DeadlinesService', () => {
         status:deadline_status(*)
       `);
       expect(mockEq).toHaveBeenCalledWith('user_id', userId);
-      expect(mockOrder).toHaveBeenCalledWith('created_at', { ascending: false });
+      expect(mockOrder).toHaveBeenCalledWith('created_at', {
+        ascending: false,
+      });
       expect(result).toEqual(mockDeadlines);
     });
 
@@ -560,7 +635,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockOrder = jest.fn().mockResolvedValue({ data: null, error: mockError });
+      const mockOrder = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -568,7 +645,9 @@ describe('DeadlinesService', () => {
         order: mockOrder,
       });
 
-      await expect(deadlinesService.getDeadlines(userId)).rejects.toThrow('Query failed');
+      await expect(deadlinesService.getDeadlines(userId)).rejects.toThrow(
+        'Query failed'
+      );
     });
   });
 
@@ -596,7 +675,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockOrder = jest.fn().mockResolvedValue({ data: mockDeadlines, error: null });
+      const mockOrder = jest
+        .fn()
+        .mockResolvedValue({ data: mockDeadlines, error: null });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -623,7 +704,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockOrder = jest.fn().mockResolvedValue({ data: mockDeadlines, error: null });
+      const mockOrder = jest
+        .fn()
+        .mockResolvedValue({ data: mockDeadlines, error: null });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -641,7 +724,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockOrder = jest.fn().mockResolvedValue({ data: null, error: mockError });
+      const mockOrder = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -649,7 +734,9 @@ describe('DeadlinesService', () => {
         order: mockOrder,
       });
 
-      await expect(deadlinesService.getArchivedDeadlines(userId)).rejects.toThrow('Archived query failed');
+      await expect(
+        deadlinesService.getArchivedDeadlines(userId)
+      ).rejects.toThrow('Archived query failed');
     });
   });
 
@@ -667,7 +754,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: mockDeadline, error: null });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: mockDeadline, error: null });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -687,7 +776,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: null, error: mockError });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -705,7 +796,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: null, error: mockError });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -713,7 +806,9 @@ describe('DeadlinesService', () => {
         single: mockSingle,
       });
 
-      await expect(deadlinesService.getDeadlineById(userId, deadlineId)).rejects.toThrow('Database error');
+      await expect(
+        deadlinesService.getDeadlineById(userId, deadlineId)
+      ).rejects.toThrow('Database error');
     });
   });
 
@@ -730,7 +825,9 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: mockStatusData, error: null });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: mockStatusData, error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
@@ -738,7 +835,10 @@ describe('DeadlinesService', () => {
         single: mockSingle,
       });
 
-      const result = await deadlinesService.updateDeadlineStatus(deadlineId, 'complete');
+      const result = await deadlinesService.updateDeadlineStatus(
+        deadlineId,
+        'complete'
+      );
 
       expect(mockInsert).toHaveBeenCalledWith({
         deadline_id: 'rd-123',
@@ -746,10 +846,12 @@ describe('DeadlinesService', () => {
         created_at: expect.any(String),
         updated_at: expect.any(String),
       });
-      expect(result).toEqual(expect.objectContaining({
-        deadline_id: 'rd-123',
-        status: 'complete',
-      }));
+      expect(result).toEqual(
+        expect.objectContaining({
+          deadline_id: 'rd-123',
+          status: 'complete',
+        })
+      );
     });
 
     it('should update deadline status to set_aside', async () => {
@@ -760,7 +862,9 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: mockStatusData, error: null });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: mockStatusData, error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
@@ -768,11 +872,16 @@ describe('DeadlinesService', () => {
         single: mockSingle,
       });
 
-      const result = await deadlinesService.updateDeadlineStatus(deadlineId, 'set_aside');
+      const result = await deadlinesService.updateDeadlineStatus(
+        deadlineId,
+        'set_aside'
+      );
 
-      expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({
-        status: 'set_aside',
-      }));
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'set_aside',
+        })
+      );
       expect(result).toEqual(mockStatusData);
     });
 
@@ -781,7 +890,9 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: null, error: mockError });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
@@ -789,7 +900,9 @@ describe('DeadlinesService', () => {
         single: mockSingle,
       });
 
-      await expect(deadlinesService.updateDeadlineStatus(deadlineId, 'complete')).rejects.toThrow('Status update failed');
+      await expect(
+        deadlinesService.updateDeadlineStatus(deadlineId, 'complete')
+      ).rejects.toThrow('Status update failed');
     });
   });
 
@@ -801,26 +914,26 @@ describe('DeadlinesService', () => {
       const mockDeadline = {
         id: 'rd-123',
         total_quantity: 300,
-        progress: [
-          { current_progress: 150 },
-          { current_progress: 200 },
-        ],
+        progress: [{ current_progress: 150 }, { current_progress: 200 }],
       };
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn()
+      const mockSingle = jest
+        .fn()
         .mockResolvedValueOnce({ data: mockDeadline, error: null });
 
       const mockInsert = jest.fn().mockReturnThis();
 
-      mockSupabaseFrom.mockReturnValueOnce({
-        select: mockSelect,
-        eq: mockEq,
-        single: mockSingle,
-      }).mockReturnValueOnce({
-        insert: mockInsert,
-      });
+      mockSupabaseFrom
+        .mockReturnValueOnce({
+          select: mockSelect,
+          eq: mockEq,
+          single: mockSingle,
+        })
+        .mockReturnValueOnce({
+          insert: mockInsert,
+        });
 
       // Mock the updateDeadlineStatus method
       jest.spyOn(deadlinesService, 'updateDeadlineStatus').mockResolvedValue({
@@ -831,7 +944,10 @@ describe('DeadlinesService', () => {
         updated_at: new Date().toISOString(),
       } as any);
 
-      const result = await deadlinesService.completeDeadline(userId, deadlineId);
+      const result = await deadlinesService.completeDeadline(
+        userId,
+        deadlineId
+      );
 
       expect(mockSelect).toHaveBeenCalledWith(`
         *,
@@ -844,24 +960,26 @@ describe('DeadlinesService', () => {
         created_at: expect.any(String),
         updated_at: expect.any(String),
       });
-      expect(result).toEqual(expect.objectContaining({
-        deadline_id: 'rd-123',
-        status: 'complete',
-      }));
+      expect(result).toEqual(
+        expect.objectContaining({
+          deadline_id: 'rd-123',
+          status: 'complete',
+        })
+      );
     });
 
     it('should complete deadline without updating progress when already at max', async () => {
       const mockDeadline = {
         id: 'rd-123',
         total_quantity: 300,
-        progress: [
-          { current_progress: 300 },
-        ],
+        progress: [{ current_progress: 300 }],
       };
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: mockDeadline, error: null });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: mockDeadline, error: null });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -877,13 +995,18 @@ describe('DeadlinesService', () => {
         updated_at: new Date().toISOString(),
       } as any);
 
-      const result = await deadlinesService.completeDeadline(userId, deadlineId);
+      const result = await deadlinesService.completeDeadline(
+        userId,
+        deadlineId
+      );
 
       expect(mockSupabaseFrom).toHaveBeenCalledTimes(1); // Only for fetching deadline
-      expect(result).toEqual(expect.objectContaining({
-        deadline_id: 'rd-123',
-        status: 'complete',
-      }));
+      expect(result).toEqual(
+        expect.objectContaining({
+          deadline_id: 'rd-123',
+          status: 'complete',
+        })
+      );
     });
 
     it('should handle deadline with no progress entries', async () => {
@@ -895,17 +1018,21 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: mockDeadline, error: null });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: mockDeadline, error: null });
 
       const mockInsert = jest.fn().mockReturnThis();
 
-      mockSupabaseFrom.mockReturnValueOnce({
-        select: mockSelect,
-        eq: mockEq,
-        single: mockSingle,
-      }).mockReturnValueOnce({
-        insert: mockInsert,
-      });
+      mockSupabaseFrom
+        .mockReturnValueOnce({
+          select: mockSelect,
+          eq: mockEq,
+          single: mockSingle,
+        })
+        .mockReturnValueOnce({
+          insert: mockInsert,
+        });
 
       jest.spyOn(deadlinesService, 'updateDeadlineStatus').mockResolvedValue({
         id: 'status-123',
@@ -915,15 +1042,22 @@ describe('DeadlinesService', () => {
         updated_at: new Date().toISOString(),
       } as any);
 
-      const result = await deadlinesService.completeDeadline(userId, deadlineId);
+      const result = await deadlinesService.completeDeadline(
+        userId,
+        deadlineId
+      );
 
-      expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({
-        current_progress: 300,
-      }));
-      expect(result).toEqual(expect.objectContaining({
-        deadline_id: 'rd-123',
-        status: 'complete',
-      }));
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          current_progress: 300,
+        })
+      );
+      expect(result).toEqual(
+        expect.objectContaining({
+          deadline_id: 'rd-123',
+          status: 'complete',
+        })
+      );
     });
 
     it('should throw error when deadline fetch fails', async () => {
@@ -931,7 +1065,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: null, error: mockError });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -939,7 +1075,9 @@ describe('DeadlinesService', () => {
         single: mockSingle,
       });
 
-      await expect(deadlinesService.completeDeadline(userId, deadlineId)).rejects.toThrow('Deadline fetch failed');
+      await expect(
+        deadlinesService.completeDeadline(userId, deadlineId)
+      ).rejects.toThrow('Deadline fetch failed');
     });
 
     it('should throw error when progress update fails', async () => {
@@ -953,19 +1091,27 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest.fn().mockResolvedValue({ data: mockDeadline, error: null });
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValue({ data: mockDeadline, error: null });
 
-      const mockInsert = jest.fn().mockResolvedValue({ error: mockProgressError });
+      const mockInsert = jest
+        .fn()
+        .mockResolvedValue({ error: mockProgressError });
 
-      mockSupabaseFrom.mockReturnValueOnce({
-        select: mockSelect,
-        eq: mockEq,
-        single: mockSingle,
-      }).mockReturnValueOnce({
-        insert: mockInsert,
-      });
+      mockSupabaseFrom
+        .mockReturnValueOnce({
+          select: mockSelect,
+          eq: mockEq,
+          single: mockSingle,
+        })
+        .mockReturnValueOnce({
+          insert: mockInsert,
+        });
 
-      await expect(deadlinesService.completeDeadline(userId, deadlineId)).rejects.toThrow('Progress update failed');
+      await expect(
+        deadlinesService.completeDeadline(userId, deadlineId)
+      ).rejects.toThrow('Progress update failed');
     });
   });
 
@@ -984,7 +1130,10 @@ describe('DeadlinesService', () => {
         gt: mockGt,
       });
 
-      const result = await deadlinesService.deleteFutureProgress(deadlineId, newProgress);
+      const result = await deadlinesService.deleteFutureProgress(
+        deadlineId,
+        newProgress
+      );
 
       expect(mockSupabaseFrom).toHaveBeenCalledWith('deadline_progress');
       expect(mockEq).toHaveBeenCalledWith('deadline_id', deadlineId);
@@ -1005,7 +1154,9 @@ describe('DeadlinesService', () => {
         gt: mockGt,
       });
 
-      await expect(deadlinesService.deleteFutureProgress(deadlineId, newProgress)).rejects.toThrow('Deletion failed');
+      await expect(
+        deadlinesService.deleteFutureProgress(deadlineId, newProgress)
+      ).rejects.toThrow('Deletion failed');
     });
   });
 
@@ -1032,7 +1183,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockOrder = jest.fn().mockResolvedValue({ data: mockHistory, error: null });
+      const mockOrder = jest
+        .fn()
+        .mockResolvedValue({ data: mockHistory, error: null });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -1043,7 +1196,9 @@ describe('DeadlinesService', () => {
       const params = { userId };
       const result = await deadlinesService.getDeadlineHistory(params);
 
-      expect(mockSelect).toHaveBeenCalledWith(expect.stringContaining('deadline_progress'));
+      expect(mockSelect).toHaveBeenCalledWith(
+        expect.stringContaining('deadline_progress')
+      );
       expect(mockEq).toHaveBeenCalledWith('user_id', userId);
       expect(result).toEqual(mockHistory);
     });
@@ -1060,7 +1215,9 @@ describe('DeadlinesService', () => {
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
       const mockOrder = jest.fn().mockReturnThis();
-      const mockIn = jest.fn().mockResolvedValue({ data: mockHistory, error: null });
+      const mockIn = jest
+        .fn()
+        .mockResolvedValue({ data: mockHistory, error: null });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -1085,7 +1242,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockOrder = jest.fn().mockResolvedValue({ data: null, error: mockError });
+      const mockOrder = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -1095,7 +1254,9 @@ describe('DeadlinesService', () => {
 
       const params = { userId };
 
-      await expect(deadlinesService.getDeadlineHistory(params)).rejects.toThrow('History query failed');
+      await expect(deadlinesService.getDeadlineHistory(params)).rejects.toThrow(
+        'History query failed'
+      );
     });
   });
 });

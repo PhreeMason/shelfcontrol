@@ -1,13 +1,19 @@
 import React from 'react';
-import { KeyboardAwareScrollView, KeyboardAwareScrollViewProps } from 'react-native-keyboard-aware-scroll-view';
+import {
+  KeyboardAwareScrollView,
+  KeyboardAwareScrollViewProps,
+} from 'react-native-keyboard-aware-scroll-view';
 import { useTheme } from '@/hooks/useThemeColor';
 import { type ColorToken } from '@/constants/Theme';
 
-export type ThemedKeyboardAwareScrollViewProps = KeyboardAwareScrollViewProps & {
-  backgroundColor?: ColorToken;
-};
+export type ThemedKeyboardAwareScrollViewProps =
+  KeyboardAwareScrollViewProps & {
+    backgroundColor?: ColorToken;
+  };
 
-export function ThemedKeyboardAwareScrollView(props: ThemedKeyboardAwareScrollViewProps) {
+export function ThemedKeyboardAwareScrollView(
+  props: ThemedKeyboardAwareScrollViewProps
+) {
   const { style, backgroundColor: bgColorProp, ...otherProps } = props;
   const { colors } = useTheme();
   const backgroundColor = colors[bgColorProp || 'background'];

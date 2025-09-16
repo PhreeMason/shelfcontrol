@@ -1,16 +1,20 @@
-import TodaysProgress from '@/components/progress/TodaysProgress'
-import { ThemedText, ThemedView } from '@/components/themed'
-import { useDeadlines } from '@/providers/DeadlineProvider'
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types'
-import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import TodaysProgress from '@/components/progress/TodaysProgress';
+import { ThemedText, ThemedView } from '@/components/themed';
+import { useDeadlines } from '@/providers/DeadlineProvider';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 const TodaysGoals: React.FC = () => {
-  const { activeDeadlines: deadlines, getDeadlineCalculations, calculateProgressForToday } = useDeadlines();
+  const {
+    activeDeadlines: deadlines,
+    getDeadlineCalculations,
+    calculateProgressForToday,
+  } = useDeadlines();
   const audioDeadlines: ReadingDeadlineWithProgress[] = [];
   const readingDeadlines: ReadingDeadlineWithProgress[] = [];
 
-  deadlines.forEach((deadline) => {
+  deadlines.forEach(deadline => {
     if (deadline.format === 'audio') {
       audioDeadlines.push(deadline);
     } else {
@@ -23,15 +27,21 @@ const TodaysGoals: React.FC = () => {
     return total + unitsPerDay;
   }, 0);
 
-  const totalReadingTimeForToday = readingDeadlines.reduce((total, deadline) => {
-    const { unitsPerDay } = getDeadlineCalculations(deadline);
-    return total + unitsPerDay;
-  }, 0);
+  const totalReadingTimeForToday = readingDeadlines.reduce(
+    (total, deadline) => {
+      const { unitsPerDay } = getDeadlineCalculations(deadline);
+      return total + unitsPerDay;
+    },
+    0
+  );
 
-  const currentReadingTimeForToday = readingDeadlines.reduce((total, deadline) => {
-    const progress = calculateProgressForToday(deadline);
-    return total + progress;
-  }, 0);
+  const currentReadingTimeForToday = readingDeadlines.reduce(
+    (total, deadline) => {
+      const progress = calculateProgressForToday(deadline);
+      return total + progress;
+    },
+    0
+  );
 
   const currentAudioTimeForToday = audioDeadlines.reduce((total, deadline) => {
     const progress = calculateProgressForToday(deadline);
@@ -45,23 +55,27 @@ const TodaysGoals: React.FC = () => {
       </View>
 
       <View style={styles.progressSection}>
-        {readingDeadlines.length > 0 ? <TodaysProgress
-          total={totalReadingTimeForToday}
-          current={currentReadingTimeForToday}
-          // total={100}
-          // current={325}
-          type="reading"
-        /> : null}
+        {readingDeadlines.length > 0 ? (
+          <TodaysProgress
+            total={totalReadingTimeForToday}
+            current={currentReadingTimeForToday}
+            // total={100}
+            // current={325}
+            type="reading"
+          />
+        ) : null}
 
-        {audioDeadlines.length > 0 ? <TodaysProgress
-          total={totalAudioTimeForToday}
-          current={currentAudioTimeForToday}
-          type="listening"
-        /> : null}
+        {audioDeadlines.length > 0 ? (
+          <TodaysProgress
+            total={totalAudioTimeForToday}
+            current={currentAudioTimeForToday}
+            type="listening"
+          />
+        ) : null}
       </View>
     </ThemedView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -97,4 +111,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TodaysGoals
+export default TodaysGoals;

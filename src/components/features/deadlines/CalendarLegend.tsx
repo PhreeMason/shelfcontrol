@@ -3,7 +3,6 @@ import { useTheme } from '@/hooks/useTheme';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-
 interface CalendarLegendProps {
   style?: any;
 }
@@ -13,7 +12,7 @@ export function CalendarLegend({ style }: CalendarLegendProps) {
   const legendItems = [
     { color: colors.good, label: 'Good pace' },
     { color: colors.approaching, label: 'Approaching' },
-    { color: colors.urgent, label: 'Urgent' }
+    { color: colors.urgent, label: 'Urgent' },
   ];
   return (
     <View style={[styles.container, style]}>
@@ -23,12 +22,7 @@ export function CalendarLegend({ style }: CalendarLegendProps) {
       <View style={styles.legendItems}>
         {legendItems.map((item, index) => (
           <View key={index} style={styles.legendItem}>
-            <View 
-              style={[
-                styles.colorDot, 
-                { backgroundColor: item.color }
-              ]} 
-            />
+            <View style={[styles.colorDot, { backgroundColor: item.color }]} />
             <ThemedText variant="secondary" style={styles.legendLabel}>
               {item.label}
             </ThemedText>

@@ -6,19 +6,26 @@ import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import { z } from 'zod';
 
-const updatePasswordSchema = z.object({
-  password: z
-    .string({ message: 'Password is required' })
-    .min(8, 'Password should be at least 8 characters long'),
-  confirmPassword: z
-    .string({ message: 'Please confirm your password' }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const updatePasswordSchema = z
+  .object({
+    password: z
+      .string({ message: 'Password is required' })
+      .min(8, 'Password should be at least 8 characters long'),
+    confirmPassword: z.string({ message: 'Please confirm your password' }),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 type UpdatePasswordFields = z.infer<typeof updatePasswordSchema>;
 
@@ -40,39 +47,46 @@ export default function ResetPasswordUpdateScreen() {
     resolver: zodResolver(updatePasswordSchema),
   });
 
-  const createSessionFromUrl = useCallback(async (url: string) => {
-    try {
-      console.log('Processing URL:', url);
+  const createSessionFromUrl = useCallback(
+    async (url: string) => {
+      try {
+        console.log('Processing URL:', url);
 
-      // Parse the URL using expo-auth-session QueryParams
-      const { params, errorCode } = QueryParams.getQueryParams(url);
+        // Parse the URL using expo-auth-session QueryParams
+        const { params, errorCode } = QueryParams.getQueryParams(url);
 
-      if (errorCode) {
-        throw new Error(errorCode);
+        if (errorCode) {
+          throw new Error(errorCode);
+        }
+
+        const { access_token, refresh_token, type } = params;
+
+        if (!access_token || !refresh_token || type !== 'recovery') {
+          setSessionError(
+            'Invalid or expired reset link. Please request a new password reset.'
+          );
+          return;
+        }
+
+        // Set the session using the tokens from the URL
+        const { error } = await setSessionFromUrl(access_token, refresh_token);
+
+        if (error) {
+          console.error('Session establishment error:', error);
+          setSessionError(
+            'Invalid or expired reset link. Please request a new password reset.'
+          );
+        } else {
+          console.log('Session established successfully');
+          setIsSessionEstablished(true);
+        }
+      } catch (err) {
+        console.error('URL processing error:', err);
+        setSessionError('Failed to validate reset link. Please try again.');
       }
-
-      const { access_token, refresh_token, type } = params;
-
-      if (!access_token || !refresh_token || type !== 'recovery') {
-        setSessionError('Invalid or expired reset link. Please request a new password reset.');
-        return;
-      }
-
-      // Set the session using the tokens from the URL
-      const { error } = await setSessionFromUrl(access_token, refresh_token);
-
-      if (error) {
-        console.error('Session establishment error:', error);
-        setSessionError('Invalid or expired reset link. Please request a new password reset.');
-      } else {
-        console.log('Session established successfully');
-        setIsSessionEstablished(true);
-      }
-    } catch (err) {
-      console.error('URL processing error:', err);
-      setSessionError('Failed to validate reset link. Please try again.');
-    }
-  }, [setSessionFromUrl]);
+    },
+    [setSessionFromUrl]
+  );
 
   useEffect(() => {
     if (url) {
@@ -87,7 +101,9 @@ export default function ResetPasswordUpdateScreen() {
       const { error } = await updatePassword(data.password);
 
       if (error) {
-        setError('root', { message: error.message || 'Failed to update password' });
+        setError('root', {
+          message: error.message || 'Failed to update password',
+        });
       } else {
         alert('Password updated successfully!');
         router.replace('/');
@@ -102,18 +118,22 @@ export default function ResetPasswordUpdateScreen() {
   if (sessionError) {
     return (
       <ThemedView style={styles.container}>
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.innerContainer}
         >
-          <ThemedText variant="title" style={styles.title}>Invalid Link</ThemedText>
+          <ThemedText variant="title" style={styles.title}>
+            Invalid Link
+          </ThemedText>
           <ThemedText style={styles.errorMessage}>{sessionError}</ThemedText>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.button}
             onPress={() => router.replace('/reset-password-request')}
           >
-            <ThemedText style={styles.buttonText}>Request New Reset Link</ThemedText>
+            <ThemedText style={styles.buttonText}>
+              Request New Reset Link
+            </ThemedText>
           </TouchableOpacity>
         </KeyboardAvoidingView>
       </ThemedView>
@@ -133,12 +153,16 @@ export default function ResetPasswordUpdateScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.innerContainer}
       >
-        <ThemedText variant="title" style={styles.title}>Update Password</ThemedText>
-        <ThemedText style={styles.subtitle}>Enter your new password below.</ThemedText>
+        <ThemedText variant="title" style={styles.title}>
+          Update Password
+        </ThemedText>
+        <ThemedText style={styles.subtitle}>
+          Enter your new password below.
+        </ThemedText>
 
         <ThemedView style={styles.form}>
           <Controller
@@ -158,7 +182,9 @@ export default function ResetPasswordUpdateScreen() {
             )}
           />
           {errors.password && (
-            <ThemedText style={styles.errorText}>{errors.password.message}</ThemedText>
+            <ThemedText style={styles.errorText}>
+              {errors.password.message}
+            </ThemedText>
           )}
 
           <Controller
@@ -178,15 +204,22 @@ export default function ResetPasswordUpdateScreen() {
             )}
           />
           {errors.confirmPassword && (
-            <ThemedText style={styles.errorText}>{errors.confirmPassword.message}</ThemedText>
+            <ThemedText style={styles.errorText}>
+              {errors.confirmPassword.message}
+            </ThemedText>
           )}
 
           {errors.root && (
-            <ThemedText style={styles.errorText}>{errors.root.message}</ThemedText>
+            <ThemedText style={styles.errorText}>
+              {errors.root.message}
+            </ThemedText>
           )}
 
-          <TouchableOpacity 
-            style={[styles.button, (isLoading || isSubmitting) && styles.buttonDisabled]}
+          <TouchableOpacity
+            style={[
+              styles.button,
+              (isLoading || isSubmitting) && styles.buttonDisabled,
+            ]}
             onPress={handleSubmit(onUpdatePassword)}
             disabled={isLoading || isSubmitting}
           >
@@ -201,7 +234,6 @@ export default function ResetPasswordUpdateScreen() {
 }
 
 // ... keep your existing styles
-
 
 const styles = StyleSheet.create({
   container: {

@@ -12,7 +12,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
  */
 export function useTheme() {
   const colorScheme = useColorScheme() ?? 'light';
-  
+
   return {
     colors: Colors[colorScheme],
     typography: Typography,

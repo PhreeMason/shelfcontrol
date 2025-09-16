@@ -15,20 +15,24 @@ interface DeadlineCalendarProps {
 }
 
 export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
-  const { activeDeadlines, overdueDeadlines, getDeadlineCalculations } = useDeadlines();
+  const { activeDeadlines, overdueDeadlines, getDeadlineCalculations } =
+    useDeadlines();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const router = useRouter();
   const { colors } = useTheme();
-  const { good, approaching, urgent, overdue, impossible } = colors
+  const { good, approaching, urgent, overdue, impossible } = colors;
 
-  const urgencyColorMap = useMemo(() => ({
-    good,
-    approaching,
-    urgent,
-    overdue,
-    impossible,
-  }), [good, approaching, urgent, overdue, impossible]);
+  const urgencyColorMap = useMemo(
+    () => ({
+      good,
+      approaching,
+      urgent,
+      overdue,
+      impossible,
+    }),
+    [good, approaching, urgent, overdue, impossible]
+  );
   // Process deadlines to create marked dates
   const markedDates = useMemo(() => {
     const marked: any = {};
@@ -36,7 +40,7 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
     // Combine active and overdue deadlines
     const allActiveDeadlines = [...activeDeadlines, ...overdueDeadlines];
 
-    allActiveDeadlines.forEach((deadline) => {
+    allActiveDeadlines.forEach(deadline => {
       if (deadline.deadline_date) {
         const dateStr = dayjs(deadline.deadline_date).format('YYYY-MM-DD');
         const { urgencyLevel } = getDeadlineCalculations(deadline);
@@ -46,14 +50,14 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
           marked[dateStr] = {
             marked: true,
             dots: [],
-            deadlines: []
+            deadlines: [],
           };
         }
 
         marked[dateStr].dots.push({
           key: deadline.id,
           color: color,
-          selectedDotColor: color
+          selectedDotColor: color,
         });
         marked[dateStr].deadlines.push(deadline);
       }
@@ -65,17 +69,24 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
         ...marked[selectedDate],
         selected: true,
         selectedColor: Colors.light.primary,
-        selectedTextColor: Colors.light.onPrimary
+        selectedTextColor: Colors.light.onPrimary,
       };
     }
 
     return marked;
-  }, [activeDeadlines, overdueDeadlines, getDeadlineCalculations, selectedDate, urgencyColorMap]);
+  }, [
+    activeDeadlines,
+    overdueDeadlines,
+    getDeadlineCalculations,
+    selectedDate,
+    urgencyColorMap,
+  ]);
 
   // Get deadlines for selected date
-  const selectedDateDeadlines = selectedDate && markedDates[selectedDate]
-    ? markedDates[selectedDate].deadlines
-    : [];
+  const selectedDateDeadlines =
+    selectedDate && markedDates[selectedDate]
+      ? markedDates[selectedDate].deadlines
+      : [];
 
   const handleDayPress = (day: DateData) => {
     const dateStr = day.dateString;
@@ -145,40 +156,62 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
           <ThemedView style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <ThemedText variant="title">
-                Deadlines for {selectedDate ? dayjs(selectedDate).format('MMM D, YYYY') : ''}
+                Deadlines for{' '}
+                {selectedDate ? dayjs(selectedDate).format('MMM D, YYYY') : ''}
               </ThemedText>
-              <Pressable onPress={closeModal} style={styles.closeButton}>past
+              <Pressable onPress={closeModal} style={styles.closeButton}>
+                past
                 <IconSymbol name="xmark" size={20} color={Colors.light.text} />
               </Pressable>
             </View>
 
             <View style={styles.deadlinesList}>
               {/* // TODO: Sort by urgency level */}
-              {selectedDateDeadlines.map((deadline: ReadingDeadlineWithProgress) => {
-                const { urgencyLevel, daysLeft } = getDeadlineCalculations(deadline);
-                const urgencyColor = urgencyColorMap[urgencyLevel];
+              {selectedDateDeadlines.map(
+                (deadline: ReadingDeadlineWithProgress) => {
+                  const { urgencyLevel, daysLeft } =
+                    getDeadlineCalculations(deadline);
+                  const urgencyColor = urgencyColorMap[urgencyLevel];
 
-                return (
-                  <Pressable
-                    key={deadline.id}
-                    style={styles.deadlineItem}
-                    onPress={() => handleDeadlinePress(deadline.id)}
-                  >
-                    <View style={[styles.urgencyIndicator, { backgroundColor: urgencyColor }]} />
-                    <View style={styles.deadlineContent}>
-                      <ThemedText style={styles.deadlineTitle} numberOfLines={2}>
-                        {deadline.book_title}
-                      </ThemedText>
-                      <ThemedText variant="secondary" style={styles.deadlineSubtitle}>
-                        {daysLeft > 0 ? `${daysLeft} days left` :
-                          daysLeft === 0 ? 'Due today' :
-                            `${Math.abs(daysLeft)} days overdue`}
-                      </ThemedText>
-                    </View>
-                    <IconSymbol name="chevron.right" size={16} color={Colors.light.textMuted} />
-                  </Pressable>
-                );
-              })}
+                  return (
+                    <Pressable
+                      key={deadline.id}
+                      style={styles.deadlineItem}
+                      onPress={() => handleDeadlinePress(deadline.id)}
+                    >
+                      <View
+                        style={[
+                          styles.urgencyIndicator,
+                          { backgroundColor: urgencyColor },
+                        ]}
+                      />
+                      <View style={styles.deadlineContent}>
+                        <ThemedText
+                          style={styles.deadlineTitle}
+                          numberOfLines={2}
+                        >
+                          {deadline.book_title}
+                        </ThemedText>
+                        <ThemedText
+                          variant="secondary"
+                          style={styles.deadlineSubtitle}
+                        >
+                          {daysLeft > 0
+                            ? `${daysLeft} days left`
+                            : daysLeft === 0
+                              ? 'Due today'
+                              : `${Math.abs(daysLeft)} days overdue`}
+                        </ThemedText>
+                      </View>
+                      <IconSymbol
+                        name="chevron.right"
+                        size={16}
+                        color={Colors.light.textMuted}
+                      />
+                    </Pressable>
+                  );
+                }
+              )}
             </View>
           </ThemedView>
         </Pressable>

@@ -130,10 +130,15 @@ describe('paceCalculations', () => {
     });
 
     it('should process progress entries after cutoff time', () => {
-      const book = createMockDeadline('1', 'physical', [
-        { current_progress: 50, created_at: '2024-01-05T00:00:00Z' },
-        { current_progress: 100, created_at: '2024-01-10T00:00:00Z' },
-      ], '2024-01-01T00:00:00Z');
+      const book = createMockDeadline(
+        '1',
+        'physical',
+        [
+          { current_progress: 50, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 100, created_at: '2024-01-10T00:00:00Z' },
+        ],
+        '2024-01-01T00:00:00Z'
+      );
       const dailyProgress: { [date: string]: number } = {};
       const cutoffTime = new Date('2024-01-03').getTime();
 
@@ -145,10 +150,15 @@ describe('paceCalculations', () => {
 
     it('should handle baseline progress from deadline creation', () => {
       const createdAt = '2024-01-01T00:00:00Z';
-      const book = createMockDeadline('1', 'physical', [
-        { current_progress: 20, created_at: createdAt },
-        { current_progress: 70, created_at: '2024-01-05T00:00:00Z' },
-      ], createdAt);
+      const book = createMockDeadline(
+        '1',
+        'physical',
+        [
+          { current_progress: 20, created_at: createdAt },
+          { current_progress: 70, created_at: '2024-01-05T00:00:00Z' },
+        ],
+        createdAt
+      );
       const dailyProgress: { [date: string]: number } = {};
       const cutoffTime = new Date('2024-01-01').getTime();
 
@@ -374,7 +384,11 @@ describe('paceCalculations', () => {
 
     it('should return overdue message', () => {
       const userPaceData = createUserPaceData(20);
-      const status: PaceBasedStatus = { color: 'red', level: 'overdue', message: 'Return or renew' };
+      const status: PaceBasedStatus = {
+        color: 'red',
+        level: 'overdue',
+        message: 'Return or renew',
+      };
 
       const result = getPaceStatusMessage(userPaceData, 25, status);
       expect(result).toBe('Return or renew');
@@ -382,7 +396,11 @@ describe('paceCalculations', () => {
 
     it('should return impossible message with pace comparison', () => {
       const userPaceData = createUserPaceData(10);
-      const status: PaceBasedStatus = { color: 'red', level: 'impossible', message: 'Pace too slow' };
+      const status: PaceBasedStatus = {
+        color: 'red',
+        level: 'impossible',
+        message: 'Pace too slow',
+      };
 
       const result = getPaceStatusMessage(userPaceData, 30, status);
       expect(result).toBe('Current: 10 pages vs Required: 30 pages');
@@ -390,7 +408,11 @@ describe('paceCalculations', () => {
 
     it('should return impossible message with required pace for default fallback', () => {
       const userPaceData = createUserPaceData(0, 'default_fallback');
-      const status: PaceBasedStatus = { color: 'red', level: 'impossible', message: 'Pace too slow' };
+      const status: PaceBasedStatus = {
+        color: 'red',
+        level: 'impossible',
+        message: 'Pace too slow',
+      };
 
       const result = getPaceStatusMessage(userPaceData, 30, status);
       expect(result).toBe('Required: 30 pages/day');
@@ -398,7 +420,11 @@ describe('paceCalculations', () => {
 
     it('should return good message with current pace', () => {
       const userPaceData = createUserPaceData(30);
-      const status: PaceBasedStatus = { color: 'green', level: 'good', message: "You're on track" };
+      const status: PaceBasedStatus = {
+        color: 'green',
+        level: 'good',
+        message: "You're on track",
+      };
 
       const result = getPaceStatusMessage(userPaceData, 25, status);
       expect(result).toBe('On track at 30 pages/day');
@@ -406,7 +432,11 @@ describe('paceCalculations', () => {
 
     it('should return good message with default pace', () => {
       const userPaceData = createUserPaceData(0, 'default_fallback');
-      const status: PaceBasedStatus = { color: 'green', level: 'good', message: "You're on track" };
+      const status: PaceBasedStatus = {
+        color: 'green',
+        level: 'good',
+        message: "You're on track",
+      };
 
       const result = getPaceStatusMessage(userPaceData, 25, status);
       expect(result).toBe('On track (default pace)');
@@ -414,7 +444,11 @@ describe('paceCalculations', () => {
 
     it('should return approaching message with difference', () => {
       const userPaceData = createUserPaceData(20);
-      const status: PaceBasedStatus = { color: 'orange', level: 'approaching', message: 'Pick up the pace' };
+      const status: PaceBasedStatus = {
+        color: 'orange',
+        level: 'approaching',
+        message: 'Pick up the pace',
+      };
 
       const result = getPaceStatusMessage(userPaceData, 30, status);
       expect(result).toBe('Read ~10 pages/day more');
@@ -422,7 +456,11 @@ describe('paceCalculations', () => {
 
     it('should handle audio format', () => {
       const userPaceData = createUserPaceData(120);
-      const status: PaceBasedStatus = { color: 'green', level: 'good', message: "You're on track" };
+      const status: PaceBasedStatus = {
+        color: 'green',
+        level: 'good',
+        message: "You're on track",
+      };
 
       const result = getPaceStatusMessage(userPaceData, 100, status, 'audio');
       expect(result).toBe('On track at 2h 0m/day');

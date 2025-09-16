@@ -15,30 +15,35 @@ const ProgressStats: React.FC<ProgressStatsProps> = ({
   totalQuantity,
   remaining,
   format,
-  urgencyLevel
+  urgencyLevel,
 }) => {
   const urgencyTypeMap = {
-    'overdue': 'error' as const,
-    'urgent': 'warning' as const,
-    'good': 'success' as const,
-    'approaching': 'warning' as const,
-    'impossible': 'error' as const,
+    overdue: 'error' as const,
+    urgent: 'warning' as const,
+    good: 'success' as const,
+    approaching: 'warning' as const,
+    impossible: 'error' as const,
   };
 
   return (
     <View style={styles.progressStats}>
       <View style={[styles.statItem]}>
-        <ThemedText variant={urgencyTypeMap[urgencyLevel]} style={styles.statNumber}>
+        <ThemedText
+          variant={urgencyTypeMap[urgencyLevel]}
+          style={styles.statNumber}
+        >
           {formatProgressDisplay(format, currentProgress)}
         </ThemedText>
         <ThemedText variant="muted" style={styles.statLabel}>
-          OF{' '}
-            {formatProgressDisplay(format, totalQuantity)}
+          OF {formatProgressDisplay(format, totalQuantity)}
           {format === 'audio' ? ' LISTENED' : ' READ'}
         </ThemedText>
       </View>
       <View style={[styles.statItem]}>
-        <ThemedText variant={urgencyTypeMap[urgencyLevel]} style={styles.statNumber}>
+        <ThemedText
+          variant={urgencyTypeMap[urgencyLevel]}
+          style={styles.statNumber}
+        >
           {formatProgressDisplay(format, remaining)}
         </ThemedText>
         <ThemedText variant="muted" style={styles.statLabel}>

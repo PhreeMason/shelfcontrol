@@ -5,7 +5,10 @@ import { SymbolViewProps, SymbolWeight } from 'expo-symbols';
 import { ComponentProps } from 'react';
 import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
 
-type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
+type IconMapping = Record<
+  SymbolViewProps['name'],
+  ComponentProps<typeof MaterialIcons>['name']
+>;
 type IconSymbolName = keyof typeof MAPPING;
 
 /**
@@ -21,16 +24,16 @@ const MAPPING = {
   'chevron.right': 'chevron-right',
   'chevron.down': 'keyboard-arrow-down',
   'books.vertical': 'library-books',
-  'magnifyingglass': 'search',
+  magnifyingglass: 'search',
   'xmark.circle.fill': 'cancel',
   'arrow.left': 'arrow-left',
   'gearshape.fill': 'settings',
   'rectangle.portrait.and.arrow.right': 'logout',
   'chevron.left': 'keyboard-arrow-left',
-  'plus': 'add',
+  plus: 'add',
   // Stats page icons
   'chart.bar.fill': 'bar-chart',
-  'speedometer': 'speed',
+  speedometer: 'speed',
   'info.circle.fill': 'info',
   'checkmark.circle.fill': 'check-circle',
   'exclamationmark.triangle.fill': 'warning',
@@ -43,11 +46,11 @@ const MAPPING = {
   'moon.fill': 'dark-mode',
   'slider.horizontal.3': 'tune',
   'book.fill': 'menu-book',
-  'headphones': 'headphones',
-  'pencil': 'edit',
+  headphones: 'headphones',
+  pencil: 'edit',
   // Calendar icons
-  'calendar': 'event',
-  'envelope': 'email',
+  calendar: 'event',
+  envelope: 'email',
 } as IconMapping;
 
 /**
@@ -67,5 +70,12 @@ export function IconSymbol({
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+  return (
+    <MaterialIcons
+      color={color}
+      size={size}
+      name={MAPPING[name]}
+      style={style}
+    />
+  );
 }

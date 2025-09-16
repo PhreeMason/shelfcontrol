@@ -1,7 +1,13 @@
 import { ScrollView, type ScrollViewProps } from 'react-native';
 
 import { useTheme } from '@/hooks/useThemeColor';
-import { ComponentVariants, createThemedStyle, type SurfaceVariant, type ColorToken, type SpacingToken } from '@/constants/Theme';
+import {
+  ComponentVariants,
+  createThemedStyle,
+  type SurfaceVariant,
+  type ColorToken,
+  type SpacingToken,
+} from '@/constants/Theme';
 
 export type ThemedScrollViewProps = ScrollViewProps & {
   variant?: SurfaceVariant;
@@ -9,27 +15,28 @@ export type ThemedScrollViewProps = ScrollViewProps & {
   padding?: SpacingToken;
 };
 
-export function ThemedScrollView({ 
-  style, 
+export function ThemedScrollView({
+  style,
   variant = 'default',
   backgroundColor,
   padding,
-  ...otherProps 
+  ...otherProps
 }: ThemedScrollViewProps) {
   const { colors } = useTheme();
   const surfaceVariant = ComponentVariants.surface[variant];
-  
-  const themeBackgroundColor = colors[backgroundColor || surfaceVariant.container];
+
+  const themeBackgroundColor =
+    colors[backgroundColor || surfaceVariant.container];
   const scrollViewStyle = createThemedStyle.surface(variant, padding);
 
   return (
-    <ScrollView 
+    <ScrollView
       style={[
         scrollViewStyle,
         { backgroundColor: themeBackgroundColor },
-        style
-      ]} 
-      {...otherProps} 
+        style,
+      ]}
+      {...otherProps}
     />
   );
 }

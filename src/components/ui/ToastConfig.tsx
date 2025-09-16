@@ -44,10 +44,14 @@ const CustomToast = ({
 
           <View style={styles.messageContainer}>
             {text1 && (
-              <Text style={[styles.text1, { color: colors.text }]}>{text1}</Text>
+              <Text style={[styles.text1, { color: colors.text }]}>
+                {text1}
+              </Text>
             )}
             {text2 && (
-              <Text style={[styles.text2, { color: colors.textSecondary }]}>{text2}</Text>
+              <Text style={[styles.text2, { color: colors.textSecondary }]}>
+                {text2}
+              </Text>
             )}
           </View>
         </View>
@@ -94,10 +98,14 @@ const CustomToastWithAction = ({
 
           <View style={styles.messageContainer}>
             {text1 && (
-              <Text style={[styles.text1, { color: colors.text }]}>{text1}</Text>
+              <Text style={[styles.text1, { color: colors.text }]}>
+                {text1}
+              </Text>
             )}
             {text2 && (
-              <Text style={[styles.text2, { color: colors.textSecondary }]}>{text2}</Text>
+              <Text style={[styles.text2, { color: colors.textSecondary }]}>
+                {text2}
+              </Text>
             )}
           </View>
 
@@ -106,7 +114,7 @@ const CustomToastWithAction = ({
               onPress={onActionPress}
               style={({ pressed }) => [
                 styles.actionButton,
-                pressed && { opacity: 0.8 }
+                pressed && { opacity: 0.8 },
               ]}
             >
               <LinearGradient
@@ -132,7 +140,7 @@ const SuccessToast = (props: CustomToastProps) => {
   return (
     <CustomToast
       {...props}
-      gradientColors={[colors.success, "#FAF8F5"] as const}
+      gradientColors={[colors.success, '#FAF8F5'] as const}
       iconGradientColors={[colors.success, colors.peach] as const}
       icon="✓"
     />
@@ -146,7 +154,7 @@ const ErrorToast = (props: CustomToastProps) => {
   return (
     <CustomToast
       {...props}
-      gradientColors={[colors.error, "#FAF8F5"] as const}
+      gradientColors={[colors.error, '#FAF8F5'] as const}
       iconGradientColors={[colors.error, colors.darkPink] as const}
       icon="!"
     />
@@ -160,7 +168,7 @@ const InfoToast = (props: CustomToastProps) => {
   return (
     <CustomToast
       {...props}
-      gradientColors={[colors.info, "#FAF8F5"] as const}
+      gradientColors={[colors.info, '#FAF8F5'] as const}
       iconGradientColors={[colors.info, colors.warning] as const}
       icon="i"
     />
@@ -174,35 +182,39 @@ const WarningToast = (props: CustomToastProps) => {
   return (
     <CustomToast
       {...props}
-      gradientColors={[colors.orange,"#FAF8F5"] as const}
+      gradientColors={[colors.orange, '#FAF8F5'] as const}
       iconGradientColors={[colors.orange, colors.warning] as const}
       icon="⚠"
     />
   );
 };
 
-const SuccessWithActionToast = (props: CustomToastProps & { actionText?: string; onActionPress?: () => void }) => {
+const SuccessWithActionToast = (
+  props: CustomToastProps & { actionText?: string; onActionPress?: () => void }
+) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
     <CustomToastWithAction
       {...props}
-      gradientColors={[colors.success, "#FAF8F5"] as const}
+      gradientColors={[colors.success, '#FAF8F5'] as const}
       iconGradientColors={[colors.success, colors.peach] as const}
       icon="✓"
     />
   );
 };
 
-const InfoWithActionToast = (props: CustomToastProps & { actionText?: string; onActionPress?: () => void }) => {
+const InfoWithActionToast = (
+  props: CustomToastProps & { actionText?: string; onActionPress?: () => void }
+) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
   return (
     <CustomToastWithAction
       {...props}
-      gradientColors={[colors.info, "#FAF8F5"] as const}
+      gradientColors={[colors.info, '#FAF8F5'] as const}
       iconGradientColors={[colors.info, colors.warning] as const}
       icon="↻"
     />

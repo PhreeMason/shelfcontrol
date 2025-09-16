@@ -13,7 +13,10 @@ export const utcToLocalDate = (utcDateString: string): string => {
  * @param utcDateString - UTC date string from database
  * @param format - Day.js format string (default: 'MMM D, YYYY')
  */
-export const formatDisplayDate = (utcDateString: string, format: string = 'MMM D, YYYY'): string => {
+export const formatDisplayDate = (
+  utcDateString: string,
+  format: string = 'MMM D, YYYY'
+): string => {
   return dayjs(utcDateString).format(format);
 };
 
@@ -22,7 +25,10 @@ export const formatDisplayDate = (utcDateString: string, format: string = 'MMM D
  * @param date1 - First date (can be string or Date)
  * @param date2 - Second date (defaults to today)
  */
-export const isDateBefore = (date1: string | Date, date2: string | Date = new Date()): boolean => {
+export const isDateBefore = (
+  date1: string | Date,
+  date2: string | Date = new Date()
+): boolean => {
   return dayjs(date1).startOf('day').isBefore(dayjs(date2).startOf('day'));
 };
 
@@ -32,7 +38,10 @@ export const isDateBefore = (date1: string | Date, date2: string | Date = new Da
  * @param fromDate - Starting date (defaults to today)
  * @returns Number of days (negative if deadline is in past)
  */
-export const calculateDaysLeft = (deadlineDate: string, fromDate: Date = new Date()): number => {
+export const calculateDaysLeft = (
+  deadlineDate: string,
+  fromDate: Date = new Date()
+): number => {
   const deadline = dayjs(deadlineDate).startOf('day');
   const from = dayjs(fromDate).startOf('day');
   return deadline.diff(from, 'day');

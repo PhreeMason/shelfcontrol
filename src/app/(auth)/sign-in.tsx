@@ -5,7 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useRouter } from 'expo-router';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import { z } from 'zod';
 
 const signInSchema = z.object({
@@ -56,8 +62,8 @@ export default function SignInScreen() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
+    <KeyboardAvoidingView
+      style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ThemedView style={styles.innerContainer}>
@@ -65,7 +71,9 @@ export default function SignInScreen() {
           <ThemedText>Sign up</ThemedText>
         </Link>
 
-        <ThemedText style={[styles.title, { fontSize: 32, fontWeight: 'bold' }]}>
+        <ThemedText
+          style={[styles.title, { fontSize: 32, fontWeight: 'bold' }]}
+        >
           Sign in
         </ThemedText>
 
@@ -123,7 +131,10 @@ export default function SignInScreen() {
           )}
 
           <TouchableOpacity
-            style={[styles.button, (isLoading || isSubmitting) && styles.buttonDisabled]}
+            style={[
+              styles.button,
+              (isLoading || isSubmitting) && styles.buttonDisabled,
+            ]}
             onPress={handleSubmit(onSignInPress)}
             disabled={isLoading || isSubmitting}
           >
@@ -133,7 +144,10 @@ export default function SignInScreen() {
           </TouchableOpacity>
 
           {/* Add Forgot Password Link */}
-          <Link href="/reset-password-request" style={styles.forgotPasswordLink}>
+          <Link
+            href="/reset-password-request"
+            style={styles.forgotPasswordLink}
+          >
             <ThemedText style={styles.forgotPasswordText}>
               Forgot Password?
             </ThemedText>
@@ -145,7 +159,11 @@ export default function SignInScreen() {
         <ThemedView style={styles.socialButtons}>
           <AppleSSO
             onSuccess={() => router.replace('/')}
-            onError={(error) => setError('root', { message: error.message || 'Apple sign-in failed' })}
+            onError={error =>
+              setError('root', {
+                message: error.message || 'Apple sign-in failed',
+              })
+            }
           />
           {/* <GoogleSSO
             onSuccess={() => router.replace('/')}

@@ -1,34 +1,34 @@
-import LinearProgressBar from '@/components/shared/LinearProgressBar'
-import { Typography } from '@/constants/Colors'
-import { useTheme } from '@/hooks/useThemeColor'
-import { formatProgressDisplay } from '@/utils/deadlineUtils'
-import React from 'react'
-import { StyleSheet, View } from 'react-native'
-import { ThemedText, ThemedView } from '../themed'
+import LinearProgressBar from '@/components/shared/LinearProgressBar';
+import { Typography } from '@/constants/Colors';
+import { useTheme } from '@/hooks/useThemeColor';
+import { formatProgressDisplay } from '@/utils/deadlineUtils';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { ThemedText, ThemedView } from '../themed';
 
 const formatMinutesToTime = (minutes: number): string => {
-  return formatProgressDisplay('audio', minutes)
-}
+  return formatProgressDisplay('audio', minutes);
+};
 
 type TodaysProgressProps = {
-  total: number,
-  current: number,
-  type?: 'reading' | 'listening'
-}
+  total: number;
+  current: number;
+  type?: 'reading' | 'listening';
+};
 
 const messageForProgressPercentage = {
-  10000: "Immortal!",
-  5000: "Godlike!",
-  2500: "Mythical!",
-  1000: "Legendary!",
-  500: "Unstoppable!",
-  250: "Incredible!",
-  100: "Amazing work!",
+  10000: 'Immortal!',
+  5000: 'Godlike!',
+  2500: 'Mythical!',
+  1000: 'Legendary!',
+  500: 'Unstoppable!',
+  250: 'Incredible!',
+  100: 'Amazing work!',
   75: "You're doing great!",
-  50: "Great pace!",
-  20: "Keep it up!",
+  50: 'Great pace!',
+  20: 'Keep it up!',
   0: "Let's get started!",
-}
+};
 
 const colorProgressThresholds = {
   1000: '#4b2e83',
@@ -47,12 +47,12 @@ const colorProgressThresholds = {
 const TodaysProgress: React.FC<TodaysProgressProps> = ({
   total,
   current,
-  type = 'reading'
+  type = 'reading',
 }) => {
   const progressPercentage = (current / total) * 100;
   const isListening = type === 'listening';
   const icon = isListening ? '🎧' : '📖';
-  const label = isListening ? "Listening" : "Reading";
+  const label = isListening ? 'Listening' : 'Reading';
   const { colors } = useTheme();
 
   const getDisplayValue = () => {
@@ -87,12 +87,14 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
 
     for (const threshold of thresholds) {
       if (progressPercentage >= threshold) {
-        return messageForProgressPercentage[threshold as keyof typeof messageForProgressPercentage];
+        return messageForProgressPercentage[
+          threshold as keyof typeof messageForProgressPercentage
+        ];
       }
     }
 
     return messageForProgressPercentage[0];
-  }
+  };
 
   const getProgressColors = () => {
     const colorThresholds = Object.keys(colorProgressThresholds)
@@ -105,21 +107,32 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
     for (let i = 0; i < colorThresholds.length; i++) {
       const threshold = colorThresholds[i];
       if (progressPercentage >= threshold) {
-        backgroundColor = colorProgressThresholds[threshold as keyof typeof colorProgressThresholds];
-        currentColor = colorProgressThresholds[colorThresholds[Math.max(0, i - 1)] as keyof typeof colorProgressThresholds];
+        backgroundColor =
+          colorProgressThresholds[
+            threshold as keyof typeof colorProgressThresholds
+          ];
+        currentColor =
+          colorProgressThresholds[
+            colorThresholds[
+              Math.max(0, i - 1)
+            ] as keyof typeof colorProgressThresholds
+          ];
         break;
       }
     }
 
     return {
       gradientColors: [currentColor, currentColor],
-      backgroundColor: `${backgroundColor}99`
+      backgroundColor: `${backgroundColor}99`,
     };
-  }
+  };
 
   const { backgroundColor } = getProgressColors();
   const progressBarPercentageValue = Math.min(100, progressPercentage);
-  const gradientColors = progressBarPercentageValue === 100 ? ['#815ac0', '#4b2e83'] : ['#f8acff', colors.primary];
+  const gradientColors =
+    progressBarPercentageValue === 100
+      ? ['#815ac0', '#4b2e83']
+      : ['#f8acff', colors.primary];
   return (
     <ThemedView style={styles.statCard}>
       <View style={styles.statHeader}>
@@ -140,12 +153,16 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
       />
 
       <View style={[styles.statFooter, { marginTop: 8 }]}>
-        <ThemedText style={styles.encouragementText}>{getEncouragementMessage()}</ThemedText>
-        <ThemedText style={styles.remainingText}>{getRemainingText()}</ThemedText>
+        <ThemedText style={styles.encouragementText}>
+          {getEncouragementMessage()}
+        </ThemedText>
+        <ThemedText style={styles.remainingText}>
+          {getRemainingText()}
+        </ThemedText>
       </View>
     </ThemedView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   statCard: {
@@ -198,4 +215,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TodaysProgress
+export default TodaysProgress;

@@ -1,39 +1,45 @@
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { calculateDaysLeft as calculateDaysLeftUtil, isDateBefore } from './dateUtils';
+import {
+  calculateDaysLeft as calculateDaysLeftUtil,
+  isDateBefore,
+} from './dateUtils';
 import { calculateTotalQuantity } from './deadlineCalculations';
 
 /**
- * Sorts deadlines by priority: first by due date (earliest first), then by updated_at (most recent first), 
+ * Sorts deadlines by priority: first by due date (earliest first), then by updated_at (most recent first),
  * and finally by created_at (most recent first).
  * @param a - First deadline to compare
  * @param b - Second deadline to compare
  * @returns A negative value if a should come before b, positive if a should come after b, or 0 if equal
  */
-export const sortDeadlines = (a: ReadingDeadlineWithProgress, b: ReadingDeadlineWithProgress) => {
-    // First sort by due date (deadline_date)
-    const aDueDate = new Date(a.deadline_date);
-    const bDueDate = new Date(b.deadline_date);
-    if (aDueDate.getTime() !== bDueDate.getTime()) {
-        return aDueDate.getTime() - bDueDate.getTime();
-    }
+export const sortDeadlines = (
+  a: ReadingDeadlineWithProgress,
+  b: ReadingDeadlineWithProgress
+) => {
+  // First sort by due date (deadline_date)
+  const aDueDate = new Date(a.deadline_date);
+  const bDueDate = new Date(b.deadline_date);
+  if (aDueDate.getTime() !== bDueDate.getTime()) {
+    return aDueDate.getTime() - bDueDate.getTime();
+  }
 
-    // TODO: If due dates are equal sort by priority level if available
-    // ....
+  // TODO: If due dates are equal sort by priority level if available
+  // ....
 
-    // TODO: If priority is equal sort by urgency level if available
-    // ....
-    
-    // If due dates are equal, sort by updated_at
-    const aUpdatedAt = a.updated_at ? new Date(a.updated_at) : new Date(0);
-    const bUpdatedAt = b.updated_at ? new Date(b.updated_at) : new Date(0);
-    if (aUpdatedAt.getTime() !== bUpdatedAt.getTime()) {
-        return bUpdatedAt.getTime() - aUpdatedAt.getTime(); // Most recent first
-    }
-    
-    // If updated_at dates are equal, sort by created_at
-    const aCreatedAt = a.created_at ? new Date(a.created_at) : new Date(0);
-    const bCreatedAt = b.created_at ? new Date(b.created_at) : new Date(0);
-    return bCreatedAt.getTime() - aCreatedAt.getTime(); // Most recent first
+  // TODO: If priority is equal sort by urgency level if available
+  // ....
+
+  // If due dates are equal, sort by updated_at
+  const aUpdatedAt = a.updated_at ? new Date(a.updated_at) : new Date(0);
+  const bUpdatedAt = b.updated_at ? new Date(b.updated_at) : new Date(0);
+  if (aUpdatedAt.getTime() !== bUpdatedAt.getTime()) {
+    return bUpdatedAt.getTime() - aUpdatedAt.getTime(); // Most recent first
+  }
+
+  // If updated_at dates are equal, sort by created_at
+  const aCreatedAt = a.created_at ? new Date(a.created_at) : new Date(0);
+  const bCreatedAt = b.created_at ? new Date(b.created_at) : new Date(0);
+  return bCreatedAt.getTime() - aCreatedAt.getTime(); // Most recent first
 };
 
 /**
@@ -43,37 +49,38 @@ export const sortDeadlines = (a: ReadingDeadlineWithProgress, b: ReadingDeadline
  * @returns Object containing active, overdue, and completed deadline arrays
  */
 export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
-    const active: ReadingDeadlineWithProgress[] = [];
-    const overdue: ReadingDeadlineWithProgress[] = [];
-    const completed: ReadingDeadlineWithProgress[] = [];
+  const active: ReadingDeadlineWithProgress[] = [];
+  const overdue: ReadingDeadlineWithProgress[] = [];
+  const completed: ReadingDeadlineWithProgress[] = [];
 
-    deadlines.forEach(deadline => {
-        // Get the latest status from the status array
-        const latestStatus = deadline.status && deadline.status.length > 0 
-            ? deadline.status[deadline.status.length - 1].status 
-            : 'reading';
-            
-        if (latestStatus === 'complete' || latestStatus === 'set_aside') {
-            completed.push(deadline);
-        } else if (isDateBefore(deadline.deadline_date)) {
-            overdue.push(deadline);
-        } else {
-            active.push(deadline);
-        }
-    });
-    
-    // Sort active and overdue by priority
-    active.sort(sortDeadlines);
-    overdue.sort(sortDeadlines);
+  deadlines.forEach(deadline => {
+    // Get the latest status from the status array
+    const latestStatus =
+      deadline.status && deadline.status.length > 0
+        ? deadline.status[deadline.status.length - 1].status
+        : 'reading';
 
-    // Sort completed by most recently updated
-    completed.sort((a, b) => {
-        const aDate = a.updated_at ? new Date(a.updated_at) : new Date(0);
-        const bDate = b.updated_at ? new Date(b.updated_at) : new Date(0);
-        return bDate.getTime() - aDate.getTime();
-    });
-    
-    return { active, overdue, completed };
+    if (latestStatus === 'complete' || latestStatus === 'set_aside') {
+      completed.push(deadline);
+    } else if (isDateBefore(deadline.deadline_date)) {
+      overdue.push(deadline);
+    } else {
+      active.push(deadline);
+    }
+  });
+
+  // Sort active and overdue by priority
+  active.sort(sortDeadlines);
+  overdue.sort(sortDeadlines);
+
+  // Sort completed by most recently updated
+  completed.sort((a, b) => {
+    const aDate = a.updated_at ? new Date(a.updated_at) : new Date(0);
+    const bDate = b.updated_at ? new Date(b.updated_at) : new Date(0);
+    return bDate.getTime() - aDate.getTime();
+  });
+
+  return { active, overdue, completed };
 };
 
 /**
@@ -83,7 +90,7 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
  * @returns Number of days left (positive) or overdue (negative)
  */
 export const calculateDaysLeft = (deadlineDate: string): number => {
-    return calculateDaysLeftUtil(deadlineDate);
+  return calculateDaysLeftUtil(deadlineDate);
 };
 
 /**
@@ -91,15 +98,19 @@ export const calculateDaysLeft = (deadlineDate: string): number => {
  * @param deadline - The deadline with its progress entries
  * @returns The current progress value, or 0 if no progress entries exist
  */
-export const calculateProgress = (deadline: ReadingDeadlineWithProgress): number => {
-    if (!deadline.progress || deadline.progress.length === 0) return 0;
-    
-    const latestProgress = deadline.progress.reduce((latest, current) => {
-        return new Date(current.updated_at || current.created_at || '') > 
-               new Date(latest.updated_at || latest.created_at || '') ? current : latest;
-    });
-    
-    return latestProgress.current_progress || 0;
+export const calculateProgress = (
+  deadline: ReadingDeadlineWithProgress
+): number => {
+  if (!deadline.progress || deadline.progress.length === 0) return 0;
+
+  const latestProgress = deadline.progress.reduce((latest, current) => {
+    return new Date(current.updated_at || current.created_at || '') >
+      new Date(latest.updated_at || latest.created_at || '')
+      ? current
+      : latest;
+  });
+
+  return latestProgress.current_progress || 0;
 };
 
 /**
@@ -107,10 +118,15 @@ export const calculateProgress = (deadline: ReadingDeadlineWithProgress): number
  * @param deadline - The deadline to calculate percentage for
  * @returns Progress percentage rounded to the nearest whole number
  */
-export const calculateProgressPercentage = (deadline: ReadingDeadlineWithProgress): number => {
-    const currentProgress = calculateProgress(deadline);
-    const totalQuantity = calculateTotalQuantity(deadline.format, deadline.total_quantity);
-    return Math.round((currentProgress / totalQuantity) * 100);
+export const calculateProgressPercentage = (
+  deadline: ReadingDeadlineWithProgress
+): number => {
+  const currentProgress = calculateProgress(deadline);
+  const totalQuantity = calculateTotalQuantity(
+    deadline.format,
+    deadline.total_quantity
+  );
+  return Math.round((currentProgress / totalQuantity) * 100);
 };
 
 /**
@@ -118,15 +134,17 @@ export const calculateProgressPercentage = (deadline: ReadingDeadlineWithProgres
  * @param format - The reading format (physical, eBook, or audio)
  * @returns The unit string ('minutes' for audio, 'pages' for physical/eBook)
  */
-export const getUnitForFormat = (format: 'physical' | 'eBook' | 'audio'): string => {
-    switch (format) {
-        case 'audio':
-            return 'minutes';
-        case 'physical':
-        case 'eBook':
-        default:
-            return 'pages';
-    }
+export const getUnitForFormat = (
+  format: 'physical' | 'eBook' | 'audio'
+): string => {
+  switch (format) {
+    case 'audio':
+      return 'minutes';
+    case 'physical':
+    case 'eBook':
+    default:
+      return 'pages';
+  }
 };
 
 /**
@@ -137,16 +155,19 @@ export const getUnitForFormat = (format: 'physical' | 'eBook' | 'audio'): string
  * @param progress - The progress value to format
  * @returns Formatted progress string
  */
-export const formatProgressDisplay = (format: 'physical' | 'eBook' | 'audio', progress: number): string => {
-    if (format === 'audio') {
-        const hours = Math.floor(progress / 60);
-        const minutes = progress % 60;
-        if (hours > 0) {
-            return `${hours}h ${minutes}m`;
-        }
-        return `${minutes}m`;
+export const formatProgressDisplay = (
+  format: 'physical' | 'eBook' | 'audio',
+  progress: number
+): string => {
+  if (format === 'audio') {
+    const hours = Math.floor(progress / 60);
+    const minutes = progress % 60;
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
     }
-    return `${progress}`;
+    return `${minutes}m`;
+  }
+  return `${progress}`;
 };
 
 /**
@@ -157,45 +178,44 @@ export const formatProgressDisplay = (format: 'physical' | 'eBook' | 'audio', pr
  * @returns Formatted string showing total daily reading time needed or "No active deadlines"
  */
 export const getTotalReadingPagesForDay = (
-    activeDeadlines: ReadingDeadlineWithProgress[],
-    getDeadlineCalculations: (deadline: ReadingDeadlineWithProgress) => {
-        unitsPerDay: number;
-    }
+  activeDeadlines: ReadingDeadlineWithProgress[],
+  getDeadlineCalculations: (deadline: ReadingDeadlineWithProgress) => {
+    unitsPerDay: number;
+  }
 ): string => {
-    if (activeDeadlines.length === 0) {
-        return 'No active deadlines';
-    }
-    
-    let totalMinutesPerDay = 0;
-    
-    activeDeadlines.forEach(deadline => {
-        const calculations = getDeadlineCalculations(deadline);
-        
-        if (deadline.format === 'audio') {
-            // For audio, unitsPerDay is already in minutes
-            totalMinutesPerDay += calculations.unitsPerDay;
-        } else {
-            // For physical/eBook, convert pages to estimated minutes
-            // Assuming average reading speed of 40 pages per hour
-            // So 1 page = 1.5 minutes (60 minutes / 40 pages = 1.5 minutes per page)
-            const estimatedMinutesPerDay = calculations.unitsPerDay * 1.5;
-            totalMinutesPerDay += estimatedMinutesPerDay;
-        }
-    });
-    
-    // Format the total time
-    const hours = Math.floor(totalMinutesPerDay / 60);
-    const minutes = Math.round(totalMinutesPerDay % 60);
-    
-    if (hours > 0) {
-        if (minutes > 0) {
-            return `${hours}h ${minutes}m/day needed`;
-        }
-        return `${hours}h/day needed`;
-    }
-    return `${minutes}m/day needed`;
-}; 
+  if (activeDeadlines.length === 0) {
+    return 'No active deadlines';
+  }
 
+  let totalMinutesPerDay = 0;
+
+  activeDeadlines.forEach(deadline => {
+    const calculations = getDeadlineCalculations(deadline);
+
+    if (deadline.format === 'audio') {
+      // For audio, unitsPerDay is already in minutes
+      totalMinutesPerDay += calculations.unitsPerDay;
+    } else {
+      // For physical/eBook, convert pages to estimated minutes
+      // Assuming average reading speed of 40 pages per hour
+      // So 1 page = 1.5 minutes (60 minutes / 40 pages = 1.5 minutes per page)
+      const estimatedMinutesPerDay = calculations.unitsPerDay * 1.5;
+      totalMinutesPerDay += estimatedMinutesPerDay;
+    }
+  });
+
+  // Format the total time
+  const hours = Math.floor(totalMinutesPerDay / 60);
+  const minutes = Math.round(totalMinutesPerDay % 60);
+
+  if (hours > 0) {
+    if (minutes > 0) {
+      return `${hours}h ${minutes}m/day needed`;
+    }
+    return `${hours}h/day needed`;
+  }
+  return `${minutes}m/day needed`;
+};
 
 /** * Extracts and validates an initial step number from search parameters.
  * Ensures the step is within specified bounds.
@@ -240,19 +260,25 @@ export function getInitialStepFromSearchParams(
 /**
  * Get count of deadlines completed this month
  */
-export const getCompletedThisMonth = (deadlines: ReadingDeadlineWithProgress[]): number => {
+export const getCompletedThisMonth = (
+  deadlines: ReadingDeadlineWithProgress[]
+): number => {
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
 
   return deadlines.filter(deadline => {
-    const latestStatus = deadline.status && deadline.status.length > 0
-      ? deadline.status[deadline.status.length - 1]
-      : null;
+    const latestStatus =
+      deadline.status && deadline.status.length > 0
+        ? deadline.status[deadline.status.length - 1]
+        : null;
 
     if (latestStatus?.status !== 'complete') return false;
 
     const completionDate = new Date(latestStatus.created_at);
-    return completionDate.getMonth() === currentMonth && completionDate.getFullYear() === currentYear;
+    return (
+      completionDate.getMonth() === currentMonth &&
+      completionDate.getFullYear() === currentYear
+    );
   }).length;
 };
 
@@ -260,13 +286,19 @@ export const getCompletedThisMonth = (deadlines: ReadingDeadlineWithProgress[]):
  * Get count of deadlines that are on track
  * A deadline is "on track" if its progress percentage is >= expected percentage based on time elapsed
  */
-export const getOnTrackDeadlines = (deadlines: ReadingDeadlineWithProgress[]): number => {
+export const getOnTrackDeadlines = (
+  deadlines: ReadingDeadlineWithProgress[]
+): number => {
   const activeDeadlines = deadlines.filter(deadline => {
-    const latestStatus = deadline.status && deadline.status.length > 0
-      ? deadline.status[deadline.status.length - 1]?.status
-      : 'reading';
+    const latestStatus =
+      deadline.status && deadline.status.length > 0
+        ? deadline.status[deadline.status.length - 1]?.status
+        : 'reading';
 
-    return latestStatus === 'reading' && calculateDaysLeft(deadline.deadline_date) >= 0;
+    return (
+      latestStatus === 'reading' &&
+      calculateDaysLeft(deadline.deadline_date) >= 0
+    );
   });
 
   return activeDeadlines.filter(deadline => {
@@ -275,7 +307,12 @@ export const getOnTrackDeadlines = (deadlines: ReadingDeadlineWithProgress[]): n
 
     const createdDate = new Date(deadline.created_at);
     const deadlineDate = new Date(deadline.deadline_date);
-    const totalDays = Math.max(1, Math.ceil((deadlineDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)));
+    const totalDays = Math.max(
+      1,
+      Math.ceil(
+        (deadlineDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+      )
+    );
 
     const daysPassed = totalDays - daysLeft;
     const timePassedPercentage = (daysPassed / totalDays) * 100;

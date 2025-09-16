@@ -2,7 +2,7 @@ import { generateId, supabase } from '@/lib/supabase';
 import {
   ReadingDeadlineInsert,
   ReadingDeadlineProgressInsert,
-  ReadingDeadlineWithProgress
+  ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
 import { booksService } from './books.service';
 
@@ -57,7 +57,9 @@ class DeadlinesService {
       } else {
         // Need to fetch and insert book data
         try {
-          const bookResponse = await booksService.fetchBookData(bookData.api_id);
+          const bookResponse = await booksService.fetchBookData(
+            bookData.api_id
+          );
           if (bookResponse) {
             const finalNewBookId = generateId('book');
             await booksService.insertBook(finalNewBookId, bookResponse);
@@ -99,7 +101,9 @@ class DeadlinesService {
       .insert({
         deadline_id: finalDeadlineId,
         status: 'reading',
-        created_at: startDate ? startDate.toISOString() : new Date().toISOString(),
+        created_at: startDate
+          ? startDate.toISOString()
+          : new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
       .select()
@@ -227,11 +231,13 @@ class DeadlinesService {
   async getDeadlines(userId: string): Promise<ReadingDeadlineWithProgress[]> {
     const { data, error } = await supabase
       .from('deadlines')
-      .select(`
+      .select(
+        `
         *,
         progress:deadline_progress(*),
         status:deadline_status(*)
-      `)
+      `
+      )
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
@@ -242,24 +248,30 @@ class DeadlinesService {
   /**
    * Get archived deadlines (completed or set aside)
    */
-  async getArchivedDeadlines(userId: string): Promise<ReadingDeadlineWithProgress[]> {
+  async getArchivedDeadlines(
+    userId: string
+  ): Promise<ReadingDeadlineWithProgress[]> {
     const { data, error } = await supabase
       .from('deadlines')
-      .select(`
+      .select(
+        `
         *,
         progress:deadline_progress(*),
         status:deadline_status(*)
-      `)
+      `
+      )
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
 
     // Filter for completed and set_aside deadlines only
-    const filteredData = data?.filter(deadline => {
-      const latestStatus = deadline.status?.[deadline.status.length - 1]?.status;
-      return latestStatus === 'complete' || latestStatus === 'set_aside';
-    }) || [];
+    const filteredData =
+      data?.filter(deadline => {
+        const latestStatus =
+          deadline.status?.[deadline.status.length - 1]?.status;
+        return latestStatus === 'complete' || latestStatus === 'set_aside';
+      }) || [];
 
     // Sort by completion date
     filteredData.sort((a, b) => {
@@ -275,14 +287,19 @@ class DeadlinesService {
   /**
    * Get a single deadline by ID
    */
-  async getDeadlineById(userId: string, deadlineId: string): Promise<ReadingDeadlineWithProgress | null> {
+  async getDeadlineById(
+    userId: string,
+    deadlineId: string
+  ): Promise<ReadingDeadlineWithProgress | null> {
     const { data, error } = await supabase
       .from('deadlines')
-      .select(`
+      .select(
+        `
         *,
         progress:deadline_progress(*),
         status:deadline_status(*)
-      `)
+      `
+      )
       .eq('user_id', userId)
       .eq('id', deadlineId)
       .single();
@@ -300,7 +317,10 @@ class DeadlinesService {
   /**
    * Update deadline status (complete, set_aside, reading)
    */
-  async updateDeadlineStatus(deadlineId: string, status: 'complete' | 'set_aside' | 'reading') {
+  async updateDeadlineStatus(
+    deadlineId: string,
+    status: 'complete' | 'set_aside' | 'reading'
+  ) {
     const { data, error } = await supabase
       .from('deadline_status')
       .insert({
@@ -323,10 +343,12 @@ class DeadlinesService {
     // First, get the deadline details
     const { data: deadline, error: deadlineError } = await supabase
       .from('deadlines')
-      .select(`
+      .select(
+        `
         *,
         progress:deadline_progress(*)
-      `)
+      `
+      )
       .eq('id', deadlineId)
       .eq('user_id', userId)
       .single();
@@ -334,9 +356,10 @@ class DeadlinesService {
     if (deadlineError) throw deadlineError;
 
     // Calculate current progress
-    const latestProgress = deadline.progress?.length > 0
-      ? Math.max(...deadline.progress.map(p => p.current_progress))
-      : 0;
+    const latestProgress =
+      deadline.progress?.length > 0
+        ? Math.max(...deadline.progress.map(p => p.current_progress))
+        : 0;
 
     // If current progress is not at max, update it
     if (latestProgress < deadline.total_quantity) {
@@ -380,7 +403,8 @@ class DeadlinesService {
 
     let query = supabase
       .from('deadlines')
-      .select(`
+      .select(
+        `
         id,
         book_title,
         author,
@@ -401,7 +425,8 @@ class DeadlinesService {
           status,
           created_at
         )
-      `)
+      `
+      )
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 

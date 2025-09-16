@@ -11,7 +11,12 @@ export default function NotFoundScreen() {
       <ThemedView style={styles.container}>
         <ThemedText variant="headline">This screen does not exist.</ThemedText>
         <Link href="/" style={styles.link}>
-          <ThemedText variant="default" style={{ textDecorationLine: 'underline' }}>Go to home screen!</ThemedText>
+          <ThemedText
+            variant="default"
+            style={{ textDecorationLine: 'underline' }}
+          >
+            Go to home screen!
+          </ThemedText>
         </Link>
       </ThemedView>
     </>

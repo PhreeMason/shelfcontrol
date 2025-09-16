@@ -7,14 +7,22 @@ import { useMemo } from 'react';
 // Helper function to get status colors
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'requested': return '#6366F1'; // Indigo (changed from blue)
-    case 'approved': return '#10B981'; // Green
-    case 'reading': return '#F59E0B'; // Yellow
-    case 'complete': return '#059669'; // Dark Green
-    case 'set_aside': return '#FB923C'; // Orange
-    case 'rejected': return '#EF4444'; // Red
-    case 'withdrew': return '#9CA3AF'; // Gray
-    default: return '#8E8E93'; // Default gray
+    case 'requested':
+      return '#6366F1'; // Indigo (changed from blue)
+    case 'approved':
+      return '#10B981'; // Green
+    case 'reading':
+      return '#F59E0B'; // Yellow
+    case 'complete':
+      return '#059669'; // Dark Green
+    case 'set_aside':
+      return '#FB923C'; // Orange
+    case 'rejected':
+      return '#EF4444'; // Red
+    case 'withdrew':
+      return '#9CA3AF'; // Gray
+    default:
+      return '#8E8E93'; // Default gray
   }
 };
 
@@ -24,7 +32,14 @@ export interface DeadlineStatusChange {
   book_title: string;
   author?: string;
   format: 'physical' | 'eBook' | 'audio';
-  status: 'requested' | 'approved' | 'reading' | 'rejected' | 'withdrew' | 'complete' | 'set_aside';
+  status:
+    | 'requested'
+    | 'approved'
+    | 'reading'
+    | 'rejected'
+    | 'withdrew'
+    | 'complete'
+    | 'set_aside';
   deadline_date: string;
   source: string;
   flexibility: string;
@@ -47,7 +62,8 @@ export interface DailyDeadlineEntry {
   }[];
   statusChanges: DeadlineStatusChange[]; // status changes that occurred on this day
   totalProgressMade: number; // total progress made across all deadlines this day
-  deadlineInfo?: { // deadline info for deadline-due dates
+  deadlineInfo?: {
+    // deadline info for deadline-due dates
     id: string;
     book_title: string;
     author?: string;
@@ -113,7 +129,7 @@ const getFormatFilter = (filter: FormatFilter): string[] => {
 
 export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
   const { session } = useAuth();
-    const userId = session?.user?.id;
+  const userId = session?.user?.id;
   const { dateRange = '90d', formatFilter = 'all' } = options;
 
   const query = useQuery({
@@ -168,7 +184,8 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
 
         // Sort progress by date to calculate daily differences
         const sortedProgress = progress.sort(
-          (a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          (a: any, b: any) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
         );
 
         // Group progress entries by date to handle same-day updates properly
@@ -180,9 +197,10 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
         });
 
         // Check if deadline was created on the same day as first progress
-        const firstProgressDate = sortedProgress.length > 0
-          ? getLocalDateString(sortedProgress[0].created_at)
-          : null;
+        const firstProgressDate =
+          sortedProgress.length > 0
+            ? getLocalDateString(sortedProgress[0].created_at)
+            : null;
 
         const showDeadlineCreation = deadlineCreatedDate === firstProgressDate;
 
@@ -208,7 +226,10 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
               // For deadline creation day, apply progress threshold logic:
               // If initial progress > 50, treat as starting point (progress made = 0)
               // If initial progress <= 50, count it as progress made
-              progressMade = currentProgress.current_progress > 50 ? 0 : currentProgress.current_progress;
+              progressMade =
+                currentProgress.current_progress > 50
+                  ? 0
+                  : currentProgress.current_progress;
             } else {
               // If first entry is not on creation date, it means progress was made
               progressMade = currentProgress.current_progress;
@@ -219,8 +240,13 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
             if (prevDate) {
               const prevDayProgress = progressByDate[prevDate];
               if (prevDayProgress && prevDayProgress.length > 0) {
-                const prevProgress = prevDayProgress[prevDayProgress.length - 1];
-                progressMade = Math.max(0, currentProgress.current_progress - prevProgress.current_progress);
+                const prevProgress =
+                  prevDayProgress[prevDayProgress.length - 1];
+                progressMade = Math.max(
+                  0,
+                  currentProgress.current_progress -
+                    prevProgress.current_progress
+                );
               }
             }
           }
@@ -286,7 +312,6 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
             created_at: statusChange.created_at,
           });
         });
-
       });
 
       // Add entries for deadline dates that don't already exist
@@ -312,7 +337,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
                 source: deadline.source,
                 flexibility: deadline.flexibility,
                 total_quantity: deadline.total_quantity,
-              }
+              },
             };
           }
         }
@@ -327,12 +352,15 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
       const totalDays = entries.length;
 
       // Count active vs completed deadlines
-      const activeDeadlines = deadlines?.filter(d => {
-        const progress = d.deadline_progress || [];
-        if (progress.length === 0) return true; // No progress yet, so it's active
-        const latestProgress = progress[progress.length - 1];
-        return latestProgress ? latestProgress.current_progress < d.total_quantity : true;
-      }).length || 0;
+      const activeDeadlines =
+        deadlines?.filter(d => {
+          const progress = d.deadline_progress || [];
+          if (progress.length === 0) return true; // No progress yet, so it's active
+          const latestProgress = progress[progress.length - 1];
+          return latestProgress
+            ? latestProgress.current_progress < d.total_quantity
+            : true;
+        }).length || 0;
 
       const ArchivedDeadlines = (deadlines?.length || 0) - activeDeadlines;
 
@@ -367,8 +395,12 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
 
         // Add progress dot if there's progress
         if (hasProgress) {
-          const hasReadingDeadlines = entry.deadlines.some(d => d.format === 'physical' || d.format === 'eBook');
-          const hasListeningDeadlines = entry.deadlines.some(d => d.format === 'audio');
+          const hasReadingDeadlines = entry.deadlines.some(
+            d => d.format === 'physical' || d.format === 'eBook'
+          );
+          const hasListeningDeadlines = entry.deadlines.some(
+            d => d.format === 'audio'
+          );
 
           let dotColor = '#8E8E93';
           if (hasReadingDeadlines && hasListeningDeadlines) {
@@ -384,10 +416,10 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
 
         // Add status dots for status changes (limit to 3 to avoid crowding)
         if (hasStatusChanges) {
-          (entry.statusChanges || []).slice(0, 3).forEach((change) => {
+          (entry.statusChanges || []).slice(0, 3).forEach(change => {
             dots.push({
               key: `status_${change.status_id}`,
-              color: getStatusColor(change.status)
+              color: getStatusColor(change.status),
             });
           });
         }
@@ -416,7 +448,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
         // Add deadline marker dot
         markedDates[entry.date].dots.push({
           key: 'deadline',
-          color: '#DC2626' // Red for deadline dates
+          color: '#DC2626', // Red for deadline dates
         });
       }
     });

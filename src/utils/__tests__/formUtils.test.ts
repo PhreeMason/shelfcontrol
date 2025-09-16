@@ -1,7 +1,7 @@
 import {
   transformProgressInputText,
   transformProgressValueToText,
-  requiresAudiobookInput
+  requiresAudiobookInput,
 } from '../formUtils';
 
 describe('formUtils', () => {

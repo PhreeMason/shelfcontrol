@@ -8,7 +8,15 @@ import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Image, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ReadingSession = () => {
@@ -23,7 +31,8 @@ const ReadingSession = () => {
   let deadline = deadlines.find(d => d.id === id);
 
   // If not found, use fallback hook (for archived deadlines)
-  const { data: fallbackDeadline, isLoading: isFallbackLoading } = useGetDeadlineById(deadline ? undefined : id);
+  const { data: fallbackDeadline, isLoading: isFallbackLoading } =
+    useGetDeadlineById(deadline ? undefined : id);
 
   // Use fallback deadline if context deadline not found
   if (!deadline && fallbackDeadline) {
@@ -36,7 +45,9 @@ const ReadingSession = () => {
   // Show loading state when using fallback
   if (!deadline && isFallbackLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.surface }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.surface }]}
+      >
         <ThemedView style={[styles.loadingContainer]}>
           <ThemedText>Loading deadline...</ThemedText>
         </ThemedView>
@@ -47,7 +58,9 @@ const ReadingSession = () => {
   // Show error or not found state
   if (!deadline) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.surface }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.surface }]}
+      >
         <ThemedView style={[styles.loadingContainer]}>
           <ThemedText variant="title">Deadline not found</ThemedText>
           <ThemedButton
@@ -106,14 +119,25 @@ const ReadingSession = () => {
     }
   };
 
-
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <View style={[styles.header, { borderBottomColor: colors.border }]}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <IconSymbol name="chevron.left" size={Platform.OS === 'ios' ? 24 : 40} color={colors.primary} />
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
+            <IconSymbol
+              name="chevron.left"
+              size={Platform.OS === 'ios' ? 24 : 40}
+              color={colors.primary}
+            />
           </TouchableOpacity>
           <ThemedText style={[styles.headerTitle, { fontWeight: '600' }]}>
             Reading Session

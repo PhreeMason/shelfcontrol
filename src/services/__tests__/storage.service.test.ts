@@ -18,7 +18,9 @@ jest.mock('@/lib/supabase', () => ({
   },
 }));
 
-const mockSupabaseStorage = supabase.storage as jest.Mocked<typeof supabase.storage>;
+const mockSupabaseStorage = supabase.storage as jest.Mocked<
+  typeof supabase.storage
+>;
 
 describe('StorageService', () => {
   beforeEach(() => {
@@ -28,7 +30,14 @@ describe('StorageService', () => {
   describe('setupAvatarsBucket', () => {
     it('should create bucket when it does not exist', async () => {
       const mockBuckets = [
-        { id: 'other-bucket', name: 'other-bucket', owner: '', created_at: '', updated_at: '', public: false },
+        {
+          id: 'other-bucket',
+          name: 'other-bucket',
+          owner: '',
+          created_at: '',
+          updated_at: '',
+          public: false,
+        },
       ];
 
       mockSupabaseStorage.listBuckets.mockResolvedValue({
@@ -46,7 +55,12 @@ describe('StorageService', () => {
       expect(mockSupabaseStorage.listBuckets).toHaveBeenCalled();
       expect(mockSupabaseStorage.createBucket).toHaveBeenCalledWith('avatars', {
         public: true,
-        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+        allowedMimeTypes: [
+          'image/jpeg',
+          'image/png',
+          'image/gif',
+          'image/webp',
+        ],
         fileSizeLimit: 5242880,
       });
       expect(result).toEqual({
@@ -57,7 +71,14 @@ describe('StorageService', () => {
 
     it('should update bucket when it already exists', async () => {
       const mockBuckets = [
-        { id: 'avatars', name: 'avatars', owner: '', created_at: '', updated_at: '', public: false },
+        {
+          id: 'avatars',
+          name: 'avatars',
+          owner: '',
+          created_at: '',
+          updated_at: '',
+          public: false,
+        },
       ];
 
       mockSupabaseStorage.listBuckets.mockResolvedValue({
@@ -76,7 +97,12 @@ describe('StorageService', () => {
       expect(mockSupabaseStorage.createBucket).not.toHaveBeenCalled();
       expect(mockSupabaseStorage.updateBucket).toHaveBeenCalledWith('avatars', {
         public: true,
-        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+        allowedMimeTypes: [
+          'image/jpeg',
+          'image/png',
+          'image/gif',
+          'image/webp',
+        ],
         fileSizeLimit: 5242880,
       });
       expect(result).toEqual({
@@ -86,7 +112,10 @@ describe('StorageService', () => {
     });
 
     it('should handle list buckets error', async () => {
-      const mockError = { message: 'Failed to list buckets', __isStorageError: true } as any;
+      const mockError = {
+        message: 'Failed to list buckets',
+        __isStorageError: true,
+      } as any;
 
       mockSupabaseStorage.listBuckets.mockResolvedValue({
         data: null,
@@ -103,9 +132,19 @@ describe('StorageService', () => {
 
     it('should handle create bucket error', async () => {
       const mockBuckets = [
-        { id: 'other-bucket', name: 'other-bucket', owner: '', created_at: '', updated_at: '', public: false },
+        {
+          id: 'other-bucket',
+          name: 'other-bucket',
+          owner: '',
+          created_at: '',
+          updated_at: '',
+          public: false,
+        },
       ];
-      const mockError = { message: 'Failed to create bucket', __isStorageError: true } as any;
+      const mockError = {
+        message: 'Failed to create bucket',
+        __isStorageError: true,
+      } as any;
 
       mockSupabaseStorage.listBuckets.mockResolvedValue({
         data: mockBuckets,
@@ -127,9 +166,19 @@ describe('StorageService', () => {
 
     it('should handle update bucket error', async () => {
       const mockBuckets = [
-        { id: 'avatars', name: 'avatars', owner: '', created_at: '', updated_at: '', public: false },
+        {
+          id: 'avatars',
+          name: 'avatars',
+          owner: '',
+          created_at: '',
+          updated_at: '',
+          public: false,
+        },
       ];
-      const mockError = { message: 'Failed to update bucket', __isStorageError: true } as any;
+      const mockError = {
+        message: 'Failed to update bucket',
+        __isStorageError: true,
+      } as any;
 
       mockSupabaseStorage.listBuckets.mockResolvedValue({
         data: mockBuckets,
