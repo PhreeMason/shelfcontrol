@@ -2,19 +2,41 @@ import TodaysProgress from '@/components/progress/TodaysProgress';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import dayjs from 'dayjs';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 const TodaysGoals: React.FC = () => {
   const {
-    activeDeadlines: deadlines,
+    activeDeadlines,
+    completedDeadlines,
+    deadlines,
     getDeadlineCalculations,
     calculateProgressForToday,
   } = useDeadlines();
   const audioDeadlines: ReadingDeadlineWithProgress[] = [];
   const readingDeadlines: ReadingDeadlineWithProgress[] = [];
+  console.log(JSON.stringify(deadlines));
+  // we want to include all active deadlines, plus any completed deadlines that were completed today
+  // this way, if a user completes a deadline today, they can still see their progress for the day
+  // but if they completed it on a previous day, it won't show up in today's goals
+  // this encourages users to keep making progress on their active deadlines
+  // while still giving them credit for completing a deadline today
+  // even if they had already met their goal for the day with other active deadlines
+  const allDeadlines = [
+    ...activeDeadlines,
+    // filter to only include completed deadlines that were completed today
+    ...completedDeadlines.filter(d => {
+      const status = d.status?.length && d.status[d.status.length - 1];
+      const today = dayjs().startOf('day');
+      // Check if the completed_at date is today
+      return status && dayjs(status.created_at).isAfter(today);
+    })
+    // remove any overdue deadlines
+  ].filter(d => d.deadline_date && dayjs(d.deadline_date).isAfter(dayjs().startOf('day')));
 
-  deadlines.forEach(deadline => {
+
+  allDeadlines.forEach(deadline => {
     if (deadline.format === 'audio') {
       audioDeadlines.push(deadline);
     } else {

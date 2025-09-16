@@ -4,6 +4,7 @@ import {
   ReadingDeadlineProgressInsert,
   ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
+import dayjs from 'dayjs';
 import { booksService } from './books.service';
 
 export interface AddDeadlineParams {
@@ -439,6 +440,20 @@ class DeadlinesService {
     if (error) throw error;
     return deadlines;
   }
+
+  async getUserProgressForToday(userId: string) {
+    const today = dayjs().startOf('day').toISOString();
+    const { data, error } = await supabase
+      .from('deadline_progress')
+      .select('*, deadline:deadlines(format, total_quantity)')
+      .eq('user_id', userId)
+      .eq('created_at', today);
+
+    if (error) throw error;
+    return data;
+  }
 }
+
+
 
 export const deadlinesService = new DeadlinesService();

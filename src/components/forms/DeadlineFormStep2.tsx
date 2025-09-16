@@ -105,7 +105,7 @@ export const DeadlineFormStep2 = ({
 
       <View>
         <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
-          Where is this book from?
+          Book type
         </ThemedText>
         <CustomDropdown
           control={control}
