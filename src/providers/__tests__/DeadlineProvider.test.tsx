@@ -31,6 +31,7 @@ jest.mock('@/utils/deadlineUtils', () => ({
     active: deadlines.slice(0, 2),
     overdue: deadlines.slice(2, 3),
     completed: deadlines.slice(3, 4),
+    setAside: deadlines.slice(4, 5),
   })),
 }));
 
@@ -134,6 +135,7 @@ describe('DeadlineProvider', () => {
       expect(result.current.activeDeadlines).toBeDefined();
       expect(result.current.overdueDeadlines).toBeDefined();
       expect(result.current.completedDeadlines).toBeDefined();
+      expect(result.current.setAsideDeadlines).toBeDefined();
       expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBeNull();
 
@@ -169,6 +171,7 @@ describe('DeadlineProvider', () => {
       // Counts
       expect(typeof result.current.activeCount).toBe('number');
       expect(typeof result.current.overdueCount).toBe('number');
+      expect(typeof result.current.setAsideCount).toBe('number');
 
       // Summary calculations
       expect(typeof result.current.calculateProgressAsOfStartOfDay).toBe(
@@ -182,6 +185,7 @@ describe('DeadlineProvider', () => {
 
       expect(result.current.activeCount).toBe(2); // mocked separateDeadlines returns 2 active
       expect(result.current.overdueCount).toBe(1); // mocked separateDeadlines returns 1 overdue
+      expect(result.current.setAsideCount).toBe(1); // mocked separateDeadlines returns 1 set aside
     });
 
     it('should provide user pace data', () => {

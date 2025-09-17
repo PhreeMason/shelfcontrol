@@ -28,6 +28,7 @@ const FilteredDeadlines = () => {
     activeDeadlines,
     overdueDeadlines,
     completedDeadlines,
+    setAsideDeadlines,
     isLoading,
     error,
   } = useDeadlines();
@@ -39,17 +40,9 @@ const FilteredDeadlines = () => {
       case 'overdue':
         return overdueDeadlines;
       case 'completed':
-        return completedDeadlines.filter(deadline => {
-          const latestStatus =
-            deadline.status?.[deadline.status.length - 1]?.status;
-          return latestStatus === 'complete';
-        });
+        return completedDeadlines;
       case 'set_aside':
-        return completedDeadlines.filter(deadline => {
-          const latestStatus =
-            deadline.status?.[deadline.status.length - 1]?.status;
-          return latestStatus === 'set_aside';
-        });
+        return setAsideDeadlines;
       case 'all':
         return deadlines;
       default:

@@ -41,15 +41,30 @@ export const sortDeadlines = (
 };
 
 /**
+ * Sorts deadlines by their latest status creation date (most recent first)
+ */
+const sortByStatusDate = (
+  a: ReadingDeadlineWithProgress,
+  b: ReadingDeadlineWithProgress
+) => {
+  const aStatus = a.status && a.status.length > 0 ? a.status[a.status.length - 1] : null;
+  const bStatus = b.status && b.status.length > 0 ? b.status[b.status.length - 1] : null;
+  const aDate = aStatus ? normalizeServerDate(aStatus.created_at || '') : dayjs(0);
+  const bDate = bStatus ? normalizeServerDate(bStatus.created_at || '') : dayjs(0);
+  return bDate.valueOf() - aDate.valueOf();
+};
+
+/**
  * Separation Strategy
  * -------------------
  * Uses normalized local start-of-day for comparisons.
- * Completed / set_aside moved to completed bucket; overdue determined by deadline_date < today.
+ * Completed deadlines moved to completed bucket; set_aside deadlines moved to setAside bucket; overdue determined by deadline_date < today.
  */
 export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   const active: ReadingDeadlineWithProgress[] = [];
   const overdue: ReadingDeadlineWithProgress[] = [];
   const completed: ReadingDeadlineWithProgress[] = [];
+  const setAside: ReadingDeadlineWithProgress[] = [];
 
   const today = dayjs().startOf('day');
 
@@ -61,8 +76,10 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
 
     const deadlineDate = normalizeServerDateStartOfDay(deadline.deadline_date);
 
-    if (latestStatus === 'complete' || latestStatus === 'set_aside') {
+    if (latestStatus === 'complete') {
       completed.push(deadline);
+    } else if (latestStatus === 'set_aside') {
+      setAside.push(deadline);
     } else if (deadlineDate.isBefore(today)) {
       overdue.push(deadline);
     } else {
@@ -72,13 +89,10 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
 
   active.sort(sortDeadlines);
   overdue.sort(sortDeadlines);
-  completed.sort((a, b) => {
-    const aDate = normalizeServerDate(a.updated_at || '') || dayjs(0);
-    const bDate = normalizeServerDate(b.updated_at || '') || dayjs(0);
-    return bDate.valueOf() - aDate.valueOf();
-  });
+  completed.sort(sortByStatusDate);
+  setAside.sort(sortByStatusDate);
 
-  return { active, overdue, completed };
+  return { active, overdue, completed, setAside };
 };
 
 /**

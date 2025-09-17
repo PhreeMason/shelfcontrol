@@ -10,7 +10,6 @@ import {
   useCompleteDeadline,
   useSetAsideDeadline,
   useReactivateDeadline,
-  useGetArchivedDeadlines,
   useGetDeadlineById,
   useDeleteFutureProgress,
 } from '../useDeadlines';
@@ -24,7 +23,6 @@ jest.mock('@/services', () => ({
     getDeadlines: jest.fn(),
     completeDeadline: jest.fn(),
     updateDeadlineStatus: jest.fn(),
-    getArchivedDeadlines: jest.fn(),
     getDeadlineById: jest.fn(),
     deleteFutureProgress: jest.fn(),
   },
@@ -466,43 +464,6 @@ describe('useDeadlines hooks', () => {
     });
   });
 
-  describe('useGetArchivedDeadlines', () => {
-    it('should configure query with correct parameters', () => {
-      useGetArchivedDeadlines();
-
-      expect(mockUseQuery).toHaveBeenCalledWith(
-        expect.objectContaining({
-          queryKey: ['ArchivedDeadlines', 'user-123'],
-          queryFn: expect.any(Function),
-          enabled: true,
-          refetchOnWindowFocus: false,
-        })
-      );
-    });
-
-    it('should call deadlinesService.getArchivedDeadlines with correct userId', async () => {
-      useGetArchivedDeadlines();
-
-      const queryConfig = mockUseQuery.mock.calls[0][0];
-      await queryConfig.queryFn();
-
-      expect(mockDeadlinesService.getArchivedDeadlines).toHaveBeenCalledWith(
-        'user-123'
-      );
-    });
-
-    it('should be disabled when user not authenticated', () => {
-      mockUseAuth.mockReturnValue({
-        profile: null,
-        session: null,
-      });
-
-      useGetArchivedDeadlines();
-
-      const queryConfig = mockUseQuery.mock.calls[0][0];
-      expect(queryConfig.enabled).toBe(false);
-    });
-  });
 
   describe('useGetDeadlineById', () => {
     it('should configure query with correct parameters', () => {

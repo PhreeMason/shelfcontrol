@@ -52,6 +52,7 @@ interface DeadlineContextType {
   activeDeadlines: ReadingDeadlineWithProgress[];
   overdueDeadlines: ReadingDeadlineWithProgress[];
   completedDeadlines: ReadingDeadlineWithProgress[];
+  setAsideDeadlines: ReadingDeadlineWithProgress[];
   isLoading: boolean;
   error: Error | null;
 
@@ -153,6 +154,7 @@ interface DeadlineContextType {
   // Counts
   activeCount: number;
   overdueCount: number;
+  setAsideCount: number;
 
   // Progress calculations
   calculateProgressAsOfStartOfDay: (
@@ -186,6 +188,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     active: activeDeadlines,
     overdue: overdueDeadlines,
     completed: completedDeadlines,
+    setAside: setAsideDeadlines,
   } = separateDeadlines(deadlines);
 
   // Calculate pace data (merged from PaceProvider)
@@ -419,6 +422,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     activeDeadlines,
     overdueDeadlines,
     completedDeadlines,
+    setAsideDeadlines,
     isLoading,
     error,
 
@@ -450,6 +454,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     // Counts
     activeCount: activeDeadlines.length,
     overdueCount: overdueDeadlines.length,
+    setAsideCount: setAsideDeadlines.length,
 
     // Progress calculations
     calculateProgressAsOfStartOfDay,

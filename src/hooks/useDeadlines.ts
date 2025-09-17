@@ -203,20 +203,6 @@ export const useSetAsideDeadline = () => useUpdateDeadlineStatus('set_aside');
 
 export const useReactivateDeadline = () => useUpdateDeadlineStatus('reading');
 
-export const useGetArchivedDeadlines = () => {
-  const { profile, session } = useAuth();
-  const userId = profile?.id || session?.user?.id;
-
-  return useQuery<ReadingDeadlineWithProgress[]>({
-    queryKey: ['ArchivedDeadlines', userId],
-    queryFn: async () => {
-      if (!userId) throw new Error('User not authenticated');
-      return deadlinesService.getArchivedDeadlines(userId);
-    },
-    enabled: !!userId,
-    refetchOnWindowFocus: false,
-  });
-};
 
 export const useGetDeadlineById = (deadlineId: string | undefined) => {
   const { profile, session } = useAuth();

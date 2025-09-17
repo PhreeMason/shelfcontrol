@@ -131,7 +131,7 @@ describe('deadlineUtils', () => {
   });
 
   describe('separateDeadlines', () => {
-    it('should separate deadlines into active, overdue, and completed', () => {
+    it('should separate deadlines into active, overdue, completed, and setAside', () => {
       const activeDeadline = createMockDeadline('1', '2025-12-31');
       const overdueDeadline = createMockDeadline('2', '2023-01-01');
       const completedDeadline = createMockDeadline(
@@ -162,9 +162,10 @@ describe('deadlineUtils', () => {
       expect(result.active[0].id).toBe('1');
       expect(result.overdue).toHaveLength(1);
       expect(result.overdue[0].id).toBe('2');
-      expect(result.completed).toHaveLength(2);
-      expect(result.completed.map(d => d.id)).toContain('3');
-      expect(result.completed.map(d => d.id)).toContain('4');
+      expect(result.completed).toHaveLength(1);
+      expect(result.completed[0].id).toBe('3');
+      expect(result.setAside).toHaveLength(1);
+      expect(result.setAside[0].id).toBe('4');
     });
 
     it('should use latest status when multiple status entries exist', () => {
@@ -183,6 +184,7 @@ describe('deadlineUtils', () => {
       const result = separateDeadlines([deadline]);
 
       expect(result.completed).toHaveLength(1);
+      expect(result.setAside).toHaveLength(0);
       expect(result.active).toHaveLength(0);
       expect(result.overdue).toHaveLength(0);
     });
@@ -194,10 +196,11 @@ describe('deadlineUtils', () => {
 
       expect(result.active).toHaveLength(1);
       expect(result.completed).toHaveLength(0);
+      expect(result.setAside).toHaveLength(0);
       expect(result.overdue).toHaveLength(0);
     });
 
-    it('should sort completed by most recently updated', () => {
+    it('should sort completed by most recently completed status', () => {
       const deadline1 = createMockDeadline(
         '1',
         '2024-12-31',
@@ -212,13 +215,37 @@ describe('deadlineUtils', () => {
         '2024-01-01T00:00:00Z',
         '2024-01-20T00:00:00Z',
         [],
-        [{ status: 'complete', created_at: '2024-01-15T00:00:00Z' }]
+        [{ status: 'complete', created_at: '2024-01-20T00:00:00Z' }]
       );
 
       const result = separateDeadlines([deadline1, deadline2]);
 
       expect(result.completed[0].id).toBe('2');
       expect(result.completed[1].id).toBe('1');
+    });
+
+    it('should sort setAside by most recently set aside status', () => {
+      const deadline1 = createMockDeadline(
+        '1',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        '2024-01-10T00:00:00Z',
+        [],
+        [{ status: 'set_aside', created_at: '2024-01-15T00:00:00Z' }]
+      );
+      const deadline2 = createMockDeadline(
+        '2',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        '2024-01-20T00:00:00Z',
+        [],
+        [{ status: 'set_aside', created_at: '2024-01-18T00:00:00Z' }]
+      );
+
+      const result = separateDeadlines([deadline1, deadline2]);
+
+      expect(result.setAside[0].id).toBe('2');
+      expect(result.setAside[1].id).toBe('1');
     });
   });
 

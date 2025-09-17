@@ -242,44 +242,6 @@ class DeadlinesService {
     return data as ReadingDeadlineWithProgress[];
   }
 
-  /**
-   * Get archived deadlines (completed or set aside)
-   */
-  async getArchivedDeadlines(
-    userId: string
-  ): Promise<ReadingDeadlineWithProgress[]> {
-    const { data, error } = await supabase
-      .from('deadlines')
-      .select(
-        `
-        *,
-        progress:deadline_progress(*),
-        status:deadline_status(*)
-      `
-      )
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    // Filter for completed and set_aside deadlines only
-    const filteredData =
-      data?.filter(deadline => {
-        const latestStatus =
-          deadline.status?.[deadline.status.length - 1]?.status;
-        return latestStatus === 'complete' || latestStatus === 'set_aside';
-      }) || [];
-
-    // Sort by completion date
-    filteredData.sort((a, b) => {
-      const aDate = a.status?.[a.status.length - 1]?.created_at || a.created_at;
-      const bDate = b.status?.[b.status.length - 1]?.created_at || b.created_at;
-      if (!aDate || !bDate) return 0;
-      return new Date(bDate).getTime() - new Date(aDate).getTime();
-    });
-
-    return filteredData as ReadingDeadlineWithProgress[];
-  }
 
   /**
    * Get unique source values used by the user

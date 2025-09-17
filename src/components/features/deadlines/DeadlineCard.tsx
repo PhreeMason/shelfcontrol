@@ -2,6 +2,7 @@ import { ThemedText } from '@/components/themed';
 import { Typography } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
+import { dayjs } from '@/lib/dayjs';
 // import { useFetchBookById } from '@/hooks/useBooks';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -66,7 +67,11 @@ export function DeadlineCard({
     deadline.status && deadline.status.length > 0
       ? deadline.status[deadline.status.length - 1].status
       : 'reading';
-
+  const latestStatusDate =
+    deadline.status && deadline.status.length > 0
+      ? deadline.status[deadline.status.length - 1].created_at
+      : null;
+  
   const isArchived =
     latestStatus === 'complete' || latestStatus === 'set_aside';
   if (isArchived) {
@@ -277,7 +282,7 @@ export function DeadlineCard({
               {deadline.book_title}
             </ThemedText>
             <ThemedText style={styles.bookDeadline}>
-              {formatUnitsPerDayForDisplay(
+              {isArchived && latestStatusDate ? dayjs(latestStatusDate).format('MMM D, YYYY') : formatUnitsPerDayForDisplay(
                 unitsPerDay,
                 deadline.format,
                 remaining,
