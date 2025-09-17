@@ -2,7 +2,10 @@ import TodaysProgress from '@/components/progress/TodaysProgress';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useTodaysDeadlines } from '@/hooks/useTodaysDeadlines';
 import { useDeadlines } from '@/providers/DeadlineProvider';
-import { calculateTodaysAudioTotals, calculateTodaysReadingTotals } from '@/utils/deadlineAggregationUtils';
+import {
+  calculateTodaysAudioTotals,
+  calculateTodaysReadingTotals,
+} from '@/utils/deadlineAggregationUtils';
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -12,13 +15,14 @@ const TodaysGoals: React.FC = () => {
 
   // Using specialized "today's goals" functions that maintain stable daily totals
   // even when deadlines are completed and archived mid-day
-  const audioTotals = useMemo(() =>
-    calculateTodaysAudioTotals(audioDeadlines, calculateProgressForToday),
+  const audioTotals = useMemo(
+    () => calculateTodaysAudioTotals(audioDeadlines, calculateProgressForToday),
     [audioDeadlines, calculateProgressForToday]
   );
 
-  const readingTotals = useMemo(() =>
-    calculateTodaysReadingTotals(readingDeadlines, calculateProgressForToday),
+  const readingTotals = useMemo(
+    () =>
+      calculateTodaysReadingTotals(readingDeadlines, calculateProgressForToday),
     [readingDeadlines, calculateProgressForToday]
   );
 

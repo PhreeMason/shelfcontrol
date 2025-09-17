@@ -12,7 +12,10 @@ import {
   DeadlineCalculationResult,
 } from '../deadlineAggregationUtils';
 
-const createMockDeadline = (id: string, format: 'audio' | 'physical' | 'eBook'): ReadingDeadlineWithProgress => ({
+const createMockDeadline = (
+  id: string,
+  format: 'audio' | 'physical' | 'eBook'
+): ReadingDeadlineWithProgress => ({
   id,
   book_title: `Test Book ${id}`,
   author: 'Test Author',
@@ -46,7 +49,10 @@ describe('deadlineAggregationUtils', () => {
       ];
       const mockGetCalculations = jest.fn().mockReturnValue(null);
 
-      const result = calculateTotalUnitsForDeadlines(mockDeadlines, mockGetCalculations);
+      const result = calculateTotalUnitsForDeadlines(
+        mockDeadlines,
+        mockGetCalculations
+      );
 
       expect(result).toBe(0);
       expect(mockGetCalculations).toHaveBeenCalledTimes(2);
@@ -57,11 +63,15 @@ describe('deadlineAggregationUtils', () => {
         createMockDeadline('1', 'physical'),
         createMockDeadline('2', 'audio'),
       ];
-      const mockGetCalculations = jest.fn()
+      const mockGetCalculations = jest
+        .fn()
         .mockReturnValueOnce({ unitsPerDay: 30 })
         .mockReturnValueOnce({ unitsPerDay: 45 });
 
-      const result = calculateTotalUnitsForDeadlines(mockDeadlines, mockGetCalculations);
+      const result = calculateTotalUnitsForDeadlines(
+        mockDeadlines,
+        mockGetCalculations
+      );
 
       expect(result).toBe(75);
       expect(mockGetCalculations).toHaveBeenCalledTimes(2);
@@ -75,21 +85,30 @@ describe('deadlineAggregationUtils', () => {
         createMockDeadline('2', 'audio'),
         createMockDeadline('3', 'eBook'),
       ];
-      const mockGetCalculations = jest.fn()
+      const mockGetCalculations = jest
+        .fn()
         .mockReturnValueOnce({ unitsPerDay: 20 })
         .mockReturnValueOnce(null)
         .mockReturnValueOnce({ unitsPerDay: 35 });
 
-      const result = calculateTotalUnitsForDeadlines(mockDeadlines, mockGetCalculations);
+      const result = calculateTotalUnitsForDeadlines(
+        mockDeadlines,
+        mockGetCalculations
+      );
 
       expect(result).toBe(55);
     });
 
     it('should handle calculations with undefined unitsPerDay', () => {
       const mockDeadlines = [createMockDeadline('1', 'physical')];
-      const mockGetCalculations = jest.fn().mockReturnValue({} as DeadlineCalculationResult);
+      const mockGetCalculations = jest
+        .fn()
+        .mockReturnValue({} as DeadlineCalculationResult);
 
-      const result = calculateTotalUnitsForDeadlines(mockDeadlines, mockGetCalculations);
+      const result = calculateTotalUnitsForDeadlines(
+        mockDeadlines,
+        mockGetCalculations
+      );
 
       expect(result).toBe(0);
     });
@@ -111,7 +130,10 @@ describe('deadlineAggregationUtils', () => {
       ];
       const mockGetProgress = jest.fn().mockReturnValue(null);
 
-      const result = calculateCurrentProgressForDeadlines(mockDeadlines, mockGetProgress);
+      const result = calculateCurrentProgressForDeadlines(
+        mockDeadlines,
+        mockGetProgress
+      );
 
       expect(result).toBe(0);
       expect(mockGetProgress).toHaveBeenCalledTimes(2);
@@ -122,11 +144,15 @@ describe('deadlineAggregationUtils', () => {
         createMockDeadline('1', 'physical'),
         createMockDeadline('2', 'audio'),
       ];
-      const mockGetProgress = jest.fn()
+      const mockGetProgress = jest
+        .fn()
         .mockReturnValueOnce(150)
         .mockReturnValueOnce(75);
 
-      const result = calculateCurrentProgressForDeadlines(mockDeadlines, mockGetProgress);
+      const result = calculateCurrentProgressForDeadlines(
+        mockDeadlines,
+        mockGetProgress
+      );
 
       expect(result).toBe(225);
       expect(mockGetProgress).toHaveBeenCalledTimes(2);
@@ -140,12 +166,16 @@ describe('deadlineAggregationUtils', () => {
         createMockDeadline('2', 'audio'),
         createMockDeadline('3', 'eBook'),
       ];
-      const mockGetProgress = jest.fn()
+      const mockGetProgress = jest
+        .fn()
         .mockReturnValueOnce(100)
         .mockReturnValueOnce(null)
         .mockReturnValueOnce(50);
 
-      const result = calculateCurrentProgressForDeadlines(mockDeadlines, mockGetProgress);
+      const result = calculateCurrentProgressForDeadlines(
+        mockDeadlines,
+        mockGetProgress
+      );
 
       expect(result).toBe(150);
     });
@@ -155,11 +185,15 @@ describe('deadlineAggregationUtils', () => {
         createMockDeadline('1', 'physical'),
         createMockDeadline('2', 'audio'),
       ];
-      const mockGetProgress = jest.fn()
+      const mockGetProgress = jest
+        .fn()
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(25);
 
-      const result = calculateCurrentProgressForDeadlines(mockDeadlines, mockGetProgress);
+      const result = calculateCurrentProgressForDeadlines(
+        mockDeadlines,
+        mockGetProgress
+      );
 
       expect(result).toBe(25);
     });
@@ -171,14 +205,20 @@ describe('deadlineAggregationUtils', () => {
         createMockDeadline('1', 'physical'),
         createMockDeadline('2', 'audio'),
       ];
-      const mockGetCalculations = jest.fn()
+      const mockGetCalculations = jest
+        .fn()
         .mockReturnValueOnce({ unitsPerDay: 30 })
         .mockReturnValueOnce({ unitsPerDay: 45 });
-      const mockGetProgress = jest.fn()
+      const mockGetProgress = jest
+        .fn()
         .mockReturnValueOnce(150)
         .mockReturnValueOnce(90);
 
-      const result = calculateDeadlineTotals(mockDeadlines, mockGetCalculations, mockGetProgress);
+      const result = calculateDeadlineTotals(
+        mockDeadlines,
+        mockGetCalculations,
+        mockGetProgress
+      );
 
       expect(result).toEqual({
         total: 75,
@@ -190,7 +230,11 @@ describe('deadlineAggregationUtils', () => {
       const mockGetCalculations = jest.fn();
       const mockGetProgress = jest.fn();
 
-      const result = calculateDeadlineTotals([], mockGetCalculations, mockGetProgress);
+      const result = calculateDeadlineTotals(
+        [],
+        mockGetCalculations,
+        mockGetProgress
+      );
 
       expect(result).toEqual({
         total: 0,
@@ -205,14 +249,20 @@ describe('deadlineAggregationUtils', () => {
         createMockDeadline('1', 'audio'),
         createMockDeadline('2', 'audio'),
       ];
-      const mockGetCalculations = jest.fn()
+      const mockGetCalculations = jest
+        .fn()
         .mockReturnValueOnce({ unitsPerDay: 60 })
         .mockReturnValueOnce({ unitsPerDay: 90 });
-      const mockGetProgress = jest.fn()
+      const mockGetProgress = jest
+        .fn()
         .mockReturnValueOnce(120)
         .mockReturnValueOnce(45);
 
-      const result = calculateAudioTotals(audioDeadlines, mockGetCalculations, mockGetProgress);
+      const result = calculateAudioTotals(
+        audioDeadlines,
+        mockGetCalculations,
+        mockGetProgress
+      );
 
       expect(result).toEqual({
         total: 150,
@@ -224,7 +274,11 @@ describe('deadlineAggregationUtils', () => {
       const mockGetCalculations = jest.fn();
       const mockGetProgress = jest.fn();
 
-      const result = calculateAudioTotals([], mockGetCalculations, mockGetProgress);
+      const result = calculateAudioTotals(
+        [],
+        mockGetCalculations,
+        mockGetProgress
+      );
 
       expect(result).toEqual({
         total: 0,
@@ -239,14 +293,20 @@ describe('deadlineAggregationUtils', () => {
         createMockDeadline('1', 'physical'),
         createMockDeadline('2', 'eBook'),
       ];
-      const mockGetCalculations = jest.fn()
+      const mockGetCalculations = jest
+        .fn()
         .mockReturnValueOnce({ unitsPerDay: 25 })
         .mockReturnValueOnce({ unitsPerDay: 40 });
-      const mockGetProgress = jest.fn()
+      const mockGetProgress = jest
+        .fn()
         .mockReturnValueOnce(200)
         .mockReturnValueOnce(150);
 
-      const result = calculateReadingTotals(readingDeadlines, mockGetCalculations, mockGetProgress);
+      const result = calculateReadingTotals(
+        readingDeadlines,
+        mockGetCalculations,
+        mockGetProgress
+      );
 
       expect(result).toEqual({
         total: 65,
@@ -258,7 +318,11 @@ describe('deadlineAggregationUtils', () => {
       const mockGetCalculations = jest.fn();
       const mockGetProgress = jest.fn();
 
-      const result = calculateReadingTotals([], mockGetCalculations, mockGetProgress);
+      const result = calculateReadingTotals(
+        [],
+        mockGetCalculations,
+        mockGetProgress
+      );
 
       expect(result).toEqual({
         total: 0,
@@ -270,10 +334,16 @@ describe('deadlineAggregationUtils', () => {
   describe('edge cases', () => {
     it('should handle large numbers correctly', () => {
       const mockDeadlines = [createMockDeadline('1', 'physical')];
-      const mockGetCalculations = jest.fn().mockReturnValue({ unitsPerDay: 999999 });
+      const mockGetCalculations = jest
+        .fn()
+        .mockReturnValue({ unitsPerDay: 999999 });
       const mockGetProgress = jest.fn().mockReturnValue(888888);
 
-      const result = calculateDeadlineTotals(mockDeadlines, mockGetCalculations, mockGetProgress);
+      const result = calculateDeadlineTotals(
+        mockDeadlines,
+        mockGetCalculations,
+        mockGetProgress
+      );
 
       expect(result).toEqual({
         total: 999999,
@@ -283,10 +353,16 @@ describe('deadlineAggregationUtils', () => {
 
     it('should handle negative progress values', () => {
       const mockDeadlines = [createMockDeadline('1', 'physical')];
-      const mockGetCalculations = jest.fn().mockReturnValue({ unitsPerDay: 30 });
+      const mockGetCalculations = jest
+        .fn()
+        .mockReturnValue({ unitsPerDay: 30 });
       const mockGetProgress = jest.fn().mockReturnValue(-10);
 
-      const result = calculateDeadlineTotals(mockDeadlines, mockGetCalculations, mockGetProgress);
+      const result = calculateDeadlineTotals(
+        mockDeadlines,
+        mockGetCalculations,
+        mockGetProgress
+      );
 
       expect(result).toEqual({
         total: 30,
@@ -296,7 +372,7 @@ describe('deadlineAggregationUtils', () => {
   });
 
   // Tests for new "today's goals" functions that ignore archive status
-  describe('Today\'s Goals Functions (ignore archive status)', () => {
+  describe("Today's Goals Functions (ignore archive status)", () => {
     const createDeadlineWithStatus = (
       id: string,
       format: 'audio' | 'physical' | 'eBook',
@@ -313,24 +389,26 @@ describe('deadlineAggregationUtils', () => {
           time_spent_reading: null,
           created_at: '2024-01-01T08:00:00Z',
           updated_at: '2024-01-01T08:00:00Z',
-        }
+        },
       ],
-      status: isCompleted ? [
-        {
-          id: `status-${id}`,
-          deadline_id: id,
-          status: 'complete',
-          created_at: '2024-01-15T10:00:00Z',
-          updated_at: '2024-01-15T10:00:00Z',
-        }
-      ] : [],
+      status: isCompleted
+        ? [
+            {
+              id: `status-${id}`,
+              deadline_id: id,
+              status: 'complete',
+              created_at: '2024-01-15T10:00:00Z',
+              updated_at: '2024-01-15T10:00:00Z',
+            },
+          ]
+        : [],
     });
 
     describe('calculateTodaysGoalUnitsForDeadlines', () => {
       it('should calculate units per day ignoring completion status', () => {
         const mockDeadlines = [
           createDeadlineWithStatus('1', 'physical', false), // Active
-          createDeadlineWithStatus('2', 'physical', true),  // Completed
+          createDeadlineWithStatus('2', 'physical', true), // Completed
         ];
 
         const result = calculateTodaysGoalUnitsForDeadlines(mockDeadlines);
@@ -354,11 +432,15 @@ describe('deadlineAggregationUtils', () => {
           createDeadlineWithStatus('2', 'physical', true), // Completed
         ];
 
-        const mockGetProgress = jest.fn()
+        const mockGetProgress = jest
+          .fn()
           .mockReturnValueOnce(20) // Progress for active deadline
           .mockReturnValueOnce(30); // Progress for completed deadline
 
-        const result = calculateTodaysGoalTotals(mockDeadlines, mockGetProgress);
+        const result = calculateTodaysGoalTotals(
+          mockDeadlines,
+          mockGetProgress
+        );
 
         // Total should include both deadlines (ignoring completion status)
         expect(result.total).toBeGreaterThan(0);
@@ -374,11 +456,15 @@ describe('deadlineAggregationUtils', () => {
           createDeadlineWithStatus('2', 'audio', true), // Completed
         ];
 
-        const mockGetProgress = jest.fn()
+        const mockGetProgress = jest
+          .fn()
           .mockReturnValueOnce(45)
           .mockReturnValueOnce(60);
 
-        const result = calculateTodaysAudioTotals(audioDeadlines, mockGetProgress);
+        const result = calculateTodaysAudioTotals(
+          audioDeadlines,
+          mockGetProgress
+        );
 
         expect(result.total).toBeGreaterThan(0);
         expect(result.current).toBe(105);
@@ -392,11 +478,15 @@ describe('deadlineAggregationUtils', () => {
           createDeadlineWithStatus('2', 'eBook', true), // Completed
         ];
 
-        const mockGetProgress = jest.fn()
+        const mockGetProgress = jest
+          .fn()
           .mockReturnValueOnce(25)
           .mockReturnValueOnce(15);
 
-        const result = calculateTodaysReadingTotals(readingDeadlines, mockGetProgress);
+        const result = calculateTodaysReadingTotals(
+          readingDeadlines,
+          mockGetProgress
+        );
 
         expect(result.total).toBeGreaterThan(0);
         expect(result.current).toBe(40);
@@ -410,14 +500,23 @@ describe('deadlineAggregationUtils', () => {
         ];
 
         // Mock the original calculation that returns 0 for archived deadlines
-        const mockGetCalculationsArchiveAware = jest.fn().mockReturnValue({ unitsPerDay: 0 });
+        const mockGetCalculationsArchiveAware = jest
+          .fn()
+          .mockReturnValue({ unitsPerDay: 0 });
         const mockGetProgress = jest.fn().mockReturnValue(10);
 
         // Original function should return 0 total for completed deadline
-        const originalResult = calculateDeadlineTotals(deadlines, mockGetCalculationsArchiveAware, mockGetProgress);
+        const originalResult = calculateDeadlineTotals(
+          deadlines,
+          mockGetCalculationsArchiveAware,
+          mockGetProgress
+        );
 
         // Today's goal function should return non-zero total
-        const todaysGoalResult = calculateTodaysGoalTotals(deadlines, mockGetProgress);
+        const todaysGoalResult = calculateTodaysGoalTotals(
+          deadlines,
+          mockGetProgress
+        );
 
         expect(originalResult.total).toBe(0); // Archive-aware returns 0
         expect(todaysGoalResult.total).toBeGreaterThan(0); // Today's goals ignore archive status

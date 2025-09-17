@@ -341,7 +341,11 @@ export function createArchivedPaceData(statusMessage: string) {
   return {
     userPace: 0,
     requiredPace: 0,
-    status: { color: 'green' as const, level: 'good' as const, message: statusMessage },
+    status: {
+      color: 'green' as const,
+      level: 'good' as const,
+      message: statusMessage,
+    },
     statusMessage: statusMessage,
   };
 }

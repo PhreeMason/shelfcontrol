@@ -28,7 +28,7 @@ jest.mock('@/utils/deadlineUtils', () => ({
   calculateProgress: jest.fn(() => 100),
   calculateProgressPercentage: jest.fn(() => 50),
   getTotalReadingPagesForDay: jest.fn(() => '25 pages'),
-  separateDeadlines: jest.fn((deadlines) => ({
+  separateDeadlines: jest.fn(deadlines => ({
     active: deadlines.slice(0, 2),
     overdue: deadlines.slice(2, 3),
     completed: deadlines.slice(3, 4),
@@ -55,7 +55,10 @@ jest.mock('@/utils/paceCalculations', () => ({
     totalSessions: 8,
     recentSessions: 4,
   })),
-  formatPaceDisplay: jest.fn((pace: number, format: string) => `${pace} ${format === 'audio' ? 'min' : 'pages'}/day`),
+  formatPaceDisplay: jest.fn(
+    (pace: number, format: string) =>
+      `${pace} ${format === 'audio' ? 'min' : 'pages'}/day`
+  ),
 }));
 
 jest.mock('@/utils/deadlineProviderUtils', () => ({
@@ -96,8 +99,14 @@ jest.mock('@/utils/deadlineProviderUtils', () => ({
     paceStatus: 'green',
     paceMessage: 'You are on track',
   })),
-  formatUnitsPerDay: jest.fn((units: number, format: string) => `${units} ${format === 'audio' ? 'minutes' : 'pages'}/day needed`),
-  formatUnitsPerDayForDisplay: jest.fn((units: number, format: string) => `${units} ${format === 'audio' ? 'minutes' : 'pages'}/day needed`),
+  formatUnitsPerDay: jest.fn(
+    (units: number, format: string) =>
+      `${units} ${format === 'audio' ? 'minutes' : 'pages'}/day needed`
+  ),
+  formatUnitsPerDayForDisplay: jest.fn(
+    (units: number, format: string) =>
+      `${units} ${format === 'audio' ? 'minutes' : 'pages'}/day needed`
+  ),
   getDeadlineStatus: jest.fn(() => ({
     latestStatus: 'reading',
     isCompleted: false,
@@ -144,14 +153,18 @@ describe('DeadlineProvider', () => {
       // Calculations
       expect(typeof result.current.getDeadlineCalculations).toBe('function');
       expect(typeof result.current.formatUnitsPerDay).toBe('function');
-      expect(typeof result.current.formatUnitsPerDayForDisplay).toBe('function');
+      expect(typeof result.current.formatUnitsPerDayForDisplay).toBe(
+        'function'
+      );
 
       // Pace functions
       expect(typeof result.current.getDeadlinePaceStatus).toBe('function');
       expect(typeof result.current.formatPaceForFormat).toBe('function');
       expect(typeof result.current.getUserPaceReliability).toBe('function');
       expect(typeof result.current.getUserPaceMethod).toBe('function');
-      expect(typeof result.current.getUserListeningPaceReliability).toBe('function');
+      expect(typeof result.current.getUserListeningPaceReliability).toBe(
+        'function'
+      );
       expect(typeof result.current.getUserListeningPaceMethod).toBe('function');
 
       // Counts
@@ -160,7 +173,9 @@ describe('DeadlineProvider', () => {
 
       // Summary calculations
       expect(typeof result.current.getTotalReadingPagesForDay).toBe('function');
-      expect(typeof result.current.calculateProgressAsOfStartOfDay).toBe('function');
+      expect(typeof result.current.calculateProgressAsOfStartOfDay).toBe(
+        'function'
+      );
       expect(typeof result.current.calculateProgressForToday).toBe('function');
     });
 
@@ -339,7 +354,12 @@ describe('DeadlineProvider', () => {
       const unitsPerDay = result.current.formatUnitsPerDay(10, 'physical');
       expect(unitsPerDay).toBe('10 pages/day needed');
 
-      const unitsPerDayDisplay = result.current.formatUnitsPerDayForDisplay(10, 'physical', 50, 5);
+      const unitsPerDayDisplay = result.current.formatUnitsPerDayForDisplay(
+        10,
+        'physical',
+        50,
+        5
+      );
       expect(unitsPerDayDisplay).toBe('10 pages/day needed');
 
       const paceForFormat = result.current.formatPaceForFormat(25, 'physical');
@@ -359,10 +379,12 @@ describe('DeadlineProvider', () => {
       const { result } = renderHook(() => useDeadlines(), { wrapper });
       const mockDeadline = deadlinesMockData[0] as ReadingDeadlineWithProgress;
 
-      const progressAsOfStartOfDay = result.current.calculateProgressAsOfStartOfDay(mockDeadline);
+      const progressAsOfStartOfDay =
+        result.current.calculateProgressAsOfStartOfDay(mockDeadline);
       expect(progressAsOfStartOfDay).toBe(75);
 
-      const progressForToday = result.current.calculateProgressForToday(mockDeadline);
+      const progressForToday =
+        result.current.calculateProgressForToday(mockDeadline);
       expect(progressForToday).toBe(25);
     });
 
@@ -434,21 +456,24 @@ describe('DeadlineProvider', () => {
       const onSuccess = jest.fn();
 
       act(() => {
-        result.current.addDeadline({
-          deadlineDetails: {
-            book_title: 'Test Book',
-            author: 'Test Author',
-            deadline_date: '2025-12-31',
-            format: 'physical' as const,
-            total_quantity: 300,
-            flexibility: 'strict' as const,
-            source: 'manual' as const,
+        result.current.addDeadline(
+          {
+            deadlineDetails: {
+              book_title: 'Test Book',
+              author: 'Test Author',
+              deadline_date: '2025-12-31',
+              format: 'physical' as const,
+              total_quantity: 300,
+              flexibility: 'strict' as const,
+              source: 'manual' as const,
+            },
+            progressDetails: {
+              deadline_id: 'test-id',
+              current_progress: 0,
+            },
           },
-          progressDetails: {
-            deadline_id: 'test-id',
-            current_progress: 0,
-          },
-        }, onSuccess);
+          onSuccess
+        );
       });
 
       // Simulate successful mutation by calling the onSuccess callback
@@ -465,21 +490,25 @@ describe('DeadlineProvider', () => {
       const error = new Error('Failed to add deadline');
 
       act(() => {
-        result.current.addDeadline({
-          deadlineDetails: {
-            book_title: 'Test Book',
-            author: 'Test Author',
-            deadline_date: '2025-12-31',
-            format: 'physical' as const,
-            total_quantity: 300,
-            flexibility: 'strict' as const,
-            source: 'manual' as const,
+        result.current.addDeadline(
+          {
+            deadlineDetails: {
+              book_title: 'Test Book',
+              author: 'Test Author',
+              deadline_date: '2025-12-31',
+              format: 'physical' as const,
+              total_quantity: 300,
+              flexibility: 'strict' as const,
+              source: 'manual' as const,
+            },
+            progressDetails: {
+              deadline_id: 'test-id',
+              current_progress: 0,
+            },
           },
-          progressDetails: {
-            deadline_id: 'test-id',
-            current_progress: 0,
-          },
-        }, undefined, onError);
+          undefined,
+          onError
+        );
       });
 
       // Simulate failed mutation by calling the onError callback

@@ -1,2136 +1,2136 @@
 [
-    {
-        "id": "rd_adsasd74e-f9b8-400f-9550-5c24c703d2d2",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbc5726-4c37-4301-aa4d-abf1d5f2d5f1",
-        "book_title": "How to Love Better: The Path to Deeper Connection Through Growth, Kindness, and Compassion",
-        "author": "Yung Pueblo",
-        "source": "ARC",
-        "deadline_date": "2025-10-06T21:02:00+00:00",
-        "flexibility": "strict",
-        "format": "audio",
-        "total_quantity": 454,
-        "created_at": "2025-09-15T21:03:54.226893+00:00",
-        "updated_at": "2025-09-15T21:03:54.226893+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfse17e-9c79-4c37-b8bb-de781290df94",
-                "created_at": "2025-09-15T21:03:54.331892+00:00",
-                "updated_at": "2025-09-15T21:03:54.331892+00:00",
-                "deadline_id": "rd_adsasd74e-f9b8-400f-9550-5c24c703d2d2",
-                "current_progress": 0,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "1715sc383-110b-4bc7-a514-c18ffe7c1804",
-                "status": "reading",
-                "created_at": "2025-09-15T21:03:54.485997+00:00",
-                "updated_at": "2025-09-15T21:03:54.485997+00:00",
-                "deadline_id": "rd_adsasd74e-f9b8-400f-9550-5c24c703d2d2"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasdd5d-5880-4b2d-917b-c0313c0f1da7",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbc989e-eea5-4b7d-81ed-a2615ae0f911",
-        "book_title": "Alfred's Basic Adult All-In-One Course, Book 1: Learn How to Play Piano with Lesson, Theory and Technic: Lesson * Theory * Technic, Comb Bound Book",
-        "author": "Willard A. Palmer",
-        "source": "ARC",
-        "deadline_date": "2026-02-20T18:42:00+00:00",
-        "flexibility": "flexible",
-        "format": "eBook",
-        "total_quantity": 160,
-        "created_at": "2025-09-14T17:51:51.268438+00:00",
-        "updated_at": "2025-09-14T17:51:51.268438+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfsc54a-cae0-4f5d-9f30-6007f5a84351",
-                "created_at": "2025-09-14T17:51:51.482383+00:00",
-                "updated_at": "2025-09-14T17:51:51.482383+00:00",
-                "deadline_id": "rd_adsasdd5d-5880-4b2d-917b-c0313c0f1da7",
-                "current_progress": 0,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "0e927d936-1b35-49d6-a5dd-07baa9086125",
-                "status": "reading",
-                "created_at": "2025-09-14T17:51:51.680356+00:00",
-                "updated_at": "2025-09-14T17:51:51.680356+00:00",
-                "deadline_id": "rd_adsasdd5d-5880-4b2d-917b-c0313c0f1da7"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd8d71a5e4a83",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbc177c-93ed-48e3-bdf2-173cb5d5535d",
-        "book_title": "Edge Dancer ",
-        "author": "Brandon Sanderson",
-        "source": "ARC",
-        "deadline_date": "2025-10-31T08:43:00+00:00",
-        "flexibility": "flexible",
-        "format": "audio",
-        "total_quantity": 311,
-        "created_at": "2025-09-14T08:44:44.311798+00:00",
-        "updated_at": "2025-09-15T04:00:33.551675+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfsb7ec7dff407c",
-                "created_at": "2025-09-14T08:44:44.535829+00:00",
-                "updated_at": "2025-09-14T08:44:44.535829+00:00",
-                "deadline_id": "rd_adsasd8d71a5e4a83",
-                "current_progress": 0,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "69bb515-a9d7-41a9-856c-3bd81245de62",
-                "status": "reading",
-                "created_at": "2025-09-14T08:44:45.118+00:00",
-                "updated_at": "2025-09-14T08:44:45.118+00:00",
-                "deadline_id": "rd_adsasd8d71a5e4a83"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasdf45d61c4c21",
-        "user_id": "user-id-1234",
-        "book_id": null,
-        "book_title": "Rona",
-        "author": "Mason",
-        "source": "personal",
-        "deadline_date": "2026-09-09T16:11:00+00:00",
-        "flexibility": "strict",
-        "format": "physical",
-        "total_quantity": 52,
-        "created_at": "2025-09-02T16:12:12.310799+00:00",
-        "updated_at": "2025-09-02T16:12:12.310799+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfs96ca73304a67",
-                "created_at": "2025-09-02T16:12:12.513995+00:00",
-                "updated_at": "2025-09-02T16:12:12.513995+00:00",
-                "deadline_id": "rd_adsasdf45d61c4c21",
-                "current_progress": 1,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "380asd15-ce96-4394-a23a-1f27b9efd4de",
-                "status": "reading",
-                "created_at": "2025-09-02T16:12:12.605+00:00",
-                "updated_at": "2025-09-02T16:12:12.605+00:00",
-                "deadline_id": "rd_adsasdf45d61c4c21"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasdd3a118b4e65",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbce0b28b544424",
-        "book_title": "$100M Money Models: How To Make Money",
-        "author": "Alex Hormozi",
-        "source": "personal",
-        "deadline_date": "2025-09-27T01:43:00+00:00",
-        "flexibility": "strict",
-        "format": "physical",
-        "total_quantity": 176,
-        "created_at": "2025-08-24T01:54:16.843025+00:00",
-        "updated_at": "2025-09-14T00:23:45.918+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfsee4dccc34f13",
-                "created_at": "2025-08-24T01:54:17.048689+00:00",
-                "updated_at": "2025-08-25T05:28:22.242+00:00",
-                "deadline_id": "rd_adsasdd3a118b4e65",
-                "current_progress": 0,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsce3e222b4f99",
-                "created_at": "2025-08-27T04:47:23.244+00:00",
-                "updated_at": "2025-08-27T04:51:44.261+00:00",
-                "deadline_id": "rd_adsasdd3a118b4e65",
-                "current_progress": 57,
-                "time_spent_reading": 43
-            },
-            {
-                "id": "rdp_hsdfs4e9d07474c28",
-                "created_at": "2025-09-06T00:36:36.483+00:00",
-                "updated_at": "2025-09-06T00:36:36.483+00:00",
-                "deadline_id": "rd_adsasdd3a118b4e65",
-                "current_progress": 88,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsc7017a3d47f8",
-                "created_at": "2025-08-27T05:10:24.909+00:00",
-                "updated_at": "2025-08-27T05:10:24.909+00:00",
-                "deadline_id": "rd_adsasdd3a118b4e65",
-                "current_progress": 60,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs7a93a2414626",
-                "created_at": "2025-09-06T00:36:22.053+00:00",
-                "updated_at": "2025-09-06T00:36:22.053+00:00",
-                "deadline_id": "rd_adsasdd3a118b4e65",
-                "current_progress": 87,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsf0cc52c0490e",
-                "created_at": "2025-09-06T01:10:35.301+00:00",
-                "updated_at": "2025-09-14T00:23:47.725+00:00",
-                "deadline_id": "rd_adsasdd3a118b4e65",
-                "current_progress": 94,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsd6f47c0745ba",
-                "created_at": "2025-08-26T03:06:19.789+00:00",
-                "updated_at": "2025-08-26T03:06:19.789+00:00",
-                "deadline_id": "rd_adsasdd3a118b4e65",
-                "current_progress": 46,
-                "time_spent_reading": 99
-            },
-            {
-                "id": "rdp_hsdfsb90c368b43bd",
-                "created_at": "2025-08-28T22:10:31.601+00:00",
-                "updated_at": "2025-08-30T16:14:46.9+00:00",
-                "deadline_id": "rd_adsasdd3a118b4e65",
-                "current_progress": 69,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "15fdf63a-2608-4e67-8569-5ea95e28ebca",
-                "status": "reading",
-                "created_at": "2025-08-24T01:54:17.044+00:00",
-                "updated_at": "2025-08-24T01:54:17.044+00:00",
-                "deadline_id": "rd_adsasdd3a118b4e65"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd8102afc438e",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbc729a59084d47",
-        "book_title": "Holy Bible Hcsb",
-        "author": "C.S.B. Bibles",
-        "source": "personal",
-        "deadline_date": "2026-02-21T02:06:00+00:00",
-        "flexibility": "flexible",
-        "format": "physical",
-        "total_quantity": 1918,
-        "created_at": "2025-08-24T01:34:10.7445+00:00",
-        "updated_at": "2025-08-24T06:12:55.912+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfsb736ff764331",
-                "created_at": "2025-08-24T01:34:10.872272+00:00",
-                "updated_at": "2025-08-24T06:12:56.064+00:00",
-                "deadline_id": "rd_adsasd8102afc438e",
-                "current_progress": 19,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "33adf0d5-3868-4369-86a8-b7935ae0d283",
-                "status": "reading",
-                "created_at": "2025-08-24T01:34:10.846+00:00",
-                "updated_at": "2025-08-24T01:34:10.846+00:00",
-                "deadline_id": "rd_adsasd8102afc438e"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasda8655c54136",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbc446ecb7d41b7",
-        "book_title": "Oathbringer",
-        "author": "Brandon Sanderson",
-        "source": "ARC",
-        "deadline_date": "2025-11-01T14:10:00+00:00",
-        "flexibility": "strict",
-        "format": "audio",
-        "total_quantity": 3307,
-        "created_at": "2025-08-23T14:11:33.432896+00:00",
-        "updated_at": "2025-09-15T03:56:41.127258+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfs115845a24e75",
-                "created_at": "2025-09-13T23:15:19.762+00:00",
-                "updated_at": "2025-09-13T23:15:19.762+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 3307,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsb05679d347e3",
-                "created_at": "2025-08-25T11:07:47.579+00:00",
-                "updated_at": "2025-08-25T11:07:47.579+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 1065,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsf8655a7544c5",
-                "created_at": "2025-09-01T06:31:47.372+00:00",
-                "updated_at": "2025-09-01T06:31:47.372+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 1679,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsbdcc08df456c",
-                "created_at": "2025-08-26T00:41:21.131+00:00",
-                "updated_at": "2025-08-26T00:41:21.131+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 1157,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs057ecd164228",
-                "created_at": "2025-09-13T15:47:39.965+00:00",
-                "updated_at": "2025-09-13T15:47:39.965+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 3204,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs0f090d654ef1",
-                "created_at": "2025-08-29T23:50:43.901+00:00",
-                "updated_at": "2025-08-29T23:50:43.901+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 1196,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsf16483d547b8",
-                "created_at": "2025-08-24T19:10:14.816+00:00",
-                "updated_at": "2025-08-24T19:10:14.816+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 684,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsb951c7dc4aa3",
-                "created_at": "2025-09-08T05:37:38.894+00:00",
-                "updated_at": "2025-09-08T06:04:13.832+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 2288,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs83e0baaf4ca6",
-                "created_at": "2025-09-13T16:42:18.542+00:00",
-                "updated_at": "2025-09-13T16:42:18.542+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 3232,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsac89c9094de9",
-                "created_at": "2025-08-25T10:13:26.961+00:00",
-                "updated_at": "2025-08-25T10:13:26.961+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 1041,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsc309d24b4269",
-                "created_at": "2025-09-06T01:11:27.858+00:00",
-                "updated_at": "2025-09-06T01:11:27.858+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 1961,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsd1eb1ce54c45",
-                "created_at": "2025-09-01T20:14:03.539+00:00",
-                "updated_at": "2025-09-01T20:38:25.396+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 1830,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsa9d1a4ec4f2f",
-                "created_at": "2025-08-23T14:11:33.882985+00:00",
-                "updated_at": "2025-08-23T14:11:33.882985+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 248,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsd7aa5e184866",
-                "created_at": "2025-09-08T18:07:11.967+00:00",
-                "updated_at": "2025-09-08T18:07:11.967+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 2526,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs830006004a96",
-                "created_at": "2025-08-25T05:04:16.545+00:00",
-                "updated_at": "2025-08-25T05:04:16.545+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 850,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfscb8d92964a95",
-                "created_at": "2025-09-07T15:11:09.697+00:00",
-                "updated_at": "2025-09-07T15:11:09.697+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 2118,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs0edcac2c4bf7",
-                "created_at": "2025-09-01T16:09:49.425+00:00",
-                "updated_at": "2025-09-01T16:09:49.425+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 1701,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsb0e64d834d13",
-                "created_at": "2025-09-01T02:15:47.084+00:00",
-                "updated_at": "2025-09-01T02:15:47.084+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 1669,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs8f8da95148fc",
-                "created_at": "2025-08-24T01:16:30.984+00:00",
-                "updated_at": "2025-08-24T05:19:12.284+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 485,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs67d77baf46af",
-                "created_at": "2025-09-01T17:30:28.936+00:00",
-                "updated_at": "2025-09-01T19:40:30.507+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 1785,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs082e4d954b53",
-                "created_at": "2025-09-11T18:37:30.749+00:00",
-                "updated_at": "2025-09-11T18:37:30.749+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 3119,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs4830e26f42b0",
-                "created_at": "2025-08-24T08:01:45.945+00:00",
-                "updated_at": "2025-08-24T08:01:45.945+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 614,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsc91ffb6d4c03",
-                "created_at": "2025-08-25T05:26:54.82+00:00",
-                "updated_at": "2025-08-25T05:26:54.82+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 887,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs481cfdcb4ac3",
-                "created_at": "2025-08-24T07:17:33.373+00:00",
-                "updated_at": "2025-08-24T07:17:33.373+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 562,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsff66a8354b2d",
-                "created_at": "2025-08-31T17:07:31.569+00:00",
-                "updated_at": "2025-08-31T17:07:31.569+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 1472,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs50e68e0e4b19",
-                "created_at": "2025-08-25T05:04:38.705+00:00",
-                "updated_at": "2025-08-25T05:04:38.705+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 855,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs3327cc254d50",
-                "created_at": "2025-09-01T18:50:46.819+00:00",
-                "updated_at": "2025-09-01T18:50:46.819+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 1829,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs13937e334f04",
-                "created_at": "2025-08-25T09:03:59.902+00:00",
-                "updated_at": "2025-08-25T09:03:59.902+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 954,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs4ae21bf94785",
-                "created_at": "2025-08-23T23:26:27.399+00:00",
-                "updated_at": "2025-08-23T23:26:27.399+00:00",
-                "deadline_id": "rd_adsasda8655c54136",
-                "current_progress": 358,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "6csad7daf-4da6-4419-9573-ecf375c2d8b3",
-                "status": "reading",
-                "created_at": "2025-08-23T14:11:34.446+00:00",
-                "updated_at": "2025-08-23T14:11:34.446+00:00",
-                "deadline_id": "rd_adsasda8655c54136"
-            },
-            {
-                "id": "5d3csadf7-f598-4dcc-bfef-314c4e32a7b5",
-                "status": "complete",
-                "created_at": "2025-09-13T23:15:19.956+00:00",
-                "updated_at": "2025-09-13T23:15:19.956+00:00",
-                "deadline_id": "rd_adsasda8655c54136"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd85d763040f8",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbc8b20fca542c9",
-        "book_title": "An Actor Prepares",
-        "author": "Constantin Stanislavsky",
-        "source": "personal",
-        "deadline_date": "2025-10-15T19:06:00+00:00",
-        "flexibility": "flexible",
-        "format": "eBook",
-        "total_quantity": 349,
-        "created_at": "2025-08-15T19:08:07.306991+00:00",
-        "updated_at": "2025-08-24T05:54:21.33+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfs5f41404844fc",
-                "created_at": "2025-08-15T19:08:07.468964+00:00",
-                "updated_at": "2025-08-15T19:08:07.468964+00:00",
-                "deadline_id": "rd_adsasd85d763040f8",
-                "current_progress": 15,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs2ada87bf4a5f",
-                "created_at": "2025-08-15T19:27:47.06+00:00",
-                "updated_at": "2025-08-24T05:54:21.462+00:00",
-                "deadline_id": "rd_adsasd85d763040f8",
-                "current_progress": 20,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "46fbasd18-0018-42b5-bdd4-b96c36d53ee6",
-                "status": "reading",
-                "created_at": "2025-08-15T19:08:08.715+00:00",
-                "updated_at": "2025-08-15T19:08:08.715+00:00",
-                "deadline_id": "rd_adsasd85d763040f8"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd8f5ec0f40c4",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbcbeb355d74df1",
-        "book_title": "Words of Radiance ",
-        "author": "Brandon Sanderson",
-        "source": "personal",
-        "deadline_date": "2025-09-02T00:35:00+00:00",
-        "flexibility": "flexible",
-        "format": "audio",
-        "total_quantity": 2893,
-        "created_at": "2025-08-12T00:37:29.148535+00:00",
-        "updated_at": "2025-08-12T00:37:29.148535+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfsfbbaffde403d",
-                "created_at": "2025-08-13T17:39:18.237+00:00",
-                "updated_at": "2025-08-13T17:39:18.237+00:00",
-                "deadline_id": "rd_adsasd8f5ec0f40c4",
-                "current_progress": 1463,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs693936ff4632",
-                "created_at": "2025-08-19T22:32:01.609+00:00",
-                "updated_at": "2025-08-19T22:32:01.609+00:00",
-                "deadline_id": "rd_adsasd8f5ec0f40c4",
-                "current_progress": 2551,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs443712b74501",
-                "created_at": "2025-08-12T00:37:29.391449+00:00",
-                "updated_at": "2025-08-12T00:37:29.391449+00:00",
-                "deadline_id": "rd_adsasd8f5ec0f40c4",
-                "current_progress": 1331,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs6ab477364349",
-                "created_at": "2025-08-14T22:33:10.547+00:00",
-                "updated_at": "2025-08-14T22:33:10.547+00:00",
-                "deadline_id": "rd_adsasd8f5ec0f40c4",
-                "current_progress": 1478,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs16caa6b84353",
-                "created_at": "2025-08-20T16:25:54.5+00:00",
-                "updated_at": "2025-08-20T16:25:54.5+00:00",
-                "deadline_id": "rd_adsasd8f5ec0f40c4",
-                "current_progress": 2893,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsecd02a874cab",
-                "created_at": "2025-08-20T05:43:26.728+00:00",
-                "updated_at": "2025-08-20T05:43:26.728+00:00",
-                "deadline_id": "rd_adsasd8f5ec0f40c4",
-                "current_progress": 2711,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "23asa47cb-db38-4509-837f-93975bd5445f",
-                "status": "reading",
-                "created_at": "2025-08-12T00:37:30.684+00:00",
-                "updated_at": "2025-08-12T00:37:30.684+00:00",
-                "deadline_id": "rd_adsasd8f5ec0f40c4"
-            },
-            {
-                "id": "25ecxcf20-d20d-48da-9ea5-36218b10237b",
-                "status": "complete",
-                "created_at": "2025-08-20T16:25:58.367+00:00",
-                "updated_at": "2025-08-20T16:25:58.367+00:00",
-                "deadline_id": "rd_adsasd8f5ec0f40c4"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd27d067c42b8",
-        "user_id": "user-id-1234",
-        "book_id": null,
-        "book_title": "Running",
-        "author": "Mason",
-        "source": "personal",
-        "deadline_date": "2025-10-01T02:03:00+00:00",
-        "flexibility": "strict",
-        "format": "physical",
-        "total_quantity": 22,
-        "created_at": "2025-08-09T02:04:38.720052+00:00",
-        "updated_at": "2025-09-08T06:05:01.854+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfs55c24b3740b7",
-                "created_at": "2025-08-12T00:32:32.101+00:00",
-                "updated_at": "2025-08-12T00:32:32.101+00:00",
-                "deadline_id": "rd_adsasd27d067c42b8",
-                "current_progress": 5,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs2c7f931c46dd",
-                "created_at": "2025-09-01T06:36:28.475+00:00",
-                "updated_at": "2025-09-01T06:36:28.475+00:00",
-                "deadline_id": "rd_adsasd27d067c42b8",
-                "current_progress": 12,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs1d2a593b47ac",
-                "created_at": "2025-09-09T03:05:00.788+00:00",
-                "updated_at": "2025-09-09T03:05:00.788+00:00",
-                "deadline_id": "rd_adsasd27d067c42b8",
-                "current_progress": 13,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsb67328494ab9",
-                "created_at": "2025-08-19T22:30:54.042+00:00",
-                "updated_at": "2025-08-19T22:30:54.042+00:00",
-                "deadline_id": "rd_adsasd27d067c42b8",
-                "current_progress": 8,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsc34ca49e4433",
-                "created_at": "2025-08-30T16:11:44.312+00:00",
-                "updated_at": "2025-08-30T16:14:01.303+00:00",
-                "deadline_id": "rd_adsasd27d067c42b8",
-                "current_progress": 12,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs0744c7f84c1f",
-                "created_at": "2025-09-01T06:42:54.162+00:00",
-                "updated_at": "2025-09-08T06:05:03.397+00:00",
-                "deadline_id": "rd_adsasd27d067c42b8",
-                "current_progress": 12,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs2eca1ccb410b",
-                "created_at": "2025-08-10T06:15:06.412+00:00",
-                "updated_at": "2025-08-10T06:15:06.412+00:00",
-                "deadline_id": "rd_adsasd27d067c42b8",
-                "current_progress": 2,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfse4a76274408e",
-                "created_at": "2025-08-29T23:50:30.485+00:00",
-                "updated_at": "2025-08-29T23:50:30.485+00:00",
-                "deadline_id": "rd_adsasd27d067c42b8",
-                "current_progress": 11,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsc9a6ddfc4fb5",
-                "created_at": "2025-08-26T00:41:34.946+00:00",
-                "updated_at": "2025-08-26T00:41:34.946+00:00",
-                "deadline_id": "rd_adsasd27d067c42b8",
-                "current_progress": 10,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs1907f4414d91",
-                "created_at": "2025-08-09T02:04:39.111924+00:00",
-                "updated_at": "2025-08-09T02:04:39.111924+00:00",
-                "deadline_id": "rd_adsasd27d067c42b8",
-                "current_progress": 1,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "534exc8b-9a88-40f7-bbf2-5b00373cbd63",
-                "status": "reading",
-                "created_at": "2025-08-09T02:04:39.9+00:00",
-                "updated_at": "2025-08-09T02:04:39.9+00:00",
-                "deadline_id": "rd_adsasd27d067c42b8"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd6f3101a4144",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbc36b760f24153",
-        "book_title": "Method Writing: The First Four Concepts",
-        "author": "Jack Grapes",
-        "source": "personal",
-        "deadline_date": "2025-09-30T04:41:00+00:00",
-        "flexibility": "flexible",
-        "format": "physical",
-        "total_quantity": 210,
-        "created_at": "2025-08-01T04:43:56.50344+00:00",
-        "updated_at": "2025-08-24T05:50:42.28+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfsfd4ccc614fd7",
-                "created_at": "2025-08-21T00:06:27.759+00:00",
-                "updated_at": "2025-08-21T00:06:27.759+00:00",
-                "deadline_id": "rd_adsasd6f3101a4144",
-                "current_progress": 38,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs075176f2440a",
-                "created_at": "2025-08-21T00:10:16.657+00:00",
-                "updated_at": "2025-08-24T05:50:42.453+00:00",
-                "deadline_id": "rd_adsasd6f3101a4144",
-                "current_progress": 40,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsda2a49404d68",
-                "created_at": "2025-08-31T03:49:53.665+00:00",
-                "updated_at": "2025-08-31T03:49:53.665+00:00",
-                "deadline_id": "rd_adsasd6f3101a4144",
-                "current_progress": 44,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsfaead8cb4cd4",
-                "created_at": "2025-08-28T22:11:07.2+00:00",
-                "updated_at": "2025-08-28T22:11:07.2+00:00",
-                "deadline_id": "rd_adsasd6f3101a4144",
-                "current_progress": 42,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs10ad00e44b2e",
-                "created_at": "2025-08-01T04:43:56.753974+00:00",
-                "updated_at": "2025-08-12T00:32:52.925+00:00",
-                "deadline_id": "rd_adsasd6f3101a4144",
-                "current_progress": 33,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "45xc992a-8ea0-4b9d-bbd7-810de45df7ff",
-                "status": "reading",
-                "created_at": "2025-08-01T04:43:58.983+00:00",
-                "updated_at": "2025-08-01T04:43:58.983+00:00",
-                "deadline_id": "rd_adsasd6f3101a4144"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd7fb79644998",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbc5230a4f147d4",
-        "book_title": "Murder your darling",
-        "author": "Roy Peter Clark",
-        "source": "library",
-        "deadline_date": "2025-07-27T16:19:00+00:00",
-        "flexibility": "strict",
-        "format": "audio",
-        "total_quantity": 552,
-        "created_at": "2025-07-06T16:20:15.773459+00:00",
-        "updated_at": "2025-07-06T16:20:15.773459+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfs8f98f6a845b9",
-                "created_at": "2025-07-16T05:29:01.739+00:00",
-                "updated_at": "2025-07-16T05:29:01.74+00:00",
-                "deadline_id": "rd_adsasd7fb79644998",
-                "current_progress": 101,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs099b5f944f50",
-                "created_at": "2025-07-16T05:22:35.948+00:00",
-                "updated_at": "2025-07-16T05:22:35.948+00:00",
-                "deadline_id": "rd_adsasd7fb79644998",
-                "current_progress": 96,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs7e3247cd47fc",
-                "created_at": "2025-07-06T16:20:15.945088+00:00",
-                "updated_at": "2025-07-06T16:20:15.945088+00:00",
-                "deadline_id": "rd_adsasd7fb79644998",
-                "current_progress": 0,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs168c9f0843eb",
-                "created_at": "2025-07-14T12:18:38.194+00:00",
-                "updated_at": "2025-07-14T12:18:38.194+00:00",
-                "deadline_id": "rd_adsasd7fb79644998",
-                "current_progress": 79,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "1943h598-ff01-4e55-9616-891a34a8adac",
-                "status": "reading",
-                "created_at": "2025-07-06T16:20:17.563+00:00",
-                "updated_at": "2025-07-06T16:20:17.563+00:00",
-                "deadline_id": "rd_adsasd7fb79644998"
-            },
-            {
-                "id": "5c573uje8-62d1-4e86-9922-429f0370c021",
-                "status": "set_aside",
-                "created_at": "2025-07-29T16:27:22.985+00:00",
-                "updated_at": "2025-07-29T16:27:22.985+00:00",
-                "deadline_id": "rd_adsasd7fb79644998"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasda94a19a4c25",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbc355dcf4a4142",
-        "book_title": "The Idiot",
-        "author": "Fyodor Dostoevsky ",
-        "source": "library",
-        "deadline_date": "2025-07-22T18:50:00+00:00",
-        "flexibility": "strict",
-        "format": "audio",
-        "total_quantity": 1677,
-        "created_at": "2025-07-01T18:52:46.430375+00:00",
-        "updated_at": "2025-07-01T18:52:46.430375+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfse98a98514ce1",
-                "created_at": "2025-07-12T17:22:26.237+00:00",
-                "updated_at": "2025-07-12T17:22:26.237+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1403,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs1a1f883f44df",
-                "created_at": "2025-07-12T15:25:46.248+00:00",
-                "updated_at": "2025-07-12T15:25:46.248+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1383,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs164e448f4627",
-                "created_at": "2025-07-07T06:48:35.162+00:00",
-                "updated_at": "2025-07-07T06:48:35.162+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1071,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsf48180964ca4",
-                "created_at": "2025-07-05T13:57:00.773+00:00",
-                "updated_at": "2025-07-05T13:57:00.773+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 895,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs28bc47184a69",
-                "created_at": "2025-07-07T18:14:40.127+00:00",
-                "updated_at": "2025-07-07T18:14:40.127+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1170,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs5f6bf8844ca8",
-                "created_at": "2025-07-11T01:57:35.408+00:00",
-                "updated_at": "2025-07-11T01:57:35.408+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1209,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsb75eb51d4e14",
-                "created_at": "2025-07-12T19:16:43.676+00:00",
-                "updated_at": "2025-07-12T19:16:43.676+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1512,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs87ccbd514e87",
-                "created_at": "2025-07-05T23:29:04.1+00:00",
-                "updated_at": "2025-07-05T23:29:04.1+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 981,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsf70f19d0462c",
-                "created_at": "2025-07-11T06:37:43.459+00:00",
-                "updated_at": "2025-07-11T06:37:43.459+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1235,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs8b1e1d3640d9",
-                "created_at": "2025-07-01T23:45:18.897+00:00",
-                "updated_at": "2025-07-01T23:45:18.897+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 845,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs6a89a0fa4814",
-                "created_at": "2025-07-08T04:57:44.198+00:00",
-                "updated_at": "2025-07-08T04:57:44.198+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1185,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsda3c5a4f4ac4",
-                "created_at": "2025-07-12T07:05:12.651+00:00",
-                "updated_at": "2025-07-12T07:05:12.651+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1352,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsf2bb28974386",
-                "created_at": "2025-07-05T23:57:28.874+00:00",
-                "updated_at": "2025-07-05T23:57:28.874+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1005,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs1fc7f9b94dcc",
-                "created_at": "2025-07-05T23:19:32.814+00:00",
-                "updated_at": "2025-07-05T23:19:32.814+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 974,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs02c418b64b93",
-                "created_at": "2025-07-13T12:07:04.646+00:00",
-                "updated_at": "2025-07-13T12:07:04.646+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1554,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsb3d8e68c4f01",
-                "created_at": "2025-07-07T13:40:12.062+00:00",
-                "updated_at": "2025-07-07T13:40:12.062+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1099,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs8a1ed0a440fa",
-                "created_at": "2025-07-01T18:52:46.673297+00:00",
-                "updated_at": "2025-07-01T18:52:46.673297+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 821,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs63f72db840b3",
-                "created_at": "2025-07-05T23:36:22.727+00:00",
-                "updated_at": "2025-07-05T23:36:22.727+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 988,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs5a96898240f6",
-                "created_at": "2025-07-12T07:17:13.99+00:00",
-                "updated_at": "2025-07-12T07:17:13.99+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1367,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs6025d6d3451b",
-                "created_at": "2025-07-07T13:55:56.567+00:00",
-                "updated_at": "2025-07-07T13:55:56.567+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1108,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs53843e77499c",
-                "created_at": "2025-07-01T19:55:13.004+00:00",
-                "updated_at": "2025-07-01T19:55:13.004+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 846,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs6d83d7114c7e",
-                "created_at": "2025-07-13T20:50:12.746+00:00",
-                "updated_at": "2025-07-13T20:50:12.746+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 1677,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsd8a9dc5a45a4",
-                "created_at": "2025-07-04T19:10:24.565+00:00",
-                "updated_at": "2025-07-04T19:10:24.565+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 857,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs9c2a9f864eb5",
-                "created_at": "2025-07-05T23:19:17.751+00:00",
-                "updated_at": "2025-07-05T23:19:17.751+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 914,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsfa9b891e4185",
-                "created_at": "2025-07-01T20:55:21.371+00:00",
-                "updated_at": "2025-07-01T20:55:21.371+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25",
-                "current_progress": 847,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "3947sad6c-714d-4870-9e0a-8c41a4beb562",
-                "status": "reading",
-                "created_at": "2025-07-03T01:55:18.805642+00:00",
-                "updated_at": "2025-07-03T01:55:18.805642+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25"
-            },
-            {
-                "id": "3asdbc93e-f445-482a-a39d-26cb0efcec7a",
-                "status": "complete",
-                "created_at": "2025-07-13T20:50:16.45+00:00",
-                "updated_at": "2025-07-13T20:50:16.45+00:00",
-                "deadline_id": "rd_adsasda94a19a4c25"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd0efe76545e9",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbccfdf1f6b4408",
-        "book_title": "Letters to a Young Poet",
-        "author": "Rainer Maria Rilke",
-        "source": "personal",
-        "deadline_date": "2025-09-19T21:11:00+00:00",
-        "flexibility": "flexible",
-        "format": "physical",
-        "total_quantity": 52,
-        "created_at": "2025-06-26T21:13:29.617564+00:00",
-        "updated_at": "2025-08-24T05:41:12.149+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfs60dd299b40dd",
-                "created_at": "2025-06-26T21:13:29.773601+00:00",
-                "updated_at": "2025-06-27T05:13:59.913+00:00",
-                "deadline_id": "rd_adsasd0efe76545e9",
-                "current_progress": 37,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs59f56c4d4ab2",
-                "created_at": "2025-06-28T00:54:07.324+00:00",
-                "updated_at": "2025-08-24T05:41:12.376+00:00",
-                "deadline_id": "rd_adsasd0efe76545e9",
-                "current_progress": 39,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "74a8dxc6-5ca3-4879-ae60-edcaf827d8d9",
-                "status": "reading",
-                "created_at": "2025-07-03T01:55:18.805642+00:00",
-                "updated_at": "2025-07-03T01:55:18.805642+00:00",
-                "deadline_id": "rd_adsasd0efe76545e9"
-            },
-            {
-                "id": "4xcz524f0-ac47-4aaa-bcc2-f6b3025d9243",
-                "status": "set_aside",
-                "created_at": "2025-08-21T01:04:14.644+00:00",
-                "updated_at": "2025-08-21T01:04:14.644+00:00",
-                "deadline_id": "rd_adsasd0efe76545e9"
-            },
-            {
-                "id": "cd0zxfc8-dd7c-40b0-9e7d-6fab8edb11d3",
-                "status": "reading",
-                "created_at": "2025-08-21T01:07:23.595+00:00",
-                "updated_at": "2025-08-21T01:07:23.595+00:00",
-                "deadline_id": "rd_adsasd0efe76545e9"
-            },
-            {
-                "id": "15bzxc0c6-23f4-4a24-a88a-809c087c9bd3",
-                "status": "set_aside",
-                "created_at": "2025-09-07T05:41:07.093+00:00",
-                "updated_at": "2025-09-07T05:41:07.093+00:00",
-                "deadline_id": "rd_adsasd0efe76545e9"
-            },
-            {
-                "id": "7xcz59bb7-fe80-4bd4-a61e-e2c9ca56d71d",
-                "status": "reading",
-                "created_at": "2025-09-07T05:41:13.739+00:00",
-                "updated_at": "2025-09-07T05:41:13.739+00:00",
-                "deadline_id": "rd_adsasd0efe76545e9"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd91b52044931",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbc48218bdb4d54",
-        "book_title": "Freeing the natural voice",
-        "author": "Kristin Linklater",
-        "source": "library",
-        "deadline_date": "2025-11-01T03:55:00+00:00",
-        "flexibility": "flexible",
-        "format": "physical",
-        "total_quantity": 374,
-        "created_at": "2025-06-26T04:03:53.45453+00:00",
-        "updated_at": "2025-08-12T00:33:31.028+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfs6fdcb61e47ad",
-                "created_at": "2025-06-28T04:45:39.085+00:00",
-                "updated_at": "2025-08-12T00:33:33.124+00:00",
-                "deadline_id": "rd_adsasd91b52044931",
-                "current_progress": 41,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsad9e56d84ffa",
-                "created_at": "2025-06-26T04:03:53.745677+00:00",
-                "updated_at": "2025-06-27T06:31:12.37+00:00",
-                "deadline_id": "rd_adsasd91b52044931",
-                "current_progress": 31,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "1d73bxce-5d43-4c36-8b8f-dc28b5c854af",
-                "status": "reading",
-                "created_at": "2025-07-03T01:55:18.805642+00:00",
-                "updated_at": "2025-07-03T01:55:18.805642+00:00",
-                "deadline_id": "rd_adsasd91b52044931"
-            },
-            {
-                "id": "1xzc1bf60-de5a-4efb-88a2-656873b75814",
-                "status": "set_aside",
-                "created_at": "2025-08-20T16:26:29.546+00:00",
-                "updated_at": "2025-08-20T16:26:29.546+00:00",
-                "deadline_id": "rd_adsasd91b52044931"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasdc8cb5b94bea",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbce9c97e0f4129",
-        "book_title": "The Way of Kings",
-        "author": "Brandon Sanderson",
-        "source": "personal",
-        "deadline_date": "2025-12-31T07:57:00+00:00",
-        "flexibility": "strict",
-        "format": "audio",
-        "total_quantity": 2734,
-        "created_at": "2025-06-24T23:13:21.422152+00:00",
-        "updated_at": "2025-06-24T23:13:21.422152+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfs71b352584083",
-                "created_at": "2025-06-30T02:06:36.833+00:00",
-                "updated_at": "2025-06-30T02:06:36.833+00:00",
-                "deadline_id": "rd_adsasdc8cb5b94bea",
-                "current_progress": 984,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs870ac8924921",
-                "created_at": "2025-07-28T23:00:02.339+00:00",
-                "updated_at": "2025-07-28T23:00:02.339+00:00",
-                "deadline_id": "rd_adsasdc8cb5b94bea",
-                "current_progress": 2188,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfscec2bc504104",
-                "created_at": "2025-08-02T03:22:23.685+00:00",
-                "updated_at": "2025-08-02T03:22:23.685+00:00",
-                "deadline_id": "rd_adsasdc8cb5b94bea",
-                "current_progress": 2369,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs4a9054ac42a2",
-                "created_at": "2025-08-02T16:02:47.468+00:00",
-                "updated_at": "2025-08-02T16:02:47.468+00:00",
-                "deadline_id": "rd_adsasdc8cb5b94bea",
-                "current_progress": 2733,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsb7170089463a",
-                "created_at": "2025-07-26T21:44:41.478+00:00",
-                "updated_at": "2025-07-26T21:44:41.478+00:00",
-                "deadline_id": "rd_adsasdc8cb5b94bea",
-                "current_progress": 1541,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs80131cf045f9",
-                "created_at": "2025-08-10T05:46:56.79+00:00",
-                "updated_at": "2025-08-10T05:46:56.79+00:00",
-                "deadline_id": "rd_adsasdc8cb5b94bea",
-                "current_progress": 2734,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs2a1812ca4c75",
-                "created_at": "2025-07-23T03:55:45.619+00:00",
-                "updated_at": "2025-07-23T03:55:45.619+00:00",
-                "deadline_id": "rd_adsasdc8cb5b94bea",
-                "current_progress": 1077,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs7a2a1d7642ab",
-                "created_at": "2025-06-25T23:34:40.168+00:00",
-                "updated_at": "2025-06-25T23:34:40.168+00:00",
-                "deadline_id": "rd_adsasdc8cb5b94bea",
-                "current_progress": 962,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsf80a71d84374",
-                "created_at": "2025-06-24T23:13:21.809276+00:00",
-                "updated_at": "2025-06-24T23:13:21.809276+00:00",
-                "deadline_id": "rd_adsasdc8cb5b94bea",
-                "current_progress": 938,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "42b09sd7-ac11-44b1-9721-d8af13d2c5b4",
-                "status": "reading",
-                "created_at": "2025-07-03T01:55:18.805642+00:00",
-                "updated_at": "2025-07-03T01:55:18.805642+00:00",
-                "deadline_id": "rd_adsasdc8cb5b94bea"
-            },
-            {
-                "id": "6b1xca33-f59d-4478-bde6-dee7b40a6f8b",
-                "status": "complete",
-                "created_at": "2025-08-10T05:46:59.863+00:00",
-                "updated_at": "2025-08-10T05:46:59.863+00:00",
-                "deadline_id": "rd_adsasdc8cb5b94bea"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd6a0c8434e75",
-        "user_id": "user-id-1234",
-        "book_id": null,
-        "book_title": "Singing",
-        "author": "Omar Mason",
-        "source": "personal",
-        "deadline_date": "2025-12-31T07:57:00+00:00",
-        "flexibility": "strict",
-        "format": "audio",
-        "total_quantity": 6000,
-        "created_at": "2025-06-22T06:59:29.797049+00:00",
-        "updated_at": "2025-06-22T06:59:29.797049+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfs1f67bce64314",
-                "created_at": "2025-07-24T00:13:15.497+00:00",
-                "updated_at": "2025-07-24T00:13:15.497+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1762,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs1176eb01472d",
-                "created_at": "2025-06-22T06:59:29.94999+00:00",
-                "updated_at": "2025-06-22T06:59:29.94999+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1200,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsdd7e3e214428",
-                "created_at": "2025-08-29T06:35:23.364+00:00",
-                "updated_at": "2025-08-29T06:35:23.364+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2817,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs325560f14ec0",
-                "created_at": "2025-08-09T18:49:48.001+00:00",
-                "updated_at": "2025-08-09T18:49:48.001+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2239,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsa7e7ce114c3b",
-                "created_at": "2025-07-18T23:55:53.675+00:00",
-                "updated_at": "2025-07-18T23:55:53.675+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1644,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfse74546df417d",
-                "created_at": "2025-08-27T03:02:16.494+00:00",
-                "updated_at": "2025-08-27T03:02:16.494+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2697,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsb085e34d43b8",
-                "created_at": "2025-08-12T00:33:48.801+00:00",
-                "updated_at": "2025-08-12T00:33:48.801+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2442,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs2ca43b7c4e7a",
-                "created_at": "2025-07-17T21:50:07.217+00:00",
-                "updated_at": "2025-07-17T21:50:07.217+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1606,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsc28b4b3f4183",
-                "created_at": "2025-07-19T19:40:00.675+00:00",
-                "updated_at": "2025-07-19T19:40:00.675+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1680,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsc881693d4694",
-                "created_at": "2025-06-25T21:39:19.694+00:00",
-                "updated_at": "2025-06-25T21:39:19.694+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1278,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs5af3084c4dca",
-                "created_at": "2025-07-31T04:19:58.004+00:00",
-                "updated_at": "2025-07-31T04:19:58.004+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2056,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs5874411c43e2",
-                "created_at": "2025-07-11T20:08:37.124+00:00",
-                "updated_at": "2025-07-11T20:08:37.124+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1501,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs5f67a4b941dc",
-                "created_at": "2025-07-04T02:05:10.07+00:00",
-                "updated_at": "2025-07-04T02:05:10.07+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1496,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsaba301d34c20",
-                "created_at": "2025-08-10T05:47:15.771+00:00",
-                "updated_at": "2025-08-10T05:47:15.771+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2359,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs09022e994715",
-                "created_at": "2025-06-25T21:38:51.459+00:00",
-                "updated_at": "2025-06-25T21:38:51.459+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1226,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs78746a0c44d4",
-                "created_at": "2025-07-11T21:43:27.641+00:00",
-                "updated_at": "2025-07-11T21:43:27.641+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1571,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfscdbf4a224772",
-                "created_at": "2025-09-09T17:50:50.134+00:00",
-                "updated_at": "2025-09-09T17:50:50.134+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2977,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfscd902ae64443",
-                "created_at": "2025-07-03T23:30:42.908+00:00",
-                "updated_at": "2025-07-03T23:30:42.908+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1470,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsf3f3f83c49e4",
-                "created_at": "2025-08-06T03:35:40.98+00:00",
-                "updated_at": "2025-08-06T03:35:40.98+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2161,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsc5bcbfb241fd",
-                "created_at": "2025-08-09T18:20:42.33+00:00",
-                "updated_at": "2025-08-09T18:20:42.33+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2219,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsba295a444146",
-                "created_at": "2025-09-06T00:34:17.538+00:00",
-                "updated_at": "2025-09-06T00:34:17.538+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2937,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs2d543eff4377",
-                "created_at": "2025-09-09T03:05:14.215+00:00",
-                "updated_at": "2025-09-09T03:05:14.215+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2967,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs2800db3a4e68",
-                "created_at": "2025-08-26T00:42:43.194+00:00",
-                "updated_at": "2025-08-26T00:42:43.194+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2677,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsb0b0eb4f4569",
-                "created_at": "2025-07-17T22:51:17.69+00:00",
-                "updated_at": "2025-07-17T22:51:17.69+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1624,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs76b1513440c3",
-                "created_at": "2025-08-16T06:12:59.79+00:00",
-                "updated_at": "2025-08-16T06:12:59.79+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2540,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsa1b7bcfb4f3e",
-                "created_at": "2025-08-06T03:40:26.523+00:00",
-                "updated_at": "2025-08-06T03:40:26.523+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2166,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfse597c362415b",
-                "created_at": "2025-07-18T23:56:22.525+00:00",
-                "updated_at": "2025-07-18T23:56:22.525+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1681,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsa556b9db4826",
-                "created_at": "2025-08-09T02:04:49.015+00:00",
-                "updated_at": "2025-08-09T02:04:49.015+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2196,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsebc650534c6f",
-                "created_at": "2025-07-22T00:52:28.143+00:00",
-                "updated_at": "2025-07-22T00:52:28.143+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1739,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs0f80b51e46f5",
-                "created_at": "2025-08-29T05:43:23.712+00:00",
-                "updated_at": "2025-08-29T05:43:23.713+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2807,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsc8818ab14b02",
-                "created_at": "2025-08-10T06:13:38.383+00:00",
-                "updated_at": "2025-08-10T06:13:38.383+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2364,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsd6c046734f5a",
-                "created_at": "2025-08-25T20:30:45.987+00:00",
-                "updated_at": "2025-08-25T20:30:45.987+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2605,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfscf2a82b54d29",
-                "created_at": "2025-09-13T17:44:23.709+00:00",
-                "updated_at": "2025-09-13T17:44:23.709+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2992,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfseb781e024748",
-                "created_at": "2025-07-03T21:43:59.75+00:00",
-                "updated_at": "2025-07-03T21:43:59.75+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1402,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsf00ec91a4772",
-                "created_at": "2025-08-26T00:42:19.898+00:00",
-                "updated_at": "2025-08-26T00:42:19.898+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2649,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsca37db7441a9",
-                "created_at": "2025-07-11T21:43:16.203+00:00",
-                "updated_at": "2025-07-11T21:43:16.203+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1559,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs2b0d83ee4bdf",
-                "created_at": "2025-08-10T16:40:51.233+00:00",
-                "updated_at": "2025-08-10T16:40:51.233+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2392,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsd52ebbf94b62",
-                "created_at": "2025-06-28T04:21:03.734+00:00",
-                "updated_at": "2025-06-28T04:21:03.735+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1342,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsa9332e094a94",
-                "created_at": "2025-07-11T20:39:37.518+00:00",
-                "updated_at": "2025-07-11T20:39:37.518+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1520,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsea0da3584d1c",
-                "created_at": "2025-08-07T20:36:26.429+00:00",
-                "updated_at": "2025-08-07T20:36:26.429+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2186,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs8e7bf8d64fd4",
-                "created_at": "2025-07-03T21:55:59.383+00:00",
-                "updated_at": "2025-07-03T21:55:59.383+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1424,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsc38912e14918",
-                "created_at": "2025-07-02T01:57:58.418+00:00",
-                "updated_at": "2025-07-02T01:57:58.418+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1387,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs2f6a64f84574",
-                "created_at": "2025-08-27T03:30:07.526+00:00",
-                "updated_at": "2025-08-27T03:30:07.526+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2727,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs8f6ec7fe4c9b",
-                "created_at": "2025-08-09T18:20:29.992+00:00",
-                "updated_at": "2025-08-09T18:20:29.992+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2209,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsbabc33d44bee",
-                "created_at": "2025-07-19T19:17:07.927+00:00",
-                "updated_at": "2025-07-19T19:17:07.927+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1696,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs0f8868824fca",
-                "created_at": "2025-07-15T20:49:29.227+00:00",
-                "updated_at": "2025-07-15T20:49:29.227+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1586,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs89d57e684858",
-                "created_at": "2025-07-26T02:49:13.998+00:00",
-                "updated_at": "2025-07-26T02:49:13.998+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1871,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs72f21f97438b",
-                "created_at": "2025-07-24T18:53:24.366+00:00",
-                "updated_at": "2025-07-24T18:53:24.366+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1825,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs2726225344c5",
-                "created_at": "2025-07-11T21:43:08.148+00:00",
-                "updated_at": "2025-07-11T21:43:08.148+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1551,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs5bfc4c89449e",
-                "created_at": "2025-07-22T02:12:18.385+00:00",
-                "updated_at": "2025-07-22T02:12:18.385+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1752,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs794acc5646b7",
-                "created_at": "2025-08-14T22:33:25.097+00:00",
-                "updated_at": "2025-08-14T22:33:25.097+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2457,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsae7cd93e4b0c",
-                "created_at": "2025-07-19T19:56:55.152+00:00",
-                "updated_at": "2025-07-19T19:56:55.152+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1716,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfse209af9d41c7",
-                "created_at": "2025-07-26T02:11:37.525+00:00",
-                "updated_at": "2025-07-26T02:11:37.525+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1840,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsd029b58647e7",
-                "created_at": "2025-07-20T14:58:08.291+00:00",
-                "updated_at": "2025-07-20T14:58:08.291+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1724,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsa690741740cd",
-                "created_at": "2025-07-19T19:40:30.455+00:00",
-                "updated_at": "2025-07-19T19:40:30.455+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1711,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfse798ead44b03",
-                "created_at": "2025-08-10T15:59:52.563+00:00",
-                "updated_at": "2025-08-10T15:59:52.563+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2384,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs77db5ba3496e",
-                "created_at": "2025-07-26T02:54:55.419+00:00",
-                "updated_at": "2025-07-26T02:54:55.419+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1881,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs5aa7b2554321",
-                "created_at": "2025-07-11T20:28:00.304+00:00",
-                "updated_at": "2025-07-11T20:28:00.304+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1511,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfse0ebb0e64e6b",
-                "created_at": "2025-08-24T04:39:11.38+00:00",
-                "updated_at": "2025-08-24T04:39:11.38+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2575,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsac8df2284c3f",
-                "created_at": "2025-06-28T17:43:03.46+00:00",
-                "updated_at": "2025-06-28T17:43:03.46+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1377,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs1346d29b4fda",
-                "created_at": "2025-07-18T23:55:59.659+00:00",
-                "updated_at": "2025-07-18T23:55:59.659+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1671,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsc544531a41f4",
-                "created_at": "2025-07-26T02:41:02.056+00:00",
-                "updated_at": "2025-07-26T02:41:02.056+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1865,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs6be22ab94cf2",
-                "created_at": "2025-08-27T02:33:33.19+00:00",
-                "updated_at": "2025-08-27T02:33:33.19+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2687,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs249e41f947f5",
-                "created_at": "2025-07-29T03:03:09.289+00:00",
-                "updated_at": "2025-07-29T03:03:09.289+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 1981,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs3d8e39fa4d7f",
-                "created_at": "2025-08-19T22:32:40.853+00:00",
-                "updated_at": "2025-08-19T22:32:40.853+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2550,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs9cee7dbf4969",
-                "created_at": "2025-08-28T04:26:53.554+00:00",
-                "updated_at": "2025-08-28T04:26:53.554+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2757,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs47c0601f463e",
-                "created_at": "2025-08-24T01:54:42.476+00:00",
-                "updated_at": "2025-08-24T01:54:42.476+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 2580,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs4ce8-3e61-4068-ade1-3684d394a394",
-                "created_at": "2025-09-15T23:35:10.04019+00:00",
-                "updated_at": "2025-09-15T23:35:10.04019+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75",
-                "current_progress": 3037,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "e22fasd08-3c41-4c1d-846f-98250efeb5cc",
-                "status": "reading",
-                "created_at": "2025-07-03T01:55:18.805642+00:00",
-                "updated_at": "2025-07-03T01:55:18.805642+00:00",
-                "deadline_id": "rd_adsasd6a0c8434e75"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd304c851434a",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbcf56fd4aa45ab",
-        "book_title": "Onyx Storm",
-        "author": "Rebecca Yarros",
-        "source": "ARC",
-        "deadline_date": "2025-12-31T07:57:00+00:00",
-        "flexibility": "strict",
-        "format": "audio",
-        "total_quantity": 1432,
-        "created_at": "2025-06-21T06:56:48.16655+00:00",
-        "updated_at": "2025-09-15T03:56:47.033856+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfs7ea9ad664f8a",
-                "created_at": "2025-06-21T06:56:48.32877+00:00",
-                "updated_at": "2025-06-21T06:56:48.32877+00:00",
-                "deadline_id": "rd_adsasd304c851434a",
-                "current_progress": 832,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs1904acdb4a21",
-                "created_at": "2025-07-01T01:38:57.214+00:00",
-                "updated_at": "2025-07-01T01:38:57.214+00:00",
-                "deadline_id": "rd_adsasd304c851434a",
-                "current_progress": 838,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs2f156fa9479c",
-                "created_at": "2025-07-03T03:33:33.039+00:00",
-                "updated_at": "2025-08-24T05:21:33.904+00:00",
-                "deadline_id": "rd_adsasd304c851434a",
-                "current_progress": 838,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "42b9asd68-5d88-4b2d-a1bb-6ea2e4439d85",
-                "status": "reading",
-                "created_at": "2025-07-03T01:55:18.805642+00:00",
-                "updated_at": "2025-07-03T01:55:18.805642+00:00",
-                "deadline_id": "rd_adsasd304c851434a"
-            },
-            {
-                "id": "adsda-cfc8-41a6-b448-dbd7f2850c25",
-                "status": "set_aside",
-                "created_at": "2025-07-03T03:33:44.774+00:00",
-                "updated_at": "2025-07-03T03:33:44.774+00:00",
-                "deadline_id": "rd_adsasd304c851434a"
-            },
-            {
-                "id": "2009asd43-6dce-47d1-9a6d-8442a91a81fb",
-                "status": "reading",
-                "created_at": "2025-08-21T00:57:30.042+00:00",
-                "updated_at": "2025-08-21T00:57:30.042+00:00",
-                "deadline_id": "rd_adsasd304c851434a"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd109fce34579",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbcae3c2b60490e",
-        "book_title": "The lean start up",
-        "author": "Eric Ries",
-        "source": "personal",
-        "deadline_date": "2025-09-05T06:47:00+00:00",
-        "flexibility": "flexible",
-        "format": "audio",
-        "total_quantity": 519,
-        "created_at": "2025-06-21T05:46:43.766915+00:00",
-        "updated_at": "2025-08-10T06:15:48.703+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfsff7295a84fa4",
-                "created_at": "2025-06-27T17:04:16.402+00:00",
-                "updated_at": "2025-06-27T17:04:16.402+00:00",
-                "deadline_id": "rd_adsasd109fce34579",
-                "current_progress": 344,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsca7f8d7b4e41",
-                "created_at": "2025-06-30T20:06:18.398+00:00",
-                "updated_at": "2025-06-30T20:06:18.398+00:00",
-                "deadline_id": "rd_adsasd109fce34579",
-                "current_progress": 350,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs0755ee9142dd",
-                "created_at": "2025-06-27T17:59:32.686+00:00",
-                "updated_at": "2025-06-27T17:59:32.686+00:00",
-                "deadline_id": "rd_adsasd109fce34579",
-                "current_progress": 344,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs0511684b407b",
-                "created_at": "2025-06-21T05:46:43.766915+00:00",
-                "updated_at": "2025-06-21T05:46:43.766915+00:00",
-                "deadline_id": "rd_adsasd109fce34579",
-                "current_progress": 281,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs149e680a40cb",
-                "created_at": "2025-07-02T17:27:23.454+00:00",
-                "updated_at": "2025-08-10T06:15:48.873+00:00",
-                "deadline_id": "rd_adsasd109fce34579",
-                "current_progress": 369,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs8558fb9445f9",
-                "created_at": "2025-06-27T02:49:52.547+00:00",
-                "updated_at": "2025-06-27T02:49:52.547+00:00",
-                "deadline_id": "rd_adsasd109fce34579",
-                "current_progress": 302,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs0dfcc22249dd",
-                "created_at": "2025-06-27T17:59:24.503+00:00",
-                "updated_at": "2025-06-27T17:59:24.503+00:00",
-                "deadline_id": "rd_adsasd109fce34579",
-                "current_progress": 346,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "b8aaasdef-5771-4794-8e94-47a0062623cc",
-                "status": "reading",
-                "created_at": "2025-07-03T01:55:18.805642+00:00",
-                "updated_at": "2025-07-03T01:55:18.805642+00:00",
-                "deadline_id": "rd_adsasd109fce34579"
-            },
-            {
-                "id": "567asd4a0-fb5e-452e-b106-529133ee8b3f",
-                "status": "set_aside",
-                "created_at": "2025-08-24T01:55:52.756+00:00",
-                "updated_at": "2025-08-24T01:55:52.756+00:00",
-                "deadline_id": "rd_adsasd109fce34579"
-            }
-        ]
-    },
-    {
-        "id": "rd_adsasd0d544304c7c",
-        "user_id": "user-id-1234",
-        "book_id": "book_jsbcee5f373c4ae0",
-        "book_title": "Dungeon Crawler Carl This Inevitable Ruin",
-        "author": "Matt Dinniman",
-        "source": "personal",
-        "deadline_date": "2025-12-31T07:57:00+00:00",
-        "flexibility": "strict",
-        "format": "audio",
-        "total_quantity": 1720,
+  {
+    "id": "rd_adsasd74e-f9b8-400f-9550-5c24c703d2d2",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbc5726-4c37-4301-aa4d-abf1d5f2d5f1",
+    "book_title": "How to Love Better: The Path to Deeper Connection Through Growth, Kindness, and Compassion",
+    "author": "Yung Pueblo",
+    "source": "ARC",
+    "deadline_date": "2025-10-06T21:02:00+00:00",
+    "flexibility": "strict",
+    "format": "audio",
+    "total_quantity": 454,
+    "created_at": "2025-09-15T21:03:54.226893+00:00",
+    "updated_at": "2025-09-15T21:03:54.226893+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfse17e-9c79-4c37-b8bb-de781290df94",
+        "created_at": "2025-09-15T21:03:54.331892+00:00",
+        "updated_at": "2025-09-15T21:03:54.331892+00:00",
+        "deadline_id": "rd_adsasd74e-f9b8-400f-9550-5c24c703d2d2",
+        "current_progress": 0,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "1715sc383-110b-4bc7-a514-c18ffe7c1804",
+        "status": "reading",
+        "created_at": "2025-09-15T21:03:54.485997+00:00",
+        "updated_at": "2025-09-15T21:03:54.485997+00:00",
+        "deadline_id": "rd_adsasd74e-f9b8-400f-9550-5c24c703d2d2"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasdd5d-5880-4b2d-917b-c0313c0f1da7",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbc989e-eea5-4b7d-81ed-a2615ae0f911",
+    "book_title": "Alfred's Basic Adult All-In-One Course, Book 1: Learn How to Play Piano with Lesson, Theory and Technic: Lesson * Theory * Technic, Comb Bound Book",
+    "author": "Willard A. Palmer",
+    "source": "ARC",
+    "deadline_date": "2026-02-20T18:42:00+00:00",
+    "flexibility": "flexible",
+    "format": "eBook",
+    "total_quantity": 160,
+    "created_at": "2025-09-14T17:51:51.268438+00:00",
+    "updated_at": "2025-09-14T17:51:51.268438+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfsc54a-cae0-4f5d-9f30-6007f5a84351",
+        "created_at": "2025-09-14T17:51:51.482383+00:00",
+        "updated_at": "2025-09-14T17:51:51.482383+00:00",
+        "deadline_id": "rd_adsasdd5d-5880-4b2d-917b-c0313c0f1da7",
+        "current_progress": 0,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "0e927d936-1b35-49d6-a5dd-07baa9086125",
+        "status": "reading",
+        "created_at": "2025-09-14T17:51:51.680356+00:00",
+        "updated_at": "2025-09-14T17:51:51.680356+00:00",
+        "deadline_id": "rd_adsasdd5d-5880-4b2d-917b-c0313c0f1da7"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd8d71a5e4a83",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbc177c-93ed-48e3-bdf2-173cb5d5535d",
+    "book_title": "Edge Dancer ",
+    "author": "Brandon Sanderson",
+    "source": "ARC",
+    "deadline_date": "2025-10-31T08:43:00+00:00",
+    "flexibility": "flexible",
+    "format": "audio",
+    "total_quantity": 311,
+    "created_at": "2025-09-14T08:44:44.311798+00:00",
+    "updated_at": "2025-09-15T04:00:33.551675+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfsb7ec7dff407c",
+        "created_at": "2025-09-14T08:44:44.535829+00:00",
+        "updated_at": "2025-09-14T08:44:44.535829+00:00",
+        "deadline_id": "rd_adsasd8d71a5e4a83",
+        "current_progress": 0,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "69bb515-a9d7-41a9-856c-3bd81245de62",
+        "status": "reading",
+        "created_at": "2025-09-14T08:44:45.118+00:00",
+        "updated_at": "2025-09-14T08:44:45.118+00:00",
+        "deadline_id": "rd_adsasd8d71a5e4a83"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasdf45d61c4c21",
+    "user_id": "user-id-1234",
+    "book_id": null,
+    "book_title": "Rona",
+    "author": "Mason",
+    "source": "personal",
+    "deadline_date": "2026-09-09T16:11:00+00:00",
+    "flexibility": "strict",
+    "format": "physical",
+    "total_quantity": 52,
+    "created_at": "2025-09-02T16:12:12.310799+00:00",
+    "updated_at": "2025-09-02T16:12:12.310799+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfs96ca73304a67",
+        "created_at": "2025-09-02T16:12:12.513995+00:00",
+        "updated_at": "2025-09-02T16:12:12.513995+00:00",
+        "deadline_id": "rd_adsasdf45d61c4c21",
+        "current_progress": 1,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "380asd15-ce96-4394-a23a-1f27b9efd4de",
+        "status": "reading",
+        "created_at": "2025-09-02T16:12:12.605+00:00",
+        "updated_at": "2025-09-02T16:12:12.605+00:00",
+        "deadline_id": "rd_adsasdf45d61c4c21"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasdd3a118b4e65",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbce0b28b544424",
+    "book_title": "$100M Money Models: How To Make Money",
+    "author": "Alex Hormozi",
+    "source": "personal",
+    "deadline_date": "2025-09-27T01:43:00+00:00",
+    "flexibility": "strict",
+    "format": "physical",
+    "total_quantity": 176,
+    "created_at": "2025-08-24T01:54:16.843025+00:00",
+    "updated_at": "2025-09-14T00:23:45.918+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfsee4dccc34f13",
+        "created_at": "2025-08-24T01:54:17.048689+00:00",
+        "updated_at": "2025-08-25T05:28:22.242+00:00",
+        "deadline_id": "rd_adsasdd3a118b4e65",
+        "current_progress": 0,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsce3e222b4f99",
+        "created_at": "2025-08-27T04:47:23.244+00:00",
+        "updated_at": "2025-08-27T04:51:44.261+00:00",
+        "deadline_id": "rd_adsasdd3a118b4e65",
+        "current_progress": 57,
+        "time_spent_reading": 43
+      },
+      {
+        "id": "rdp_hsdfs4e9d07474c28",
+        "created_at": "2025-09-06T00:36:36.483+00:00",
+        "updated_at": "2025-09-06T00:36:36.483+00:00",
+        "deadline_id": "rd_adsasdd3a118b4e65",
+        "current_progress": 88,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsc7017a3d47f8",
+        "created_at": "2025-08-27T05:10:24.909+00:00",
+        "updated_at": "2025-08-27T05:10:24.909+00:00",
+        "deadline_id": "rd_adsasdd3a118b4e65",
+        "current_progress": 60,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs7a93a2414626",
+        "created_at": "2025-09-06T00:36:22.053+00:00",
+        "updated_at": "2025-09-06T00:36:22.053+00:00",
+        "deadline_id": "rd_adsasdd3a118b4e65",
+        "current_progress": 87,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsf0cc52c0490e",
+        "created_at": "2025-09-06T01:10:35.301+00:00",
+        "updated_at": "2025-09-14T00:23:47.725+00:00",
+        "deadline_id": "rd_adsasdd3a118b4e65",
+        "current_progress": 94,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsd6f47c0745ba",
+        "created_at": "2025-08-26T03:06:19.789+00:00",
+        "updated_at": "2025-08-26T03:06:19.789+00:00",
+        "deadline_id": "rd_adsasdd3a118b4e65",
+        "current_progress": 46,
+        "time_spent_reading": 99
+      },
+      {
+        "id": "rdp_hsdfsb90c368b43bd",
+        "created_at": "2025-08-28T22:10:31.601+00:00",
+        "updated_at": "2025-08-30T16:14:46.9+00:00",
+        "deadline_id": "rd_adsasdd3a118b4e65",
+        "current_progress": 69,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "15fdf63a-2608-4e67-8569-5ea95e28ebca",
+        "status": "reading",
+        "created_at": "2025-08-24T01:54:17.044+00:00",
+        "updated_at": "2025-08-24T01:54:17.044+00:00",
+        "deadline_id": "rd_adsasdd3a118b4e65"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd8102afc438e",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbc729a59084d47",
+    "book_title": "Holy Bible Hcsb",
+    "author": "C.S.B. Bibles",
+    "source": "personal",
+    "deadline_date": "2026-02-21T02:06:00+00:00",
+    "flexibility": "flexible",
+    "format": "physical",
+    "total_quantity": 1918,
+    "created_at": "2025-08-24T01:34:10.7445+00:00",
+    "updated_at": "2025-08-24T06:12:55.912+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfsb736ff764331",
+        "created_at": "2025-08-24T01:34:10.872272+00:00",
+        "updated_at": "2025-08-24T06:12:56.064+00:00",
+        "deadline_id": "rd_adsasd8102afc438e",
+        "current_progress": 19,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "33adf0d5-3868-4369-86a8-b7935ae0d283",
+        "status": "reading",
+        "created_at": "2025-08-24T01:34:10.846+00:00",
+        "updated_at": "2025-08-24T01:34:10.846+00:00",
+        "deadline_id": "rd_adsasd8102afc438e"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasda8655c54136",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbc446ecb7d41b7",
+    "book_title": "Oathbringer",
+    "author": "Brandon Sanderson",
+    "source": "ARC",
+    "deadline_date": "2025-11-01T14:10:00+00:00",
+    "flexibility": "strict",
+    "format": "audio",
+    "total_quantity": 3307,
+    "created_at": "2025-08-23T14:11:33.432896+00:00",
+    "updated_at": "2025-09-15T03:56:41.127258+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfs115845a24e75",
+        "created_at": "2025-09-13T23:15:19.762+00:00",
+        "updated_at": "2025-09-13T23:15:19.762+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 3307,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsb05679d347e3",
+        "created_at": "2025-08-25T11:07:47.579+00:00",
+        "updated_at": "2025-08-25T11:07:47.579+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 1065,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsf8655a7544c5",
+        "created_at": "2025-09-01T06:31:47.372+00:00",
+        "updated_at": "2025-09-01T06:31:47.372+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 1679,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsbdcc08df456c",
+        "created_at": "2025-08-26T00:41:21.131+00:00",
+        "updated_at": "2025-08-26T00:41:21.131+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 1157,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs057ecd164228",
+        "created_at": "2025-09-13T15:47:39.965+00:00",
+        "updated_at": "2025-09-13T15:47:39.965+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 3204,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs0f090d654ef1",
+        "created_at": "2025-08-29T23:50:43.901+00:00",
+        "updated_at": "2025-08-29T23:50:43.901+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 1196,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsf16483d547b8",
+        "created_at": "2025-08-24T19:10:14.816+00:00",
+        "updated_at": "2025-08-24T19:10:14.816+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 684,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsb951c7dc4aa3",
+        "created_at": "2025-09-08T05:37:38.894+00:00",
+        "updated_at": "2025-09-08T06:04:13.832+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 2288,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs83e0baaf4ca6",
+        "created_at": "2025-09-13T16:42:18.542+00:00",
+        "updated_at": "2025-09-13T16:42:18.542+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 3232,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsac89c9094de9",
+        "created_at": "2025-08-25T10:13:26.961+00:00",
+        "updated_at": "2025-08-25T10:13:26.961+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 1041,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsc309d24b4269",
+        "created_at": "2025-09-06T01:11:27.858+00:00",
+        "updated_at": "2025-09-06T01:11:27.858+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 1961,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsd1eb1ce54c45",
+        "created_at": "2025-09-01T20:14:03.539+00:00",
+        "updated_at": "2025-09-01T20:38:25.396+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 1830,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsa9d1a4ec4f2f",
+        "created_at": "2025-08-23T14:11:33.882985+00:00",
+        "updated_at": "2025-08-23T14:11:33.882985+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 248,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsd7aa5e184866",
+        "created_at": "2025-09-08T18:07:11.967+00:00",
+        "updated_at": "2025-09-08T18:07:11.967+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 2526,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs830006004a96",
+        "created_at": "2025-08-25T05:04:16.545+00:00",
+        "updated_at": "2025-08-25T05:04:16.545+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 850,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfscb8d92964a95",
+        "created_at": "2025-09-07T15:11:09.697+00:00",
+        "updated_at": "2025-09-07T15:11:09.697+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 2118,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs0edcac2c4bf7",
+        "created_at": "2025-09-01T16:09:49.425+00:00",
+        "updated_at": "2025-09-01T16:09:49.425+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 1701,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsb0e64d834d13",
+        "created_at": "2025-09-01T02:15:47.084+00:00",
+        "updated_at": "2025-09-01T02:15:47.084+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 1669,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs8f8da95148fc",
+        "created_at": "2025-08-24T01:16:30.984+00:00",
+        "updated_at": "2025-08-24T05:19:12.284+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 485,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs67d77baf46af",
+        "created_at": "2025-09-01T17:30:28.936+00:00",
+        "updated_at": "2025-09-01T19:40:30.507+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 1785,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs082e4d954b53",
+        "created_at": "2025-09-11T18:37:30.749+00:00",
+        "updated_at": "2025-09-11T18:37:30.749+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 3119,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs4830e26f42b0",
+        "created_at": "2025-08-24T08:01:45.945+00:00",
+        "updated_at": "2025-08-24T08:01:45.945+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 614,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsc91ffb6d4c03",
+        "created_at": "2025-08-25T05:26:54.82+00:00",
+        "updated_at": "2025-08-25T05:26:54.82+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 887,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs481cfdcb4ac3",
+        "created_at": "2025-08-24T07:17:33.373+00:00",
+        "updated_at": "2025-08-24T07:17:33.373+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 562,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsff66a8354b2d",
+        "created_at": "2025-08-31T17:07:31.569+00:00",
+        "updated_at": "2025-08-31T17:07:31.569+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 1472,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs50e68e0e4b19",
+        "created_at": "2025-08-25T05:04:38.705+00:00",
+        "updated_at": "2025-08-25T05:04:38.705+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 855,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs3327cc254d50",
+        "created_at": "2025-09-01T18:50:46.819+00:00",
+        "updated_at": "2025-09-01T18:50:46.819+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 1829,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs13937e334f04",
+        "created_at": "2025-08-25T09:03:59.902+00:00",
+        "updated_at": "2025-08-25T09:03:59.902+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 954,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs4ae21bf94785",
+        "created_at": "2025-08-23T23:26:27.399+00:00",
+        "updated_at": "2025-08-23T23:26:27.399+00:00",
+        "deadline_id": "rd_adsasda8655c54136",
+        "current_progress": 358,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "6csad7daf-4da6-4419-9573-ecf375c2d8b3",
+        "status": "reading",
+        "created_at": "2025-08-23T14:11:34.446+00:00",
+        "updated_at": "2025-08-23T14:11:34.446+00:00",
+        "deadline_id": "rd_adsasda8655c54136"
+      },
+      {
+        "id": "5d3csadf7-f598-4dcc-bfef-314c4e32a7b5",
+        "status": "complete",
+        "created_at": "2025-09-13T23:15:19.956+00:00",
+        "updated_at": "2025-09-13T23:15:19.956+00:00",
+        "deadline_id": "rd_adsasda8655c54136"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd85d763040f8",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbc8b20fca542c9",
+    "book_title": "An Actor Prepares",
+    "author": "Constantin Stanislavsky",
+    "source": "personal",
+    "deadline_date": "2025-10-15T19:06:00+00:00",
+    "flexibility": "flexible",
+    "format": "eBook",
+    "total_quantity": 349,
+    "created_at": "2025-08-15T19:08:07.306991+00:00",
+    "updated_at": "2025-08-24T05:54:21.33+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfs5f41404844fc",
+        "created_at": "2025-08-15T19:08:07.468964+00:00",
+        "updated_at": "2025-08-15T19:08:07.468964+00:00",
+        "deadline_id": "rd_adsasd85d763040f8",
+        "current_progress": 15,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs2ada87bf4a5f",
+        "created_at": "2025-08-15T19:27:47.06+00:00",
+        "updated_at": "2025-08-24T05:54:21.462+00:00",
+        "deadline_id": "rd_adsasd85d763040f8",
+        "current_progress": 20,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "46fbasd18-0018-42b5-bdd4-b96c36d53ee6",
+        "status": "reading",
+        "created_at": "2025-08-15T19:08:08.715+00:00",
+        "updated_at": "2025-08-15T19:08:08.715+00:00",
+        "deadline_id": "rd_adsasd85d763040f8"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd8f5ec0f40c4",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbcbeb355d74df1",
+    "book_title": "Words of Radiance ",
+    "author": "Brandon Sanderson",
+    "source": "personal",
+    "deadline_date": "2025-09-02T00:35:00+00:00",
+    "flexibility": "flexible",
+    "format": "audio",
+    "total_quantity": 2893,
+    "created_at": "2025-08-12T00:37:29.148535+00:00",
+    "updated_at": "2025-08-12T00:37:29.148535+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfsfbbaffde403d",
+        "created_at": "2025-08-13T17:39:18.237+00:00",
+        "updated_at": "2025-08-13T17:39:18.237+00:00",
+        "deadline_id": "rd_adsasd8f5ec0f40c4",
+        "current_progress": 1463,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs693936ff4632",
+        "created_at": "2025-08-19T22:32:01.609+00:00",
+        "updated_at": "2025-08-19T22:32:01.609+00:00",
+        "deadline_id": "rd_adsasd8f5ec0f40c4",
+        "current_progress": 2551,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs443712b74501",
+        "created_at": "2025-08-12T00:37:29.391449+00:00",
+        "updated_at": "2025-08-12T00:37:29.391449+00:00",
+        "deadline_id": "rd_adsasd8f5ec0f40c4",
+        "current_progress": 1331,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs6ab477364349",
+        "created_at": "2025-08-14T22:33:10.547+00:00",
+        "updated_at": "2025-08-14T22:33:10.547+00:00",
+        "deadline_id": "rd_adsasd8f5ec0f40c4",
+        "current_progress": 1478,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs16caa6b84353",
+        "created_at": "2025-08-20T16:25:54.5+00:00",
+        "updated_at": "2025-08-20T16:25:54.5+00:00",
+        "deadline_id": "rd_adsasd8f5ec0f40c4",
+        "current_progress": 2893,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsecd02a874cab",
+        "created_at": "2025-08-20T05:43:26.728+00:00",
+        "updated_at": "2025-08-20T05:43:26.728+00:00",
+        "deadline_id": "rd_adsasd8f5ec0f40c4",
+        "current_progress": 2711,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "23asa47cb-db38-4509-837f-93975bd5445f",
+        "status": "reading",
+        "created_at": "2025-08-12T00:37:30.684+00:00",
+        "updated_at": "2025-08-12T00:37:30.684+00:00",
+        "deadline_id": "rd_adsasd8f5ec0f40c4"
+      },
+      {
+        "id": "25ecxcf20-d20d-48da-9ea5-36218b10237b",
+        "status": "complete",
+        "created_at": "2025-08-20T16:25:58.367+00:00",
+        "updated_at": "2025-08-20T16:25:58.367+00:00",
+        "deadline_id": "rd_adsasd8f5ec0f40c4"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd27d067c42b8",
+    "user_id": "user-id-1234",
+    "book_id": null,
+    "book_title": "Running",
+    "author": "Mason",
+    "source": "personal",
+    "deadline_date": "2025-10-01T02:03:00+00:00",
+    "flexibility": "strict",
+    "format": "physical",
+    "total_quantity": 22,
+    "created_at": "2025-08-09T02:04:38.720052+00:00",
+    "updated_at": "2025-09-08T06:05:01.854+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfs55c24b3740b7",
+        "created_at": "2025-08-12T00:32:32.101+00:00",
+        "updated_at": "2025-08-12T00:32:32.101+00:00",
+        "deadline_id": "rd_adsasd27d067c42b8",
+        "current_progress": 5,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs2c7f931c46dd",
+        "created_at": "2025-09-01T06:36:28.475+00:00",
+        "updated_at": "2025-09-01T06:36:28.475+00:00",
+        "deadline_id": "rd_adsasd27d067c42b8",
+        "current_progress": 12,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs1d2a593b47ac",
+        "created_at": "2025-09-09T03:05:00.788+00:00",
+        "updated_at": "2025-09-09T03:05:00.788+00:00",
+        "deadline_id": "rd_adsasd27d067c42b8",
+        "current_progress": 13,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsb67328494ab9",
+        "created_at": "2025-08-19T22:30:54.042+00:00",
+        "updated_at": "2025-08-19T22:30:54.042+00:00",
+        "deadline_id": "rd_adsasd27d067c42b8",
+        "current_progress": 8,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsc34ca49e4433",
+        "created_at": "2025-08-30T16:11:44.312+00:00",
+        "updated_at": "2025-08-30T16:14:01.303+00:00",
+        "deadline_id": "rd_adsasd27d067c42b8",
+        "current_progress": 12,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs0744c7f84c1f",
+        "created_at": "2025-09-01T06:42:54.162+00:00",
+        "updated_at": "2025-09-08T06:05:03.397+00:00",
+        "deadline_id": "rd_adsasd27d067c42b8",
+        "current_progress": 12,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs2eca1ccb410b",
+        "created_at": "2025-08-10T06:15:06.412+00:00",
+        "updated_at": "2025-08-10T06:15:06.412+00:00",
+        "deadline_id": "rd_adsasd27d067c42b8",
+        "current_progress": 2,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfse4a76274408e",
+        "created_at": "2025-08-29T23:50:30.485+00:00",
+        "updated_at": "2025-08-29T23:50:30.485+00:00",
+        "deadline_id": "rd_adsasd27d067c42b8",
+        "current_progress": 11,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsc9a6ddfc4fb5",
+        "created_at": "2025-08-26T00:41:34.946+00:00",
+        "updated_at": "2025-08-26T00:41:34.946+00:00",
+        "deadline_id": "rd_adsasd27d067c42b8",
+        "current_progress": 10,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs1907f4414d91",
+        "created_at": "2025-08-09T02:04:39.111924+00:00",
+        "updated_at": "2025-08-09T02:04:39.111924+00:00",
+        "deadline_id": "rd_adsasd27d067c42b8",
+        "current_progress": 1,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "534exc8b-9a88-40f7-bbf2-5b00373cbd63",
+        "status": "reading",
+        "created_at": "2025-08-09T02:04:39.9+00:00",
+        "updated_at": "2025-08-09T02:04:39.9+00:00",
+        "deadline_id": "rd_adsasd27d067c42b8"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd6f3101a4144",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbc36b760f24153",
+    "book_title": "Method Writing: The First Four Concepts",
+    "author": "Jack Grapes",
+    "source": "personal",
+    "deadline_date": "2025-09-30T04:41:00+00:00",
+    "flexibility": "flexible",
+    "format": "physical",
+    "total_quantity": 210,
+    "created_at": "2025-08-01T04:43:56.50344+00:00",
+    "updated_at": "2025-08-24T05:50:42.28+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfsfd4ccc614fd7",
+        "created_at": "2025-08-21T00:06:27.759+00:00",
+        "updated_at": "2025-08-21T00:06:27.759+00:00",
+        "deadline_id": "rd_adsasd6f3101a4144",
+        "current_progress": 38,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs075176f2440a",
+        "created_at": "2025-08-21T00:10:16.657+00:00",
+        "updated_at": "2025-08-24T05:50:42.453+00:00",
+        "deadline_id": "rd_adsasd6f3101a4144",
+        "current_progress": 40,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsda2a49404d68",
+        "created_at": "2025-08-31T03:49:53.665+00:00",
+        "updated_at": "2025-08-31T03:49:53.665+00:00",
+        "deadline_id": "rd_adsasd6f3101a4144",
+        "current_progress": 44,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsfaead8cb4cd4",
+        "created_at": "2025-08-28T22:11:07.2+00:00",
+        "updated_at": "2025-08-28T22:11:07.2+00:00",
+        "deadline_id": "rd_adsasd6f3101a4144",
+        "current_progress": 42,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs10ad00e44b2e",
+        "created_at": "2025-08-01T04:43:56.753974+00:00",
+        "updated_at": "2025-08-12T00:32:52.925+00:00",
+        "deadline_id": "rd_adsasd6f3101a4144",
+        "current_progress": 33,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "45xc992a-8ea0-4b9d-bbd7-810de45df7ff",
+        "status": "reading",
+        "created_at": "2025-08-01T04:43:58.983+00:00",
+        "updated_at": "2025-08-01T04:43:58.983+00:00",
+        "deadline_id": "rd_adsasd6f3101a4144"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd7fb79644998",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbc5230a4f147d4",
+    "book_title": "Murder your darling",
+    "author": "Roy Peter Clark",
+    "source": "library",
+    "deadline_date": "2025-07-27T16:19:00+00:00",
+    "flexibility": "strict",
+    "format": "audio",
+    "total_quantity": 552,
+    "created_at": "2025-07-06T16:20:15.773459+00:00",
+    "updated_at": "2025-07-06T16:20:15.773459+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfs8f98f6a845b9",
+        "created_at": "2025-07-16T05:29:01.739+00:00",
+        "updated_at": "2025-07-16T05:29:01.74+00:00",
+        "deadline_id": "rd_adsasd7fb79644998",
+        "current_progress": 101,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs099b5f944f50",
+        "created_at": "2025-07-16T05:22:35.948+00:00",
+        "updated_at": "2025-07-16T05:22:35.948+00:00",
+        "deadline_id": "rd_adsasd7fb79644998",
+        "current_progress": 96,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs7e3247cd47fc",
+        "created_at": "2025-07-06T16:20:15.945088+00:00",
+        "updated_at": "2025-07-06T16:20:15.945088+00:00",
+        "deadline_id": "rd_adsasd7fb79644998",
+        "current_progress": 0,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs168c9f0843eb",
+        "created_at": "2025-07-14T12:18:38.194+00:00",
+        "updated_at": "2025-07-14T12:18:38.194+00:00",
+        "deadline_id": "rd_adsasd7fb79644998",
+        "current_progress": 79,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "1943h598-ff01-4e55-9616-891a34a8adac",
+        "status": "reading",
+        "created_at": "2025-07-06T16:20:17.563+00:00",
+        "updated_at": "2025-07-06T16:20:17.563+00:00",
+        "deadline_id": "rd_adsasd7fb79644998"
+      },
+      {
+        "id": "5c573uje8-62d1-4e86-9922-429f0370c021",
+        "status": "set_aside",
+        "created_at": "2025-07-29T16:27:22.985+00:00",
+        "updated_at": "2025-07-29T16:27:22.985+00:00",
+        "deadline_id": "rd_adsasd7fb79644998"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasda94a19a4c25",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbc355dcf4a4142",
+    "book_title": "The Idiot",
+    "author": "Fyodor Dostoevsky ",
+    "source": "library",
+    "deadline_date": "2025-07-22T18:50:00+00:00",
+    "flexibility": "strict",
+    "format": "audio",
+    "total_quantity": 1677,
+    "created_at": "2025-07-01T18:52:46.430375+00:00",
+    "updated_at": "2025-07-01T18:52:46.430375+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfse98a98514ce1",
+        "created_at": "2025-07-12T17:22:26.237+00:00",
+        "updated_at": "2025-07-12T17:22:26.237+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1403,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs1a1f883f44df",
+        "created_at": "2025-07-12T15:25:46.248+00:00",
+        "updated_at": "2025-07-12T15:25:46.248+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1383,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs164e448f4627",
+        "created_at": "2025-07-07T06:48:35.162+00:00",
+        "updated_at": "2025-07-07T06:48:35.162+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1071,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsf48180964ca4",
+        "created_at": "2025-07-05T13:57:00.773+00:00",
+        "updated_at": "2025-07-05T13:57:00.773+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 895,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs28bc47184a69",
+        "created_at": "2025-07-07T18:14:40.127+00:00",
+        "updated_at": "2025-07-07T18:14:40.127+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1170,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs5f6bf8844ca8",
+        "created_at": "2025-07-11T01:57:35.408+00:00",
+        "updated_at": "2025-07-11T01:57:35.408+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1209,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsb75eb51d4e14",
+        "created_at": "2025-07-12T19:16:43.676+00:00",
+        "updated_at": "2025-07-12T19:16:43.676+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1512,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs87ccbd514e87",
+        "created_at": "2025-07-05T23:29:04.1+00:00",
+        "updated_at": "2025-07-05T23:29:04.1+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 981,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsf70f19d0462c",
+        "created_at": "2025-07-11T06:37:43.459+00:00",
+        "updated_at": "2025-07-11T06:37:43.459+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1235,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs8b1e1d3640d9",
+        "created_at": "2025-07-01T23:45:18.897+00:00",
+        "updated_at": "2025-07-01T23:45:18.897+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 845,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs6a89a0fa4814",
+        "created_at": "2025-07-08T04:57:44.198+00:00",
+        "updated_at": "2025-07-08T04:57:44.198+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1185,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsda3c5a4f4ac4",
+        "created_at": "2025-07-12T07:05:12.651+00:00",
+        "updated_at": "2025-07-12T07:05:12.651+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1352,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsf2bb28974386",
+        "created_at": "2025-07-05T23:57:28.874+00:00",
+        "updated_at": "2025-07-05T23:57:28.874+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1005,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs1fc7f9b94dcc",
+        "created_at": "2025-07-05T23:19:32.814+00:00",
+        "updated_at": "2025-07-05T23:19:32.814+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 974,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs02c418b64b93",
+        "created_at": "2025-07-13T12:07:04.646+00:00",
+        "updated_at": "2025-07-13T12:07:04.646+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1554,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsb3d8e68c4f01",
+        "created_at": "2025-07-07T13:40:12.062+00:00",
+        "updated_at": "2025-07-07T13:40:12.062+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1099,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs8a1ed0a440fa",
+        "created_at": "2025-07-01T18:52:46.673297+00:00",
+        "updated_at": "2025-07-01T18:52:46.673297+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 821,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs63f72db840b3",
+        "created_at": "2025-07-05T23:36:22.727+00:00",
+        "updated_at": "2025-07-05T23:36:22.727+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 988,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs5a96898240f6",
+        "created_at": "2025-07-12T07:17:13.99+00:00",
+        "updated_at": "2025-07-12T07:17:13.99+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1367,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs6025d6d3451b",
+        "created_at": "2025-07-07T13:55:56.567+00:00",
+        "updated_at": "2025-07-07T13:55:56.567+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1108,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs53843e77499c",
+        "created_at": "2025-07-01T19:55:13.004+00:00",
+        "updated_at": "2025-07-01T19:55:13.004+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 846,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs6d83d7114c7e",
+        "created_at": "2025-07-13T20:50:12.746+00:00",
+        "updated_at": "2025-07-13T20:50:12.746+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 1677,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsd8a9dc5a45a4",
+        "created_at": "2025-07-04T19:10:24.565+00:00",
+        "updated_at": "2025-07-04T19:10:24.565+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 857,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs9c2a9f864eb5",
+        "created_at": "2025-07-05T23:19:17.751+00:00",
+        "updated_at": "2025-07-05T23:19:17.751+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 914,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsfa9b891e4185",
+        "created_at": "2025-07-01T20:55:21.371+00:00",
+        "updated_at": "2025-07-01T20:55:21.371+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25",
+        "current_progress": 847,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "3947sad6c-714d-4870-9e0a-8c41a4beb562",
+        "status": "reading",
+        "created_at": "2025-07-03T01:55:18.805642+00:00",
+        "updated_at": "2025-07-03T01:55:18.805642+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25"
+      },
+      {
+        "id": "3asdbc93e-f445-482a-a39d-26cb0efcec7a",
+        "status": "complete",
+        "created_at": "2025-07-13T20:50:16.45+00:00",
+        "updated_at": "2025-07-13T20:50:16.45+00:00",
+        "deadline_id": "rd_adsasda94a19a4c25"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd0efe76545e9",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbccfdf1f6b4408",
+    "book_title": "Letters to a Young Poet",
+    "author": "Rainer Maria Rilke",
+    "source": "personal",
+    "deadline_date": "2025-09-19T21:11:00+00:00",
+    "flexibility": "flexible",
+    "format": "physical",
+    "total_quantity": 52,
+    "created_at": "2025-06-26T21:13:29.617564+00:00",
+    "updated_at": "2025-08-24T05:41:12.149+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfs60dd299b40dd",
+        "created_at": "2025-06-26T21:13:29.773601+00:00",
+        "updated_at": "2025-06-27T05:13:59.913+00:00",
+        "deadline_id": "rd_adsasd0efe76545e9",
+        "current_progress": 37,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs59f56c4d4ab2",
+        "created_at": "2025-06-28T00:54:07.324+00:00",
+        "updated_at": "2025-08-24T05:41:12.376+00:00",
+        "deadline_id": "rd_adsasd0efe76545e9",
+        "current_progress": 39,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "74a8dxc6-5ca3-4879-ae60-edcaf827d8d9",
+        "status": "reading",
+        "created_at": "2025-07-03T01:55:18.805642+00:00",
+        "updated_at": "2025-07-03T01:55:18.805642+00:00",
+        "deadline_id": "rd_adsasd0efe76545e9"
+      },
+      {
+        "id": "4xcz524f0-ac47-4aaa-bcc2-f6b3025d9243",
+        "status": "set_aside",
+        "created_at": "2025-08-21T01:04:14.644+00:00",
+        "updated_at": "2025-08-21T01:04:14.644+00:00",
+        "deadline_id": "rd_adsasd0efe76545e9"
+      },
+      {
+        "id": "cd0zxfc8-dd7c-40b0-9e7d-6fab8edb11d3",
+        "status": "reading",
+        "created_at": "2025-08-21T01:07:23.595+00:00",
+        "updated_at": "2025-08-21T01:07:23.595+00:00",
+        "deadline_id": "rd_adsasd0efe76545e9"
+      },
+      {
+        "id": "15bzxc0c6-23f4-4a24-a88a-809c087c9bd3",
+        "status": "set_aside",
+        "created_at": "2025-09-07T05:41:07.093+00:00",
+        "updated_at": "2025-09-07T05:41:07.093+00:00",
+        "deadline_id": "rd_adsasd0efe76545e9"
+      },
+      {
+        "id": "7xcz59bb7-fe80-4bd4-a61e-e2c9ca56d71d",
+        "status": "reading",
+        "created_at": "2025-09-07T05:41:13.739+00:00",
+        "updated_at": "2025-09-07T05:41:13.739+00:00",
+        "deadline_id": "rd_adsasd0efe76545e9"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd91b52044931",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbc48218bdb4d54",
+    "book_title": "Freeing the natural voice",
+    "author": "Kristin Linklater",
+    "source": "library",
+    "deadline_date": "2025-11-01T03:55:00+00:00",
+    "flexibility": "flexible",
+    "format": "physical",
+    "total_quantity": 374,
+    "created_at": "2025-06-26T04:03:53.45453+00:00",
+    "updated_at": "2025-08-12T00:33:31.028+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfs6fdcb61e47ad",
+        "created_at": "2025-06-28T04:45:39.085+00:00",
+        "updated_at": "2025-08-12T00:33:33.124+00:00",
+        "deadline_id": "rd_adsasd91b52044931",
+        "current_progress": 41,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsad9e56d84ffa",
+        "created_at": "2025-06-26T04:03:53.745677+00:00",
+        "updated_at": "2025-06-27T06:31:12.37+00:00",
+        "deadline_id": "rd_adsasd91b52044931",
+        "current_progress": 31,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "1d73bxce-5d43-4c36-8b8f-dc28b5c854af",
+        "status": "reading",
+        "created_at": "2025-07-03T01:55:18.805642+00:00",
+        "updated_at": "2025-07-03T01:55:18.805642+00:00",
+        "deadline_id": "rd_adsasd91b52044931"
+      },
+      {
+        "id": "1xzc1bf60-de5a-4efb-88a2-656873b75814",
+        "status": "set_aside",
+        "created_at": "2025-08-20T16:26:29.546+00:00",
+        "updated_at": "2025-08-20T16:26:29.546+00:00",
+        "deadline_id": "rd_adsasd91b52044931"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasdc8cb5b94bea",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbce9c97e0f4129",
+    "book_title": "The Way of Kings",
+    "author": "Brandon Sanderson",
+    "source": "personal",
+    "deadline_date": "2025-12-31T07:57:00+00:00",
+    "flexibility": "strict",
+    "format": "audio",
+    "total_quantity": 2734,
+    "created_at": "2025-06-24T23:13:21.422152+00:00",
+    "updated_at": "2025-06-24T23:13:21.422152+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfs71b352584083",
+        "created_at": "2025-06-30T02:06:36.833+00:00",
+        "updated_at": "2025-06-30T02:06:36.833+00:00",
+        "deadline_id": "rd_adsasdc8cb5b94bea",
+        "current_progress": 984,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs870ac8924921",
+        "created_at": "2025-07-28T23:00:02.339+00:00",
+        "updated_at": "2025-07-28T23:00:02.339+00:00",
+        "deadline_id": "rd_adsasdc8cb5b94bea",
+        "current_progress": 2188,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfscec2bc504104",
+        "created_at": "2025-08-02T03:22:23.685+00:00",
+        "updated_at": "2025-08-02T03:22:23.685+00:00",
+        "deadline_id": "rd_adsasdc8cb5b94bea",
+        "current_progress": 2369,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs4a9054ac42a2",
+        "created_at": "2025-08-02T16:02:47.468+00:00",
+        "updated_at": "2025-08-02T16:02:47.468+00:00",
+        "deadline_id": "rd_adsasdc8cb5b94bea",
+        "current_progress": 2733,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsb7170089463a",
+        "created_at": "2025-07-26T21:44:41.478+00:00",
+        "updated_at": "2025-07-26T21:44:41.478+00:00",
+        "deadline_id": "rd_adsasdc8cb5b94bea",
+        "current_progress": 1541,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs80131cf045f9",
+        "created_at": "2025-08-10T05:46:56.79+00:00",
+        "updated_at": "2025-08-10T05:46:56.79+00:00",
+        "deadline_id": "rd_adsasdc8cb5b94bea",
+        "current_progress": 2734,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs2a1812ca4c75",
+        "created_at": "2025-07-23T03:55:45.619+00:00",
+        "updated_at": "2025-07-23T03:55:45.619+00:00",
+        "deadline_id": "rd_adsasdc8cb5b94bea",
+        "current_progress": 1077,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs7a2a1d7642ab",
+        "created_at": "2025-06-25T23:34:40.168+00:00",
+        "updated_at": "2025-06-25T23:34:40.168+00:00",
+        "deadline_id": "rd_adsasdc8cb5b94bea",
+        "current_progress": 962,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsf80a71d84374",
+        "created_at": "2025-06-24T23:13:21.809276+00:00",
+        "updated_at": "2025-06-24T23:13:21.809276+00:00",
+        "deadline_id": "rd_adsasdc8cb5b94bea",
+        "current_progress": 938,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "42b09sd7-ac11-44b1-9721-d8af13d2c5b4",
+        "status": "reading",
+        "created_at": "2025-07-03T01:55:18.805642+00:00",
+        "updated_at": "2025-07-03T01:55:18.805642+00:00",
+        "deadline_id": "rd_adsasdc8cb5b94bea"
+      },
+      {
+        "id": "6b1xca33-f59d-4478-bde6-dee7b40a6f8b",
+        "status": "complete",
+        "created_at": "2025-08-10T05:46:59.863+00:00",
+        "updated_at": "2025-08-10T05:46:59.863+00:00",
+        "deadline_id": "rd_adsasdc8cb5b94bea"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd6a0c8434e75",
+    "user_id": "user-id-1234",
+    "book_id": null,
+    "book_title": "Singing",
+    "author": "Omar Mason",
+    "source": "personal",
+    "deadline_date": "2025-12-31T07:57:00+00:00",
+    "flexibility": "strict",
+    "format": "audio",
+    "total_quantity": 6000,
+    "created_at": "2025-06-22T06:59:29.797049+00:00",
+    "updated_at": "2025-06-22T06:59:29.797049+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfs1f67bce64314",
+        "created_at": "2025-07-24T00:13:15.497+00:00",
+        "updated_at": "2025-07-24T00:13:15.497+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1762,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs1176eb01472d",
+        "created_at": "2025-06-22T06:59:29.94999+00:00",
+        "updated_at": "2025-06-22T06:59:29.94999+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1200,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsdd7e3e214428",
+        "created_at": "2025-08-29T06:35:23.364+00:00",
+        "updated_at": "2025-08-29T06:35:23.364+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2817,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs325560f14ec0",
+        "created_at": "2025-08-09T18:49:48.001+00:00",
+        "updated_at": "2025-08-09T18:49:48.001+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2239,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsa7e7ce114c3b",
+        "created_at": "2025-07-18T23:55:53.675+00:00",
+        "updated_at": "2025-07-18T23:55:53.675+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1644,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfse74546df417d",
+        "created_at": "2025-08-27T03:02:16.494+00:00",
+        "updated_at": "2025-08-27T03:02:16.494+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2697,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsb085e34d43b8",
+        "created_at": "2025-08-12T00:33:48.801+00:00",
+        "updated_at": "2025-08-12T00:33:48.801+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2442,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs2ca43b7c4e7a",
+        "created_at": "2025-07-17T21:50:07.217+00:00",
+        "updated_at": "2025-07-17T21:50:07.217+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1606,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsc28b4b3f4183",
+        "created_at": "2025-07-19T19:40:00.675+00:00",
+        "updated_at": "2025-07-19T19:40:00.675+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1680,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsc881693d4694",
+        "created_at": "2025-06-25T21:39:19.694+00:00",
+        "updated_at": "2025-06-25T21:39:19.694+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1278,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs5af3084c4dca",
+        "created_at": "2025-07-31T04:19:58.004+00:00",
+        "updated_at": "2025-07-31T04:19:58.004+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2056,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs5874411c43e2",
+        "created_at": "2025-07-11T20:08:37.124+00:00",
+        "updated_at": "2025-07-11T20:08:37.124+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1501,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs5f67a4b941dc",
+        "created_at": "2025-07-04T02:05:10.07+00:00",
+        "updated_at": "2025-07-04T02:05:10.07+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1496,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsaba301d34c20",
+        "created_at": "2025-08-10T05:47:15.771+00:00",
+        "updated_at": "2025-08-10T05:47:15.771+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2359,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs09022e994715",
+        "created_at": "2025-06-25T21:38:51.459+00:00",
+        "updated_at": "2025-06-25T21:38:51.459+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1226,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs78746a0c44d4",
+        "created_at": "2025-07-11T21:43:27.641+00:00",
+        "updated_at": "2025-07-11T21:43:27.641+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1571,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfscdbf4a224772",
+        "created_at": "2025-09-09T17:50:50.134+00:00",
+        "updated_at": "2025-09-09T17:50:50.134+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2977,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfscd902ae64443",
+        "created_at": "2025-07-03T23:30:42.908+00:00",
+        "updated_at": "2025-07-03T23:30:42.908+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1470,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsf3f3f83c49e4",
+        "created_at": "2025-08-06T03:35:40.98+00:00",
+        "updated_at": "2025-08-06T03:35:40.98+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2161,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsc5bcbfb241fd",
+        "created_at": "2025-08-09T18:20:42.33+00:00",
+        "updated_at": "2025-08-09T18:20:42.33+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2219,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsba295a444146",
+        "created_at": "2025-09-06T00:34:17.538+00:00",
+        "updated_at": "2025-09-06T00:34:17.538+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2937,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs2d543eff4377",
+        "created_at": "2025-09-09T03:05:14.215+00:00",
+        "updated_at": "2025-09-09T03:05:14.215+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2967,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs2800db3a4e68",
+        "created_at": "2025-08-26T00:42:43.194+00:00",
+        "updated_at": "2025-08-26T00:42:43.194+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2677,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsb0b0eb4f4569",
+        "created_at": "2025-07-17T22:51:17.69+00:00",
+        "updated_at": "2025-07-17T22:51:17.69+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1624,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs76b1513440c3",
+        "created_at": "2025-08-16T06:12:59.79+00:00",
+        "updated_at": "2025-08-16T06:12:59.79+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2540,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsa1b7bcfb4f3e",
+        "created_at": "2025-08-06T03:40:26.523+00:00",
+        "updated_at": "2025-08-06T03:40:26.523+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2166,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfse597c362415b",
+        "created_at": "2025-07-18T23:56:22.525+00:00",
+        "updated_at": "2025-07-18T23:56:22.525+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1681,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsa556b9db4826",
+        "created_at": "2025-08-09T02:04:49.015+00:00",
+        "updated_at": "2025-08-09T02:04:49.015+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2196,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsebc650534c6f",
+        "created_at": "2025-07-22T00:52:28.143+00:00",
+        "updated_at": "2025-07-22T00:52:28.143+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1739,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs0f80b51e46f5",
+        "created_at": "2025-08-29T05:43:23.712+00:00",
+        "updated_at": "2025-08-29T05:43:23.713+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2807,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsc8818ab14b02",
+        "created_at": "2025-08-10T06:13:38.383+00:00",
+        "updated_at": "2025-08-10T06:13:38.383+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2364,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsd6c046734f5a",
+        "created_at": "2025-08-25T20:30:45.987+00:00",
+        "updated_at": "2025-08-25T20:30:45.987+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2605,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfscf2a82b54d29",
+        "created_at": "2025-09-13T17:44:23.709+00:00",
+        "updated_at": "2025-09-13T17:44:23.709+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2992,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfseb781e024748",
+        "created_at": "2025-07-03T21:43:59.75+00:00",
+        "updated_at": "2025-07-03T21:43:59.75+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1402,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsf00ec91a4772",
+        "created_at": "2025-08-26T00:42:19.898+00:00",
+        "updated_at": "2025-08-26T00:42:19.898+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2649,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsca37db7441a9",
+        "created_at": "2025-07-11T21:43:16.203+00:00",
+        "updated_at": "2025-07-11T21:43:16.203+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1559,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs2b0d83ee4bdf",
+        "created_at": "2025-08-10T16:40:51.233+00:00",
+        "updated_at": "2025-08-10T16:40:51.233+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2392,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsd52ebbf94b62",
+        "created_at": "2025-06-28T04:21:03.734+00:00",
+        "updated_at": "2025-06-28T04:21:03.735+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1342,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsa9332e094a94",
+        "created_at": "2025-07-11T20:39:37.518+00:00",
+        "updated_at": "2025-07-11T20:39:37.518+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1520,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsea0da3584d1c",
+        "created_at": "2025-08-07T20:36:26.429+00:00",
+        "updated_at": "2025-08-07T20:36:26.429+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2186,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs8e7bf8d64fd4",
+        "created_at": "2025-07-03T21:55:59.383+00:00",
+        "updated_at": "2025-07-03T21:55:59.383+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1424,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsc38912e14918",
+        "created_at": "2025-07-02T01:57:58.418+00:00",
+        "updated_at": "2025-07-02T01:57:58.418+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1387,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs2f6a64f84574",
+        "created_at": "2025-08-27T03:30:07.526+00:00",
+        "updated_at": "2025-08-27T03:30:07.526+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2727,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs8f6ec7fe4c9b",
+        "created_at": "2025-08-09T18:20:29.992+00:00",
+        "updated_at": "2025-08-09T18:20:29.992+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2209,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsbabc33d44bee",
+        "created_at": "2025-07-19T19:17:07.927+00:00",
+        "updated_at": "2025-07-19T19:17:07.927+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1696,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs0f8868824fca",
+        "created_at": "2025-07-15T20:49:29.227+00:00",
+        "updated_at": "2025-07-15T20:49:29.227+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1586,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs89d57e684858",
+        "created_at": "2025-07-26T02:49:13.998+00:00",
+        "updated_at": "2025-07-26T02:49:13.998+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1871,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs72f21f97438b",
+        "created_at": "2025-07-24T18:53:24.366+00:00",
+        "updated_at": "2025-07-24T18:53:24.366+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1825,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs2726225344c5",
+        "created_at": "2025-07-11T21:43:08.148+00:00",
+        "updated_at": "2025-07-11T21:43:08.148+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1551,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs5bfc4c89449e",
+        "created_at": "2025-07-22T02:12:18.385+00:00",
+        "updated_at": "2025-07-22T02:12:18.385+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1752,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs794acc5646b7",
+        "created_at": "2025-08-14T22:33:25.097+00:00",
+        "updated_at": "2025-08-14T22:33:25.097+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2457,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsae7cd93e4b0c",
+        "created_at": "2025-07-19T19:56:55.152+00:00",
+        "updated_at": "2025-07-19T19:56:55.152+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1716,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfse209af9d41c7",
+        "created_at": "2025-07-26T02:11:37.525+00:00",
+        "updated_at": "2025-07-26T02:11:37.525+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1840,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsd029b58647e7",
+        "created_at": "2025-07-20T14:58:08.291+00:00",
+        "updated_at": "2025-07-20T14:58:08.291+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1724,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsa690741740cd",
+        "created_at": "2025-07-19T19:40:30.455+00:00",
+        "updated_at": "2025-07-19T19:40:30.455+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1711,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfse798ead44b03",
+        "created_at": "2025-08-10T15:59:52.563+00:00",
+        "updated_at": "2025-08-10T15:59:52.563+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2384,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs77db5ba3496e",
+        "created_at": "2025-07-26T02:54:55.419+00:00",
+        "updated_at": "2025-07-26T02:54:55.419+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1881,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs5aa7b2554321",
+        "created_at": "2025-07-11T20:28:00.304+00:00",
+        "updated_at": "2025-07-11T20:28:00.304+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1511,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfse0ebb0e64e6b",
+        "created_at": "2025-08-24T04:39:11.38+00:00",
+        "updated_at": "2025-08-24T04:39:11.38+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2575,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsac8df2284c3f",
+        "created_at": "2025-06-28T17:43:03.46+00:00",
+        "updated_at": "2025-06-28T17:43:03.46+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1377,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs1346d29b4fda",
+        "created_at": "2025-07-18T23:55:59.659+00:00",
+        "updated_at": "2025-07-18T23:55:59.659+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1671,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsc544531a41f4",
+        "created_at": "2025-07-26T02:41:02.056+00:00",
+        "updated_at": "2025-07-26T02:41:02.056+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1865,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs6be22ab94cf2",
+        "created_at": "2025-08-27T02:33:33.19+00:00",
+        "updated_at": "2025-08-27T02:33:33.19+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2687,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs249e41f947f5",
+        "created_at": "2025-07-29T03:03:09.289+00:00",
+        "updated_at": "2025-07-29T03:03:09.289+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 1981,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs3d8e39fa4d7f",
+        "created_at": "2025-08-19T22:32:40.853+00:00",
+        "updated_at": "2025-08-19T22:32:40.853+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2550,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs9cee7dbf4969",
+        "created_at": "2025-08-28T04:26:53.554+00:00",
+        "updated_at": "2025-08-28T04:26:53.554+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2757,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs47c0601f463e",
+        "created_at": "2025-08-24T01:54:42.476+00:00",
+        "updated_at": "2025-08-24T01:54:42.476+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 2580,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs4ce8-3e61-4068-ade1-3684d394a394",
+        "created_at": "2025-09-15T23:35:10.04019+00:00",
+        "updated_at": "2025-09-15T23:35:10.04019+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75",
+        "current_progress": 3037,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "e22fasd08-3c41-4c1d-846f-98250efeb5cc",
+        "status": "reading",
+        "created_at": "2025-07-03T01:55:18.805642+00:00",
+        "updated_at": "2025-07-03T01:55:18.805642+00:00",
+        "deadline_id": "rd_adsasd6a0c8434e75"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd304c851434a",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbcf56fd4aa45ab",
+    "book_title": "Onyx Storm",
+    "author": "Rebecca Yarros",
+    "source": "ARC",
+    "deadline_date": "2025-12-31T07:57:00+00:00",
+    "flexibility": "strict",
+    "format": "audio",
+    "total_quantity": 1432,
+    "created_at": "2025-06-21T06:56:48.16655+00:00",
+    "updated_at": "2025-09-15T03:56:47.033856+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfs7ea9ad664f8a",
+        "created_at": "2025-06-21T06:56:48.32877+00:00",
+        "updated_at": "2025-06-21T06:56:48.32877+00:00",
+        "deadline_id": "rd_adsasd304c851434a",
+        "current_progress": 832,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs1904acdb4a21",
+        "created_at": "2025-07-01T01:38:57.214+00:00",
+        "updated_at": "2025-07-01T01:38:57.214+00:00",
+        "deadline_id": "rd_adsasd304c851434a",
+        "current_progress": 838,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs2f156fa9479c",
+        "created_at": "2025-07-03T03:33:33.039+00:00",
+        "updated_at": "2025-08-24T05:21:33.904+00:00",
+        "deadline_id": "rd_adsasd304c851434a",
+        "current_progress": 838,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "42b9asd68-5d88-4b2d-a1bb-6ea2e4439d85",
+        "status": "reading",
+        "created_at": "2025-07-03T01:55:18.805642+00:00",
+        "updated_at": "2025-07-03T01:55:18.805642+00:00",
+        "deadline_id": "rd_adsasd304c851434a"
+      },
+      {
+        "id": "adsda-cfc8-41a6-b448-dbd7f2850c25",
+        "status": "set_aside",
+        "created_at": "2025-07-03T03:33:44.774+00:00",
+        "updated_at": "2025-07-03T03:33:44.774+00:00",
+        "deadline_id": "rd_adsasd304c851434a"
+      },
+      {
+        "id": "2009asd43-6dce-47d1-9a6d-8442a91a81fb",
+        "status": "reading",
+        "created_at": "2025-08-21T00:57:30.042+00:00",
+        "updated_at": "2025-08-21T00:57:30.042+00:00",
+        "deadline_id": "rd_adsasd304c851434a"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd109fce34579",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbcae3c2b60490e",
+    "book_title": "The lean start up",
+    "author": "Eric Ries",
+    "source": "personal",
+    "deadline_date": "2025-09-05T06:47:00+00:00",
+    "flexibility": "flexible",
+    "format": "audio",
+    "total_quantity": 519,
+    "created_at": "2025-06-21T05:46:43.766915+00:00",
+    "updated_at": "2025-08-10T06:15:48.703+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfsff7295a84fa4",
+        "created_at": "2025-06-27T17:04:16.402+00:00",
+        "updated_at": "2025-06-27T17:04:16.402+00:00",
+        "deadline_id": "rd_adsasd109fce34579",
+        "current_progress": 344,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsca7f8d7b4e41",
+        "created_at": "2025-06-30T20:06:18.398+00:00",
+        "updated_at": "2025-06-30T20:06:18.398+00:00",
+        "deadline_id": "rd_adsasd109fce34579",
+        "current_progress": 350,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs0755ee9142dd",
+        "created_at": "2025-06-27T17:59:32.686+00:00",
+        "updated_at": "2025-06-27T17:59:32.686+00:00",
+        "deadline_id": "rd_adsasd109fce34579",
+        "current_progress": 344,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs0511684b407b",
         "created_at": "2025-06-21T05:46:43.766915+00:00",
         "updated_at": "2025-06-21T05:46:43.766915+00:00",
-        "progress": [
-            {
-                "id": "rdp_hsdfs2f917186491e",
-                "created_at": "2025-07-19T05:45:28.465+00:00",
-                "updated_at": "2025-07-19T05:45:28.465+00:00",
-                "deadline_id": "rd_adsasd0d544304c7c",
-                "current_progress": 1720,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs64d27d2349d6",
-                "created_at": "2025-06-28T16:49:01.786+00:00",
-                "updated_at": "2025-06-28T16:49:01.786+00:00",
-                "deadline_id": "rd_adsasd0d544304c7c",
-                "current_progress": 1385,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs2499cc5a4881",
-                "created_at": "2025-06-21T05:46:43.766915+00:00",
-                "updated_at": "2025-06-21T05:46:43.766915+00:00",
-                "deadline_id": "rd_adsasd0d544304c7c",
-                "current_progress": 1272,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs77d09964440d",
-                "created_at": "2025-06-29T09:26:20.461+00:00",
-                "updated_at": "2025-06-29T09:26:20.461+00:00",
-                "deadline_id": "rd_adsasd0d544304c7c",
-                "current_progress": 1499,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfsa32632ce4573",
-                "created_at": "2025-06-30T20:06:38.123+00:00",
-                "updated_at": "2025-06-30T20:06:38.123+00:00",
-                "deadline_id": "rd_adsasd0d544304c7c",
-                "current_progress": 1505,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs40345f5e4e34",
-                "created_at": "2025-06-28T01:49:16.59+00:00",
-                "updated_at": "2025-06-28T01:49:16.59+00:00",
-                "deadline_id": "rd_adsasd0d544304c7c",
-                "current_progress": 1358,
-                "time_spent_reading": null
-            },
-            {
-                "id": "rdp_hsdfs434e0e6a436a",
-                "created_at": "2025-07-01T12:26:39.442+00:00",
-                "updated_at": "2025-07-01T12:26:39.442+00:00",
-                "deadline_id": "rd_adsasd0d544304c7c",
-                "current_progress": 1559,
-                "time_spent_reading": null
-            }
-        ],
-        "status": [
-            {
-                "id": "c1fasdea3-9b9d-4017-a9ec-ee35ad23d073",
-                "status": "reading",
-                "created_at": "2025-07-03T01:55:18.805642+00:00",
-                "updated_at": "2025-07-03T01:55:18.805642+00:00",
-                "deadline_id": "rd_adsasd0d544304c7c"
-            },
-            {
-                "id": "90asdb3fd-2319-4652-8558-776410551859",
-                "status": "complete",
-                "created_at": "2025-07-19T05:45:32.413+00:00",
-                "updated_at": "2025-07-19T05:45:32.413+00:00",
-                "deadline_id": "rd_adsasd0d544304c7c"
-            }
-        ]
-    }
+        "deadline_id": "rd_adsasd109fce34579",
+        "current_progress": 281,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs149e680a40cb",
+        "created_at": "2025-07-02T17:27:23.454+00:00",
+        "updated_at": "2025-08-10T06:15:48.873+00:00",
+        "deadline_id": "rd_adsasd109fce34579",
+        "current_progress": 369,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs8558fb9445f9",
+        "created_at": "2025-06-27T02:49:52.547+00:00",
+        "updated_at": "2025-06-27T02:49:52.547+00:00",
+        "deadline_id": "rd_adsasd109fce34579",
+        "current_progress": 302,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs0dfcc22249dd",
+        "created_at": "2025-06-27T17:59:24.503+00:00",
+        "updated_at": "2025-06-27T17:59:24.503+00:00",
+        "deadline_id": "rd_adsasd109fce34579",
+        "current_progress": 346,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "b8aaasdef-5771-4794-8e94-47a0062623cc",
+        "status": "reading",
+        "created_at": "2025-07-03T01:55:18.805642+00:00",
+        "updated_at": "2025-07-03T01:55:18.805642+00:00",
+        "deadline_id": "rd_adsasd109fce34579"
+      },
+      {
+        "id": "567asd4a0-fb5e-452e-b106-529133ee8b3f",
+        "status": "set_aside",
+        "created_at": "2025-08-24T01:55:52.756+00:00",
+        "updated_at": "2025-08-24T01:55:52.756+00:00",
+        "deadline_id": "rd_adsasd109fce34579"
+      }
+    ]
+  },
+  {
+    "id": "rd_adsasd0d544304c7c",
+    "user_id": "user-id-1234",
+    "book_id": "book_jsbcee5f373c4ae0",
+    "book_title": "Dungeon Crawler Carl This Inevitable Ruin",
+    "author": "Matt Dinniman",
+    "source": "personal",
+    "deadline_date": "2025-12-31T07:57:00+00:00",
+    "flexibility": "strict",
+    "format": "audio",
+    "total_quantity": 1720,
+    "created_at": "2025-06-21T05:46:43.766915+00:00",
+    "updated_at": "2025-06-21T05:46:43.766915+00:00",
+    "progress": [
+      {
+        "id": "rdp_hsdfs2f917186491e",
+        "created_at": "2025-07-19T05:45:28.465+00:00",
+        "updated_at": "2025-07-19T05:45:28.465+00:00",
+        "deadline_id": "rd_adsasd0d544304c7c",
+        "current_progress": 1720,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs64d27d2349d6",
+        "created_at": "2025-06-28T16:49:01.786+00:00",
+        "updated_at": "2025-06-28T16:49:01.786+00:00",
+        "deadline_id": "rd_adsasd0d544304c7c",
+        "current_progress": 1385,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs2499cc5a4881",
+        "created_at": "2025-06-21T05:46:43.766915+00:00",
+        "updated_at": "2025-06-21T05:46:43.766915+00:00",
+        "deadline_id": "rd_adsasd0d544304c7c",
+        "current_progress": 1272,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs77d09964440d",
+        "created_at": "2025-06-29T09:26:20.461+00:00",
+        "updated_at": "2025-06-29T09:26:20.461+00:00",
+        "deadline_id": "rd_adsasd0d544304c7c",
+        "current_progress": 1499,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfsa32632ce4573",
+        "created_at": "2025-06-30T20:06:38.123+00:00",
+        "updated_at": "2025-06-30T20:06:38.123+00:00",
+        "deadline_id": "rd_adsasd0d544304c7c",
+        "current_progress": 1505,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs40345f5e4e34",
+        "created_at": "2025-06-28T01:49:16.59+00:00",
+        "updated_at": "2025-06-28T01:49:16.59+00:00",
+        "deadline_id": "rd_adsasd0d544304c7c",
+        "current_progress": 1358,
+        "time_spent_reading": null
+      },
+      {
+        "id": "rdp_hsdfs434e0e6a436a",
+        "created_at": "2025-07-01T12:26:39.442+00:00",
+        "updated_at": "2025-07-01T12:26:39.442+00:00",
+        "deadline_id": "rd_adsasd0d544304c7c",
+        "current_progress": 1559,
+        "time_spent_reading": null
+      }
+    ],
+    "status": [
+      {
+        "id": "c1fasdea3-9b9d-4017-a9ec-ee35ad23d073",
+        "status": "reading",
+        "created_at": "2025-07-03T01:55:18.805642+00:00",
+        "updated_at": "2025-07-03T01:55:18.805642+00:00",
+        "deadline_id": "rd_adsasd0d544304c7c"
+      },
+      {
+        "id": "90asdb3fd-2319-4652-8558-776410551859",
+        "status": "complete",
+        "created_at": "2025-07-19T05:45:32.413+00:00",
+        "updated_at": "2025-07-19T05:45:32.413+00:00",
+        "deadline_id": "rd_adsasd0d544304c7c"
+      }
+    ]
+  }
 ]

@@ -20,7 +20,7 @@ export const useTodaysDeadlines = (): TodaysDeadlines => {
       ...completedDeadlines.filter(d => {
         const status = d.status?.length && d.status[d.status.length - 1];
         return status && dayjs(status.created_at).isAfter(today);
-      })
+      }),
     ].filter(d => d.deadline_date && dayjs(d.deadline_date).isAfter(today));
   }, [activeDeadlines, completedDeadlines]);
 

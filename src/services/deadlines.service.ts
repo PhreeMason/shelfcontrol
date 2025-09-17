@@ -454,6 +454,4 @@ class DeadlinesService {
   }
 }
 
-
-
 export const deadlinesService = new DeadlinesService();

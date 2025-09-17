@@ -20,7 +20,9 @@ import deadlinesMockData from '@/__fixtures__/deadlines.mock.json';
 
 // Mock dependencies
 jest.mock('@/utils/deadlineCalculations', () => ({
-  calculateCurrentProgress: jest.fn((format: string, progress: number) => progress),
+  calculateCurrentProgress: jest.fn(
+    (format: string, progress: number) => progress
+  ),
   calculateTotalQuantity: jest.fn((format: string, total: number) => total),
   getPaceEstimate: jest.fn(() => '~2 hours'),
   getReadingEstimate: jest.fn(() => '3 hours remaining'),
@@ -30,13 +32,22 @@ jest.mock('@/utils/deadlineUtils', () => ({
   calculateDaysLeft: jest.fn(() => 5),
   calculateProgress: jest.fn(() => 100),
   calculateProgressPercentage: jest.fn(() => 50),
-  getUnitForFormat: jest.fn((format: string) => format === 'audio' ? 'minutes' : 'pages'),
+  getUnitForFormat: jest.fn((format: string) =>
+    format === 'audio' ? 'minutes' : 'pages'
+  ),
 }));
 
 jest.mock('@/utils/paceCalculations', () => ({
   calculateRequiredPace: jest.fn(() => 20),
-  formatPaceDisplay: jest.fn((pace: number, format: string) => `${pace} ${format === 'audio' ? 'min' : 'pages'}/day`),
-  getPaceBasedStatus: jest.fn(() => ({ color: 'green', level: 'good', message: 'On track' })),
+  formatPaceDisplay: jest.fn(
+    (pace: number, format: string) =>
+      `${pace} ${format === 'audio' ? 'min' : 'pages'}/day`
+  ),
+  getPaceBasedStatus: jest.fn(() => ({
+    color: 'green',
+    level: 'good',
+    message: 'On track',
+  })),
   getPaceStatusMessage: jest.fn(() => 'You are on track'),
 }));
 
@@ -284,54 +295,90 @@ describe('deadlineProviderUtils', () => {
 
   describe('determineUserPace', () => {
     it('should return listening pace for audio format', () => {
-      const result = determineUserPace('audio', mockUserPaceData, mockUserListeningPaceData);
+      const result = determineUserPace(
+        'audio',
+        mockUserPaceData,
+        mockUserListeningPaceData
+      );
       expect(result).toBe(30); // mockUserListeningPaceData.averagePace
     });
 
     it('should return reading pace for physical format', () => {
-      const result = determineUserPace('physical', mockUserPaceData, mockUserListeningPaceData);
+      const result = determineUserPace(
+        'physical',
+        mockUserPaceData,
+        mockUserListeningPaceData
+      );
       expect(result).toBe(25); // mockUserPaceData.averagePace
     });
 
     it('should return reading pace for eBook format', () => {
-      const result = determineUserPace('eBook', mockUserPaceData, mockUserListeningPaceData);
+      const result = determineUserPace(
+        'eBook',
+        mockUserPaceData,
+        mockUserListeningPaceData
+      );
       expect(result).toBe(25); // mockUserPaceData.averagePace
     });
   });
 
   describe('mapPaceToUrgency', () => {
     it('should map overdue to overdue', () => {
-      const status = { color: 'red' as const, level: 'overdue' as const, message: 'Overdue' };
+      const status = {
+        color: 'red' as const,
+        level: 'overdue' as const,
+        message: 'Overdue',
+      };
       const result = mapPaceToUrgency(status, 5);
       expect(result).toBe('overdue');
     });
 
     it('should map impossible to impossible', () => {
-      const status = { color: 'red' as const, level: 'impossible' as const, message: 'Impossible' };
+      const status = {
+        color: 'red' as const,
+        level: 'impossible' as const,
+        message: 'Impossible',
+      };
       const result = mapPaceToUrgency(status, 5);
       expect(result).toBe('impossible');
     });
 
     it('should map good to good', () => {
-      const status = { color: 'green' as const, level: 'good' as const, message: 'Good' };
+      const status = {
+        color: 'green' as const,
+        level: 'good' as const,
+        message: 'Good',
+      };
       const result = mapPaceToUrgency(status, 5);
       expect(result).toBe('good');
     });
 
     it('should map approaching to approaching', () => {
-      const status = { color: 'orange' as const, level: 'approaching' as const, message: 'Approaching' };
+      const status = {
+        color: 'orange' as const,
+        level: 'approaching' as const,
+        message: 'Approaching',
+      };
       const result = mapPaceToUrgency(status, 5);
       expect(result).toBe('approaching');
     });
 
     it('should default to urgent for short time left', () => {
-      const status = { color: 'orange' as const, level: 'unknown' as const, message: 'Unknown' };
+      const status = {
+        color: 'orange' as const,
+        level: 'unknown' as const,
+        message: 'Unknown',
+      };
       const result = mapPaceToUrgency(status, 3);
       expect(result).toBe('urgent');
     });
 
     it('should default to good for long time left', () => {
-      const status = { color: 'orange' as const, level: 'unknown' as const, message: 'Unknown' };
+      const status = {
+        color: 'orange' as const,
+        level: 'unknown' as const,
+        message: 'Unknown',
+      };
       const result = mapPaceToUrgency(status, 10);
       expect(result).toBe('good');
     });
@@ -374,9 +421,19 @@ describe('deadlineProviderUtils', () => {
 
   describe('buildPaceStatusResult', () => {
     it('should build correct pace status result', () => {
-      const status = { color: 'green' as const, level: 'good' as const, message: 'On track' };
+      const status = {
+        color: 'green' as const,
+        level: 'good' as const,
+        message: 'On track',
+      };
       const result = buildPaceStatusResult(
-        25, 20, status, 'You are on track', 'physical', 5, 50
+        25,
+        20,
+        status,
+        'You are on track',
+        'physical',
+        5,
+        50
       );
 
       expect(result).toEqual({
@@ -395,7 +452,11 @@ describe('deadlineProviderUtils', () => {
   describe('calculateDeadlinePaceStatus', () => {
     it('should calculate pace status for deadline', () => {
       const deadline = mockDeadlines[0];
-      const result = calculateDeadlinePaceStatus(deadline, mockUserPaceData, mockUserListeningPaceData);
+      const result = calculateDeadlinePaceStatus(
+        deadline,
+        mockUserPaceData,
+        mockUserListeningPaceData
+      );
 
       expect(result).toHaveProperty('userPace');
       expect(result).toHaveProperty('requiredPace');
@@ -411,16 +472,33 @@ describe('deadlineProviderUtils', () => {
   describe('createDeadlineCalculationResult', () => {
     it('should create complete deadline calculation result', () => {
       const deadline = mockDeadlines[0];
-      const metrics = { currentProgress: 100, totalQuantity: 200, daysLeft: 5, progressPercentage: 50 };
+      const metrics = {
+        currentProgress: 100,
+        totalQuantity: 200,
+        daysLeft: 5,
+        progressPercentage: 50,
+      };
       const paceData = {
         userPace: 25,
         requiredPace: 20,
-        status: { color: 'green' as const, level: 'good' as const, message: 'On track' },
+        status: {
+          color: 'green' as const,
+          level: 'good' as const,
+          message: 'On track',
+        },
         statusMessage: 'You are on track',
       };
 
       const result = createDeadlineCalculationResult(
-        deadline, metrics, 100, 5, 20, 'good', '#10b981', 'On track', paceData
+        deadline,
+        metrics,
+        100,
+        5,
+        20,
+        'good',
+        '#10b981',
+        'On track',
+        paceData
       );
 
       expect(result).toHaveProperty('currentProgress', 100);

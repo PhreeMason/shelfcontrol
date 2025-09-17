@@ -1,5 +1,8 @@
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { calculateUnitsPerDay, calculateProgressAsOfStartOfDay } from '@/utils/deadlineProviderUtils';
+import {
+  calculateUnitsPerDay,
+  calculateProgressAsOfStartOfDay,
+} from '@/utils/deadlineProviderUtils';
 import { calculateDaysLeft } from '@/utils/deadlineUtils';
 
 export interface DeadlineCalculationResult {
@@ -13,7 +16,9 @@ export interface DeadlineTotals {
 
 export const calculateTotalUnitsForDeadlines = (
   deadlines: ReadingDeadlineWithProgress[],
-  getCalculations: (deadline: ReadingDeadlineWithProgress) => DeadlineCalculationResult | null
+  getCalculations: (
+    deadline: ReadingDeadlineWithProgress
+  ) => DeadlineCalculationResult | null
 ): number => {
   return deadlines.reduce((total, deadline) => {
     const calculations = getCalculations(deadline);
@@ -33,7 +38,9 @@ export const calculateCurrentProgressForDeadlines = (
 
 export const calculateDeadlineTotals = (
   deadlines: ReadingDeadlineWithProgress[],
-  getCalculations: (deadline: ReadingDeadlineWithProgress) => DeadlineCalculationResult | null,
+  getCalculations: (
+    deadline: ReadingDeadlineWithProgress
+  ) => DeadlineCalculationResult | null,
   getProgress: (deadline: ReadingDeadlineWithProgress) => number | null
 ): DeadlineTotals => ({
   total: calculateTotalUnitsForDeadlines(deadlines, getCalculations),
@@ -42,7 +49,9 @@ export const calculateDeadlineTotals = (
 
 export const calculateAudioTotals = (
   audioDeadlines: ReadingDeadlineWithProgress[],
-  getCalculations: (deadline: ReadingDeadlineWithProgress) => DeadlineCalculationResult | null,
+  getCalculations: (
+    deadline: ReadingDeadlineWithProgress
+  ) => DeadlineCalculationResult | null,
   getProgress: (deadline: ReadingDeadlineWithProgress) => number | null
 ): DeadlineTotals => {
   return calculateDeadlineTotals(audioDeadlines, getCalculations, getProgress);
@@ -50,10 +59,16 @@ export const calculateAudioTotals = (
 
 export const calculateReadingTotals = (
   readingDeadlines: ReadingDeadlineWithProgress[],
-  getCalculations: (deadline: ReadingDeadlineWithProgress) => DeadlineCalculationResult | null,
+  getCalculations: (
+    deadline: ReadingDeadlineWithProgress
+  ) => DeadlineCalculationResult | null,
   getProgress: (deadline: ReadingDeadlineWithProgress) => number | null
 ): DeadlineTotals => {
-  return calculateDeadlineTotals(readingDeadlines, getCalculations, getProgress);
+  return calculateDeadlineTotals(
+    readingDeadlines,
+    getCalculations,
+    getProgress
+  );
 };
 
 /**
@@ -75,7 +90,8 @@ export const calculateTodaysGoalUnitsForDeadlines = (
   deadlines: ReadingDeadlineWithProgress[]
 ): number => {
   return deadlines.reduce((total, deadline) => {
-    const currentProgressAsOfStartOfDay = calculateProgressAsOfStartOfDay(deadline);
+    const currentProgressAsOfStartOfDay =
+      calculateProgressAsOfStartOfDay(deadline);
     const daysLeft = calculateDaysLeft(deadline.deadline_date);
 
     const unitsPerDay = calculateUnitsPerDay(

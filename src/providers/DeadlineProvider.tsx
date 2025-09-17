@@ -203,7 +203,11 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
 
   // Pace calculation functions (merged from PaceProvider)
   const getDeadlinePaceStatus = (deadline: ReadingDeadlineWithProgress) => {
-    return calculateDeadlinePaceStatus(deadline, userPaceData, userListeningPaceData);
+    return calculateDeadlinePaceStatus(
+      deadline,
+      userPaceData,
+      userListeningPaceData
+    );
   };
 
   const formatPaceForFormat = (
@@ -240,7 +244,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
   // Special formatting for DeadlineCard display (now using utility function)
 
   // Comprehensive calculations for a single deadline (enhanced with pace-based logic)
-  const getDeadlineCalculations = (deadline: ReadingDeadlineWithProgress): DeadlineCalculationResult => {
+  const getDeadlineCalculations = (
+    deadline: ReadingDeadlineWithProgress
+  ): DeadlineCalculationResult => {
     const currentProgress = calculateProgress(deadline);
     const totalQuantity = calculateTotalQuantity(
       deadline.format,
@@ -259,7 +265,12 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     const deadlineStatus = getDeadlineStatus(deadline);
 
     // For archived deadlines, don't calculate countdown-related metrics
-    let daysLeft, unitsPerDay, urgencyLevel, urgencyColor, statusMessage, paceData;
+    let daysLeft,
+      unitsPerDay,
+      urgencyLevel,
+      urgencyColor,
+      statusMessage,
+      paceData;
 
     if (deadlineStatus.isArchived) {
       daysLeft = 0;
@@ -271,7 +282,8 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     } else {
       // Calculate normally for active deadlines
       daysLeft = calculateDaysLeft(deadline.deadline_date);
-      const currentProgressAsOfStartOfDay = calculateProgressAsOfStartOfDay(deadline);
+      const currentProgressAsOfStartOfDay =
+        calculateProgressAsOfStartOfDay(deadline);
       unitsPerDay = calculateUnitsPerDay(
         deadline.total_quantity,
         currentProgressAsOfStartOfDay,
