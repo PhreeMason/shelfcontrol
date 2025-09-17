@@ -41,7 +41,7 @@ const colorProgressThresholds = {
   300: '#c19ee0',
   200: '#d2b7e5',
   100: '#dac3e8',
-  0: '#e8c2b9',
+  0: '#E8C2B9',
 };
 
 const TodaysProgress: React.FC<TodaysProgressProps> = ({
@@ -132,7 +132,7 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
   const gradientColors =
     progressBarPercentageValue === 100
       ? ['#815ac0', '#4b2e83']
-      : ['#f8acff', colors.primary];
+      : ['#E8C2B9', colors.primary];
   return (
     <ThemedView style={styles.statCard}>
       <View style={styles.statHeader}>
