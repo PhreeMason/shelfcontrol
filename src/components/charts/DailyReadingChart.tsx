@@ -1,5 +1,6 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
+import dayjs from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   calculateCutoffTime,
@@ -7,7 +8,6 @@ import {
   minimumUnitsPerDayFromDeadline,
   processBookProgress,
 } from '@/utils/paceCalculations';
-import dayjs from 'dayjs';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';

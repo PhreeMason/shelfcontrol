@@ -1,97 +1,93 @@
+import dayjs from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
-  calculateDaysLeft as calculateDaysLeftUtil,
-  isDateBefore,
-} from './dateUtils';
+  calculateLocalDaysLeft,
+  normalizeServerDate,
+  normalizeServerDateStartOfDay,
+} from './dateNormalization';
 import { calculateTotalQuantity } from './deadlineCalculations';
 
 /**
- * Sorts deadlines by priority: first by due date (earliest first), then by updated_at (most recent first),
- * and finally by created_at (most recent first).
- * @param a - First deadline to compare
- * @param b - Second deadline to compare
- * @returns A negative value if a should come before b, positive if a should come after b, or 0 if equal
+ * Deadline Sorting Strategy (UTC -> Local Normalization)
+ * -----------------------------------------------------
+ * All server timestamp fields (created_at / updated_at) are ISO UTC strings.
+ * We normalize them to LOCAL time via normalizeServerDate() before comparisons.
+ * Date-only fields (deadline_date) remain local calendar dates with no timezone shift.
+ * Priority order:
+ * 1. Earliest deadline_date first
+ * 2. Most recent updated_at
+ * 3. Most recent created_at
  */
 export const sortDeadlines = (
   a: ReadingDeadlineWithProgress,
   b: ReadingDeadlineWithProgress
 ) => {
-  // First sort by due date (deadline_date)
-  const aDueDate = new Date(a.deadline_date);
-  const bDueDate = new Date(b.deadline_date);
-  if (aDueDate.getTime() !== bDueDate.getTime()) {
-    return aDueDate.getTime() - bDueDate.getTime();
-  }
+  const aDue = normalizeServerDateStartOfDay(a.deadline_date);
+  const bDue = normalizeServerDateStartOfDay(b.deadline_date);
+  if (aDue.valueOf() !== bDue.valueOf()) return aDue.valueOf() - bDue.valueOf();
 
-  // TODO: If due dates are equal sort by priority level if available
-  // ....
+  const safeTs = (val?: string) => {
+    const d = normalizeServerDate(val || '');
+    return d.isValid() ? d.valueOf() : 0; // treat missing/invalid as epoch (oldest)
+  };
 
-  // TODO: If priority is equal sort by urgency level if available
-  // ....
+  const aUpd = safeTs(a.updated_at);
+  const bUpd = safeTs(b.updated_at);
+  if (aUpd !== bUpd) return bUpd - aUpd;
 
-  // If due dates are equal, sort by updated_at
-  const aUpdatedAt = a.updated_at ? new Date(a.updated_at) : new Date(0);
-  const bUpdatedAt = b.updated_at ? new Date(b.updated_at) : new Date(0);
-  if (aUpdatedAt.getTime() !== bUpdatedAt.getTime()) {
-    return bUpdatedAt.getTime() - aUpdatedAt.getTime(); // Most recent first
-  }
-
-  // If updated_at dates are equal, sort by created_at
-  const aCreatedAt = a.created_at ? new Date(a.created_at) : new Date(0);
-  const bCreatedAt = b.created_at ? new Date(b.created_at) : new Date(0);
-  return bCreatedAt.getTime() - aCreatedAt.getTime(); // Most recent first
+  const aCreated = safeTs(a.created_at);
+  const bCreated = safeTs(b.created_at);
+  return bCreated - aCreated;
 };
 
 /**
- * Separates deadlines into active, overdue, and completed categories.
- * Active and overdue are sorted by due date, while completed are sorted by last update.
- * @param deadlines - Array of deadlines to separate
- * @returns Object containing active, overdue, and completed deadline arrays
+ * Separation Strategy
+ * -------------------
+ * Uses normalized local start-of-day for comparisons.
+ * Completed / set_aside moved to completed bucket; overdue determined by deadline_date < today.
  */
 export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   const active: ReadingDeadlineWithProgress[] = [];
   const overdue: ReadingDeadlineWithProgress[] = [];
   const completed: ReadingDeadlineWithProgress[] = [];
 
+  const today = dayjs().startOf('day');
+
   deadlines.forEach(deadline => {
-    // Get the latest status from the status array
     const latestStatus =
       deadline.status && deadline.status.length > 0
         ? deadline.status[deadline.status.length - 1].status
         : 'reading';
 
+    const deadlineDate = normalizeServerDateStartOfDay(deadline.deadline_date);
+
     if (latestStatus === 'complete' || latestStatus === 'set_aside') {
       completed.push(deadline);
-    } else if (isDateBefore(deadline.deadline_date)) {
+    } else if (deadlineDate.isBefore(today)) {
       overdue.push(deadline);
     } else {
       active.push(deadline);
     }
   });
 
-  // Sort active and overdue by priority
   active.sort(sortDeadlines);
   overdue.sort(sortDeadlines);
-
-  // Sort completed by most recently updated
   completed.sort((a, b) => {
-    const aDate = a.updated_at ? new Date(a.updated_at) : new Date(0);
-    const bDate = b.updated_at ? new Date(b.updated_at) : new Date(0);
-    return bDate.getTime() - aDate.getTime();
+    const aDate = normalizeServerDate(a.updated_at || '') || dayjs(0);
+    const bDate = normalizeServerDate(b.updated_at || '') || dayjs(0);
+    return bDate.valueOf() - aDate.valueOf();
   });
 
   return { active, overdue, completed };
 };
 
 /**
- * Calculates the number of days remaining until a deadline.
- * Returns a positive number for future dates and negative for past dates.
- * @param deadlineDate - The deadline date as a string
- * @returns Number of days left (positive) or overdue (negative)
+ * Days Left Calculation
+ * ---------------------
+ * Delegates to calculateLocalDaysLeft which uses normalization rules.
  */
-export const calculateDaysLeft = (deadlineDate: string): number => {
-  return calculateDaysLeftUtil(deadlineDate);
-};
+export const calculateDaysLeft = (deadlineDate: string): number =>
+  calculateLocalDaysLeft(deadlineDate);
 
 /**
  * Calculates the current progress for a deadline by finding the most recent progress entry.
@@ -104,10 +100,9 @@ export const calculateProgress = (
   if (!deadline.progress || deadline.progress.length === 0) return 0;
 
   const latestProgress = deadline.progress.reduce((latest, current) => {
-    return new Date(current.updated_at || current.created_at || '') >
-      new Date(latest.updated_at || latest.created_at || '')
-      ? current
-      : latest;
+    const latestTs = normalizeServerDate(latest.updated_at || latest.created_at || '').valueOf();
+    const currentTs = normalizeServerDate(current.updated_at || current.created_at || '').valueOf();
+    return currentTs > latestTs ? current : latest;
   });
 
   return latestProgress.current_progress || 0;
@@ -126,6 +121,7 @@ export const calculateProgressPercentage = (
     deadline.format,
     deadline.total_quantity
   );
+  if (!totalQuantity) return 0;
   return Math.round((currentProgress / totalQuantity) * 100);
 };
 
@@ -216,22 +212,17 @@ export function getInitialStepFromSearchParams(
 export const getCompletedThisMonth = (
   deadlines: ReadingDeadlineWithProgress[]
 ): number => {
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-
+  const now = dayjs();
+  const month = now.month();
+  const year = now.year();
   return deadlines.filter(deadline => {
     const latestStatus =
       deadline.status && deadline.status.length > 0
         ? deadline.status[deadline.status.length - 1]
         : null;
-
     if (latestStatus?.status !== 'complete') return false;
-
-    const completionDate = new Date(latestStatus.created_at);
-    return (
-      completionDate.getMonth() === currentMonth &&
-      completionDate.getFullYear() === currentYear
-    );
+    const completion = normalizeServerDate(latestStatus.created_at || '');
+    return completion.isValid() && completion.month() === month && completion.year() === year;
   }).length;
 };
 
@@ -242,34 +233,27 @@ export const getCompletedThisMonth = (
 export const getOnTrackDeadlines = (
   deadlines: ReadingDeadlineWithProgress[]
 ): number => {
-  const activeDeadlines = deadlines.filter(deadline => {
-    const latestStatus =
-      deadline.status && deadline.status.length > 0
-        ? deadline.status[deadline.status.length - 1]?.status
-        : 'reading';
+  const today = dayjs().startOf('day');
 
-    return (
-      latestStatus === 'reading' &&
-      calculateDaysLeft(deadline.deadline_date) >= 0
-    );
+  const active = deadlines.filter(d => {
+    const latestStatus =
+      d.status && d.status.length > 0
+        ? d.status[d.status.length - 1]?.status
+        : 'reading';
+    const deadlineDate = normalizeServerDateStartOfDay(d.deadline_date);
+    return latestStatus === 'reading' && !deadlineDate.isBefore(today);
   });
 
-  return activeDeadlines.filter(deadline => {
-    const progressPercentage = calculateProgressPercentage(deadline);
-    const daysLeft = calculateDaysLeft(deadline.deadline_date);
-
-    const createdDate = new Date(deadline.created_at);
-    const deadlineDate = new Date(deadline.deadline_date);
-    const totalDays = Math.max(
-      1,
-      Math.ceil(
-        (deadlineDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
-      )
-    );
-
-    const daysPassed = totalDays - daysLeft;
+  return active.filter(d => {
+    const progressPercentage = calculateProgressPercentage(d);
+    const deadlineDate = normalizeServerDateStartOfDay(d.deadline_date);
+    const createdDate = normalizeServerDateStartOfDay(d.created_at);
+    if (!createdDate.isValid() || !deadlineDate.isValid() || !deadlineDate.isAfter(createdDate)) {
+      return false;
+    }
+    const totalDays = Math.max(1, deadlineDate.diff(createdDate, 'day'));
+    const daysPassed = totalDays - calculateDaysLeft(d.deadline_date);
     const timePassedPercentage = (daysPassed / totalDays) * 100;
-
     return progressPercentage >= timePassedPercentage;
   }).length;
 };

@@ -1,6 +1,6 @@
 import { ThemedText, ThemedView } from '@/components/themed';
+import dayjs from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import dayjs from 'dayjs';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 

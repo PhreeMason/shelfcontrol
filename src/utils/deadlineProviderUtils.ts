@@ -1,3 +1,4 @@
+import dayjs from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   calculateCurrentProgress,
@@ -20,7 +21,6 @@ import {
   getPaceBasedStatus,
   getPaceStatusMessage,
 } from '@/utils/paceCalculations';
-import dayjs from 'dayjs';
 
 // Types for function returns
 export interface DeadlineStatus {

@@ -1,7 +1,7 @@
 import TodaysGoals from '@/components/progress/TodaysGoals';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { Typography } from '@/constants/Colors';
-import dayjs from 'dayjs';
+import dayjs from '@/lib/dayjs';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet } from 'react-native';

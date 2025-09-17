@@ -1,5 +1,5 @@
+import dayjs from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import dayjs from 'dayjs';
 
 export interface ReadingDay {
   date: string;

@@ -1,3 +1,4 @@
+import dayjs from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   calculateDaysLeft,
@@ -9,7 +10,7 @@ import {
   getOnTrackDeadlines,
   getUnitForFormat,
   separateDeadlines,
-  sortDeadlines
+  sortDeadlines,
 } from '../deadlineUtils';
 
 const createMockDeadline = (
@@ -108,7 +109,7 @@ describe('deadlineUtils', () => {
       expect(result[1].id).toBe('1');
     });
 
-    it('should handle missing updated_at', () => {
+    it('should handle missing updated_at (treat empty updated_at as older)', () => {
       const deadline1 = createMockDeadline(
         '1',
         '2024-01-01',
@@ -123,7 +124,7 @@ describe('deadlineUtils', () => {
       );
 
       const result = [deadline1, deadline2].sort(sortDeadlines);
-
+      // With normalization, deadline2 has a valid updated_at making it first
       expect(result[0].id).toBe('2');
       expect(result[1].id).toBe('1');
     });
@@ -222,25 +223,20 @@ describe('deadlineUtils', () => {
   });
 
   describe('calculateDaysLeft', () => {
-    it('should calculate positive days for future dates', () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 5);
-
-      const result = calculateDaysLeft(futureDate.toISOString().split('T')[0]);
+    it('should calculate positive days for future dates (local calendar diff)', () => {
+      const future = dayjs().add(5, 'day').format('YYYY-MM-DD');
+      const result = calculateDaysLeft(future);
       expect(result).toBe(5);
     });
 
-    it('should calculate negative days for past dates', () => {
-      const pastDate = new Date();
-      pastDate.setDate(pastDate.getDate() - 3);
-
-      const result = calculateDaysLeft(pastDate.toISOString().split('T')[0]);
+    it('should calculate negative days for past dates (local calendar diff)', () => {
+      const past = dayjs().subtract(3, 'day').format('YYYY-MM-DD');
+      const result = calculateDaysLeft(past);
       expect(result).toBe(-3);
     });
 
-    it('should return 0 for today', () => {
-      const today = new Date().toISOString().split('T')[0];
-
+    it('should return 0 for today (local calendar start)', () => {
+      const today = dayjs().format('YYYY-MM-DD');
       const result = calculateDaysLeft(today);
       expect(result).toBe(0);
     });

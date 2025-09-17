@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs from '@/lib/dayjs';
 
 /**
  * Convert UTC date string to local date string (YYYY-MM-DD)

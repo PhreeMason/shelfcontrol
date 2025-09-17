@@ -1,3 +1,4 @@
+import deadlinesMockData from '@/__fixtures__/deadlines.mock.json';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   buildPaceStatusResult,
@@ -16,7 +17,6 @@ import {
   mapPaceColorToUrgencyColor,
   mapPaceToUrgency,
 } from '../deadlineProviderUtils';
-import deadlinesMockData from '@/__fixtures__/deadlines.mock.json';
 
 // Mock dependencies
 jest.mock('@/utils/deadlineCalculations', () => ({
@@ -51,18 +51,14 @@ jest.mock('@/utils/paceCalculations', () => ({
   getPaceStatusMessage: jest.fn(() => 'You are on track'),
 }));
 
-// Mock dayjs
-jest.mock('dayjs', () => {
-  const originalDayjs = jest.requireActual('dayjs');
-  const mockDayjs = (date?: any) => {
-    if (!date) {
-      // Return a fixed date for "now"
-      return originalDayjs('2025-09-16T12:00:00Z');
-    }
-    return originalDayjs(date);
-  };
-  mockDayjs.startOf = originalDayjs().startOf;
-  return mockDayjs;
+// Freeze time for deterministic tests instead of mocking dayjs
+beforeAll(() => {
+  jest.useFakeTimers();
+  jest.setSystemTime(new Date('2025-09-16T12:00:00Z'));
+});
+
+afterAll(() => {
+  jest.useRealTimers();
 });
 
 describe('deadlineProviderUtils', () => {
@@ -82,6 +78,7 @@ describe('deadlineProviderUtils', () => {
     totalSessions: 8,
     recentSessions: 4,
     readingDaysCount: 8,
+    listeningDaysCount: 8,
   };
 
   beforeEach(() => {
@@ -364,9 +361,9 @@ describe('deadlineProviderUtils', () => {
     });
 
     it('should default to urgent for short time left', () => {
-      const status = {
-        color: 'orange' as const,
-        level: 'unknown' as const,
+      const status: any = {
+        color: 'orange',
+        level: 'unknown',
         message: 'Unknown',
       };
       const result = mapPaceToUrgency(status, 3);
@@ -374,9 +371,9 @@ describe('deadlineProviderUtils', () => {
     });
 
     it('should default to good for long time left', () => {
-      const status = {
-        color: 'orange' as const,
-        level: 'unknown' as const,
+      const status: any = {
+        color: 'orange',
+        level: 'unknown',
         message: 'Unknown',
       };
       const result = mapPaceToUrgency(status, 10);

@@ -1,10 +1,10 @@
+import dayjs from '@/lib/dayjs';
 import { generateId, supabase } from '@/lib/supabase';
 import {
   ReadingDeadlineInsert,
   ReadingDeadlineProgressInsert,
   ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
-import dayjs from 'dayjs';
 import { booksService } from './books.service';
 
 export interface AddDeadlineParams {

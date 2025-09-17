@@ -1,6 +1,7 @@
+import dayjs from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import dayjs from 'dayjs';
+import { normalizeServerDate, normalizeServerDateStartOfDay } from '@/utils/dateNormalization';
 import { useMemo } from 'react';
 
 interface TodaysDeadlines {
@@ -19,9 +20,15 @@ export const useTodaysDeadlines = (): TodaysDeadlines => {
       ...activeDeadlines,
       ...completedDeadlines.filter(d => {
         const status = d.status?.length && d.status[d.status.length - 1];
-        return status && dayjs(status.created_at).isAfter(today);
+        if (!status) return false;
+        const statusDate = normalizeServerDate(status.created_at);
+        return statusDate.isValid() && statusDate.isAfter(today);
       }),
-    ].filter(d => d.deadline_date && dayjs(d.deadline_date).isAfter(today));
+    ].filter(d => {
+      if (!d.deadline_date) return false;
+      const deadlineDate = normalizeServerDateStartOfDay(d.deadline_date);
+      return deadlineDate.isValid() && deadlineDate.isAfter(today);
+    });
   }, [activeDeadlines, completedDeadlines]);
 
   const { audioDeadlines, readingDeadlines } = useMemo(() => {

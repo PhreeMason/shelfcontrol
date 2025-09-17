@@ -161,3 +161,41 @@ npm run genTypes
 - Optimized bundle size with tree shaking
 - Image optimization with expo-image
 - Efficient re-renders with React.memo and useMemo
+
+## Date & Time Handling
+
+All timestamp fields from Supabase (e.g. `created_at`, `updated_at`, status/progress record timestamps) are stored in UTC. The application normalizes these values to the user's local timezone through a dedicated normalization layer located in `src/utils/dateNormalization.ts`.
+
+Strategy:
+- Date-Time strings (contain a time component / ISO like `2025-09-16T10:30:00Z`): Parsed as UTC then converted immediately to local time.
+- Date-only strings (`YYYY-MM-DD` such as `deadline_date` or certain book metadata): Treated as pure local calendar dates (no timezone shifting) to avoid off-by-one errors around midnight boundaries.
+- All calendar-based calculations (e.g. days left, overdue checks, monthly completion counts) operate on local `startOf('day')` values.
+- New timestamps sent to the backend use `new Date().toISOString()` ensuring UTC storage consistency.
+
+Key Helpers (import from `dateNormalization`):
+- `isDateOnly(value)` – Detects `YYYY-MM-DD` format.
+- `parseServerDateTime(value)` – UTC -> local conversion for timestamp strings.
+- `parseServerDateOnly(value)` – Local parse for date-only values.
+- `normalizeServerDate(value)` – Dispatches to the appropriate parser, always returning a local Dayjs instance.
+- `normalizeServerDateStartOfDay(value)` – Normalized date at local start-of-day boundary.
+- `calculateLocalDaysLeft(deadline)` – Local calendar diff for deadlines.
+
+Usage Guidelines:
+1. Never call `dayjs(rawServerField)` directly on server-provided fields; always use normalization helpers.
+2. For UI display, format the already-local Dayjs instance (e.g. `.format('LL')`).
+3. For logic requiring day comparison (sorting, filtering, overdue checks), ensure you use `normalizeServerDateStartOfDay`.
+4. When adding new tables/fields with dates, update the README and `dateNormalization.ts` comments if special handling is needed.
+
+Affected Fields (current schema):
+- Deadlines: `created_at`, `updated_at`, `deadline_date`
+- Deadline Progress: `created_at`, `updated_at`
+- Deadline Status: `created_at`, `updated_at`
+- Books: `created_at`, `updated_at`, `publication_date` (date-only), `date_added`
+- Profiles & other tables: any `*_at` timestamp fields follow the same UTC->local rule.
+
+Tests:
+- Added `dateNormalization.test.ts` to lock in helper behavior.
+- Updated `deadlineUtils.test.ts` to align with local calendar semantics for `calculateDaysLeft` and sorting logic.
+
+Rationale:
+This approach prevents subtle off-by-one issues caused by implicit timezone shifts on date-only values while preserving correct instant-based ordering for true timestamps.
