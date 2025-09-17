@@ -170,53 +170,6 @@ export const formatProgressDisplay = (
   return `${progress}`;
 };
 
-/**
- * Calculates the total reading time per day needed for all active deadlines.
- * Converts pages to estimated minutes using an average reading speed of 40 pages per hour.
- * @param activeDeadlines - Array of active deadlines
- * @param getDeadlineCalculations - Function that calculates units per day for a deadline
- * @returns Formatted string showing total daily reading time needed or "No active deadlines"
- */
-export const getTotalReadingPagesForDay = (
-  activeDeadlines: ReadingDeadlineWithProgress[],
-  getDeadlineCalculations: (deadline: ReadingDeadlineWithProgress) => {
-    unitsPerDay: number;
-  }
-): string => {
-  if (activeDeadlines.length === 0) {
-    return 'No active deadlines';
-  }
-
-  let totalMinutesPerDay = 0;
-
-  activeDeadlines.forEach(deadline => {
-    const calculations = getDeadlineCalculations(deadline);
-
-    if (deadline.format === 'audio') {
-      // For audio, unitsPerDay is already in minutes
-      totalMinutesPerDay += calculations.unitsPerDay;
-    } else {
-      // For physical/eBook, convert pages to estimated minutes
-      // Assuming average reading speed of 40 pages per hour
-      // So 1 page = 1.5 minutes (60 minutes / 40 pages = 1.5 minutes per page)
-      const estimatedMinutesPerDay = calculations.unitsPerDay * 1.5;
-      totalMinutesPerDay += estimatedMinutesPerDay;
-    }
-  });
-
-  // Format the total time
-  const hours = Math.floor(totalMinutesPerDay / 60);
-  const minutes = Math.round(totalMinutesPerDay % 60);
-
-  if (hours > 0) {
-    if (minutes > 0) {
-      return `${hours}h ${minutes}m/day needed`;
-    }
-    return `${hours}h/day needed`;
-  }
-  return `${minutes}m/day needed`;
-};
-
 /** * Extracts and validates an initial step number from search parameters.
  * Ensures the step is within specified bounds.
  * @param params - The search parameters object

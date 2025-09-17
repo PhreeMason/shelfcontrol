@@ -1,17 +1,16 @@
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
-  sortDeadlines,
-  separateDeadlines,
   calculateDaysLeft,
   calculateProgress,
   calculateProgressPercentage,
-  getUnitForFormat,
   formatProgressDisplay,
-  getTotalReadingPagesForDay,
-  getInitialStepFromSearchParams,
   getCompletedThisMonth,
+  getInitialStepFromSearchParams,
   getOnTrackDeadlines,
+  getUnitForFormat,
+  separateDeadlines,
+  sortDeadlines
 } from '../deadlineUtils';
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 
 const createMockDeadline = (
   id: string,
@@ -413,79 +412,6 @@ describe('deadlineUtils', () => {
     it('should handle zero audio progress', () => {
       const result = formatProgressDisplay('audio', 0);
       expect(result).toBe('0m');
-    });
-  });
-
-  describe('getTotalReadingPagesForDay', () => {
-    const mockGetDeadlineCalculations = (
-      deadline: ReadingDeadlineWithProgress
-    ) => ({
-      unitsPerDay: deadline.format === 'audio' ? 60 : 40,
-    });
-
-    it('should return message for no active deadlines', () => {
-      const result = getTotalReadingPagesForDay(
-        [],
-        mockGetDeadlineCalculations
-      );
-      expect(result).toBe('No active deadlines');
-    });
-
-    it('should calculate total for physical books only', () => {
-      const deadline1 = createMockDeadline('1', '2025-12-31');
-      deadline1.format = 'physical';
-      const deadline2 = createMockDeadline('2', '2025-12-31');
-      deadline2.format = 'physical';
-
-      const result = getTotalReadingPagesForDay(
-        [deadline1, deadline2],
-        mockGetDeadlineCalculations
-      );
-      expect(result).toBe('2h/day needed');
-    });
-
-    it('should calculate total for audio books only', () => {
-      const deadline1 = createMockDeadline('1', '2025-12-31');
-      deadline1.format = 'audio';
-      const deadline2 = createMockDeadline('2', '2025-12-31');
-      deadline2.format = 'audio';
-
-      const result = getTotalReadingPagesForDay(
-        [deadline1, deadline2],
-        mockGetDeadlineCalculations
-      );
-      expect(result).toBe('2h/day needed');
-    });
-
-    it('should calculate mixed formats correctly', () => {
-      const physicalDeadline = createMockDeadline('1', '2025-12-31');
-      physicalDeadline.format = 'physical';
-      const audioDeadline = createMockDeadline('2', '2025-12-31');
-      audioDeadline.format = 'audio';
-
-      const result = getTotalReadingPagesForDay(
-        [physicalDeadline, audioDeadline],
-        mockGetDeadlineCalculations
-      );
-      expect(result).toBe('2h/day needed');
-    });
-
-    it('should format minutes when less than an hour', () => {
-      const deadline = createMockDeadline('1', '2025-12-31');
-      deadline.format = 'audio';
-      const mockCalc = () => ({ unitsPerDay: 30 });
-
-      const result = getTotalReadingPagesForDay([deadline], mockCalc);
-      expect(result).toBe('30m/day needed');
-    });
-
-    it('should format hours and minutes', () => {
-      const deadline = createMockDeadline('1', '2025-12-31');
-      deadline.format = 'audio';
-      const mockCalc = () => ({ unitsPerDay: 90 });
-
-      const result = getTotalReadingPagesForDay([deadline], mockCalc);
-      expect(result).toBe('1h 30m/day needed');
     });
   });
 

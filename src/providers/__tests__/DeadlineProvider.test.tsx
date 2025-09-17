@@ -1,8 +1,8 @@
-import React, { ReactNode } from 'react';
-import { renderHook, act } from '@testing-library/react-native';
-import { DeadlineProvider, useDeadlines } from '../DeadlineProvider';
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import deadlinesMockData from '@/__fixtures__/deadlines.mock.json';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { act, renderHook } from '@testing-library/react-native';
+import React, { ReactNode } from 'react';
+import { DeadlineProvider, useDeadlines } from '../DeadlineProvider';
 
 // Mock all the hook dependencies
 const mockMutate = jest.fn();
@@ -27,7 +27,6 @@ jest.mock('@/utils/deadlineUtils', () => ({
   calculateDaysLeft: jest.fn(() => 5),
   calculateProgress: jest.fn(() => 100),
   calculateProgressPercentage: jest.fn(() => 50),
-  getTotalReadingPagesForDay: jest.fn(() => '25 pages'),
   separateDeadlines: jest.fn(deadlines => ({
     active: deadlines.slice(0, 2),
     overdue: deadlines.slice(2, 3),
@@ -172,7 +171,6 @@ describe('DeadlineProvider', () => {
       expect(typeof result.current.overdueCount).toBe('number');
 
       // Summary calculations
-      expect(typeof result.current.getTotalReadingPagesForDay).toBe('function');
       expect(typeof result.current.calculateProgressAsOfStartOfDay).toBe(
         'function'
       );
@@ -386,13 +384,6 @@ describe('DeadlineProvider', () => {
       const progressForToday =
         result.current.calculateProgressForToday(mockDeadline);
       expect(progressForToday).toBe(25);
-    });
-
-    it('should provide summary calculation function', () => {
-      const { result } = renderHook(() => useDeadlines(), { wrapper });
-
-      const totalPages = result.current.getTotalReadingPagesForDay();
-      expect(totalPages).toBe('25 pages');
     });
   });
 

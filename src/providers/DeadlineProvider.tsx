@@ -17,10 +17,23 @@ import {
   calculateTotalQuantity,
 } from '@/utils/deadlineCalculations';
 import {
+  calculateDeadlinePaceStatus,
+  calculateProgressAsOfStartOfDay,
+  calculateProgressForToday,
+  calculateUnitsPerDay,
+  createArchivedPaceData,
+  createDeadlineCalculationResult,
+  DeadlineCalculationResult,
+  formatUnitsPerDay,
+  formatUnitsPerDayForDisplay,
+  getDeadlineStatus,
+  mapPaceColorToUrgencyColor,
+  mapPaceToUrgency,
+} from '@/utils/deadlineProviderUtils';
+import {
   calculateDaysLeft,
   calculateProgress,
   calculateProgressPercentage,
-  getTotalReadingPagesForDay,
   separateDeadlines,
 } from '@/utils/deadlineUtils';
 import {
@@ -31,20 +44,6 @@ import {
   UserListeningPaceData,
   UserPaceData,
 } from '@/utils/paceCalculations';
-import {
-  calculateDeadlinePaceStatus,
-  calculateProgressAsOfStartOfDay,
-  calculateProgressForToday,
-  calculateUnitsPerDay,
-  createArchivedPaceData,
-  createDeadlineCalculationResult,
-  formatUnitsPerDay,
-  formatUnitsPerDayForDisplay,
-  getDeadlineStatus,
-  mapPaceColorToUrgencyColor,
-  mapPaceToUrgency,
-  DeadlineCalculationResult,
-} from '@/utils/deadlineProviderUtils';
 import React, { createContext, ReactNode, useContext, useMemo } from 'react';
 
 interface DeadlineContextType {
@@ -154,9 +153,6 @@ interface DeadlineContextType {
   // Counts
   activeCount: number;
   overdueCount: number;
-
-  // Summary calculations
-  getTotalReadingPagesForDay: () => string;
 
   // Progress calculations
   calculateProgressAsOfStartOfDay: (
@@ -454,14 +450,6 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     // Counts
     activeCount: activeDeadlines.length,
     overdueCount: overdueDeadlines.length,
-
-    // Summary calculations
-    getTotalReadingPagesForDay: () => {
-      return getTotalReadingPagesForDay(
-        activeDeadlines,
-        getDeadlineCalculations
-      );
-    },
 
     // Progress calculations
     calculateProgressAsOfStartOfDay,
