@@ -16,6 +16,7 @@ export const FormatSelector = ({
 }: FormatSelectorProps) => {
   const { colors } = useTheme();
   const primaryColor = colors.primary;
+  const borderColor = colors.border;
   const inputBlurBackground = colors.inputBlurBackground;
 
   const formats = [
@@ -39,8 +40,8 @@ export const FormatSelector = ({
                   ? `${primaryColor}20`
                   : inputBlurBackground, // primary with opacity or card
                 opacity: disabled ? 0.5 : 1,
-                borderWidth: isSelected ? 2 : 0,
-                borderColor: isSelected ? primaryColor : 'transparent',
+                borderWidth: 2,
+                borderColor: isSelected ? primaryColor : borderColor,
               },
             ]}
             onPress={

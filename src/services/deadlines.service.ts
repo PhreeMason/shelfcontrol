@@ -1,4 +1,4 @@
-import dayjs from '@/lib/dayjs';
+import { dayjs } from '@/lib/dayjs';
 import { generateId, supabase } from '@/lib/supabase';
 import {
   ReadingDeadlineInsert,
@@ -283,6 +283,23 @@ class DeadlinesService {
     });
 
     return filteredData as ReadingDeadlineWithProgress[];
+  }
+
+  /**
+   * Get unique source values used by the user
+   */
+  async getUniqueSources(userId: string): Promise<string[]> {
+    const { data, error } = await supabase
+      .from('deadlines')
+      .select('source')
+      .eq('user_id', userId)
+      .order('source', { ascending: true });
+
+    if (error) throw error;
+
+    // Extract unique sources
+    const uniqueSources = [...new Set(data?.map(d => d.source) || [])];
+    return uniqueSources.filter(Boolean).sort();
   }
 
   /**

@@ -1,6 +1,6 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
-import dayjs from '@/lib/dayjs';
+import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   calculateCutoffTime,

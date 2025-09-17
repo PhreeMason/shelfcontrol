@@ -5,7 +5,7 @@ This document provides comprehensive guidance for understanding and extending th
 ## Testing Goals
 
 - **Target Coverage**: 80% overall test coverage
-- **Current Status**: Phase 2 complete with utilities and services tested, 10.26% overall coverage
+- **Current Status**: Phase 4 complete with hooks and utilities tested, 38.06% overall coverage
 - **Testing Philosophy**: Test internal business logic separately from components for better maintainability
 
 ## Project Structure
@@ -22,13 +22,17 @@ src/
 │   │   ├── stringUtils.test.ts            # 100% coverage
 │   │   ├── deadlineCalculations.test.ts   # 98.41% coverage
 │   │   ├── audiobookTimeUtils.test.ts     # 100% coverage
-│   │   └── colorUtils.test.ts             # 100% coverage
+│   │   ├── colorUtils.test.ts             # 100% coverage
+│   │   ├── typeaheadUtils.test.ts         # 100% coverage
+│   │   └── dateNormalization.test.ts      # 85% coverage
 │   ├── dateUtils.ts           # Date formatting and calculations
 │   ├── formUtils.ts           # Form input transformations
 │   ├── stringUtils.ts         # String manipulation utilities
 │   ├── deadlineCalculations.ts # Reading deadline calculations
 │   ├── audiobookTimeUtils.ts  # Time conversion for audiobooks
-│   └── colorUtils.ts          # Color manipulation functions
+│   ├── colorUtils.ts          # Color manipulation functions
+│   ├── typeaheadUtils.ts      # Typeahead and suggestion utilities
+│   └── dateNormalization.ts   # Date normalization and validation
 ├── services/
 │   ├── __tests__/
 │   │   ├── books.service.test.ts          # 100% coverage
@@ -36,10 +40,13 @@ src/
 │   ├── books.service.ts       # Book search and data fetching
 │   └── auth.service.ts        # Authentication operations
 └── components/
-    └── progress/
+    ├── progress/
+    │   └── __tests__/
+    │       ├── ProgressBar.test.tsx    # Component tests
+    │       └── ProgressInput.test.tsx  # Component tests
+    └── shared/
         └── __tests__/
-            ├── ProgressBar.test.tsx    # Component tests
-            └── ProgressInput.test.tsx  # Component tests
+            └── SourceTypeaheadInput.test.tsx # Component tests
 ```
 
 ## Test Infrastructure
@@ -221,6 +228,14 @@ jest.mock('@/components/shared/LinearProgressBar', () => {
 - [x] `storage.service.ts` tested (54% coverage)
 - [x] **Total Coverage**: 16.46% overall (60% improvement from Phase 2!)
 - [x] **Test Count**: 251 tests passing (up from 197)
+
+### Phase 4: React Query Hooks & Advanced Utilities (Complete)
+- [x] **Major breakthrough**: React Query hooks testing implementation
+- [x] `useDeadlines.ts` hook tested with comprehensive mutation coverage
+- [x] New utility functions: `typeaheadUtils.ts` (100%), `dateNormalization.ts` (85%)
+- [x] Component integration: `SourceTypeaheadInput.test.tsx`
+- [x] **Total Coverage**: 38.06% overall (131% improvement from Phase 3!)
+- [x] **Test Count**: 544 tests passing (116% increase from Phase 3)
 ### Completed Services:
 ```typescript
 // ✅ services/books.service.ts (100% coverage)
@@ -267,39 +282,66 @@ jest.mock('@/components/shared/LinearProgressBar', () => {
 - getAvatarUrl() - file listing and URL generation
 - getAvatarSignedUrl() - signed URL creation
 
-// hooks/useBooks.ts (0% coverage)
+// hooks/useBooks.ts (0% coverage) - Still needed
 - useSearchBooksList()
 - useFetchBookData()
 - useFetchBookById()
 
-// hooks/useDeadlines.ts (0% coverage)
-- Custom deadline logic hooks
+// ✅ hooks/useDeadlines.ts (Tested) - NEW!
+- ✅ useDeadlines() - with React Query integration
+- ✅ useAddDeadline() - mutation testing
+- ✅ useUpdateDeadline() - update operations
+- ✅ useUpdateDeadlineProgress() - progress tracking
+- ✅ useCompleteDeadline() - completion logic
 
-// hooks/useReadingHistory.ts (0% coverage)
+// ✅ hooks/useDeadlineSources.ts (Tested) - NEW!
+- ✅ Source fetching and caching logic
+- ✅ Default source handling
+- ✅ User authentication integration
+
+// hooks/useReadingHistory.ts (0% coverage) - Still needed
 - Reading history management
 ```
 
-### Phase 4: React Query Hooks (Next Priority)
-Focus on completing React Query hook testing to maximize coverage impact:
+### Phase 5: Remaining Hooks & Components (Next Priority)
+Focus on completing remaining hook testing and component logic extraction:
 
 **High-Impact Targets:**
-1. `useDeadlines.ts` - State management and mutations (12 hooks)
+1. **DeadlineForm components** - Critical path testing for deadline creation (PRIORITY)
+   - `DeadlineFormStep1.tsx` - Book selection and validation
+   - `DeadlineFormStep2.tsx` - Date, format, and progress configuration
+   - Form submission and error handling workflows
 2. `useBooks.ts` - React Query integration patterns (3 hooks)
 3. `useReadingHistory.ts` - Reading history management
 4. Remaining `profile.service.ts` functions (avatar operations)
+5. Component logic extraction from complex components
 
-**Expected Impact:** 20-25% total coverage with complete hook layer testing
+**Expected Impact:** 50-60% total coverage with complete hook layer testing
 
-### Phase 5: Component Logic Extraction (Future)
+### Phase 6: Component Logic Extraction (Future)
 Components with Extractable Logic:
 ```typescript
+// HIGH PRIORITY: Deadline Form Components
+// components/forms/DeadlineFormStep1.tsx
+Functions to extract and test:
+- validateBookSelection()
+- handleBookSearch()
+- formatBookDisplayData()
+
+// components/forms/DeadlineFormStep2.tsx
+Functions to extract and test:
+- validateDateRange()
+- calculateReadingPace()
+- formatProgressInputs()
+- handleFormatTypeChange()
+
 // components/features/deadlines/DeadlineCard.tsx
 Functions to extract:
 - getBookCoverIcon()
 - getGradientBackground()
 - determineUrgencyColors()
 
-// Target: Move to utils/deadlineDisplayUtils.ts
+// Target: Move to utils/deadlineFormUtils.ts and utils/deadlineDisplayUtils.ts
 ```
 
 ## Adding New Tests
@@ -465,28 +507,28 @@ expect(screen.getByText(/75/)).toBeTruthy();
 expect(mockFormatFunction).toHaveBeenCalledWith('2024-01-20');
 ```
 
-## Phase 3 Achievements
+## Phase 4 Achievements
 
-### Major Service Testing Breakthrough
-- **251 tests** passing across 13 test suites (up from 197)
-- **91.66% coverage** of the most complex service (`deadlines.service.ts`)
-- **60% coverage improvement** in one session (10.26% → 16.46%)
+### Major React Query Hooks Breakthrough
+- **544 tests** passing across 22 test suites (up from 251)
+- **Comprehensive hook testing** with React Query integration patterns
+- **131% coverage improvement** in one phase (16.46% → 38.06%)
+- **Advanced component testing** with typeahead input functionality
 - **Professional testing standards** maintained with TypeScript compliance
-- **Complex business logic** thoroughly validated
 
-### Service Layer Progress
-1. **Complete Service Coverage**: `books.service.ts` (100%), `auth.service.ts` (92.3%)
-2. **High-Impact Service Added**: `deadlines.service.ts` (91.66% - was 0%)
-3. **Additional Services**: `profile.service.ts` (35.8%), `storage.service.ts` (54%)
-4. **Error Handling**: Comprehensive edge cases and error scenarios
-5. **Mock Strategies**: Advanced Supabase mocking for complex operations
+### Hook & Component Progress
+1. **Complete Hook Coverage**: `useDeadlines.ts` (mutations & queries), `useDeadlineSources.ts`
+2. **New Utility Functions**: `typeaheadUtils.ts` (100%), `dateNormalization.ts` (85%)
+3. **Component Integration**: `SourceTypeaheadInput.test.tsx` with user interaction testing
+4. **Error Handling**: Comprehensive edge cases for hooks and async operations
+5. **Mock Strategies**: Advanced React Query and hook testing patterns
 
 ### Coverage Improvements
-- **Before Phase 3**: 10.26% overall coverage
-- **After Phase 3**: 16.46% overall coverage (60% improvement!)
-- **Services Layer**: Now 72.91% coverage (was ~39%)
-- **Utilities**: 6 utility files at 98-100% coverage each
-- **Test Quality**: All tests pass with lint and TypeScript compliance
+- **Before Phase 4**: 16.46% overall coverage
+- **After Phase 4**: 38.06% overall coverage (131% improvement!)
+- **Utilities Layer**: 8 utility files at 85-100% coverage each
+- **Hooks Layer**: Key deadline management hooks fully tested
+- **Test Quality**: All 544 tests pass with lint and TypeScript compliance
 
 ## Best Practices
 
@@ -510,6 +552,6 @@ expect(mockFormatFunction).toHaveBeenCalledWith('2024-01-20');
 
 ---
 
-**Last Updated**: Phase 2 Complete - Services and utilities thoroughly tested (10.26% coverage)
-**Next Priority**: Phase 3 - Remaining services (`deadlines.service.ts`, `profile.service.ts`, `storage.service.ts`) and hooks (`useBooks.ts`, `useDeadlines.ts`)
-**Expected Impact**: Completing Phase 3 should achieve 40-50% total coverage
+**Last Updated**: Phase 4 Complete - React Query hooks and advanced utilities tested (38.06% coverage)
+**Next Priority**: Phase 5 - DeadlineForm components (CRITICAL PATH), remaining hooks (`useBooks.ts`, `useReadingHistory.ts`), and `profile.service.ts` functions
+**Expected Impact**: Completing Phase 5 should achieve 50-60% total coverage

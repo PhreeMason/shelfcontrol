@@ -88,7 +88,7 @@ export const Colors = {
     inputBlurBackground: '#e8c2b926',
 
     // Urgency levels
-    complete: '#B8A9D9',
+    complete: '#7251b5',
     set_aside: '#9CA3AF',
     overdue: '#c8696eff',
     urgent: '#c8696eff',
@@ -180,7 +180,7 @@ export const Colors = {
     inputBlurBackground: '#FAF8F599',
 
     // Urgency levels
-    complete: '#B8A9D9',
+    complete: '#7251b5',
     set_aside: '#9CA3AF',
     overdue: '#c8696eff',
     urgent: '#c8696eff',

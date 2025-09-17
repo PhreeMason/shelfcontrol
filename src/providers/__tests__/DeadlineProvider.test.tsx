@@ -36,7 +36,7 @@ jest.mock('@/utils/deadlineUtils', () => ({
 
 jest.mock('@/utils/deadlineCalculations', () => ({
   calculateRemaining: jest.fn(() => 100),
-  calculateTotalQuantity: jest.fn((format: string, total: number) => total),
+  calculateTotalQuantity: jest.fn((_format: string, total: number) => total),
 }));
 
 jest.mock('@/utils/paceCalculations', () => ({
@@ -213,6 +213,8 @@ describe('DeadlineProvider', () => {
         progressDetails: {
           deadline_id: 'test-id',
           current_progress: 0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
         },
       };
 
@@ -244,6 +246,8 @@ describe('DeadlineProvider', () => {
         progressDetails: {
           deadline_id: 'test-id',
           current_progress: 50,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
         },
       };
 
@@ -461,6 +465,8 @@ describe('DeadlineProvider', () => {
             progressDetails: {
               deadline_id: 'test-id',
               current_progress: 0,
+              created_at: '2024-01-01T00:00:00Z',
+              updated_at: '2024-01-01T00:00:00Z',
             },
           },
           onSuccess
@@ -495,6 +501,8 @@ describe('DeadlineProvider', () => {
             progressDetails: {
               deadline_id: 'test-id',
               current_progress: 0,
+              created_at: '2024-01-01T00:00:00Z',
+              updated_at: '2024-01-01T00:00:00Z',
             },
           },
           undefined,

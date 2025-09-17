@@ -1,5 +1,5 @@
-import CustomDropdown from '@/components/shared/CustomDropdown';
 import CustomInput from '@/components/shared/CustomInput';
+import SourceTypeaheadInput from '@/components/shared/SourceTypeaheadInput';
 import { ThemedText } from '@/components/themed';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import { toTitleCase } from '@/utils/stringUtils';
@@ -107,19 +107,11 @@ export const DeadlineFormStep2 = ({
         <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
           Book type
         </ThemedText>
-        <CustomDropdown
+        <SourceTypeaheadInput
           control={control}
           name="source"
-          placeholder="Select a source"
-          options={[
-            { label: 'ARC', value: 'ARC' },
-            { label: 'Library', value: 'library' },
-            { label: 'Personal', value: 'personal' },
-            { label: 'Book Club', value: 'bookclub' },
-          ]}
-          allowCustom={true}
-          customPlaceholder="Enter custom source"
-          testID="dropdown-source"
+          placeholder="Enter book type"
+          testID="input-source"
         />
       </View>
 
@@ -153,7 +145,7 @@ export const DeadlineFormStep2 = ({
         </View>
         <ThemedText
           color="textMuted"
-          style={{ marginTop: -12, lineHeight: 18 }}
+          style={{lineHeight: 18 }}
         >
           We'll use this to calculate your daily reading pace
         </ThemedText>

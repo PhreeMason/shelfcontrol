@@ -2,7 +2,7 @@ import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
-import dayjs from '@/lib/dayjs';
+import { dayjs } from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { useRouter } from 'expo-router';

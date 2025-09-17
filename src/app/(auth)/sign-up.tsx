@@ -90,6 +90,27 @@ export default function SignUpScreen() {
         </ThemedText>
 
         <ThemedView style={styles.form}>
+
+          <Controller
+            control={control}
+            name="username"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                placeholder="Enter username"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                autoCapitalize="none"
+              />
+            )}
+          />
+          {errors.username && (
+            <ThemedText style={styles.errorText}>
+              {errors.username.message}
+            </ThemedText>
+          )}
+
           <Controller
             control={control}
             name="email"
@@ -109,26 +130,6 @@ export default function SignUpScreen() {
           {errors.email && (
             <ThemedText style={styles.errorText}>
               {errors.email.message}
-            </ThemedText>
-          )}
-
-          <Controller
-            control={control}
-            name="username"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                placeholder="Enter username"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                autoCapitalize="none"
-              />
-            )}
-          />
-          {errors.username && (
-            <ThemedText style={styles.errorText}>
-              {errors.username.message}
             </ThemedText>
           )}
 
@@ -183,11 +184,6 @@ export default function SignUpScreen() {
               })
             }
           />
-
-          {/* <GoogleSSO 
-                        onSuccess={() => router.replace('/')}
-                        onError={(error) => setError('root', { message: error.message || 'Google sign-in failed' })}
-                    /> */}
         </ThemedView>
       </ThemedView>
     </KeyboardAvoidingView>

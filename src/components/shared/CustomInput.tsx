@@ -69,9 +69,7 @@ const CustomInput = <T extends FieldValues>({
                 color: textColor,
                 borderColor: error
                   ? dangerColor
-                  : isFocused
-                    ? borderColor
-                    : 'transparent',
+                  : borderColor,
               },
               props.style,
             ]}
