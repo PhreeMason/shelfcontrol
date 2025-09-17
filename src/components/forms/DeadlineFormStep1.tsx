@@ -247,15 +247,7 @@ export const DeadlineFormStep1 = ({
       >
         <IconSymbol name="magnifyingglass" size={20} color={colors.textMuted} />
         <TextInput
-          style={[
-            styles.searchInput,
-            { color: colors.text },
-            Platform.OS === 'ios'
-              ? { position: 'relative', bottom: 5 }
-              : {
-                  lineHeight: 16,
-                },
-          ]}
+          style={[styles.searchInput, { color: colors.text }]}
           value={query}
           onChangeText={setQuery}
           placeholder="Search by title or author..."
@@ -320,7 +312,8 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: 18,
+    paddingVertical: 6,
   },
   resultsContainer: {
     flex: 1,

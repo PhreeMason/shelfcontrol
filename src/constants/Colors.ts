@@ -79,7 +79,7 @@ export const Colors = {
     disabledText: '#9CA3AF',
 
     // Legacy support (will be deprecated)
-    tint: '#0a7ea4',
+    tint: '#E8C2B9',
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: '#0a7ea4',
@@ -171,7 +171,7 @@ export const Colors = {
     disabledText: '#9CA3AF',
 
     // Legacy support (will be deprecated)
-    tint: '#0a7ea4',
+    tint: '#E8C2B9',
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: '#0a7ea4',

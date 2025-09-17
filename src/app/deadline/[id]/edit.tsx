@@ -6,32 +6,29 @@ import {
 import AppHeader from '@/components/shared/AppHeader';
 import {
   ThemedButton,
-  ThemedKeyboardAvoidingView,
-  ThemedScrollView,
+  ThemedKeyboardAwareScrollView,
   ThemedText,
   ThemedView,
 } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
+import { convertMinutesToHoursAndMinutes } from '@/utils/audiobookTimeUtils';
 import {
   calculateCurrentProgressFromForm,
   calculateRemainingFromForm,
   calculateTotalQuantityFromForm,
   getPaceEstimate,
 } from '@/utils/deadlineCalculations';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { StyleSheet } from 'react-native';
-
-import { convertMinutesToHoursAndMinutes } from '@/utils/audiobookTimeUtils';
-
 import {
   DeadlineFormData,
   deadlineFormSchema,
 } from '@/utils/deadlineFormSchema';
 import { getInitialStepFromSearchParams } from '@/utils/deadlineUtils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
@@ -170,13 +167,9 @@ const EditDeadline = () => {
   }
 
   const onSubmit = (data: DeadlineFormData) => {
-    if (isSubmitting) {
-      return;
-    }
-
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
-    // Calculate total quantity accounting for format
     const finalTotalQuantity = calculateTotalQuantityFromForm(
       selectedFormat,
       data.totalQuantity,
@@ -197,14 +190,13 @@ const EditDeadline = () => {
       created_at: deadline.created_at,
       updated_at: new Date().toISOString(),
     };
-    // Calculate current progress accounting for format
+
     const finalCurrentProgress = calculateCurrentProgressFromForm(
       selectedFormat,
       data.currentProgress || 0,
       data.currentMinutes
     );
 
-    // Get the latest progress entry ID if it exists
     const latestProgress =
       deadline.progress && deadline.progress.length > 0
         ? deadline.progress[deadline.progress.length - 1]
@@ -217,11 +209,7 @@ const EditDeadline = () => {
     };
 
     updateDeadline(
-      {
-        deadlineDetails,
-        progressDetails,
-      },
-      // Success callback
+      { deadlineDetails, progressDetails },
       () => {
         setIsSubmitting(false);
         Toast.show({
@@ -232,12 +220,10 @@ const EditDeadline = () => {
           visibilityTime: 1500,
           position: 'top',
           onHide: () => {
-            // router.replace(`/deadline/${id}/view`);
             router.back();
           },
         });
       },
-      // Error callback
       error => {
         setIsSubmitting(false);
         Toast.show({
@@ -261,17 +247,9 @@ const EditDeadline = () => {
         'source',
         'totalQuantity',
       ];
-
-      // Add totalMinutes validation for audio format
-      if (selectedFormat === 'audio') {
-        fieldsToValidate.push('totalMinutes');
-      }
-
+      if (selectedFormat === 'audio') fieldsToValidate.push('totalMinutes');
       const result = await trigger(fieldsToValidate);
-
-      if (result) {
-        setCurrentStep(currentStep + 1);
-      }
+      if (result) setCurrentStep(currentStep + 1);
     } else {
       handleSubmit(onSubmit)();
     }
@@ -312,15 +290,17 @@ const EditDeadline = () => {
       edges={['right', 'bottom', 'left']}
       style={{ flex: 1, backgroundColor: colors.background }}
     >
-      <ThemedKeyboardAvoidingView style={styles.container}>
-        <AppHeader title={formSteps[currentStep - 1]} onBack={goBack}>
-          <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
-        </AppHeader>
-        <ThemedScrollView
-          style={styles.content}
-          contentContainerStyle={{ paddingBottom: 48 }}
-          keyboardShouldPersistTaps="handled"
-        >
+      <AppHeader title={formSteps[currentStep - 1]} onBack={goBack}>
+        <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
+      </AppHeader>
+      <ThemedKeyboardAwareScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="handled"
+        enableOnAndroid={true}
+        scrollEnabled={true}
+      >
+        <ThemedView style={styles.content}>
           {currentStep === 1 ? (
             <DeadlineFormStep2
               control={control}
@@ -344,8 +324,7 @@ const EditDeadline = () => {
               setValue={setValue}
             />
           )}
-        </ThemedScrollView>
-
+        </ThemedView>
         <ThemedView style={styles.navButtons}>
           {currentStep > 1 && (
             <ThemedButton
@@ -369,7 +348,7 @@ const EditDeadline = () => {
             style={{ flex: 1 }}
           />
         </ThemedView>
-      </ThemedKeyboardAvoidingView>
+      </ThemedKeyboardAwareScrollView>
     </SafeAreaView>
   );
 };
@@ -377,6 +356,9 @@ const EditDeadline = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  contentContainer: {
+    flexGrow: 1,
   },
   content: {
     flex: 1,
@@ -386,6 +368,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 16,
     padding: 16,
+    marginBottom: 20,
   },
 });
 

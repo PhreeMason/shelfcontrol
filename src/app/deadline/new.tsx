@@ -7,7 +7,6 @@ import {
 import AppHeader from '@/components/shared/AppHeader';
 import {
   ThemedButton,
-  ThemedKeyboardAvoidingView,
   ThemedKeyboardAwareScrollView,
   ThemedView,
 } from '@/components/themed';
@@ -28,11 +27,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
-const NewDeadLine = () => {
+const NewDeadline = () => {
   const params = useLocalSearchParams();
   const initialStep = getInitialStepFromSearchParams(params, {
     paramName: 'page',
@@ -297,19 +296,19 @@ const NewDeadLine = () => {
       edges={['right', 'bottom', 'left']}
       style={{ flex: 1, backgroundColor: colors.background }}
     >
-      <ThemedKeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <AppHeader title={formSteps[currentStep - 1]} onBack={goBack}>
-          <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
-        </AppHeader>
+      <AppHeader title={formSteps[currentStep - 1]} onBack={goBack}>
+        <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
+      </AppHeader>
 
-        <ThemedKeyboardAwareScrollView
-          style={styles.content}
-          contentContainerStyle={{ paddingBottom: 48 }}
-          keyboardShouldPersistTaps="handled"
-        >
+      <ThemedKeyboardAwareScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="handled"
+        // extraScrollHeight={Platform.OS === 'ios' ? 20 : 0}
+        enableOnAndroid={true}
+        scrollEnabled={true}
+      >
+        <ThemedView style={styles.content}>
           {currentStep === 1 ? (
             <DeadlineFormStep1
               onBookSelected={() => {
@@ -342,7 +341,7 @@ const NewDeadLine = () => {
               setValue={setValue}
             />
           )}
-        </ThemedKeyboardAwareScrollView>
+        </ThemedView>
 
         <ThemedView style={styles.navButtons}>
           {currentStep > 1 && (
@@ -367,7 +366,7 @@ const NewDeadLine = () => {
             style={{ flex: 1 }}
           />
         </ThemedView>
-      </ThemedKeyboardAvoidingView>
+      </ThemedKeyboardAwareScrollView>
     </SafeAreaView>
   );
 };
@@ -375,6 +374,10 @@ const NewDeadLine = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  contentContainer: {
+    flexGrow: 1,
+    // paddingBottom: 20,
   },
   content: {
     flex: 1,
@@ -384,8 +387,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 16,
     padding: 16,
-    marginBottom: 40,
+    marginBottom: 20,
   },
 });
 
-export default NewDeadLine;
+export default NewDeadline;
