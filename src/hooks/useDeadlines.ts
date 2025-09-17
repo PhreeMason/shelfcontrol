@@ -1,15 +1,15 @@
 import { useAuth } from '@/providers/AuthProvider';
 import {
-  AddDeadlineParams,
-  deadlinesService,
-  UpdateDeadlineParams,
+    AddDeadlineParams,
+    deadlinesService,
+    UpdateDeadlineParams,
 } from '@/services';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useAddDeadline = () => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -31,8 +31,8 @@ export const useAddDeadline = () => {
 };
 
 export const useUpdateDeadline = () => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -54,8 +54,8 @@ export const useUpdateDeadline = () => {
 };
 
 export const useDeleteDeadline = () => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -77,8 +77,8 @@ export const useDeleteDeadline = () => {
 };
 
 export const useUpdateDeadlineProgress = () => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -104,8 +104,8 @@ export const useUpdateDeadlineProgress = () => {
 };
 
 export const useGetDeadlines = () => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
 
   return useQuery<ReadingDeadlineWithProgress[]>({
     queryKey: ['deadlines', userId],
@@ -121,8 +121,8 @@ export const useGetDeadlines = () => {
 const useUpdateDeadlineStatus = (
   status: 'complete' | 'set_aside' | 'reading'
 ) => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
   const queryClient = useQueryClient();
 
   const getActionName = (status: string) => {
@@ -178,8 +178,8 @@ const useUpdateDeadlineStatus = (
 };
 
 export const useCompleteDeadline = () => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -204,8 +204,8 @@ export const useSetAsideDeadline = () => useUpdateDeadlineStatus('set_aside');
 export const useReactivateDeadline = () => useUpdateDeadlineStatus('reading');
 
 export const useGetArchivedDeadlines = () => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
 
   return useQuery<ReadingDeadlineWithProgress[]>({
     queryKey: ['ArchivedDeadlines', userId],
@@ -214,12 +214,13 @@ export const useGetArchivedDeadlines = () => {
       return deadlinesService.getArchivedDeadlines(userId);
     },
     enabled: !!userId,
+    refetchOnWindowFocus: false,
   });
 };
 
 export const useGetDeadlineById = (deadlineId: string | undefined) => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
 
   return useQuery<ReadingDeadlineWithProgress | null>({
     queryKey: ['deadline', userId, deadlineId],
@@ -229,12 +230,13 @@ export const useGetDeadlineById = (deadlineId: string | undefined) => {
     },
     enabled: !!userId && !!deadlineId,
     staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
   });
 };
 
 export const useDeleteFutureProgress = () => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -261,8 +263,8 @@ export const useDeleteFutureProgress = () => {
 };
 
 export const useGetUserProgressForToday = () => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
 
   return useQuery({
     queryKey: ['deadline_progress', userId],
