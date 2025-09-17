@@ -1,74 +1,26 @@
 import TodaysProgress from '@/components/progress/TodaysProgress';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { useTodaysDeadlines } from '@/hooks/useTodaysDeadlines';
 import { useDeadlines } from '@/providers/DeadlineProvider';
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import dayjs from 'dayjs';
-import React from 'react';
+import { calculateTodaysAudioTotals, calculateTodaysReadingTotals } from '@/utils/deadlineAggregationUtils';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 const TodaysGoals: React.FC = () => {
-  const {
-    activeDeadlines,
-    completedDeadlines,
-    deadlines,
-    getDeadlineCalculations,
-    calculateProgressForToday,
-  } = useDeadlines();
-  const audioDeadlines: ReadingDeadlineWithProgress[] = [];
-  const readingDeadlines: ReadingDeadlineWithProgress[] = [];
-  console.log(JSON.stringify(deadlines));
-  // we want to include all active deadlines, plus any completed deadlines that were completed today
-  // this way, if a user completes a deadline today, they can still see their progress for the day
-  // but if they completed it on a previous day, it won't show up in today's goals
-  // this encourages users to keep making progress on their active deadlines
-  // while still giving them credit for completing a deadline today
-  // even if they had already met their goal for the day with other active deadlines
-  const allDeadlines = [
-    ...activeDeadlines,
-    // filter to only include completed deadlines that were completed today
-    ...completedDeadlines.filter(d => {
-      const status = d.status?.length && d.status[d.status.length - 1];
-      const today = dayjs().startOf('day');
-      // Check if the completed_at date is today
-      return status && dayjs(status.created_at).isAfter(today);
-    })
-    // remove any overdue deadlines
-  ].filter(d => d.deadline_date && dayjs(d.deadline_date).isAfter(dayjs().startOf('day')));
+  const { calculateProgressForToday } = useDeadlines();
+  const { audioDeadlines, readingDeadlines } = useTodaysDeadlines();
 
-
-  allDeadlines.forEach(deadline => {
-    if (deadline.format === 'audio') {
-      audioDeadlines.push(deadline);
-    } else {
-      readingDeadlines.push(deadline);
-    }
-  });
-
-  const totalAudioTimeForToday = audioDeadlines.reduce((total, deadline) => {
-    const { unitsPerDay } = getDeadlineCalculations(deadline);
-    return total + unitsPerDay;
-  }, 0);
-
-  const totalReadingTimeForToday = readingDeadlines.reduce(
-    (total, deadline) => {
-      const { unitsPerDay } = getDeadlineCalculations(deadline);
-      return total + unitsPerDay;
-    },
-    0
+  // Using specialized "today's goals" functions that maintain stable daily totals
+  // even when deadlines are completed and archived mid-day
+  const audioTotals = useMemo(() =>
+    calculateTodaysAudioTotals(audioDeadlines, calculateProgressForToday),
+    [audioDeadlines, calculateProgressForToday]
   );
 
-  const currentReadingTimeForToday = readingDeadlines.reduce(
-    (total, deadline) => {
-      const progress = calculateProgressForToday(deadline);
-      return total + progress;
-    },
-    0
+  const readingTotals = useMemo(() =>
+    calculateTodaysReadingTotals(readingDeadlines, calculateProgressForToday),
+    [readingDeadlines, calculateProgressForToday]
   );
-
-  const currentAudioTimeForToday = audioDeadlines.reduce((total, deadline) => {
-    const progress = calculateProgressForToday(deadline);
-    return total + progress;
-  }, 0);
 
   return (
     <ThemedView style={styles.container}>
@@ -79,18 +31,16 @@ const TodaysGoals: React.FC = () => {
       <View style={styles.progressSection}>
         {readingDeadlines.length > 0 ? (
           <TodaysProgress
-            total={totalReadingTimeForToday}
-            current={currentReadingTimeForToday}
-            // total={100}
-            // current={325}
+            total={readingTotals.total}
+            current={readingTotals.current}
             type="reading"
           />
         ) : null}
 
         {audioDeadlines.length > 0 ? (
           <TodaysProgress
-            total={totalAudioTimeForToday}
-            current={currentAudioTimeForToday}
+            total={audioTotals.total}
+            current={audioTotals.current}
             type="listening"
           />
         ) : null}
