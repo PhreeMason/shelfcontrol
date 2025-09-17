@@ -100,8 +100,12 @@ export const calculateProgress = (
   if (!deadline.progress || deadline.progress.length === 0) return 0;
 
   const latestProgress = deadline.progress.reduce((latest, current) => {
-    const latestTs = normalizeServerDate(latest.updated_at || latest.created_at || '').valueOf();
-    const currentTs = normalizeServerDate(current.updated_at || current.created_at || '').valueOf();
+    const latestTs = normalizeServerDate(
+      latest.updated_at || latest.created_at || ''
+    ).valueOf();
+    const currentTs = normalizeServerDate(
+      current.updated_at || current.created_at || ''
+    ).valueOf();
     return currentTs > latestTs ? current : latest;
   });
 
@@ -222,7 +226,11 @@ export const getCompletedThisMonth = (
         : null;
     if (latestStatus?.status !== 'complete') return false;
     const completion = normalizeServerDate(latestStatus.created_at || '');
-    return completion.isValid() && completion.month() === month && completion.year() === year;
+    return (
+      completion.isValid() &&
+      completion.month() === month &&
+      completion.year() === year
+    );
   }).length;
 };
 
@@ -248,7 +256,11 @@ export const getOnTrackDeadlines = (
     const progressPercentage = calculateProgressPercentage(d);
     const deadlineDate = normalizeServerDateStartOfDay(d.deadline_date);
     const createdDate = normalizeServerDateStartOfDay(d.created_at);
-    if (!createdDate.isValid() || !deadlineDate.isValid() || !deadlineDate.isAfter(createdDate)) {
+    if (
+      !createdDate.isValid() ||
+      !deadlineDate.isValid() ||
+      !deadlineDate.isAfter(createdDate)
+    ) {
       return false;
     }
     const totalDays = Math.max(1, deadlineDate.diff(createdDate, 'day'));

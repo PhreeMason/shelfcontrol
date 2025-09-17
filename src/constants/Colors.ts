@@ -90,11 +90,11 @@ export const Colors = {
     // Urgency levels
     complete: '#B8A9D9',
     set_aside: '#9CA3AF',
-    overdue: '#e85d75',
-    urgent: '#e85d75',
-    good: '#7FB069',
-    approaching: '#F5C242',
-    impossible: '#e85d75',
+    overdue: '#c8696eff',
+    urgent: '#c8696eff',
+    good: '#7a5a8cff',
+    approaching: '#d4a46aff',
+    impossible: '#c8696eff',
   },
   dark: {
     // Text colors
@@ -182,11 +182,11 @@ export const Colors = {
     // Urgency levels
     complete: '#B8A9D9',
     set_aside: '#9CA3AF',
-    overdue: '#e85d75',
-    urgent: '#e85d75',
-    good: '#7FB069',
-    approaching: '#F5C242',
-    impossible: '#e85d75',
+    overdue: '#c8696eff',
+    urgent: '#c8696eff',
+    good: '#7a5a8cff',
+    approaching: '#d4a46aff',
+    impossible: '#c8696eff',
   },
 };
 

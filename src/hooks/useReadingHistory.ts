@@ -154,7 +154,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
 
       deadlines?.forEach((deadline: any) => {
         const progress = deadline.deadline_progress || [];
-  const deadlineCreatedDate = getLocalDateString(deadline.created_at);
+        const deadlineCreatedDate = getLocalDateString(deadline.created_at);
 
         // Check if deadline creation date is within our date range
         if (!startDate || new Date(deadlineCreatedDate) >= startDate) {
@@ -187,8 +187,8 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
         // Sort progress by date to calculate daily differences
         const sortedProgress = progress.sort((a: any, b: any) => {
           const aTs = normalizeServerDate(a.created_at).valueOf();
-            const bTs = normalizeServerDate(b.created_at).valueOf();
-            return aTs - bTs;
+          const bTs = normalizeServerDate(b.created_at).valueOf();
+          return aTs - bTs;
         });
 
         // Group progress entries by date to handle same-day updates properly
@@ -320,7 +320,7 @@ export const useDeadlineHistory = (options: UseReadingHistoryOptions = {}) => {
       // Add entries for deadline dates that don't already exist
       // Force create entries for ALL deadline dates to ensure they're clickable
       deadlines?.forEach((deadline: any) => {
-  const deadlineDate = getLocalDateString(deadline.deadline_date);
+        const deadlineDate = getLocalDateString(deadline.deadline_date);
 
         // Apply date filter for deadline dates
         if (!startDate || new Date(deadlineDate) >= startDate) {

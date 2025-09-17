@@ -51,6 +51,7 @@ const MAPPING = {
   // Calendar icons
   calendar: 'event',
   envelope: 'email',
+  xmark: 'close',
 } as IconMapping;
 
 /**

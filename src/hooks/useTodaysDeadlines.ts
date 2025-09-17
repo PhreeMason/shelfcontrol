@@ -1,7 +1,10 @@
 import dayjs from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { normalizeServerDate, normalizeServerDateStartOfDay } from '@/utils/dateNormalization';
+import {
+  normalizeServerDate,
+  normalizeServerDateStartOfDay,
+} from '@/utils/dateNormalization';
 import { useMemo } from 'react';
 
 interface TodaysDeadlines {

@@ -56,7 +56,9 @@ export function parseServerDateOnly(value?: string | null): Dayjs {
  */
 export function normalizeServerDate(value?: string | null): Dayjs {
   if (!value) return dayjs(NaN);
-  return isDateOnly(value) ? parseServerDateOnly(value) : parseServerDateTime(value);
+  return isDateOnly(value)
+    ? parseServerDateOnly(value)
+    : parseServerDateTime(value);
 }
 
 /**

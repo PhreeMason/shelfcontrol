@@ -160,7 +160,6 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
                 {selectedDate ? dayjs(selectedDate).format('MMM D, YYYY') : ''}
               </ThemedText>
               <Pressable onPress={closeModal} style={styles.closeButton}>
-                past
                 <IconSymbol name="xmark" size={20} color={Colors.light.text} />
               </Pressable>
             </View>

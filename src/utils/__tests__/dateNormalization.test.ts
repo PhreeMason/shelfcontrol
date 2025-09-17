@@ -1,10 +1,10 @@
 import {
-    calculateLocalDaysLeft,
-    isDateOnly,
-    normalizeServerDate,
-    normalizeServerDateStartOfDay,
-    parseServerDateOnly,
-    parseServerDateTime,
+  calculateLocalDaysLeft,
+  isDateOnly,
+  normalizeServerDate,
+  normalizeServerDateStartOfDay,
+  parseServerDateOnly,
+  parseServerDateTime,
 } from '../dateNormalization';
 
 // Freeze time for deterministic tests
@@ -37,7 +37,9 @@ describe('dateNormalization helpers', () => {
   });
 
   test('normalizeServerDate dispatches correctly', () => {
-    expect(normalizeServerDate('2025-09-16').format('YYYY-MM-DD')).toBe('2025-09-16');
+    expect(normalizeServerDate('2025-09-16').format('YYYY-MM-DD')).toBe(
+      '2025-09-16'
+    );
     expect(normalizeServerDate('2025-09-16T05:00:00Z').isValid()).toBe(true);
   });
 

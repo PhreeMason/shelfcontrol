@@ -1,8 +1,8 @@
 import { useAuth } from '@/providers/AuthProvider';
 import {
-    AddDeadlineParams,
-    deadlinesService,
-    UpdateDeadlineParams,
+  AddDeadlineParams,
+  deadlinesService,
+  UpdateDeadlineParams,
 } from '@/services';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
