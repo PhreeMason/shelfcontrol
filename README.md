@@ -1,53 +1,163 @@
-# Welcome to your Expo app 👋
+# ShelfControl
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native application for tracking reading deadlines and managing book progress. Built with Expo and TypeScript.
 
-## Get started
+## Features
 
-1. Install dependencies
+- Reading deadline management with progress tracking
+- Book search and library integration
+- User authentication and profile management
+- Reading session tracking
+- Progress visualization and analytics
+- Cross-platform support (iOS, Android, Web)
 
+## Tech Stack
+
+- **Framework**: React Native with Expo
+- **Language**: TypeScript
+- **Navigation**: Expo Router (file-based routing)
+- **Database**: Supabase
+- **State Management**: TanStack React Query
+- **Testing**: Jest with React Native Testing Library
+- **Styling**: React Native StyleSheet
+- **Authentication**: Supabase Auth with Apple Sign-In
+
+## Development Setup
+
+### Prerequisites
+
+- Node.js (LTS version recommended)
+- npm or yarn
+- Expo CLI
+- iOS Simulator (macOS) or Android Emulator
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-2. Start the app
+3. Set up environment variables (see configuration section)
 
+4. Start the development server:
    ```bash
-   npx expo start
+   npm start
    ```
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Development Commands
 
 ```bash
-npm run reset-project
+# Development
+npm start                    # Start Expo development server
+npm run android             # Run on Android emulator
+npm run ios                 # Run on iOS simulator
+npm run web                 # Run on web
+
+# Code Quality
+npm run lint                # Run ESLint
+npm run lint:fix            # Fix ESLint issues
+npm run typecheck           # Run TypeScript compiler check
+npm run format              # Format code with Prettier
+npm run format:check        # Check code formatting
+
+# Testing
+npm run test                # Run all tests
+npm run test:ff             # Run tests with fail-fast
+npm run test:coverage       # Run tests with coverage report
+npm run test:coverage:watch # Run tests with coverage in watch mode
+npm run test:debug          # Run tests with debugging info
+
+# Build & Deploy
+npm run prebuild            # Clean prebuild
+npm run build:android       # Build Android app
+npm run build:ios           # Build iOS app
+npm run build:local         # Build Android locally
+npm run submit:ios          # Submit iOS build to App Store
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Project Structure
 
-## Learn more
+```
+src/
+├── app/                    # File-based routing (Expo Router)
+│   ├── (authenticated)/    # Protected routes
+│   ├── (auth)/            # Authentication screens
+│   └── deadline/          # Deadline management screens
+├── components/            # Reusable UI components
+│   ├── features/          # Feature-specific components
+│   ├── navigation/        # Navigation components
+│   ├── shared/           # Shared UI components
+│   └── themed/           # Themed components
+├── hooks/                # Custom React hooks
+├── services/             # API and business logic
+├── utils/                # Utility functions
+├── types/                # TypeScript type definitions
+├── constants/            # App constants
+└── __tests__/           # Test configuration and global mocks
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Testing
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+This project maintains comprehensive test coverage for utilities, services, and components. For detailed testing guidelines and best practices, see [TESTING.md](./TESTING.md).
 
-## Join the community
+**Current Coverage**: 16.46% overall
+- Utilities: 98-100% coverage
+- Services: 72.91% coverage (books, auth, deadlines, profile, storage)
+- Target: 80% overall coverage
 
-Join our community of developers creating universal apps.
+### Running Tests
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+npm run test:coverage       # Generate coverage report
+open coverage/lcov-report/index.html  # View HTML coverage report
+```
 
+## Configuration
 
-TODO: Make all books title case
+### Environment Variables
+
+Create a `.env` file in the root directory with:
+
+```env
+EXPO_PUBLIC_SUPABASE_URL=your_supabase_url
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### Database
+
+This project uses Supabase for:
+- User authentication
+- Data persistence
+- Real-time subscriptions
+- File storage
+
+Generate TypeScript types from your Supabase schema:
+```bash
+npm run genTypes
+```
+
+## Contributing
+
+1. Follow the existing code style and conventions
+2. Format code with Prettier: `npm run format`
+3. Ensure all tests pass: `npm run test`
+4. Run linting and type checking: `npm run lint && npm run typecheck`
+5. Add tests for new functionality
+6. Update documentation as needed
+
+## Architecture
+
+- **File-based Routing**: Uses Expo Router for navigation
+- **Component Architecture**: Separation of UI components and business logic
+- **State Management**: React Query for server state, React hooks for local state
+- **Type Safety**: Full TypeScript coverage with strict type checking
+- **Testing Strategy**: Unit tests for utilities/services, component tests for UI
+
+## Performance
+
+- Code splitting with dynamic imports
+- Optimized bundle size with tree shaking
+- Image optimization with expo-image
+- Efficient re-renders with React.memo and useMemo

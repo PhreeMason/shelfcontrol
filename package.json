@@ -1,7 +1,7 @@
 {
   "name": "shelfcontrol",
   "main": "expo-router/entry",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -127,8 +127,7 @@
     "clearMocks": true,
     "restoreMocks": true,
     "testTimeout": 10000,
-    "forceExit": true,
-    "detectOpenHandles": false,
+    "detectOpenHandles": true,
     "workerIdleMemoryLimit": "512MB",
     "silent": false,
     "openHandlesTimeout": 1000,
