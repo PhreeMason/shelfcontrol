@@ -11,7 +11,6 @@ export interface AddDeadlineParams {
   deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
   progressDetails: ReadingDeadlineProgressInsert;
   bookData?: { api_id: string; book_id?: string };
-  startDate?: Date;
 }
 
 export interface UpdateDeadlineParams {
@@ -37,7 +36,7 @@ class DeadlinesService {
    * Add a new deadline
    */
   async addDeadline(userId: string, params: AddDeadlineParams) {
-    const { deadlineDetails, progressDetails, bookData, startDate } = params;
+    const { deadlineDetails, progressDetails, bookData } = params;
 
     // Generate IDs
     const finalDeadlineId = generateId('rd');
@@ -102,9 +101,6 @@ class DeadlinesService {
       .insert({
         deadline_id: finalDeadlineId,
         status: 'reading',
-        created_at: startDate
-          ? startDate.toISOString()
-          : new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
       .select()

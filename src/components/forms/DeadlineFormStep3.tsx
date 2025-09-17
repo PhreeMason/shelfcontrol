@@ -4,8 +4,8 @@ import { useTheme } from '@/hooks/useThemeColor';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect, useState } from 'react';
-import { Control, Controller, useWatch } from 'react-hook-form';
+import React from 'react';
+import { Control, Controller } from 'react-hook-form';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PrioritySelector } from './PrioritySelector';
 
@@ -34,55 +34,8 @@ export const DeadlineFormStep3 = ({
   deadline,
   paceEstimate,
   watchedValues,
-  setValue,
 }: DeadlineFormStep3Props) => {
   const { colors } = useTheme();
-
-  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-
-  // Watch for changes in current progress
-  const currentProgress = useWatch({ control, name: 'currentProgress' });
-  const currentMinutes = useWatch({ control, name: 'currentMinutes' });
-  const startDate = useWatch({ control, name: 'startDate' });
-
-  // Determine if we should show the start date field
-  const shouldShowStartDate =
-    (currentProgress && currentProgress > 0) ||
-    (selectedFormat === 'audio' && currentMinutes && currentMinutes > 0);
-
-  // Set default start date when progress is entered
-  useEffect(() => {
-    if (shouldShowStartDate && !startDate) {
-      // Default to 7 days ago if significant progress, otherwise today
-      const significantProgress =
-        selectedFormat === 'audio'
-          ? (currentProgress || 0) > 2 || (currentMinutes || 0) > 30
-          : (currentProgress || 0) > 50;
-
-      const defaultDate = new Date();
-      if (significantProgress) {
-        defaultDate.setDate(defaultDate.getDate() - 7);
-      }
-      setValue('startDate', defaultDate);
-    } else if (!shouldShowStartDate && startDate) {
-      // Clear start date if progress is removed
-      setValue('startDate', undefined);
-    }
-  }, [
-    shouldShowStartDate,
-    startDate,
-    currentProgress,
-    currentMinutes,
-    selectedFormat,
-    setValue,
-  ]);
-
-  const onStartDateChange = (_event: any, selectedDate?: Date) => {
-    setShowStartDatePicker(false);
-    if (selectedDate) {
-      setValue('startDate', selectedDate);
-    }
-  };
 
   const getProgressLabel = () => {
     switch (selectedFormat) {
@@ -146,10 +99,6 @@ export const DeadlineFormStep3 = ({
         </ThemedText>
       </View>
 
-      <View
-        style={[styles.sectionDivider, { backgroundColor: colors.textMuted }]}
-      />
-
       <View>
         <ThemedText variant="default" style={{ marginBottom: 8 }}>
           {getProgressLabel()}
@@ -184,72 +133,6 @@ export const DeadlineFormStep3 = ({
         </ThemedText>
       </View>
 
-      {shouldShowStartDate && (
-        <>
-          <View
-            style={[
-              styles.sectionDivider,
-              { backgroundColor: colors.textMuted },
-            ]}
-          />
-          <View>
-            <ThemedText variant="default" style={{ marginBottom: 8 }}>
-              When did you start reading?
-            </ThemedText>
-            <Controller
-              control={control}
-              name="startDate"
-              render={({ field: { value } }) => (
-                <>
-                  <TouchableOpacity
-                    style={[
-                      styles.dateInput,
-                      {
-                        backgroundColor: colors.surface,
-                        borderColor: colors.border,
-                      },
-                    ]}
-                    onPress={() => setShowStartDatePicker(!showStartDatePicker)}
-                    testID="start-date-picker-button"
-                  >
-                    <ThemedText>
-                      {value
-                        ? value.toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })
-                        : 'Select start date'}
-                    </ThemedText>
-                    {showStartDatePicker && (
-                      <DateTimePicker
-                        value={value || new Date()}
-                        mode="date"
-                        display="inline"
-                        onChange={onStartDateChange}
-                        maximumDate={new Date()}
-                        testID="input-startDate"
-                      />
-                    )}
-                  </TouchableOpacity>
-                </>
-              )}
-            />
-            <ThemedText
-              color="textMuted"
-              style={{ marginTop: 6, lineHeight: 18 }}
-            >
-              Since you've already started, we'll track your progress from this
-              date for accurate pacing
-            </ThemedText>
-          </View>
-        </>
-      )}
-
-      <View
-        style={[styles.sectionDivider, { backgroundColor: colors.textMuted }]}
-      />
       <View>
         <ThemedText variant="default" style={{ marginBottom: 8 }}>
           Deadline Flexibility
@@ -262,10 +145,6 @@ export const DeadlineFormStep3 = ({
           Can this deadline be adjusted if needed?
         </ThemedText>
       </View>
-
-      <View
-        style={[styles.sectionDivider, { backgroundColor: colors.textMuted }]}
-      />
 
       {paceEstimate && (
         <LinearGradient
@@ -337,16 +216,11 @@ export const DeadlineFormStep3 = ({
 };
 
 const styles = StyleSheet.create({
-  sectionDivider: {
-    height: 1,
-    marginVertical: 2,
-    opacity: 0.5,
-  },
   estimateContainer: {
     borderWidth: 1,
     borderRadius: 8,
-    padding: 14,
-    marginTop: 16,
+    paddingVertical: 34,
+    marginTop: 10,
     alignItems: 'center',
   },
   paceEstimateStyle: {
@@ -358,7 +232,7 @@ const styles = StyleSheet.create({
   summaryCard: {
     borderRadius: 16,
     padding: 20,
-    marginTop: 32,
+    marginTop: 8,
     borderWidth: 2,
   },
   summaryTitle: {
