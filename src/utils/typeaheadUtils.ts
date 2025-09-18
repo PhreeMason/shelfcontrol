@@ -5,7 +5,10 @@ export interface HighlightResult {
   matchIndex: number;
 }
 
-export const filterSuggestions = (query: string, sources: string[]): string[] => {
+export const filterSuggestions = (
+  query: string,
+  sources: string[]
+): string[] => {
   if (!query.trim()) {
     return sources;
   }
@@ -14,7 +17,10 @@ export const filterSuggestions = (query: string, sources: string[]): string[] =>
   );
 };
 
-export const highlightMatch = (text: string, query: string): HighlightResult => {
+export const highlightMatch = (
+  text: string,
+  query: string
+): HighlightResult => {
   if (!query.trim()) {
     return {
       beforeMatch: text,
@@ -61,8 +67,10 @@ export const shouldShowNoResults = (
   filteredSuggestions: string[],
   isLoading: boolean
 ): boolean => {
-  return showSuggestions &&
-         query.trim() !== '' &&
-         filteredSuggestions.length === 0 &&
-         !isLoading;
+  return (
+    showSuggestions &&
+    query.trim() !== '' &&
+    filteredSuggestions.length === 0 &&
+    !isLoading
+  );
 };

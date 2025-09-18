@@ -1,9 +1,20 @@
 import { ThemedText } from '@/components/themed';
 import { useDeadlineSources } from '@/hooks/useDeadlineSources';
 import { useTheme } from '@/hooks/useTheme';
-import { filterSuggestions, highlightMatch, shouldShowSuggestions, shouldShowNoResults } from '@/utils/typeaheadUtils';
+import {
+  filterSuggestions,
+  highlightMatch,
+  shouldShowSuggestions,
+  shouldShowNoResults,
+} from '@/utils/typeaheadUtils';
 import React, { useMemo, useState, useEffect } from 'react';
-import { Control, Controller, FieldValues, Path, useWatch } from 'react-hook-form';
+import {
+  Control,
+  Controller,
+  FieldValues,
+  Path,
+  useWatch,
+} from 'react-hook-form';
 import {
   ActivityIndicator,
   FlatList,
@@ -81,7 +92,10 @@ const SourceTypeaheadInput = <T extends FieldValues>({
     onChange: (value: string) => void;
   }) => {
     // Highlight matching text
-    const { beforeMatch, match, afterMatch, matchIndex } = highlightMatch(item, query);
+    const { beforeMatch, match, afterMatch, matchIndex } = highlightMatch(
+      item,
+      query
+    );
 
     return (
       <TouchableOpacity
@@ -92,7 +106,12 @@ const SourceTypeaheadInput = <T extends FieldValues>({
           {query && matchIndex >= 0 ? (
             <>
               {beforeMatch}
-              <Text style={{ backgroundColor: primaryColor + '20', fontWeight: '600' }}>
+              <Text
+                style={{
+                  backgroundColor: primaryColor + '20',
+                  fontWeight: '600',
+                }}
+              >
                 {match}
               </Text>
               {afterMatch}
@@ -160,7 +179,11 @@ const SourceTypeaheadInput = <T extends FieldValues>({
             </View>
 
             {/* Suggestions dropdown */}
-            {shouldShowSuggestions(showSuggestions, filteredSuggestions, isLoading) && (
+            {shouldShowSuggestions(
+              showSuggestions,
+              filteredSuggestions,
+              isLoading
+            ) && (
               <View
                 testID="suggestions-dropdown"
                 style={[
@@ -185,23 +208,28 @@ const SourceTypeaheadInput = <T extends FieldValues>({
             )}
 
             {/* No results message */}
-            {shouldShowNoResults(showSuggestions, query, filteredSuggestions, isLoading) && (
-                <View
-                  style={[
-                    styles.suggestionsContainer,
-                    {
-                      backgroundColor: cardColor,
-                      borderColor: borderColor,
-                    },
-                  ]}
-                >
-                  <View style={styles.noResultsContainer}>
-                    <ThemedText color="textMuted" style={styles.noResultsText}>
-                      No matches found. Press Enter to use "{query}"
-                    </ThemedText>
-                  </View>
+            {shouldShowNoResults(
+              showSuggestions,
+              query,
+              filteredSuggestions,
+              isLoading
+            ) && (
+              <View
+                style={[
+                  styles.suggestionsContainer,
+                  {
+                    backgroundColor: cardColor,
+                    borderColor: borderColor,
+                  },
+                ]}
+              >
+                <View style={styles.noResultsContainer}>
+                  <ThemedText color="textMuted" style={styles.noResultsText}>
+                    No matches found. Press Enter to use "{query}"
+                  </ThemedText>
                 </View>
-              )}
+              </View>
+            )}
 
             {error && (
               <ThemedText color="danger" style={styles.error}>

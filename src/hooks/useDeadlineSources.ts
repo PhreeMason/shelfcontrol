@@ -13,7 +13,6 @@ export const useDeadlineSources = () => {
     queryKey: ['deadline-sources', userId],
     queryFn: async () => {
       try {
-
         if (!userId) {
           return DEFAULT_SOURCES;
         }
@@ -25,9 +24,12 @@ export const useDeadlineSources = () => {
 
         userSources.forEach(source => {
           // Add user source if it's not already in defaults (case-insensitive)
-          if (!DEFAULT_SOURCES.some(defaultSource =>
-            defaultSource.toLowerCase() === source.toLowerCase()
-          )) {
+          if (
+            !DEFAULT_SOURCES.some(
+              defaultSource =>
+                defaultSource.toLowerCase() === source.toLowerCase()
+            )
+          ) {
             allSources.push(source);
           }
         });

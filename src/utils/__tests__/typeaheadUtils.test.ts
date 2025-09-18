@@ -7,7 +7,13 @@ import {
 
 describe('typeaheadUtils', () => {
   describe('filterSuggestions', () => {
-    const mockSources = ['Fiction', 'Non-Fiction', 'Science Fiction', 'Biography', 'ARC'];
+    const mockSources = [
+      'Fiction',
+      'Non-Fiction',
+      'Science Fiction',
+      'Biography',
+      'ARC',
+    ];
 
     it('should return all sources for empty query', () => {
       expect(filterSuggestions('', mockSources)).toEqual(mockSources);
@@ -19,9 +25,21 @@ describe('typeaheadUtils', () => {
     });
 
     it('should filter sources with case-insensitive matching', () => {
-      expect(filterSuggestions('fiction', mockSources)).toEqual(['Fiction', 'Non-Fiction', 'Science Fiction']);
-      expect(filterSuggestions('FICTION', mockSources)).toEqual(['Fiction', 'Non-Fiction', 'Science Fiction']);
-      expect(filterSuggestions('Fiction', mockSources)).toEqual(['Fiction', 'Non-Fiction', 'Science Fiction']);
+      expect(filterSuggestions('fiction', mockSources)).toEqual([
+        'Fiction',
+        'Non-Fiction',
+        'Science Fiction',
+      ]);
+      expect(filterSuggestions('FICTION', mockSources)).toEqual([
+        'Fiction',
+        'Non-Fiction',
+        'Science Fiction',
+      ]);
+      expect(filterSuggestions('Fiction', mockSources)).toEqual([
+        'Fiction',
+        'Non-Fiction',
+        'Science Fiction',
+      ]);
     });
 
     it('should return exact matches', () => {
@@ -45,7 +63,10 @@ describe('typeaheadUtils', () => {
 
     it('should handle special characters in query', () => {
       const sourcesWithSpecial = ['Non-Fiction', 'Sci-Fi', 'Test123'];
-      expect(filterSuggestions('-', sourcesWithSpecial)).toEqual(['Non-Fiction', 'Sci-Fi']);
+      expect(filterSuggestions('-', sourcesWithSpecial)).toEqual([
+        'Non-Fiction',
+        'Sci-Fi',
+      ]);
       expect(filterSuggestions('123', sourcesWithSpecial)).toEqual(['Test123']);
     });
 
@@ -184,7 +205,9 @@ describe('typeaheadUtils', () => {
     });
 
     it('should return false when showSuggestions is false', () => {
-      expect(shouldShowSuggestions(false, ['item1', 'item2'], false)).toBe(false);
+      expect(shouldShowSuggestions(false, ['item1', 'item2'], false)).toBe(
+        false
+      );
     });
 
     it('should return false when filteredSuggestions is empty', () => {

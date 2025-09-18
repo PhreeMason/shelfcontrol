@@ -651,7 +651,6 @@ describe('DeadlinesService', () => {
     });
   });
 
-
   describe('getDeadlineById', () => {
     const userId = 'user-123';
     const deadlineId = 'rd-123';

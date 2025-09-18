@@ -143,10 +143,7 @@ export const DeadlineFormStep2 = ({
             </View>
           ) : null}
         </View>
-        <ThemedText
-          color="textMuted"
-          style={{lineHeight: 18 }}
-        >
+        <ThemedText color="textMuted" style={{ lineHeight: 18 }}>
           We'll use this to calculate your daily reading pace
         </ThemedText>
       </View>

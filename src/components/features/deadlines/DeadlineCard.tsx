@@ -71,7 +71,7 @@ export function DeadlineCard({
     deadline.status && deadline.status.length > 0
       ? deadline.status[deadline.status.length - 1].created_at
       : null;
-  
+
   const isArchived =
     latestStatus === 'complete' || latestStatus === 'set_aside';
   if (isArchived) {
@@ -282,12 +282,14 @@ export function DeadlineCard({
               {deadline.book_title}
             </ThemedText>
             <ThemedText style={styles.bookDeadline}>
-              {isArchived && latestStatusDate ? dayjs(latestStatusDate).format('MMM D, YYYY') : formatUnitsPerDayForDisplay(
-                unitsPerDay,
-                deadline.format,
-                remaining,
-                daysLeft
-              )}
+              {isArchived && latestStatusDate
+                ? dayjs(latestStatusDate).format('MMM D, YYYY')
+                : formatUnitsPerDayForDisplay(
+                    unitsPerDay,
+                    deadline.format,
+                    remaining,
+                    daysLeft
+                  )}
             </ThemedText>
           </View>
         </View>

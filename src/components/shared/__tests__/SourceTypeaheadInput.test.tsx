@@ -167,7 +167,10 @@ describe('SourceTypeaheadInput', () => {
 
     it('should limit suggestions to maximum of 5 items', () => {
       const { filterSuggestions } = require('@/utils/typeaheadUtils');
-      const manySuggestions = Array.from({ length: 10 }, (_, i) => `Item ${i + 1}`);
+      const manySuggestions = Array.from(
+        { length: 10 },
+        (_, i) => `Item ${i + 1}`
+      );
       filterSuggestions.mockReturnValue(manySuggestions);
 
       render(<SourceTypeaheadInput control={mockControl} name="source" />);
@@ -186,7 +189,10 @@ describe('SourceTypeaheadInput', () => {
 
       render(<SourceTypeaheadInput control={mockControl} name="source" />);
 
-      fireEvent.changeText(screen.getByTestId('source-typeahead'), 'nonexistent');
+      fireEvent.changeText(
+        screen.getByTestId('source-typeahead'),
+        'nonexistent'
+      );
 
       expect(screen.getByText(/No matches found/)).toBeTruthy();
     });

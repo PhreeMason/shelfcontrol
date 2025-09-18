@@ -242,7 +242,6 @@ class DeadlinesService {
     return data as ReadingDeadlineWithProgress[];
   }
 
-
   /**
    * Get unique source values used by the user
    */

@@ -90,7 +90,6 @@ export default function SignUpScreen() {
         </ThemedText>
 
         <ThemedView style={styles.form}>
-
           <Controller
             control={control}
             name="username"

@@ -152,6 +152,14 @@ export default function Profile() {
             </ThemedText>
             <View style={styles.statsContainer}>
               <View style={styles.statItem}>
+                <ThemedText style={[styles.statNumber, { color: colors.good }]}>
+                  {onTrackCount}
+                </ThemedText>
+                <ThemedText variant="muted" style={styles.statLabel}>
+                  ON TRACK
+                </ThemedText>
+              </View>
+              <View style={styles.statItem}>
                 <ThemedText
                   style={[styles.statNumber, { color: colors.complete }]}
                 >
@@ -159,14 +167,6 @@ export default function Profile() {
                 </ThemedText>
                 <ThemedText variant="muted" style={styles.statLabel}>
                   COMPLETED
-                </ThemedText>
-              </View>
-              <View style={styles.statItem}>
-                <ThemedText style={[styles.statNumber, { color: colors.good }]}>
-                  {onTrackCount}
-                </ThemedText>
-                <ThemedText variant="muted" style={styles.statLabel}>
-                  ON TRACK
                 </ThemedText>
               </View>
             </View>
@@ -184,7 +184,10 @@ export default function Profile() {
             <View style={styles.paceSectionHeader}>
               <ThemedText
                 variant="defaultSemiBold"
-                style={[styles.paceSectionTitle, { fontSize: 20 }]}
+                style={[
+                  styles.paceSectionTitle,
+                  { fontSize: 20, lineHeight: 24 },
+                ]}
               >
                 Reading & Listening Pace
               </ThemedText>

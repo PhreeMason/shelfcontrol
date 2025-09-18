@@ -464,7 +464,6 @@ describe('useDeadlines hooks', () => {
     });
   });
 
-
   describe('useGetDeadlineById', () => {
     it('should configure query with correct parameters', () => {
       useGetDeadlineById('deadline-123');

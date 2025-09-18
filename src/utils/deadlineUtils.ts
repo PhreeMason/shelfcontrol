@@ -47,10 +47,16 @@ const sortByStatusDate = (
   a: ReadingDeadlineWithProgress,
   b: ReadingDeadlineWithProgress
 ) => {
-  const aStatus = a.status && a.status.length > 0 ? a.status[a.status.length - 1] : null;
-  const bStatus = b.status && b.status.length > 0 ? b.status[b.status.length - 1] : null;
-  const aDate = aStatus ? normalizeServerDate(aStatus.created_at || '') : dayjs(0);
-  const bDate = bStatus ? normalizeServerDate(bStatus.created_at || '') : dayjs(0);
+  const aStatus =
+    a.status && a.status.length > 0 ? a.status[a.status.length - 1] : null;
+  const bStatus =
+    b.status && b.status.length > 0 ? b.status[b.status.length - 1] : null;
+  const aDate = aStatus
+    ? normalizeServerDate(aStatus.created_at || '')
+    : dayjs(0);
+  const bDate = bStatus
+    ? normalizeServerDate(bStatus.created_at || '')
+    : dayjs(0);
   return bDate.valueOf() - aDate.valueOf();
 };
 
