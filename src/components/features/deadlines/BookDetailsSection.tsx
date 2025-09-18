@@ -55,6 +55,14 @@ const BookDetailsSection = ({
         </ThemedView>
         <ThemedView style={styles.detailRow}>
           <ThemedText variant="secondary" style={styles.detailLabel}>
+            Deadline
+          </ThemedText>
+          <ThemedText style={styles.detailsValue}>
+            {dayjs(deadline.deadline_date).format('MMMM D, YYYY')}
+          </ThemedText>
+        </ThemedView>
+        <ThemedView style={styles.detailRow}>
+          <ThemedText variant="secondary" style={styles.detailLabel}>
             Added
           </ThemedText>
           <ThemedText style={styles.detailsValue}>
