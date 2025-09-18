@@ -21,6 +21,7 @@ interface DeadlineFormStep3Props {
   paceEstimate: string;
   watchedValues: any;
   setValue: (name: keyof DeadlineFormData, value: any) => void;
+  deadlineFromPublicationDate?: boolean;
 }
 
 export const DeadlineFormStep3 = ({
@@ -34,6 +35,7 @@ export const DeadlineFormStep3 = ({
   deadline,
   paceEstimate,
   watchedValues,
+  deadlineFromPublicationDate = false,
 }: DeadlineFormStep3Props) => {
   const { colors } = useTheme();
 
@@ -94,6 +96,11 @@ export const DeadlineFormStep3 = ({
             </>
           )}
         />
+        {deadlineFromPublicationDate && (
+          <ThemedText color="primary" style={styles.autoFilledIndicator}>
+            ✓ Set to book publication date
+          </ThemedText>
+        )}
         <ThemedText color="textMuted" style={{ marginTop: 6, lineHeight: 18 }}>
           Past dates will be marked as overdue
         </ThemedText>
@@ -249,5 +256,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 12,
     padding: 16,
+  },
+  autoFilledIndicator: {
+    fontSize: 12,
+    fontWeight: '500',
   },
 });

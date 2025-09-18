@@ -4,6 +4,7 @@ import {
   DeadlineFormStep3,
   StepIndicators,
 } from '@/components/forms';
+import { SelectedBook } from '@/types/bookSearch';
 import AppHeader from '@/components/shared/AppHeader';
 import {
   ThemedButton,
@@ -54,6 +55,7 @@ const NewDeadline = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [paceEstimate, setPaceEstimate] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deadlineFromPublicationDate, setDeadlineFromPublicationDate] = useState(false);
   const { addDeadline } = useDeadlines();
   const { colors } = useTheme();
 
@@ -69,7 +71,7 @@ const NewDeadline = () => {
         format: 'eBook',
         source: 'ARC',
         status: 'active',
-        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
+        deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
         flexibility: 'flexible',
       },
     });
@@ -276,6 +278,8 @@ const NewDeadline = () => {
     setShowDatePicker(false);
     if (selectedDate) {
       setValue('deadline', selectedDate);
+      // If user manually changes the deadline, clear the publication date flag
+      setDeadlineFromPublicationDate(false);
     }
   };
 
@@ -289,6 +293,24 @@ const NewDeadline = () => {
   const handlePriorityChange = (priority: 'flexible' | 'strict') => {
     setSelectedPriority(priority);
     setValue('flexibility', priority);
+  };
+
+  const handleBookSelected = (book: SelectedBook | null) => {
+    if (book?.publication_date) {
+      const publicationDate = new Date(book.publication_date);
+      const now = new Date();
+
+      // Check if publication date is in the future
+      if (publicationDate > now) {
+        setValue('deadline', publicationDate);
+        setDeadlineFromPublicationDate(true);
+      } else {
+        setDeadlineFromPublicationDate(false);
+      }
+    } else {
+      setDeadlineFromPublicationDate(false);
+    }
+    setCurrentStep(2);
   };
 
   return (
@@ -311,9 +333,7 @@ const NewDeadline = () => {
         <ThemedView style={styles.content}>
           {currentStep === 1 ? (
             <DeadlineFormStep1
-              onBookSelected={() => {
-                setCurrentStep(2);
-              }}
+              onBookSelected={handleBookSelected}
               onManualEntry={() => {
                 setCurrentStep(2);
               }}
@@ -341,6 +361,7 @@ const NewDeadline = () => {
               paceEstimate={paceEstimate}
               watchedValues={watchedValues}
               setValue={setValue}
+              deadlineFromPublicationDate={deadlineFromPublicationDate}
             />
           )}
         </ThemedView>

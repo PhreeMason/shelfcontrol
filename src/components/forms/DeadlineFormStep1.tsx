@@ -71,6 +71,7 @@ export const DeadlineFormStep1 = ({
         cover_image_url: fullBookData.cover_image_url || undefined,
         total_pages: fullBookData.total_pages || undefined,
         total_duration: fullBookData.total_duration || null,
+        publication_date: fullBookData.publication_date,
       };
 
       // Set form values

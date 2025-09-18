@@ -71,4 +71,5 @@ export interface SelectedBook {
   cover_image_url?: string | undefined;
   total_pages?: number | undefined;
   total_duration?: number | null;
+  publication_date?: string | null;
 }
