@@ -45,6 +45,9 @@ const NewDeadline = () => {
     'physical' | 'eBook' | 'audio'
   >('eBook');
   // Source is now handled directly by form control
+  const [selectedStatus, setSelectedStatus] = useState<
+    'pending' | 'active'
+  >('active');
   const [selectedPriority, setSelectedPriority] = useState<
     'flexible' | 'strict'
   >('flexible');
@@ -65,6 +68,7 @@ const NewDeadline = () => {
         bookAuthor: '',
         format: 'eBook',
         source: 'ARC',
+        status: 'active',
         deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
         flexibility: 'flexible',
       },
@@ -164,6 +168,8 @@ const NewDeadline = () => {
       book_id: data.book_id || null,
     } as any;
 
+    const statusValue = selectedStatus === 'pending' ? 'requested' : 'reading';
+
     // Calculate current progress accounting for format
     const finalCurrentProgress = calculateCurrentProgressFromForm(
       selectedFormat,
@@ -181,6 +187,7 @@ const NewDeadline = () => {
       {
         deadlineDetails,
         progressDetails,
+        status: statusValue,
         bookData: data.api_id
           ? {
               api_id: data.api_id,
@@ -317,6 +324,8 @@ const NewDeadline = () => {
               control={control}
               selectedFormat={selectedFormat}
               onFormatChange={handleFormatChange}
+              selectedStatus={selectedStatus}
+              onStatusChange={setSelectedStatus}
               setValue={setValue}
             />
           ) : (

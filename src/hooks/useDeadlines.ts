@@ -203,6 +203,8 @@ export const useSetAsideDeadline = () => useUpdateDeadlineStatus('set_aside');
 
 export const useReactivateDeadline = () => useUpdateDeadlineStatus('reading');
 
+export const useStartReadingDeadline = () => useUpdateDeadlineStatus('reading');
+
 export const useGetDeadlineById = (deadlineId: string | undefined) => {
   const { profile, session } = useAuth();
   const userId = profile?.id || session?.user?.id;

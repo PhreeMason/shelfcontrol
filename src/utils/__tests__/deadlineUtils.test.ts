@@ -131,7 +131,7 @@ describe('deadlineUtils', () => {
   });
 
   describe('separateDeadlines', () => {
-    it('should separate deadlines into active, overdue, completed, and setAside', () => {
+    it('should separate deadlines into active, overdue, completed, setAside, and pending', () => {
       const activeDeadline = createMockDeadline('1', '2025-12-31');
       const overdueDeadline = createMockDeadline('2', '2023-01-01');
       const completedDeadline = createMockDeadline(
@@ -150,12 +150,21 @@ describe('deadlineUtils', () => {
         [],
         [{ status: 'set_aside', created_at: '2024-01-15T00:00:00Z' }]
       );
+      const pendingDeadline = createMockDeadline(
+        '5',
+        '2025-06-30',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [],
+        [{ status: 'requested', created_at: '2024-01-15T00:00:00Z' }]
+      );
 
       const result = separateDeadlines([
         activeDeadline,
         overdueDeadline,
         completedDeadline,
         setAsideDeadline,
+        pendingDeadline,
       ]);
 
       expect(result.active).toHaveLength(1);
@@ -166,6 +175,8 @@ describe('deadlineUtils', () => {
       expect(result.completed[0].id).toBe('3');
       expect(result.setAside).toHaveLength(1);
       expect(result.setAside[0].id).toBe('4');
+      expect(result.pending).toHaveLength(1);
+      expect(result.pending[0].id).toBe('5');
     });
 
     it('should use latest status when multiple status entries exist', () => {

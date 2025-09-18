@@ -43,6 +43,9 @@ const EditDeadline = () => {
   const [selectedFormat, setSelectedFormat] = useState<
     'physical' | 'eBook' | 'audio'
   >('physical');
+  const [selectedStatus, setSelectedStatus] = useState<
+    'pending' | 'active'
+  >('active');
   const [selectedPriority, setSelectedPriority] = useState<
     'flexible' | 'strict'
   >('flexible');
@@ -66,6 +69,7 @@ const EditDeadline = () => {
         bookAuthor: '',
         format: 'physical',
         source: 'ARC',
+        status: 'active',
         deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         totalQuantity: 0,
         totalMinutes: 0,
@@ -88,6 +92,18 @@ const EditDeadline = () => {
 
       setSelectedFormat(deadline.format);
       setSelectedPriority(deadline.flexibility as 'flexible' | 'strict');
+
+      // Set status based on the latest status
+      const latestStatus =
+        deadline.status && deadline.status.length > 0
+          ? deadline.status[deadline.status.length - 1]
+          : null;
+
+      if (latestStatus) {
+        const mappedStatus = latestStatus.status === 'requested' ? 'pending' : 'active';
+        setSelectedStatus(mappedStatus);
+        setValue('status', mappedStatus);
+      }
 
       // Get the latest progress entry
       const latestProgress =
@@ -208,8 +224,10 @@ const EditDeadline = () => {
       deadline_id: deadline.id,
     };
 
+    const statusValue = selectedStatus === 'pending' ? 'requested' : 'reading';
+
     updateDeadline(
-      { deadlineDetails, progressDetails },
+      { deadlineDetails, progressDetails, status: statusValue },
       () => {
         setIsSubmitting(false);
         Toast.show({
@@ -306,6 +324,8 @@ const EditDeadline = () => {
               control={control}
               selectedFormat={selectedFormat}
               onFormatChange={handleFormatChange}
+              selectedStatus={selectedStatus}
+              onStatusChange={setSelectedStatus}
               setValue={setValue}
               isEditMode={true}
             />

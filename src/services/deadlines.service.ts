@@ -10,12 +10,14 @@ import { booksService } from './books.service';
 export interface AddDeadlineParams {
   deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
   progressDetails: ReadingDeadlineProgressInsert;
+  status?: string;
   bookData?: { api_id: string; book_id?: string };
 }
 
 export interface UpdateDeadlineParams {
   deadlineDetails: ReadingDeadlineInsert;
   progressDetails: ReadingDeadlineProgressInsert;
+  status?: string;
   bookData?: { api_id: string; book_id?: string };
 }
 
@@ -36,7 +38,7 @@ class DeadlinesService {
    * Add a new deadline
    */
   async addDeadline(userId: string, params: AddDeadlineParams) {
-    const { deadlineDetails, progressDetails, bookData } = params;
+    const { deadlineDetails, progressDetails, status, bookData } = params;
 
     // Generate IDs
     const finalDeadlineId = generateId('rd');
@@ -100,7 +102,7 @@ class DeadlinesService {
       .from('deadline_status')
       .insert({
         deadline_id: finalDeadlineId,
-        status: 'reading',
+        status: (status || 'reading') as 'reading' | 'requested',
         updated_at: new Date().toISOString(),
       })
       .select()
@@ -121,7 +123,7 @@ class DeadlinesService {
    * Update an existing deadline
    */
   async updateDeadline(userId: string, params: UpdateDeadlineParams) {
-    const { deadlineDetails, progressDetails } = params;
+    const { deadlineDetails, progressDetails, status } = params;
 
     // Update deadline
     const { data: deadlineData, error: deadlineError } = await supabase
@@ -170,6 +172,23 @@ class DeadlinesService {
 
       if (error) throw error;
       progressData = data;
+    }
+
+    // Update status if provided
+    if (status) {
+      const { error: statusError } = await supabase
+        .from('deadline_status')
+        .update({
+          status: status as 'reading' | 'requested',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('deadline_id', deadlineDetails.id!)
+        .select()
+        .single();
+
+      if (statusError) {
+        console.warn('Failed to update status:', statusError);
+      }
     }
 
     return { ...deadlineData, progress: progressData };

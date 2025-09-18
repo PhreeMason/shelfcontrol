@@ -5,6 +5,7 @@ import {
   useGetDeadlines,
   useReactivateDeadline,
   useSetAsideDeadline,
+  useStartReadingDeadline,
   useUpdateDeadline,
 } from '@/hooks/useDeadlines';
 import {
@@ -53,6 +54,7 @@ interface DeadlineContextType {
   overdueDeadlines: ReadingDeadlineWithProgress[];
   completedDeadlines: ReadingDeadlineWithProgress[];
   setAsideDeadlines: ReadingDeadlineWithProgress[];
+  pendingDeadlines: ReadingDeadlineWithProgress[];
   isLoading: boolean;
   error: Error | null;
 
@@ -65,6 +67,7 @@ interface DeadlineContextType {
     params: {
       deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
       progressDetails: ReadingDeadlineProgressInsert;
+      status?: string;
       bookData?: { api_id: string; book_id?: string };
     },
     onSuccess?: () => void,
@@ -74,6 +77,7 @@ interface DeadlineContextType {
     params: {
       deadlineDetails: ReadingDeadlineInsert;
       progressDetails: ReadingDeadlineProgressInsert;
+      status?: string;
     },
     onSuccess?: () => void,
     onError?: (error: Error) => void
@@ -94,6 +98,11 @@ interface DeadlineContextType {
     onError?: (error: Error) => void
   ) => void;
   reactivateDeadline: (
+    deadlineId: string,
+    onSuccess?: () => void,
+    onError?: (error: Error) => void
+  ) => void;
+  startReadingDeadline: (
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
@@ -182,6 +191,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
   const { mutate: completeDeadlineMutation } = useCompleteDeadline();
   const { mutate: setAsideDeadlineMutation } = useSetAsideDeadline();
   const { mutate: reactivateDeadlineMutation } = useReactivateDeadline();
+  const { mutate: startReadingDeadlineMutation } = useStartReadingDeadline();
 
   // Separate deadlines by active and overdue status
   const {
@@ -189,6 +199,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     overdue: overdueDeadlines,
     completed: completedDeadlines,
     setAside: setAsideDeadlines,
+    pending: pendingDeadlines,
   } = separateDeadlines(deadlines);
 
   // Calculate pace data (merged from PaceProvider)
@@ -316,6 +327,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     params: {
       deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
       progressDetails: ReadingDeadlineProgressInsert;
+      status?: string;
       bookData?: { api_id: string; book_id?: string };
     },
     onSuccess?: () => void,
@@ -336,6 +348,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     params: {
       deadlineDetails: ReadingDeadlineInsert;
       progressDetails: ReadingDeadlineProgressInsert;
+      status?: string;
       bookData?: { api_id: string; book_id?: string };
     },
     onSuccess?: () => void,
@@ -416,6 +429,22 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     });
   };
 
+  const startReadingDeadline = (
+    deadlineId: string,
+    onSuccess?: () => void,
+    onError?: (error: Error) => void
+  ) => {
+    startReadingDeadlineMutation(deadlineId, {
+      onSuccess: () => {
+        onSuccess?.();
+      },
+      onError: (error: Error) => {
+        console.error('Error starting reading deadline:', error);
+        onError?.(error);
+      },
+    });
+  };
+
   const value: DeadlineContextType = {
     // Data
     deadlines,
@@ -423,6 +452,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     overdueDeadlines,
     completedDeadlines,
     setAsideDeadlines,
+    pendingDeadlines,
     isLoading,
     error,
 
@@ -437,6 +467,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     completeDeadline,
     setAsideDeadline,
     reactivateDeadline,
+    startReadingDeadline,
 
     getDeadlineCalculations,
 

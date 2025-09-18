@@ -6,7 +6,7 @@ import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-type FilterType = 'active' | 'overdue' | 'completed' | 'set_aside' | 'all';
+type FilterType = 'active' | 'overdue' | 'pending' | 'completed' | 'set_aside' | 'all';
 
 interface FilterOption {
   key: FilterType;
@@ -16,6 +16,7 @@ interface FilterOption {
 const filterOptions: FilterOption[] = [
   { key: 'active', label: 'Active' },
   { key: 'overdue', label: 'Overdue' },
+  { key: 'pending', label: 'Pending' },
   { key: 'completed', label: 'Completed' },
   { key: 'set_aside', label: 'Paused' },
   { key: 'all', label: 'All' },
@@ -29,6 +30,7 @@ const FilteredDeadlines = () => {
     overdueDeadlines,
     completedDeadlines,
     setAsideDeadlines,
+    pendingDeadlines,
     isLoading,
     error,
   } = useDeadlines();
@@ -39,6 +41,8 @@ const FilteredDeadlines = () => {
         return activeDeadlines;
       case 'overdue':
         return overdueDeadlines;
+      case 'pending':
+        return pendingDeadlines;
       case 'completed':
         return completedDeadlines;
       case 'set_aside':
@@ -56,6 +60,8 @@ const FilteredDeadlines = () => {
         return 'No active deadlines';
       case 'overdue':
         return 'No overdue deadlines';
+      case 'pending':
+        return 'No pending deadlines';
       case 'completed':
         return 'No completed deadlines';
       case 'set_aside':

@@ -18,11 +18,13 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
     completeDeadline,
     setAsideDeadline,
     reactivateDeadline,
+    startReadingDeadline,
   } = useDeadlines();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const [isSettingAside, setIsSettingAside] = useState(false);
   const [isReactivating, setIsReactivating] = useState(false);
+  const [isStartingReading, setIsStartingReading] = useState(false);
 
   // Get current status
   const latestStatus =
@@ -33,6 +35,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   const isCompleted = latestStatus === 'complete';
   const isSetAside = latestStatus === 'set_aside';
   const isActive = latestStatus === 'reading';
+  const isPending = latestStatus === 'requested';
   const handleComplete = () => {
     // Show confirmation dialog before completing
     Alert.alert(
@@ -256,8 +259,76 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
     );
   };
 
+  const handleStartReading = () => {
+    setIsStartingReading(true);
+    startReadingDeadline(
+      deadline.id,
+      // Success callback
+      () => {
+        setIsStartingReading(false);
+        Toast.show({
+          swipeable: true,
+          type: 'success',
+          text1: 'Started reading!',
+          text2: `"${deadline.book_title}" is now active`,
+          autoHide: true,
+          visibilityTime: 1500,
+          position: 'top',
+        });
+
+        // Show prompt to update deadline after starting
+        setTimeout(() => {
+          Alert.alert(
+            'Update Deadline?',
+            'Would you like to update the deadline date?',
+            [
+              {
+                text: 'Not Now',
+                style: 'cancel',
+              },
+              {
+                text: 'Yes, Update',
+                onPress: () => {
+                  // Navigate to edit form page 3 (deadline page)
+                  // @ts-ignore
+                  router.push(`/deadline/${deadline.id}/edit?page=3`);
+                },
+              },
+            ]
+          );
+        }, 2500); // Wait for toast to show first
+      },
+      // Error callback
+      error => {
+        setIsStartingReading(false);
+        Toast.show({
+          swipeable: true,
+          type: 'error',
+          text1: 'Failed to start reading',
+          text2: error.message || 'Please try again',
+          autoHide: true,
+          visibilityTime: 1500,
+          position: 'top',
+        });
+      }
+    );
+  };
+
   return (
     <ThemedView style={styles.actionButtons}>
+      {/* For pending deadlines - show start reading button */}
+      {isPending && (
+        <>
+          <ThemedButton
+            title={isStartingReading ? 'Starting...' : 'Start Reading'}
+            variant="primary"
+            style={styles.actionButton}
+            onPress={handleStartReading}
+            disabled={isStartingReading}
+          />
+        </>
+      )}
+
       {/* For active deadlines - show start reading session, complete and set aside */}
       {isActive && (
         <>

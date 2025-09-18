@@ -7,11 +7,14 @@ import React from 'react';
 import { Control, useWatch } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
 import { FormatSelector } from './FormatSelector';
+import { StatusSelector } from './StatusSelector';
 
 interface DeadlineFormStep2Props {
   control: Control<DeadlineFormData>;
   selectedFormat: 'physical' | 'eBook' | 'audio';
   onFormatChange: (format: 'physical' | 'eBook' | 'audio') => void;
+  selectedStatus: 'pending' | 'active';
+  onStatusChange: (status: 'pending' | 'active') => void;
   isEditMode?: boolean;
   setValue: (name: keyof DeadlineFormData, value: any) => void;
 }
@@ -20,6 +23,8 @@ export const DeadlineFormStep2 = ({
   control,
   selectedFormat,
   onFormatChange,
+  selectedStatus,
+  onStatusChange,
   isEditMode = false,
 }: DeadlineFormStep2Props) => {
   // Watch for book linking
@@ -82,6 +87,19 @@ export const DeadlineFormStep2 = ({
             ✓ Linked from library
           </ThemedText>
         )}
+      </View>
+
+      <View>
+        <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
+          Status
+        </ThemedText>
+        <StatusSelector
+          selectedStatus={selectedStatus}
+          onSelectStatus={onStatusChange}
+        />
+        <ThemedText color="textMuted" style={{ marginTop: 6, lineHeight: 18 }}>
+          Is this book actively being read or pending?
+        </ThemedText>
       </View>
 
       <View>
