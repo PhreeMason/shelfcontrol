@@ -5,7 +5,7 @@ import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+// import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 
@@ -48,7 +48,7 @@ export default function RootLayout() {
               <Stack.Screen name="+not-found" />
             </Stack>
           </DeadlineProvider>
-          <StatusBar style="auto" />
+          {/* <StatusBar style="auto" /> */}
           <Toast config={toastConfig} />
         </ThemeProvider>
       </QueryClientProvider>

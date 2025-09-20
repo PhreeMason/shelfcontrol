@@ -37,9 +37,7 @@ export const StatusSelector = ({
                 borderColor: isSelected ? primaryColor : textMutedColor,
               },
             ]}
-            onPress={() =>
-              onSelectStatus(status.key as 'pending' | 'active')
-            }
+            onPress={() => onSelectStatus(status.key as 'pending' | 'active')}
           >
             <ThemedText
               color={isSelected ? 'text' : 'textMuted'}

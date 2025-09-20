@@ -46,16 +46,17 @@ const NewDeadline = () => {
     'physical' | 'eBook' | 'audio'
   >('eBook');
   // Source is now handled directly by form control
-  const [selectedStatus, setSelectedStatus] = useState<
-    'pending' | 'active'
-  >('active');
+  const [selectedStatus, setSelectedStatus] = useState<'pending' | 'active'>(
+    'active'
+  );
   const [selectedPriority, setSelectedPriority] = useState<
     'flexible' | 'strict'
   >('flexible');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [paceEstimate, setPaceEstimate] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deadlineFromPublicationDate, setDeadlineFromPublicationDate] = useState(false);
+  const [deadlineFromPublicationDate, setDeadlineFromPublicationDate] =
+    useState(false);
   const { addDeadline } = useDeadlines();
   const { colors } = useTheme();
 

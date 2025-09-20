@@ -21,6 +21,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
 import {
   Alert,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -124,7 +125,12 @@ export default function Profile() {
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        <ThemedView style={styles.innerContainer}>
+        <ThemedView
+          style={[
+            styles.innerContainer,
+            Platform.OS === 'ios' && styles.iosContainer,
+          ]}
+        >
           <ThemedView style={styles.profileCard}>
             <View style={styles.avatarSection}>
               <Avatar
@@ -322,6 +328,9 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     padding: 20,
+  },
+  iosContainer: {
+    marginBottom: 80,
   },
   profileCard: {
     backgroundColor: '#f8f9fa',

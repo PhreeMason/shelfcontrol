@@ -94,18 +94,34 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     if (!isLoading) {
       const inAuthGroup = segments[0] === '(auth)';
 
-      if (!session && !inAuthGroup) {
-        // Redirect to login if not authenticated
-        router.replace('/(auth)/sign-in');
-      } else if (session && inAuthGroup) {
-        // Redirect to home if already authenticated
-        router.replace('/');
-      }
+      // Add a small delay to prevent flickering during auth state transitions
+      const timeoutId = setTimeout(() => {
+        if (!session && !inAuthGroup) {
+          // Redirect to login if not authenticated
+          router.replace('/(auth)/sign-in');
+        } else if (session && inAuthGroup) {
+          // Redirect to home if already authenticated
+          router.replace('/');
+        }
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
     }
+    // Return undefined for the case when isLoading is true
+    return undefined;
   }, [session, segments, isLoading]);
 
   const signIn = async (email: string, password: string) => {
-    return authService.signIn({ email, password });
+    try {
+      const result = await authService.signIn({ email, password });
+      if (result.error) {
+        console.error('Sign in failed:', result.error);
+      }
+      return result;
+    } catch (error) {
+      console.error('Sign in error:', error);
+      throw error;
+    }
   };
 
   const signOut = async () => {
@@ -118,7 +134,16 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   };
 
   const signUp = async (email: string, password: string, username: string) => {
-    return authService.signUp({ email, password, username });
+    try {
+      const result = await authService.signUp({ email, password, username });
+      if (result.error) {
+        console.error('Sign up failed:', result.error);
+      }
+      return result;
+    } catch (error) {
+      console.error('Sign up error:', error);
+      throw error;
+    }
   };
 
   const uploadAvatar = async (uri: string) => {

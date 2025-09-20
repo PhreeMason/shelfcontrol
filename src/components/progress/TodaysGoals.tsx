@@ -26,6 +26,8 @@ const TodaysGoals: React.FC = () => {
     [readingDeadlines, calculateProgressForToday]
   );
 
+  const hasGoals = readingDeadlines.length > 0 || audioDeadlines.length > 0;
+
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
@@ -33,21 +35,34 @@ const TodaysGoals: React.FC = () => {
       </View>
 
       <View style={styles.progressSection}>
-        {readingDeadlines.length > 0 ? (
-          <TodaysProgress
-            total={readingTotals.total}
-            current={readingTotals.current}
-            type="reading"
-          />
-        ) : null}
+        {hasGoals ? (
+          <>
+            {readingDeadlines.length > 0 && (
+              <TodaysProgress
+                total={readingTotals.total}
+                current={readingTotals.current}
+                type="reading"
+              />
+            )}
 
-        {audioDeadlines.length > 0 ? (
-          <TodaysProgress
-            total={audioTotals.total}
-            current={audioTotals.current}
-            type="listening"
-          />
-        ) : null}
+            {audioDeadlines.length > 0 && (
+              <TodaysProgress
+                total={audioTotals.total}
+                current={audioTotals.current}
+                type="listening"
+              />
+            )}
+          </>
+        ) : (
+          <View style={styles.emptyStateContainer}>
+            <ThemedText style={styles.emptyStateText} variant="muted">
+              No reading goals set for today
+            </ThemedText>
+            <ThemedText style={styles.emptyStateSubText} variant="muted">
+              Add a book deadline to start tracking your progress
+            </ThemedText>
+          </View>
+        )}
       </View>
     </ThemedView>
   );
@@ -84,6 +99,21 @@ const styles = StyleSheet.create({
   },
   progressSection: {
     gap: 16,
+  },
+  emptyStateContainer: {
+    paddingVertical: 20,
+    alignItems: 'center',
+    gap: 8,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  emptyStateSubText: {
+    fontSize: 14,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
 });
 

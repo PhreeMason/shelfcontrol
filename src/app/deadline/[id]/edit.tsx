@@ -43,9 +43,9 @@ const EditDeadline = () => {
   const [selectedFormat, setSelectedFormat] = useState<
     'physical' | 'eBook' | 'audio'
   >('physical');
-  const [selectedStatus, setSelectedStatus] = useState<
-    'pending' | 'active'
-  >('active');
+  const [selectedStatus, setSelectedStatus] = useState<'pending' | 'active'>(
+    'active'
+  );
   const [selectedPriority, setSelectedPriority] = useState<
     'flexible' | 'strict'
   >('flexible');
@@ -100,7 +100,8 @@ const EditDeadline = () => {
           : null;
 
       if (latestStatus) {
-        const mappedStatus = latestStatus.status === 'requested' ? 'pending' : 'active';
+        const mappedStatus =
+          latestStatus.status === 'requested' ? 'pending' : 'active';
         setSelectedStatus(mappedStatus);
         setValue('status', mappedStatus);
       }

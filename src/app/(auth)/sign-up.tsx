@@ -1,4 +1,5 @@
 import { AppleSSO } from '@/components/auth/AppleSSO';
+import { PasswordInput } from '@/components/auth/PasswordInput';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,6 +7,7 @@ import { Link, useRouter } from 'expo-router';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -85,6 +87,14 @@ export default function SignUpScreen() {
           </Link>
         </ThemedView>
 
+        <ThemedView style={styles.logoContainer}>
+          <Image
+            source={require('@/assets/images/transparent-logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </ThemedView>
+
         <ThemedText variant="headline" style={styles.title}>
           Sign up
         </ThemedText>
@@ -136,13 +146,12 @@ export default function SignUpScreen() {
             control={control}
             name="password"
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
+              <PasswordInput
                 style={styles.input}
                 placeholder="Enter password"
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                secureTextEntry={true}
               />
             )}
           />
@@ -198,6 +207,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    shadowColor: '#B8A9D9',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
   title: {
     textAlign: 'center',
     marginBottom: 40,
@@ -216,14 +242,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#B8A9D9',
     borderRadius: 8,
     padding: 16,
     marginTop: 8,
     alignItems: 'center',
+    shadowColor: '#B8A9D9',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   buttonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#E2E8F0',
   },
   buttonText: {
     color: '#fff',

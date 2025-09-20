@@ -24,7 +24,7 @@ const createMockDeadline = (
     updated_at?: string;
   }[] = [],
   status: {
-    status: 'reading' | 'complete' | 'set_aside';
+    status: 'reading' | 'complete' | 'set_aside' | 'requested';
     created_at: string;
   }[] = []
 ): ReadingDeadlineWithProgress => ({

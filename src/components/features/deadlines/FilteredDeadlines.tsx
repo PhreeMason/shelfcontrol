@@ -6,7 +6,13 @@ import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-type FilterType = 'active' | 'overdue' | 'pending' | 'completed' | 'set_aside' | 'all';
+type FilterType =
+  | 'active'
+  | 'overdue'
+  | 'pending'
+  | 'completed'
+  | 'set_aside'
+  | 'all';
 
 interface FilterOption {
   key: FilterType;
