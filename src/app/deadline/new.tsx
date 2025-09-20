@@ -57,6 +57,7 @@ const NewDeadline = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deadlineFromPublicationDate, setDeadlineFromPublicationDate] =
     useState(false);
+  const [previousPageCount, setPreviousPageCount] = useState<number | null>(null);
   const { addDeadline } = useDeadlines();
   const { colors } = useTheme();
 
@@ -285,6 +286,27 @@ const NewDeadline = () => {
   };
 
   const handleFormatChange = (format: 'physical' | 'eBook' | 'audio') => {
+    const currentTotalQuantity = watchedValues.totalQuantity;
+
+    // Store previous page count when switching away from physical/eBook to audio
+    if ((selectedFormat === 'physical' || selectedFormat === 'eBook') && format === 'audio') {
+      if (currentTotalQuantity && currentTotalQuantity > 0) {
+        setPreviousPageCount(currentTotalQuantity);
+      }
+      // Reset values for audio format
+      setValue('totalQuantity', 0);
+      setValue('totalMinutes', undefined);
+    }
+
+    // Restore previous page count when switching back to physical/eBook from audio
+    if (selectedFormat === 'audio' && (format === 'physical' || format === 'eBook')) {
+      if (previousPageCount && previousPageCount > 0) {
+        setValue('totalQuantity', previousPageCount);
+      }
+      // Clear audio-specific fields
+      setValue('totalMinutes', undefined);
+    }
+
     setSelectedFormat(format);
     setValue('format', format);
   };
