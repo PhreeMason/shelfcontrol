@@ -5,19 +5,17 @@ import { dayjs } from '@/lib/dayjs';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Header = () => {
   const today = Date.now();
   const formattedDate = dayjs(today).format('dddd, MMMM D');
-  const insets = useSafeAreaInsets();
 
   return (
     <LinearGradient
       colors={['#E8C2B9', '#B8A9D9']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[styles.container, { paddingTop: Math.max(insets.top, 10) }]}
+      style={styles.container}
     >
       <ThemedView style={styles.dateRow}>
         <ThemedText style={styles.dateText}>{formattedDate}</ThemedText>
