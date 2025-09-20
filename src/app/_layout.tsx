@@ -48,7 +48,6 @@ export default function RootLayout() {
               <Stack.Screen name="+not-found" />
             </Stack>
           </DeadlineProvider>
-          {/* <StatusBar style="auto" /> */}
           <Toast config={toastConfig} />
         </ThemeProvider>
       </QueryClientProvider>

@@ -40,6 +40,7 @@ export function DeadlineCard({
     good,
     approaching,
     impossible,
+    requested: set_aside, // Treat requested as set aside for colors
   };
   // Fetch book data if deadline has a book_id
   const { data: bookData } = useFetchBookById(deadline.book_id);
@@ -74,7 +75,14 @@ export function DeadlineCard({
 
   const isArchived =
     latestStatus === 'complete' || latestStatus === 'set_aside';
+  
   if (isArchived) {
+    borderColor = urgencyTextColorMap[latestStatus];
+    countdownColor = urgencyTextColorMap[latestStatus];
+  }
+
+  const isRequested = latestStatus === 'requested';
+  if (isRequested) {
     borderColor = urgencyTextColorMap[latestStatus];
     countdownColor = urgencyTextColorMap[latestStatus];
   }
@@ -282,7 +290,7 @@ export function DeadlineCard({
               {deadline.book_title}
             </ThemedText>
             <ThemedText style={styles.bookDeadline}>
-              {isArchived && latestStatusDate
+              {(isArchived || isRequested) && latestStatusDate
                 ? dayjs(latestStatusDate).format('MMM D, YYYY')
                 : formatUnitsPerDayForDisplay(
                     unitsPerDay,

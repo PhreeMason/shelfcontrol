@@ -43,7 +43,7 @@ export default function SignInScreen() {
 
     try {
       const { error } = await signIn(data.email, data.password);
-
+      console.log('Sign in response error:', error);
       if (error) {
         // Handle different Supabase auth errors
         if (error.message.includes('Invalid login credentials')) {
@@ -88,48 +88,54 @@ export default function SignInScreen() {
         </ThemedText>
 
         <ThemedView style={styles.form}>
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                placeholderTextColor="#999"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                autoComplete="email"
-              />
+          <ThemedView style={styles.inputGroup}>
+            <ThemedText style={styles.label}>Email</ThemedText>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  placeholderTextColor="#999"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  autoComplete="email"
+                />
+              )}
+            />
+            {errors.email && (
+              <ThemedText style={styles.errorText}>
+                {errors.email.message}
+              </ThemedText>
             )}
-          />
-          {errors.email && (
-            <ThemedText style={styles.errorText}>
-              {errors.email.message}
-            </ThemedText>
-          )}
+          </ThemedView>
 
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <PasswordInput
-                style={styles.input}
-                placeholder="Password"
-                placeholderTextColor="#999"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-              />
+          <ThemedView style={styles.inputGroup}>
+            <ThemedText style={styles.label}>Password</ThemedText>
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <PasswordInput
+                  style={styles.input}
+                  placeholder="Password"
+                  placeholderTextColor="#999"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />
+            {errors.password && (
+              <ThemedText style={styles.errorText}>
+                {errors.password.message}
+              </ThemedText>
             )}
-          />
-          {errors.password && (
-            <ThemedText style={styles.errorText}>
-              {errors.password.message}
-            </ThemedText>
-          )}
+          </ThemedView>
 
           {errors.root && (
             <ThemedText style={styles.errorText}>
@@ -150,15 +156,17 @@ export default function SignInScreen() {
             </ThemedText>
           </TouchableOpacity>
 
-          {/* Add Forgot Password Link */}
-          <Link
-            href="/reset-password-request"
-            style={styles.forgotPasswordLink}
-          >
-            <ThemedText style={styles.forgotPasswordText}>
-              Forgot Password?
-            </ThemedText>
-          </Link>
+          {/* Add Forgot Password Link - iOS only */}
+          {Platform.OS === 'ios' && (
+            <Link
+              href="/reset-password-request"
+              style={styles.forgotPasswordLink}
+            >
+              <ThemedText style={styles.forgotPasswordText}>
+                Forgot Password?
+              </ThemedText>
+            </Link>
+          )}
         </ThemedView>
 
         <ThemedView style={styles.divider} />
@@ -214,8 +222,16 @@ const styles = StyleSheet.create({
     lineHeight: 38,
   },
   form: {
-    gap: 16,
     marginBottom: 32,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
+    color: '#333',
   },
   input: {
     borderWidth: 1,

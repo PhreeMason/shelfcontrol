@@ -13,6 +13,7 @@ export function CalendarLegend({ style }: CalendarLegendProps) {
     { color: colors.good, label: 'Good pace' },
     { color: colors.approaching, label: 'Approaching' },
     { color: colors.urgent, label: 'Urgent' },
+    { color: colors.set_aside, label: 'Pending' },
   ];
   return (
     <View style={[styles.container, style]}>

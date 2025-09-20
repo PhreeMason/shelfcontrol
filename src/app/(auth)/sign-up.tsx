@@ -21,9 +21,6 @@ const signUpSchema = z.object({
   password: z
     .string({ message: 'Password is required' })
     .min(8, 'Password should be at least 8 characters long'),
-  username: z
-    .string({ message: 'Username is required' })
-    .min(3, 'Username should be at least 3 characters long'),
 });
 
 type SignUpFields = z.infer<typeof signUpSchema>;
@@ -45,8 +42,8 @@ export default function SignUpScreen() {
     if (isLoading || isSubmitting) return;
 
     try {
-      const { error } = await signUp(data.email, data.password, data.username);
-
+      const { error } = await signUp(data.email, data.password, '');
+      console.log('Sign up response error:', error);
       if (error) {
         // Handle different Supabase auth errors
         if (error.message.includes('User already registered')) {
@@ -55,8 +52,6 @@ export default function SignUpScreen() {
           });
         } else if (error.message.includes('Password should be')) {
           setError('password', { message: error.message });
-        } else if (error.message.includes('Username')) {
-          setError('username', { message: error.message });
         } else {
           setError('root', { message: error.message || 'Sign up failed' });
         }
@@ -100,66 +95,52 @@ export default function SignUpScreen() {
         </ThemedText>
 
         <ThemedView style={styles.form}>
-          <Controller
-            control={control}
-            name="username"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                placeholder="Enter username"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                autoCapitalize="none"
-              />
+          <ThemedView style={styles.inputGroup}>
+            <ThemedText style={styles.label}>Email</ThemedText>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter email"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  autoComplete="email"
+                />
+              )}
+            />
+            {errors.email && (
+              <ThemedText style={styles.errorText}>
+                {errors.email.message}
+              </ThemedText>
             )}
-          />
-          {errors.username && (
-            <ThemedText style={styles.errorText}>
-              {errors.username.message}
-            </ThemedText>
-          )}
+          </ThemedView>
 
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                placeholder="Enter email"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                autoComplete="email"
-              />
+          <ThemedView style={styles.inputGroup}>
+            <ThemedText style={styles.label}>Password</ThemedText>
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <PasswordInput
+                  style={styles.input}
+                  placeholder="Enter password"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                />
+              )}
+            />
+            {errors.password && (
+              <ThemedText style={styles.errorText}>
+                {errors.password.message}
+              </ThemedText>
             )}
-          />
-          {errors.email && (
-            <ThemedText style={styles.errorText}>
-              {errors.email.message}
-            </ThemedText>
-          )}
-
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <PasswordInput
-                style={styles.input}
-                placeholder="Enter password"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-              />
-            )}
-          />
-          {errors.password && (
-            <ThemedText style={styles.errorText}>
-              {errors.password.message}
-            </ThemedText>
-          )}
+          </ThemedView>
 
           {errors.root && (
             <ThemedText style={styles.errorText}>
@@ -230,8 +211,16 @@ const styles = StyleSheet.create({
     lineHeight: 38,
   },
   form: {
-    gap: 16,
     marginBottom: 32,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
+    color: '#333',
   },
   input: {
     borderWidth: 1,
