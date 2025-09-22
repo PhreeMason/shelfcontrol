@@ -2,9 +2,10 @@ import { AppleSSO } from '@/components/auth/AppleSSO';
 import { PasswordInput } from '@/components/auth/PasswordInput';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useAuth } from '@/providers/AuthProvider';
+import { useDebouncedInput } from '@/hooks/useDebouncedInput';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Image,
@@ -28,14 +29,25 @@ type SignUpFields = z.infer<typeof signUpSchema>;
 export default function SignUpScreen() {
   const { signUp, isLoading } = useAuth();
   const router = useRouter();
+  const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
 
   const {
     control,
     handleSubmit,
     setError,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<SignUpFields>({
     resolver: zodResolver(signUpSchema),
+  });
+
+  const debouncedEmailChange = useDebouncedInput((value: string) => {
+    setValue('email', value);
+  });
+
+  const debouncedPasswordChange = useDebouncedInput((value: string) => {
+    setValue('password', value);
   });
 
   const onSignUpPress = async (data: SignUpFields) => {
@@ -100,12 +112,15 @@ export default function SignUpScreen() {
             <Controller
               control={control}
               name="email"
-              render={({ field: { onChange, onBlur, value } }) => (
+              render={({ field: { onBlur } }) => (
                 <TextInput
                   style={styles.input}
                   placeholder="Enter email"
-                  value={value}
-                  onChangeText={onChange}
+                  value={emailInput}
+                  onChangeText={(text) => {
+                    setEmailInput(text);
+                    debouncedEmailChange(text);
+                  }}
                   onBlur={onBlur}
                   autoCapitalize="none"
                   keyboardType="email-address"
@@ -125,12 +140,15 @@ export default function SignUpScreen() {
             <Controller
               control={control}
               name="password"
-              render={({ field: { onChange, onBlur, value } }) => (
+              render={({ field: { onBlur } }) => (
                 <PasswordInput
                   style={styles.input}
                   placeholder="Enter password"
-                  value={value}
-                  onChangeText={onChange}
+                  value={passwordInput}
+                  onChangeText={(text) => {
+                    setPasswordInput(text);
+                    debouncedPasswordChange(text);
+                  }}
                   onBlur={onBlur}
                 />
               )}

@@ -1,9 +1,10 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useAuth } from '@/providers/AuthProvider';
+import { useDebouncedInput } from '@/hooks/useDebouncedInput';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Linking from 'expo-linking';
 import { Link, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -23,14 +24,20 @@ type ResetPasswordRequestFields = z.infer<typeof resetPasswordRequestSchema>;
 export default function ResetPasswordRequestScreen() {
   const { requestResetPasswordEmail, isLoading } = useAuth();
   const router = useRouter();
+  const [emailInput, setEmailInput] = useState('');
 
   const {
     control,
     handleSubmit,
     setError,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordRequestFields>({
     resolver: zodResolver(resetPasswordRequestSchema),
+  });
+
+  const debouncedEmailChange = useDebouncedInput((value: string) => {
+    setValue('email', value);
   });
 
   const onResetPasswordRequest = async (data: ResetPasswordRequestFields) => {
@@ -84,14 +91,17 @@ export default function ResetPasswordRequestScreen() {
           <Controller
             control={control}
             name="email"
-            render={({ field: { onChange, onBlur, value } }) => (
+            render={({ field: { onBlur } }) => (
               <TextInput
                 style={styles.input}
                 placeholder="Email"
                 placeholderTextColor="#999"
                 onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
+                onChangeText={(text) => {
+                  setEmailInput(text);
+                  debouncedEmailChange(text);
+                }}
+                value={emailInput}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 autoComplete="email"

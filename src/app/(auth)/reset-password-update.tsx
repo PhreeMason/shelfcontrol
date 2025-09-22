@@ -1,5 +1,6 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useAuth } from '@/providers/AuthProvider';
+import { useDebouncedInput } from '@/hooks/useDebouncedInput';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import * as Linking from 'expo-linking';
@@ -34,6 +35,8 @@ export default function ResetPasswordUpdateScreen() {
   const router = useRouter();
   const [isSessionEstablished, setIsSessionEstablished] = useState(false);
   const [sessionError, setSessionError] = useState<string | null>(null);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
 
   // Listen for the incoming URL
   const url = Linking.useLinkingURL();
@@ -42,9 +45,18 @@ export default function ResetPasswordUpdateScreen() {
     control,
     handleSubmit,
     setError,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<UpdatePasswordFields>({
     resolver: zodResolver(updatePasswordSchema),
+  });
+
+  const debouncedPasswordChange = useDebouncedInput((value: string) => {
+    setValue('password', value);
+  });
+
+  const debouncedConfirmPasswordChange = useDebouncedInput((value: string) => {
+    setValue('confirmPassword', value);
   });
 
   const createSessionFromUrl = useCallback(
@@ -168,13 +180,16 @@ export default function ResetPasswordUpdateScreen() {
           <Controller
             control={control}
             name="password"
-            render={({ field: { onChange, onBlur, value } }) => (
+            render={({ field: { onBlur } }) => (
               <TextInput
                 style={styles.input}
                 placeholder="New Password"
                 placeholderTextColor="#999"
-                value={value}
-                onChangeText={onChange}
+                value={passwordInput}
+                onChangeText={(text) => {
+                  setPasswordInput(text);
+                  debouncedPasswordChange(text);
+                }}
                 onBlur={onBlur}
                 secureTextEntry
                 autoCapitalize="none"
@@ -190,13 +205,16 @@ export default function ResetPasswordUpdateScreen() {
           <Controller
             control={control}
             name="confirmPassword"
-            render={({ field: { onChange, onBlur, value } }) => (
+            render={({ field: { onBlur } }) => (
               <TextInput
                 style={styles.input}
                 placeholder="Confirm New Password"
                 placeholderTextColor="#999"
-                value={value}
-                onChangeText={onChange}
+                value={confirmPasswordInput}
+                onChangeText={(text) => {
+                  setConfirmPasswordInput(text);
+                  debouncedConfirmPasswordChange(text);
+                }}
                 onBlur={onBlur}
                 secureTextEntry
                 autoCapitalize="none"
