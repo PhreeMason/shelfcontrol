@@ -41,10 +41,6 @@ export default function RootLayout() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen name="deadline" options={{ headerShown: false }} />
-              {/* <Stack.Screen name="deadline/new" options={{ headerShown: false }} />
-              <Stack.Screen name="deadline/[id]/index" options={{ headerShown: false }} />
-              <Stack.Screen name="deadline/[id]/reading-session" options={{ headerShown: false }} />
-              <Stack.Screen name="deadline/[id]/edit" options={{ headerShown: false }} /> */}
               <Stack.Screen name="+not-found" />
             </Stack>
           </DeadlineProvider>

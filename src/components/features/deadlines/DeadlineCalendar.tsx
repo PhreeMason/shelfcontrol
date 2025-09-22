@@ -15,8 +15,12 @@ interface DeadlineCalendarProps {
 }
 
 export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
-  const { activeDeadlines, overdueDeadlines, pendingDeadlines, getDeadlineCalculations } =
-    useDeadlines();
+  const {
+    activeDeadlines,
+    overdueDeadlines,
+    pendingDeadlines,
+    getDeadlineCalculations,
+  } = useDeadlines();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const router = useRouter();
@@ -38,16 +42,21 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
     const marked: any = {};
 
     // Combine active, overdue, and pending deadlines
-    const allActiveDeadlines = [...activeDeadlines, ...overdueDeadlines, ...pendingDeadlines];
+    const allActiveDeadlines = [
+      ...activeDeadlines,
+      ...overdueDeadlines,
+      ...pendingDeadlines,
+    ];
 
     allActiveDeadlines.forEach(deadline => {
       if (deadline.deadline_date) {
         const dateStr = dayjs(deadline.deadline_date).format('YYYY-MM-DD');
 
         // Check if this is a pending deadline
-        const latestStatus = deadline.status && deadline.status.length > 0
-          ? deadline.status[deadline.status.length - 1]?.status
-          : null;
+        const latestStatus =
+          deadline.status && deadline.status.length > 0
+            ? deadline.status[deadline.status.length - 1]?.status
+            : null;
         const isPending = latestStatus === 'requested';
 
         // Use set_aside color for pending, otherwise use urgency color
@@ -187,13 +196,16 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
                     getDeadlineCalculations(deadline);
 
                   // Check if this is a pending deadline
-                  const latestStatus = deadline.status && deadline.status.length > 0
-                    ? deadline.status[deadline.status.length - 1]?.status
-                    : null;
+                  const latestStatus =
+                    deadline.status && deadline.status.length > 0
+                      ? deadline.status[deadline.status.length - 1]?.status
+                      : null;
                   const isPending = latestStatus === 'requested';
 
                   // Use set_aside color for pending, otherwise use urgency color
-                  const urgencyColor = isPending ? colors.set_aside : urgencyColorMap[urgencyLevel];
+                  const urgencyColor = isPending
+                    ? colors.set_aside
+                    : urgencyColorMap[urgencyLevel];
 
                   return (
                     <Pressable

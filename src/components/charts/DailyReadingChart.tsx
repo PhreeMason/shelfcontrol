@@ -5,7 +5,6 @@ import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   calculateCutoffTime,
   calculateRequiredPace,
-  minimumUnitsPerDayFromDeadline,
   processBookProgress,
 } from '@/utils/paceCalculations';
 import React from 'react';
@@ -162,23 +161,44 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     };
   });
 
-  // Get the required daily pace data and align it with bar chart data
-  const lineChartRealData = minimumUnitsPerDayFromDeadline(deadline);
-
   // Create line data that matches the bar chart dates
   const lineData = recentDays.map(day => {
-    // Find matching date in lineChartRealData or use the closest available value
-    const matchingLineData = lineChartRealData.find(
-      lineDay =>
-        dayjs(lineDay.label).format('M/DD') === dayjs(day.date).format('M/DD')
+    // Calculate the required pace for this specific day
+    const dayDate = new Date(day.date);
+    const deadlineDate = new Date(deadline.deadline_date);
+
+    // Find the most recent progress before or on this day
+    let progressAtDay = 0;
+    if (deadline.progress && deadline.progress.length > 0) {
+      const sortedProgress = [...deadline.progress].sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+
+      // Find the last progress entry before or on this day
+      for (const progress of sortedProgress) {
+        const progressDate = new Date(progress.created_at);
+        if (progressDate <= dayDate) {
+          progressAtDay = progress.current_progress;
+        } else {
+          break;
+        }
+      }
+    }
+
+    // Calculate days remaining from this specific day to deadline
+    const daysRemaining = Math.max(
+      1,
+      Math.ceil((deadlineDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24))
     );
 
+    // Calculate required pace for this day
+    const remainingUnits = Math.max(0, deadline.total_quantity - progressAtDay);
+    const requiredPace = remainingUnits / daysRemaining;
+
     return {
-      value: matchingLineData ? matchingLineData.value : displayDailyMinimum,
+      value: requiredPace,
       label: dayjs(day.date).format('M/DD'),
-      dataPointText: matchingLineData
-        ? `${Math.round(matchingLineData.value)}`
-        : `${Math.round(displayDailyMinimum)}`,
+      dataPointText: `${Math.round(requiredPace)}`,
     };
   });
 
@@ -217,16 +237,16 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
             })()}
             roundedTop
             // Line configuration (using your theme colors)
-            lineConfig={{
-              thickness: 3,
-              color: colors.accent,
-              curved: true,
-              dataPointsShape: 'circular',
-              dataPointsWidth: 6,
-              dataPointsHeight: 6,
-              dataPointsColor: colors.accent,
-              hideDataPoints: false,
-            }}
+            // lineConfig={{
+            //   thickness: 3,
+            //   color: colors.accent,
+            //   curved: true,
+            //   dataPointsShape: 'circular',
+            //   dataPointsWidth: 6,
+            //   dataPointsHeight: 6,
+            //   dataPointsColor: colors.accent,
+            //   hideDataPoints: false,
+            // }}
             // Axis styling (maintain your existing styling)
             hideRules
             xAxisThickness={2}
