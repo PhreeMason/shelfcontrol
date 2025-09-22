@@ -159,7 +159,7 @@ export const DeadlineFormStep1 = ({
                   <ThemedText style={styles.bookTitle} numberOfLines={2}>
                     {item.title}
                   </ThemedText>
-                  {item.metadata.authors &&
+                  {item.metadata?.authors &&
                     item.metadata.authors.length > 0 && (
                       <ThemedText
                         color="textMuted"

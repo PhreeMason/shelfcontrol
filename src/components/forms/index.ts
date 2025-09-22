@@ -1,4 +1,5 @@
 // Form components
+export { default as DeadlineFormContainer } from './DeadlineFormContainer';
 export { DeadlineFormStep1 } from './DeadlineFormStep1';
 export { DeadlineFormStep2 } from './DeadlineFormStep2';
 export { DeadlineFormStep3 } from './DeadlineFormStep3';
