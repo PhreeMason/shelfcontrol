@@ -67,7 +67,6 @@ class AuthService {
   async signUp({
     email,
     password,
-    username,
   }: SignUpParams): Promise<AuthResponse> {
     try {
       const { data, error } = await supabase.auth.signUp({
