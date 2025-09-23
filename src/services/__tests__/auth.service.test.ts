@@ -1,6 +1,6 @@
-import { authService } from '../auth.service';
 import { supabase } from '@/lib/supabase';
 import { AuthError } from '@supabase/supabase-js';
+import { authService } from '../auth.service';
 
 // Mock the supabase module
 jest.mock('@/lib/supabase', () => ({
@@ -152,8 +152,7 @@ describe('AuthService', () => {
 
       const result = await authService.signUp({
         email: 'test@example.com',
-        password: 'password123',
-        username: 'testuser',
+        password: 'password123'
       });
 
       expect(supabase.auth.signUp).toHaveBeenCalledWith({
@@ -161,7 +160,6 @@ describe('AuthService', () => {
         password: 'password123',
         options: {
           data: {
-            username: 'testuser',
             email: 'test@example.com',
           },
         },
@@ -184,7 +182,6 @@ describe('AuthService', () => {
       const result = await authService.signUp({
         email: 'existing@example.com',
         password: 'password123',
-        username: 'testuser',
       });
 
       expect(result).toEqual({
@@ -200,7 +197,6 @@ describe('AuthService', () => {
       const result = await authService.signUp({
         email: 'test@example.com',
         password: 'password123',
-        username: 'testuser',
       });
 
       expect(result).toEqual({
@@ -438,7 +434,6 @@ describe('AuthService', () => {
       const signUpResult = await authService.signUp({
         email: 'test@example.com',
         password: 'password123',
-        username: 'testuser',
       });
 
       expect(signUpResult.data).toEqual(signUpMockData);

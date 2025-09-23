@@ -4,7 +4,9 @@ export function useDebouncedInput(
   callback: (value: string) => void,
   delay: number = 200
 ) {
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
 
   const debouncedCallback = useCallback(
     (value: string) => {

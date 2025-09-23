@@ -186,7 +186,7 @@ export default function ResetPasswordUpdateScreen() {
                 placeholder="New Password"
                 placeholderTextColor="#999"
                 value={passwordInput}
-                onChangeText={(text) => {
+                onChangeText={text => {
                   setPasswordInput(text);
                   debouncedPasswordChange(text);
                 }}
@@ -211,7 +211,7 @@ export default function ResetPasswordUpdateScreen() {
                 placeholder="Confirm New Password"
                 placeholderTextColor="#999"
                 value={confirmPasswordInput}
-                onChangeText={(text) => {
+                onChangeText={text => {
                   setConfirmPasswordInput(text);
                   debouncedConfirmPasswordChange(text);
                 }}

@@ -188,7 +188,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Please select or enter a source');
+        expect(result.error.issues[0].message).toBe(
+          'Please select or enter a source'
+        );
       }
     });
 
@@ -305,7 +307,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Please enter a whole number');
+        expect(result.error.issues[0].message).toBe(
+          'Please enter a whole number'
+        );
       }
     });
 
@@ -323,7 +327,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Total must be greater than 0');
+        expect(result.error.issues[0].message).toBe(
+          'Total must be greater than 0'
+        );
       }
     });
 
@@ -341,7 +347,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Total must be greater than 0');
+        expect(result.error.issues[0].message).toBe(
+          'Total must be greater than 0'
+        );
       }
     });
 
@@ -359,7 +367,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Please enter a valid number');
+        expect(result.error.issues[0].message).toBe(
+          'Please enter a valid number'
+        );
       }
     });
 
@@ -376,7 +386,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Please enter a valid number');
+        expect(result.error.issues[0].message).toBe(
+          'Please enter a valid number'
+        );
       }
     });
   });
@@ -449,7 +461,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Minutes must be 0 or greater');
+        expect(result.error.issues[0].message).toBe(
+          'Minutes must be 0 or greater'
+        );
       }
     });
 
@@ -468,7 +482,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Please enter whole minutes');
+        expect(result.error.issues[0].message).toBe(
+          'Please enter whole minutes'
+        );
       }
     });
 
@@ -536,7 +552,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Minutes must be 0 or greater');
+        expect(result.error.issues[0].message).toBe(
+          'Minutes must be 0 or greater'
+        );
       }
     });
 
@@ -555,7 +573,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Please enter whole minutes');
+        expect(result.error.issues[0].message).toBe(
+          'Please enter whole minutes'
+        );
       }
     });
   });
@@ -628,7 +648,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Progress cannot be negative');
+        expect(result.error.issues[0].message).toBe(
+          'Progress cannot be negative'
+        );
       }
     });
 
@@ -647,7 +669,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Please enter a whole number');
+        expect(result.error.issues[0].message).toBe(
+          'Please enter a whole number'
+        );
       }
     });
 
@@ -704,7 +728,9 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Please select deadline flexibility');
+        expect(result.error.issues[0].message).toBe(
+          'Please select deadline flexibility'
+        );
       }
     });
 

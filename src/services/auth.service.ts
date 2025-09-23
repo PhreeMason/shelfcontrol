@@ -19,7 +19,6 @@ export interface SignInParams {
 export interface SignUpParams {
   email: string;
   password: string;
-  username: string;
 }
 
 export interface AppleSignInParams {
@@ -76,12 +75,10 @@ class AuthService {
         password,
         options: {
           data: {
-            username,
             email,
           },
         },
       });
-
       if (error) throw error;
       return { data: { user: data.user, session: data.session }, error: null };
     } catch (error) {

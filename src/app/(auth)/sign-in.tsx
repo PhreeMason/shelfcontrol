@@ -111,7 +111,7 @@ export default function SignInScreen() {
                   placeholder="Email"
                   placeholderTextColor="#999"
                   onBlur={onBlur}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setEmailInput(text);
                     debouncedEmailChange(text);
                   }}
@@ -140,7 +140,7 @@ export default function SignInScreen() {
                   placeholder="Password"
                   placeholderTextColor="#999"
                   onBlur={onBlur}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setPasswordInput(text);
                     debouncedPasswordChange(text);
                   }}

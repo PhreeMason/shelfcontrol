@@ -117,7 +117,7 @@ export default function SignUpScreen() {
                   style={styles.input}
                   placeholder="Enter email"
                   value={emailInput}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setEmailInput(text);
                     debouncedEmailChange(text);
                   }}
@@ -145,7 +145,7 @@ export default function SignUpScreen() {
                   style={styles.input}
                   placeholder="Enter password"
                   value={passwordInput}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setPasswordInput(text);
                     debouncedPasswordChange(text);
                   }}

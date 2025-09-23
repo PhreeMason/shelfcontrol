@@ -1,7 +1,7 @@
 {
   "name": "shelfcontrol",
   "main": "expo-router/entry",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -24,7 +24,16 @@
     "test:ff": "jest --runInBand --bail",
     "test:coverage": "jest --runInBand --coverage",
     "test:coverage:watch": "jest --runInBand --coverage --watch",
-    "test:debug": "jest --runInBand --detectOpenHandles --forceExit --no-cache --logHeapUsage"
+    "test:debug": "jest --runInBand --detectOpenHandles --forceExit --no-cache --logHeapUsage",
+    "maestro": "maestro test",
+    "maestro:auth": "maestro test maestro/auth-combined.yaml",
+    "maestro:signup": "maestro test maestro/signUp.yaml",
+    "maestro:signin": "maestro test maestro/signIn-complete.yaml",
+    "maestro:validation": "maestro test maestro/auth-validation.yaml",
+    "maestro:navigation": "maestro test maestro/auth-navigation.yaml",
+    "maestro:all": "maestro test maestro/",
+    "maestro:ios": "maestro test --platform ios maestro/",
+    "maestro:android": "maestro test --platform android maestro/"
   },
   "dependencies": {
     "@expo/metro-runtime": "^5.0.4",

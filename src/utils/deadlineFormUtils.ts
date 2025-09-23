@@ -292,12 +292,17 @@ export const populateFormFromDeadline = (
     setValue('bookAuthor', deadline.author || '');
     setValue('format', deadline.format || 'physical');
     setValue('source', deadline.source || 'ARC');
-    setValue('deadline', deadline.deadline_date ? new Date(deadline.deadline_date) : new Date());
+    setValue(
+      'deadline',
+      deadline.deadline_date ? new Date(deadline.deadline_date) : new Date()
+    );
     setValue('flexibility', deadline.flexibility || 'flexible');
     setValue('book_id', deadline.book_id || undefined);
 
     const selectedFormat = deadline.format || 'physical';
-    const selectedPriority = (deadline.flexibility || 'flexible') as 'flexible' | 'strict';
+    const selectedPriority = (deadline.flexibility || 'flexible') as
+      | 'flexible'
+      | 'strict';
 
     // Set status based on the latest status
     const latestStatus =
@@ -307,7 +312,8 @@ export const populateFormFromDeadline = (
 
     let selectedStatus: 'pending' | 'active' = 'active';
     if (latestStatus) {
-      selectedStatus = latestStatus.status === 'requested' ? 'pending' : 'active';
+      selectedStatus =
+        latestStatus.status === 'requested' ? 'pending' : 'active';
       setValue('status', selectedStatus);
     }
 

@@ -62,10 +62,14 @@ describe('deadlineFormUtils', () => {
 
     it('should set deadline 2 weeks from now for new mode', () => {
       const now = new Date();
-      const twoWeeksFromNow = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+      const twoWeeksFromNow = new Date(
+        now.getTime() + 14 * 24 * 60 * 60 * 1000
+      );
       const defaults = getFormDefaultValues('new');
 
-      const timeDiff = Math.abs(defaults.deadline!.getTime() - twoWeeksFromNow.getTime());
+      const timeDiff = Math.abs(
+        defaults.deadline!.getTime() - twoWeeksFromNow.getTime()
+      );
       expect(timeDiff).toBeLessThan(1000); // Within 1 second
     });
 
@@ -74,7 +78,9 @@ describe('deadlineFormUtils', () => {
       const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
       const defaults = getFormDefaultValues('edit');
 
-      const timeDiff = Math.abs(defaults.deadline!.getTime() - oneWeekFromNow.getTime());
+      const timeDiff = Math.abs(
+        defaults.deadline!.getTime() - oneWeekFromNow.getTime()
+      );
       expect(timeDiff).toBeLessThan(1000); // Within 1 second
     });
   });
@@ -199,10 +205,7 @@ describe('deadlineFormUtils', () => {
     };
 
     it('should prepare progress details for new deadline', () => {
-      const result = prepareProgressDetailsFromForm(
-        mockFormData,
-        'eBook'
-      );
+      const result = prepareProgressDetailsFromForm(mockFormData, 'eBook');
 
       expect(result.current_progress).toBe(150);
       expect(result.deadline_id).toBe('');
@@ -219,7 +222,7 @@ describe('deadlineFormUtils', () => {
             deadline_id: 'deadline-123',
             created_at: '2024-01-01T00:00:00.000Z',
             updated_at: '2024-01-01T00:00:00.000Z',
-            time_spent_reading: null
+            time_spent_reading: null,
           },
         ],
       };
@@ -242,10 +245,7 @@ describe('deadlineFormUtils', () => {
         currentMinutes: 45,
       };
 
-      const result = prepareProgressDetailsFromForm(
-        audioFormData,
-        'audio'
-      );
+      const result = prepareProgressDetailsFromForm(audioFormData, 'audio');
 
       expect(result.current_progress).toBe(345); // 5 hours * 60 + 45 minutes
     });
@@ -341,7 +341,10 @@ describe('deadlineFormUtils', () => {
       const params = { totalQuantity: 'not-a-number' };
       populateFormFromParams(params, mockSetValue);
 
-      expect(mockSetValue).not.toHaveBeenCalledWith('totalQuantity', expect.anything());
+      expect(mockSetValue).not.toHaveBeenCalledWith(
+        'totalQuantity',
+        expect.anything()
+      );
     });
   });
 
@@ -362,21 +365,25 @@ describe('deadlineFormUtils', () => {
         flexibility: 'strict',
         book_id: 'book-123',
         total_quantity: 300,
-        status: [{
-          status: 'reading',
-          id: 'status-1',
-          deadline_id: 'deadline-1',
-          created_at: '2024-01-01T00:00:00.000Z',
-          updated_at: '2024-01-01T00:00:00.000Z'
-        }],
-        progress: [{
-          current_progress: 150,
-          id: 'progress-1',
-          deadline_id: 'deadline-1',
-          created_at: '2024-01-01T00:00:00.000Z',
-          updated_at: '2024-01-01T00:00:00.000Z',
-          time_spent_reading: null
-        }],
+        status: [
+          {
+            status: 'reading',
+            id: 'status-1',
+            deadline_id: 'deadline-1',
+            created_at: '2024-01-01T00:00:00.000Z',
+            updated_at: '2024-01-01T00:00:00.000Z',
+          },
+        ],
+        progress: [
+          {
+            current_progress: 150,
+            id: 'progress-1',
+            deadline_id: 'deadline-1',
+            created_at: '2024-01-01T00:00:00.000Z',
+            updated_at: '2024-01-01T00:00:00.000Z',
+            time_spent_reading: null,
+          },
+        ],
       };
 
       const result = populateFormFromDeadline(
@@ -398,14 +405,16 @@ describe('deadlineFormUtils', () => {
         book_title: 'Audio Book',
         format: 'audio',
         total_quantity: 630, // 10 hours 30 minutes
-        progress: [{
-          current_progress: 345, // 5 hours 45 minutes
-          id: 'progress-2',
-          deadline_id: 'deadline-2',
-          created_at: '2024-01-01T00:00:00.000Z',
-          updated_at: '2024-01-01T00:00:00.000Z',
-          time_spent_reading: null
-        }],
+        progress: [
+          {
+            current_progress: 345, // 5 hours 45 minutes
+            id: 'progress-2',
+            deadline_id: 'deadline-2',
+            created_at: '2024-01-01T00:00:00.000Z',
+            updated_at: '2024-01-01T00:00:00.000Z',
+            time_spent_reading: null,
+          },
+        ],
       };
 
       const result = populateFormFromDeadline(
@@ -423,13 +432,15 @@ describe('deadlineFormUtils', () => {
     it('should handle requested status', () => {
       const deadline: Partial<ReadingDeadlineWithProgress> = {
         book_title: 'Test Book',
-        status: [{
-          status: 'requested',
-          id: 'status-3',
-          deadline_id: 'deadline-3',
-          created_at: '2024-01-01T00:00:00.000Z',
-          updated_at: '2024-01-01T00:00:00.000Z'
-        }],
+        status: [
+          {
+            status: 'requested',
+            id: 'status-3',
+            deadline_id: 'deadline-3',
+            created_at: '2024-01-01T00:00:00.000Z',
+            updated_at: '2024-01-01T00:00:00.000Z',
+          },
+        ],
       };
 
       const result = populateFormFromDeadline(
@@ -448,10 +459,7 @@ describe('deadlineFormUtils', () => {
         format: null,
       } as unknown as ReadingDeadlineWithProgress;
 
-      populateFormFromDeadline(
-        deadline,
-        mockSetValue
-      );
+      populateFormFromDeadline(deadline, mockSetValue);
 
       expect(mockSetValue).toHaveBeenCalledWith('bookTitle', '');
       expect(mockSetValue).toHaveBeenCalledWith('bookAuthor', '');
@@ -547,7 +555,10 @@ describe('deadlineFormUtils', () => {
       expect(mockSetSelectedFormat).toHaveBeenCalledWith('eBook');
       expect(mockSetValue).toHaveBeenCalledWith('format', 'eBook');
       expect(mockSetPreviousPageCount).not.toHaveBeenCalled();
-      expect(mockSetValue).not.toHaveBeenCalledWith('totalQuantity', expect.anything());
+      expect(mockSetValue).not.toHaveBeenCalledWith(
+        'totalQuantity',
+        expect.anything()
+      );
     });
   });
 
@@ -560,7 +571,10 @@ describe('deadlineFormUtils', () => {
     });
 
     it('should handle priority change', () => {
-      const handler = createPriorityChangeHandler(mockSetValue, mockSetSelectedPriority);
+      const handler = createPriorityChangeHandler(
+        mockSetValue,
+        mockSetSelectedPriority
+      );
 
       handler('strict');
 
@@ -785,7 +799,10 @@ describe('deadlineFormUtils', () => {
         mockSetDeadlineFromPublicationDate
       );
 
-      expect(mockSetValue).not.toHaveBeenCalledWith('deadline', expect.anything());
+      expect(mockSetValue).not.toHaveBeenCalledWith(
+        'deadline',
+        expect.anything()
+      );
       expect(mockSetDeadlineFromPublicationDate).toHaveBeenCalledWith(false);
       expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
     });

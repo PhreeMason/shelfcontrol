@@ -97,7 +97,7 @@ export default function ResetPasswordRequestScreen() {
                 placeholder="Email"
                 placeholderTextColor="#999"
                 onBlur={onBlur}
-                onChangeText={(text) => {
+                onChangeText={text => {
                   setEmailInput(text);
                   debouncedEmailChange(text);
                 }}
