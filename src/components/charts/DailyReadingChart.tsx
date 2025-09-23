@@ -171,7 +171,8 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     let progressAtDay = 0;
     if (deadline.progress && deadline.progress.length > 0) {
       const sortedProgress = [...deadline.progress].sort(
-        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
 
       // Find the last progress entry before or on this day
@@ -188,7 +189,9 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     // Calculate days remaining from this specific day to deadline
     const daysRemaining = Math.max(
       1,
-      Math.ceil((deadlineDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24))
+      Math.ceil(
+        (deadlineDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24)
+      )
     );
 
     // Calculate required pace for this day

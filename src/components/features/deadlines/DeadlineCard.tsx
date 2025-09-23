@@ -75,7 +75,7 @@ export function DeadlineCard({
 
   const isArchived =
     latestStatus === 'complete' || latestStatus === 'set_aside';
-  
+
   if (isArchived) {
     borderColor = urgencyTextColorMap[latestStatus];
     countdownColor = urgencyTextColorMap[latestStatus];

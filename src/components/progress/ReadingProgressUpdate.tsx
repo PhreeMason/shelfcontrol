@@ -2,6 +2,7 @@ import ProgressBar from '@/components/progress/ProgressBar';
 import ProgressHeader from '@/components/progress/ProgressHeader';
 import ProgressInput from '@/components/progress/ProgressInput';
 import ProgressStats from '@/components/progress/ProgressStats';
+import QuickActionButtons from '@/components/progress/QuickActionButtons';
 import { ThemedButton, ThemedView } from '@/components/themed';
 import { Typography } from '@/constants/Colors';
 import {
@@ -19,7 +20,7 @@ import { useForm } from 'react-hook-form';
 import { Alert, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
-const ReadingProgress = ({
+const ReadingProgressUpdate = ({
   deadline,
   timeSpentReading,
   onProgressSubmitted,
@@ -46,7 +47,7 @@ const ReadingProgress = ({
   const updateProgressMutation = useUpdateDeadlineProgress();
   const deleteFutureProgressMutation = useDeleteFutureProgress();
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, setValue, getValues } = useForm({
     resolver: zodResolver(progressSchema),
     defaultValues: {
       currentProgress: currentProgress,
@@ -234,62 +235,28 @@ const ReadingProgress = ({
     [currentProgress, showBackwardProgressWarning, handleProgressUpdate]
   );
 
-  // const handleQuickUpdate = (increment: number) => {
-  //   const currentFormValue = getValues('currentProgress');
+  const handleQuickUpdate = (increment: number) => {
+    const currentFormValue = getValues('currentProgress');
 
-  //   // Convert form value to number, handling both strings and numbers
-  //   let numericValue: number;
+    // Convert form value to number, handling both strings and numbers
+    let numericValue: number;
 
-  //   if (typeof currentFormValue === 'number' && !isNaN(currentFormValue)) {
-  //     numericValue = currentFormValue;
-  //   } else if (typeof currentFormValue === 'string') {
-  //     const parsed = parseFloat(currentFormValue.trim());
-  //     numericValue = isNaN(parsed) ? currentProgress : parsed;
-  //   } else {
-  //     numericValue = currentProgress;
-  //   }
+    if (typeof currentFormValue === 'number' && !isNaN(currentFormValue)) {
+      numericValue = currentFormValue;
+    } else if (typeof currentFormValue === 'string') {
+      const parsed = parseFloat(currentFormValue.trim());
+      numericValue = isNaN(parsed) ? currentProgress : parsed;
+    } else {
+      numericValue = currentProgress;
+    }
 
-  //   const newProgress = Math.max(
-  //     0,
-  //     Math.min(totalQuantity, numericValue + increment)
-  //   );
+    const newProgress = Math.max(
+      0,
+      Math.min(totalQuantity, numericValue + increment)
+    );
 
-  //   // Check if the new progress would be lower than current progress
-  //   if (newProgress < currentProgress) {
-  //     const progressUnit = deadline.format === 'audio' ? 'time' : 'page';
-  //     const currentDisplay = formatProgressDisplay(
-  //       deadline.format,
-  //       currentProgress
-  //     );
-  //     const newDisplay = formatProgressDisplay(deadline.format, newProgress);
-
-  //     Alert.alert(
-  //       'Backward Progress Warning',
-  //       `You're updating from ${currentDisplay} to ${newDisplay}. This will delete all progress entries beyond the new ${progressUnit}. Are you sure?`,
-  //       [
-  //         {
-  //           text: 'Cancel',
-  //           style: 'cancel',
-  //         },
-  //         {
-  //           text: 'Update',
-  //           style: 'destructive',
-  //           onPress: () => {
-  //             setValue('currentProgress', newProgress, {
-  //               shouldValidate: false,
-  //             });
-  //           },
-  //         },
-  //       ]
-  //     );
-  //   } else {
-  //     setValue('currentProgress', newProgress, { shouldValidate: false });
-  //   }
-  // };
-
-  // const handleStartReadingSession = () => {
-  //   router.push(`/deadline/${deadline.id}/reading-session`);
-  // };
+    setValue('currentProgress', newProgress, { shouldValidate: false });
+  };
 
   return (
     <ThemedView style={[styles.section]}>
@@ -318,13 +285,11 @@ const ReadingProgress = ({
       <View style={styles.updateSection}>
         <ProgressInput format={deadline.format} control={control} />
 
-        {/* <QuickActionButtons onQuickUpdate={handleQuickUpdate} /> */}
+        <QuickActionButtons onQuickUpdate={handleQuickUpdate} />
 
         <ThemedButton
           title={
-            updateProgressMutation.isPending
-              ? 'Updating...'
-              : 'Update Progress'
+            updateProgressMutation.isPending ? 'Updating...' : 'Update Progress'
           }
           variant="primary"
           onPress={handleSubmit(onSubmitProgress)}
@@ -335,7 +300,7 @@ const ReadingProgress = ({
   );
 };
 
-export default ReadingProgress;
+export default ReadingProgressUpdate;
 
 const styles = StyleSheet.create({
   section: {
