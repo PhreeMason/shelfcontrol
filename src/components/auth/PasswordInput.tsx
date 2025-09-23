@@ -1,19 +1,20 @@
+import { useTheme } from '@/hooks/useThemeColor';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
+  StyleSheet,
   TextInput,
+  TextInputProps,
   TouchableOpacity,
   View,
-  StyleSheet,
-  TextInputProps,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '@/hooks/useThemeColor';
 
 interface PasswordInputProps extends Omit<TextInputProps, 'secureTextEntry'> {
   style?: any;
+  ref?: React.Ref<TextInput>;
 }
 
-export function PasswordInput({ style, ...props }: PasswordInputProps) {
+export function PasswordInput({ style, ref, ...props }: PasswordInputProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { colors } = useTheme();
 
@@ -25,6 +26,7 @@ export function PasswordInput({ style, ...props }: PasswordInputProps) {
     <View style={styles.container}>
       <TextInput
         {...props}
+        ref={ref}
         style={[
           {
             borderColor: colors.border,

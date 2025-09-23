@@ -1,18 +1,17 @@
+import { AnimatedCustomInput, AnimatedCustomInputRef } from '@/components/AnimatedCustomInput';
 import { AppleSSO } from '@/components/auth/AppleSSO';
-import { PasswordInput } from '@/components/auth/PasswordInput';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useAuth } from '@/providers/AuthProvider';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
 } from 'react-native';
 import { z } from 'zod';
@@ -31,6 +30,8 @@ export default function SignUpScreen() {
   const router = useRouter();
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const emailInputRef = useRef<AnimatedCustomInputRef>(null);
+  const passwordInputRef = useRef<AnimatedCustomInputRef>(null);
 
   const {
     control,
@@ -108,14 +109,13 @@ export default function SignUpScreen() {
 
         <ThemedView style={styles.form}>
           <ThemedView style={styles.inputGroup}>
-            <ThemedText style={styles.label}>Email</ThemedText>
             <Controller
               control={control}
               name="email"
               render={({ field: { onBlur } }) => (
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter email"
+                <AnimatedCustomInput
+                  ref={emailInputRef}
+                  label="Email"
                   value={emailInput}
                   onChangeText={text => {
                     setEmailInput(text);
@@ -125,6 +125,7 @@ export default function SignUpScreen() {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   autoComplete="email"
+                  inputStyle={styles.input}
                 />
               )}
             />
@@ -136,20 +137,22 @@ export default function SignUpScreen() {
           </ThemedView>
 
           <ThemedView style={styles.inputGroup}>
-            <ThemedText style={styles.label}>Password</ThemedText>
             <Controller
               control={control}
               name="password"
               render={({ field: { onBlur } }) => (
-                <PasswordInput
-                  style={styles.input}
-                  placeholder="Enter password"
+                <AnimatedCustomInput
+                  ref={passwordInputRef}
+                  label="Password"
                   value={passwordInput}
                   onChangeText={text => {
                     setPasswordInput(text);
                     debouncedPasswordChange(text);
                   }}
                   onBlur={onBlur}
+                  secureTextEntry
+                  showPasswordToggle
+                  inputStyle={styles.input}
                 />
               )}
             />
@@ -233,12 +236,6 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#333',
   },
   input: {
     borderWidth: 1,

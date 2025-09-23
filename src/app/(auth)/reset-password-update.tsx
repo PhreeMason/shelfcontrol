@@ -1,3 +1,4 @@
+import { AnimatedCustomInput, AnimatedCustomInputRef } from '@/components/AnimatedCustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useAuth } from '@/providers/AuthProvider';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
@@ -5,13 +6,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
 } from 'react-native';
 import { z } from 'zod';
@@ -37,6 +37,8 @@ export default function ResetPasswordUpdateScreen() {
   const [sessionError, setSessionError] = useState<string | null>(null);
   const [passwordInput, setPasswordInput] = useState('');
   const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
+  const passwordInputRef = useRef<AnimatedCustomInputRef>(null);
+  const confirmPasswordInputRef = useRef<AnimatedCustomInputRef>(null);
 
   // Listen for the incoming URL
   const url = Linking.useLinkingURL();
@@ -181,10 +183,9 @@ export default function ResetPasswordUpdateScreen() {
             control={control}
             name="password"
             render={({ field: { onBlur } }) => (
-              <TextInput
-                style={styles.input}
-                placeholder="New Password"
-                placeholderTextColor="#999"
+              <AnimatedCustomInput
+                ref={passwordInputRef}
+                label="New Password"
                 value={passwordInput}
                 onChangeText={text => {
                   setPasswordInput(text);
@@ -192,7 +193,9 @@ export default function ResetPasswordUpdateScreen() {
                 }}
                 onBlur={onBlur}
                 secureTextEntry
+                showPasswordToggle
                 autoCapitalize="none"
+                inputStyle={styles.input}
               />
             )}
           />
@@ -206,10 +209,9 @@ export default function ResetPasswordUpdateScreen() {
             control={control}
             name="confirmPassword"
             render={({ field: { onBlur } }) => (
-              <TextInput
-                style={styles.input}
-                placeholder="Confirm New Password"
-                placeholderTextColor="#999"
+              <AnimatedCustomInput
+                ref={confirmPasswordInputRef}
+                label="Confirm New Password"
                 value={confirmPasswordInput}
                 onChangeText={text => {
                   setConfirmPasswordInput(text);
@@ -217,7 +219,9 @@ export default function ResetPasswordUpdateScreen() {
                 }}
                 onBlur={onBlur}
                 secureTextEntry
+                showPasswordToggle
                 autoCapitalize="none"
+                inputStyle={styles.input}
               />
             )}
           />

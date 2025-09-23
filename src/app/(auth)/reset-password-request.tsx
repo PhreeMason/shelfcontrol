@@ -1,16 +1,16 @@
+import { AnimatedCustomInput, AnimatedCustomInputRef } from '@/components/AnimatedCustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useAuth } from '@/providers/AuthProvider';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Linking from 'expo-linking';
 import { Link, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
 } from 'react-native';
 import { z } from 'zod';
@@ -25,6 +25,7 @@ export default function ResetPasswordRequestScreen() {
   const { requestResetPasswordEmail, isLoading } = useAuth();
   const router = useRouter();
   const [emailInput, setEmailInput] = useState('');
+  const emailInputRef = useRef<AnimatedCustomInputRef>(null);
 
   const {
     control,
@@ -92,19 +93,19 @@ export default function ResetPasswordRequestScreen() {
             control={control}
             name="email"
             render={({ field: { onBlur } }) => (
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                placeholderTextColor="#999"
-                onBlur={onBlur}
+              <AnimatedCustomInput
+                ref={emailInputRef}
+                label="Email"
+                value={emailInput}
                 onChangeText={text => {
                   setEmailInput(text);
                   debouncedEmailChange(text);
                 }}
-                value={emailInput}
+                onBlur={onBlur}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 autoComplete="email"
+                inputStyle={styles.input}
               />
             )}
           />
