@@ -146,7 +146,6 @@ export default function SignInScreen() {
                   }}
                   onBlur={onBlur}
                   secureTextEntry
-                  showPasswordToggle
                   inputStyle={styles.input}
                 />
               )}
@@ -201,10 +200,6 @@ export default function SignInScreen() {
               })
             }
           />
-          {/* <GoogleSSO
-            onSuccess={() => router.replace('/')}
-            onError={(error) => setError('root', { message: error.message || 'Google sign-in failed' })}
-          /> */}
         </ThemedView>
       </ThemedView>
     </KeyboardAvoidingView>

@@ -1,8 +1,8 @@
 import { AnimatedCustomInput, AnimatedCustomInputRef } from '@/components/AnimatedCustomInput';
 import { AppleSSO } from '@/components/auth/AppleSSO';
 import { ThemedText, ThemedView } from '@/components/themed';
-import { useAuth } from '@/providers/AuthProvider';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
+import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
@@ -151,7 +151,7 @@ export default function SignUpScreen() {
                   }}
                   onBlur={onBlur}
                   secureTextEntry
-                  showPasswordToggle
+                  
                   inputStyle={styles.input}
                 />
               )}

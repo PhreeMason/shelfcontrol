@@ -1,14 +1,15 @@
+import { useTheme } from '@/hooks/useTheme';
+import { Ionicons } from '@expo/vector-icons';
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import {
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   TextInputProps,
   TextStyle,
   TouchableOpacity,
   View,
-  ViewStyle,
+  ViewStyle
 } from 'react-native';
 import Animated, {
   interpolate,
@@ -27,8 +28,6 @@ interface AnimatedCustomInputProps extends Omit<TextInputProps, 'onFocus' | 'onB
   inputStyle?: TextStyle;
   labelColor?: string;
   secureTextEntry?: boolean;
-  showPasswordToggle?: boolean;
-  renderPasswordToggle?: () => React.ReactNode;
 }
 
 export interface AnimatedCustomInputRef {
@@ -48,8 +47,6 @@ export const AnimatedCustomInput = forwardRef<AnimatedCustomInputRef, AnimatedCu
       inputStyle = {},
       labelColor = '#666',
       secureTextEntry = false,
-      showPasswordToggle = false,
-      renderPasswordToggle,
       ...textInputProps
     },
     ref
@@ -58,6 +55,7 @@ export const AnimatedCustomInput = forwardRef<AnimatedCustomInputRef, AnimatedCu
     const labelAnimation = useSharedValue(0);
     const [isFocused, setIsFocused] = useState(false);
     const [isSecure, setIsSecure] = useState(secureTextEntry);
+    const { colors } = useTheme();
 
     useImperativeHandle(ref, () => ({
       focus: () => {
@@ -144,15 +142,17 @@ export const AnimatedCustomInput = forwardRef<AnimatedCustomInputRef, AnimatedCu
               placeholderTextColor="#999"
               {...textInputProps}
             />
-            {showPasswordToggle && secureTextEntry && (
+            {secureTextEntry && (
               <TouchableOpacity
                 style={styles.passwordToggle}
                 onPress={() => setIsSecure(!isSecure)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Text style={{ fontSize: 20 }}>
-                  {isSecure ? '👁' : '👁‍🗨'}
-                </Text>
+                <Ionicons
+                  name={isSecure ? 'eye-off-outline' : 'eye-outline'}
+                  size={20}
+                  color={colors.textSecondary}
+                />
               </TouchableOpacity>
             )}
           </View>

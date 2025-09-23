@@ -1,7 +1,7 @@
 import { AnimatedCustomInput, AnimatedCustomInputRef } from '@/components/AnimatedCustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
-import { useAuth } from '@/providers/AuthProvider';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
+import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import * as Linking from 'expo-linking';
@@ -193,7 +193,7 @@ export default function ResetPasswordUpdateScreen() {
                 }}
                 onBlur={onBlur}
                 secureTextEntry
-                showPasswordToggle
+                
                 autoCapitalize="none"
                 inputStyle={styles.input}
               />
@@ -219,7 +219,7 @@ export default function ResetPasswordUpdateScreen() {
                 }}
                 onBlur={onBlur}
                 secureTextEntry
-                showPasswordToggle
+                
                 autoCapitalize="none"
                 inputStyle={styles.input}
               />
