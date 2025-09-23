@@ -1,13 +1,13 @@
-import { DeadlineFormData } from './deadlineFormSchema';
 import { SelectedBook } from '@/types/bookSearch';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { router } from 'expo-router';
+import Toast from 'react-native-toast-message';
 import { convertMinutesToHoursAndMinutes } from './audiobookTimeUtils';
 import {
   calculateCurrentProgressFromForm,
   calculateTotalQuantityFromForm,
 } from './deadlineCalculations';
-import Toast from 'react-native-toast-message';
-import { router } from 'expo-router';
+import { DeadlineFormData } from './deadlineFormSchema';
 
 export type FormMode = 'new' | 'edit';
 
@@ -495,20 +495,23 @@ export const createSuccessToast = (mode: FormMode) => {
       : 'Deadline updated successfully!';
 
   return () => {
+    if (mode === 'new') {
+      router.replace('/');
+    } else {
+      if (router.canGoBack()) {
+        router.back();
+        return;
+      } else {
+        router.replace('/');
+      }
+    }
     Toast.show({
       swipeable: true,
       type: 'success',
       text1: message,
       autoHide: true,
       visibilityTime: 1500,
-      position: 'top',
-      onHide: () => {
-        if (mode === 'new') {
-          router.replace('/');
-        } else {
-          router.back();
-        }
-      },
+      position: 'top'
     });
   };
 };
