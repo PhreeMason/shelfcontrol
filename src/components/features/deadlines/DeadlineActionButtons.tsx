@@ -139,6 +139,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
               // Success callback
               () => {
                 setIsDeleting(false);
+                router.replace('/');
                 Toast.show({
                   swipeable: true,
                   type: 'success',
@@ -147,9 +148,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                   autoHide: true,
                   visibilityTime: 1500,
                   position: 'top',
-                  onHide: () => {
-                    router.replace('/');
-                  },
                 });
               },
               // Error callback
