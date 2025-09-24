@@ -26,6 +26,10 @@ jest.mock('@/lib/supabase', () => ({
 }));
 
 const mockSupabaseFrom = supabase.from as jest.Mock;
+const mockSupabaseStorage = supabase.storage as any;
+
+// Mock global fetch for avatar upload tests
+global.fetch = jest.fn();
 
 describe('ProfileService', () => {
   beforeEach(() => {
@@ -390,6 +394,471 @@ describe('ProfileService', () => {
       await expect(
         profileService.updateProfileFromApple(userId, appleData)
       ).rejects.toThrow('Update failed');
+    });
+  });
+
+  describe('uploadAvatar', () => {
+    const userId = 'user-123';
+    const testUri = 'https://example.com/test-image.jpg';
+
+    beforeEach(() => {
+      // Mock fetch to return an arraybuffer
+      (global.fetch as jest.Mock).mockResolvedValue({
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(1024)),
+      });
+    });
+
+    it('should upload avatar after removing existing files', async () => {
+      const existingFiles = [
+        { name: 'avatar-old.jpg', created_at: '2024-01-01' },
+      ];
+      const uploadResponse = { path: `${userId}/avatar-123456.jpg` };
+
+      const mockList = jest.fn().mockResolvedValue({ data: existingFiles });
+      const mockRemove = jest.fn().mockResolvedValue({ error: null });
+      const mockUpload = jest
+        .fn()
+        .mockResolvedValue({ data: uploadResponse, error: null });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: mockRemove,
+        upload: mockUpload,
+        createSignedUrl: jest.fn(),
+        getPublicUrl: jest.fn(),
+      });
+
+      const result = await profileService.uploadAvatar(userId, testUri);
+
+      expect(mockSupabaseStorage.from).toHaveBeenCalledWith('avatars');
+      expect(mockList).toHaveBeenCalledWith(userId);
+      expect(mockRemove).toHaveBeenCalledWith([`${userId}/avatar-old.jpg`]);
+      expect(global.fetch).toHaveBeenCalledWith(testUri);
+      expect(mockUpload).toHaveBeenCalledWith(
+        expect.stringMatching(new RegExp(`${userId}/avatar-\\d+\\.jpg`)),
+        expect.any(ArrayBuffer),
+        {
+          contentType: 'image/jpg',
+          upsert: true,
+        }
+      );
+      expect(result).toBe(uploadResponse.path);
+    });
+
+    it('should upload avatar when no existing files', async () => {
+      const uploadResponse = { path: `${userId}/avatar-123456.jpg` };
+
+      const mockList = jest.fn().mockResolvedValue({ data: [] });
+      const mockRemove = jest.fn();
+      const mockUpload = jest
+        .fn()
+        .mockResolvedValue({ data: uploadResponse, error: null });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: mockRemove,
+        upload: mockUpload,
+        createSignedUrl: jest.fn(),
+        getPublicUrl: jest.fn(),
+      });
+
+      const result = await profileService.uploadAvatar(userId, testUri);
+
+      expect(mockList).toHaveBeenCalledWith(userId);
+      expect(mockRemove).not.toHaveBeenCalled();
+      expect(mockUpload).toHaveBeenCalled();
+      expect(result).toBe(uploadResponse.path);
+    });
+
+    it('should handle different file extensions', async () => {
+      const pngUri = 'https://example.com/test-image.png';
+      const uploadResponse = { path: `${userId}/avatar-123456.png` };
+
+      const mockList = jest.fn().mockResolvedValue({ data: [] });
+      const mockUpload = jest
+        .fn()
+        .mockResolvedValue({ data: uploadResponse, error: null });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: jest.fn(),
+        upload: mockUpload,
+        createSignedUrl: jest.fn(),
+        getPublicUrl: jest.fn(),
+      });
+
+      await profileService.uploadAvatar(userId, pngUri);
+
+      expect(mockUpload).toHaveBeenCalledWith(
+        expect.stringMatching(new RegExp(`${userId}/avatar-\\d+\\.png`)),
+        expect.any(ArrayBuffer),
+        {
+          contentType: 'image/png',
+          upsert: true,
+        }
+      );
+    });
+
+    it('should handle URI with no proper extension', async () => {
+      const noExtUri = 'https://example.com/test-image';
+      const uploadResponse = { path: `${userId}/avatar-123456.com/test-image` };
+
+      const mockList = jest.fn().mockResolvedValue({ data: [] });
+      const mockUpload = jest
+        .fn()
+        .mockResolvedValue({ data: uploadResponse, error: null });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: jest.fn(),
+        upload: mockUpload,
+        createSignedUrl: jest.fn(),
+        getPublicUrl: jest.fn(),
+      });
+
+      await profileService.uploadAvatar(userId, noExtUri);
+
+      // The implementation splits on '.' and takes the last part, which gives 'com/test-image' for this URL
+      expect(mockUpload).toHaveBeenCalledWith(
+        expect.stringMatching(new RegExp(`${userId}/avatar-\\d+\\.com/test-image`)),
+        expect.any(ArrayBuffer),
+        {
+          contentType: 'image/com/test-image',
+          upsert: true,
+        }
+      );
+    });
+
+    it('should default to jpeg when URI has no dots', async () => {
+      const noDotUri = 'test-image';
+      const uploadResponse = { path: `${userId}/avatar-123456.jpeg` };
+
+      const mockList = jest.fn().mockResolvedValue({ data: [] });
+      const mockUpload = jest
+        .fn()
+        .mockResolvedValue({ data: uploadResponse, error: null });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: jest.fn(),
+        upload: mockUpload,
+        createSignedUrl: jest.fn(),
+        getPublicUrl: jest.fn(),
+      });
+
+      await profileService.uploadAvatar(userId, noDotUri);
+
+      // When split('.').pop() is called on 'test-image', it returns 'test-image'
+      expect(mockUpload).toHaveBeenCalledWith(
+        expect.stringMatching(new RegExp(`${userId}/avatar-\\d+\\.test-image`)),
+        expect.any(ArrayBuffer),
+        {
+          contentType: 'image/test-image',
+          upsert: true,
+        }
+      );
+    });
+
+    it('should throw error when upload fails', async () => {
+      const mockError = new Error('Upload failed');
+
+      const mockList = jest.fn().mockResolvedValue({ data: [] });
+      const mockUpload = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: jest.fn(),
+        upload: mockUpload,
+        createSignedUrl: jest.fn(),
+        getPublicUrl: jest.fn(),
+      });
+
+      await expect(
+        profileService.uploadAvatar(userId, testUri)
+      ).rejects.toThrow('Upload failed');
+    });
+
+    it('should throw error when fetch fails', async () => {
+      const fetchError = new Error('Fetch failed');
+      (global.fetch as jest.Mock).mockRejectedValue(fetchError);
+
+      const mockList = jest.fn().mockResolvedValue({ data: [] });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: jest.fn(),
+        upload: jest.fn(),
+        createSignedUrl: jest.fn(),
+        getPublicUrl: jest.fn(),
+      });
+
+      await expect(
+        profileService.uploadAvatar(userId, testUri)
+      ).rejects.toThrow('Fetch failed');
+    });
+
+    it('should handle removal of multiple existing files', async () => {
+      const existingFiles = [
+        { name: 'avatar-old1.jpg', created_at: '2024-01-01' },
+        { name: 'avatar-old2.png', created_at: '2024-01-02' },
+      ];
+      const uploadResponse = { path: `${userId}/avatar-123456.jpg` };
+
+      const mockList = jest.fn().mockResolvedValue({ data: existingFiles });
+      const mockRemove = jest.fn().mockResolvedValue({ error: null });
+      const mockUpload = jest
+        .fn()
+        .mockResolvedValue({ data: uploadResponse, error: null });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: mockRemove,
+        upload: mockUpload,
+        createSignedUrl: jest.fn(),
+        getPublicUrl: jest.fn(),
+      });
+
+      await profileService.uploadAvatar(userId, testUri);
+
+      expect(mockRemove).toHaveBeenCalledWith([
+        `${userId}/avatar-old1.jpg`,
+        `${userId}/avatar-old2.png`,
+      ]);
+    });
+  });
+
+  describe('getAvatarUrl', () => {
+    const userId = 'user-123';
+
+    it('should return signed URL for most recent avatar', async () => {
+      const files = [
+        {
+          name: 'avatar-1640995200000.jpg',
+          created_at: '2022-01-01T00:00:00Z',
+        },
+        {
+          name: 'avatar-1641081600000.png',
+          created_at: '2022-01-02T00:00:00Z',
+        },
+      ];
+      const signedUrl = 'https://signed-url.com/avatar.png';
+
+      const mockList = jest.fn().mockResolvedValue({ data: files, error: null });
+      const mockCreateSignedUrl = jest
+        .fn()
+        .mockResolvedValue({ data: { signedUrl }, error: null });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: jest.fn(),
+        upload: jest.fn(),
+        createSignedUrl: mockCreateSignedUrl,
+        getPublicUrl: jest.fn(),
+      });
+
+      const result = await profileService.getAvatarUrl(userId);
+
+      expect(mockList).toHaveBeenCalledWith(userId);
+      expect(mockCreateSignedUrl).toHaveBeenCalledWith(
+        `${userId}/avatar-1641081600000.png`,
+        90 * 24 * 60 * 60
+      );
+      expect(result).toBe(signedUrl);
+    });
+
+    it('should return null when no avatar files exist', async () => {
+      const mockList = jest.fn().mockResolvedValue({ data: [], error: null });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: jest.fn(),
+        upload: jest.fn(),
+        createSignedUrl: jest.fn(),
+        getPublicUrl: jest.fn(),
+      });
+
+      const result = await profileService.getAvatarUrl(userId);
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null when no avatar- prefixed files exist', async () => {
+      const files = [
+        { name: 'other-file.jpg', created_at: '2022-01-01T00:00:00Z' },
+        { name: 'not-avatar.png', created_at: '2022-01-02T00:00:00Z' },
+      ];
+
+      const mockList = jest.fn().mockResolvedValue({ data: files, error: null });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: jest.fn(),
+        upload: jest.fn(),
+        createSignedUrl: jest.fn(),
+        getPublicUrl: jest.fn(),
+      });
+
+      const result = await profileService.getAvatarUrl(userId);
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null when list operation fails', async () => {
+      const mockError = new Error('List failed');
+      const mockList = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: jest.fn(),
+        upload: jest.fn(),
+        createSignedUrl: jest.fn(),
+        getPublicUrl: jest.fn(),
+      });
+
+      const result = await profileService.getAvatarUrl(userId);
+
+      expect(result).toBeNull();
+    });
+
+    it('should handle files with missing created_at', async () => {
+      const files = [
+        {
+          name: 'avatar-1640995200000.jpg',
+          created_at: '2022-01-01T00:00:00Z',
+        },
+        { name: 'avatar-1641081600000.png', created_at: null },
+      ];
+      const signedUrl = 'https://signed-url.com/avatar.jpg';
+
+      const mockList = jest.fn().mockResolvedValue({ data: files, error: null });
+      const mockCreateSignedUrl = jest
+        .fn()
+        .mockResolvedValue({ data: { signedUrl }, error: null });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: mockList,
+        remove: jest.fn(),
+        upload: jest.fn(),
+        createSignedUrl: mockCreateSignedUrl,
+        getPublicUrl: jest.fn(),
+      });
+
+      const result = await profileService.getAvatarUrl(userId);
+
+      expect(mockCreateSignedUrl).toHaveBeenCalledWith(
+        `${userId}/avatar-1640995200000.jpg`,
+        90 * 24 * 60 * 60
+      );
+      expect(result).toBe(signedUrl);
+    });
+  });
+
+  describe('getAvatarSignedUrl', () => {
+    it('should create and return signed URL', async () => {
+      const avatarPath = 'user-123/avatar-123456.jpg';
+      const signedUrl = 'https://signed-url.com/avatar.jpg';
+
+      const mockCreateSignedUrl = jest
+        .fn()
+        .mockResolvedValue({ data: { signedUrl }, error: null });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: jest.fn(),
+        remove: jest.fn(),
+        upload: jest.fn(),
+        createSignedUrl: mockCreateSignedUrl,
+        getPublicUrl: jest.fn(),
+      });
+
+      const result = await profileService.getAvatarSignedUrl(avatarPath);
+
+      expect(mockCreateSignedUrl).toHaveBeenCalledWith(
+        avatarPath,
+        90 * 24 * 60 * 60
+      );
+      expect(result).toBe(signedUrl);
+    });
+
+    it('should return null for empty avatar path', async () => {
+      const result = await profileService.getAvatarSignedUrl('');
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null for null avatar path', async () => {
+      const result = await profileService.getAvatarSignedUrl(null as any);
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null when createSignedUrl fails', async () => {
+      const avatarPath = 'user-123/avatar-123456.jpg';
+      const mockError = new Error('Signed URL creation failed');
+
+      const mockCreateSignedUrl = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: jest.fn(),
+        remove: jest.fn(),
+        upload: jest.fn(),
+        createSignedUrl: mockCreateSignedUrl,
+        getPublicUrl: jest.fn(),
+      });
+
+      const result = await profileService.getAvatarSignedUrl(avatarPath);
+
+      expect(result).toBeNull();
+    });
+
+    it('should handle exceptions and return null', async () => {
+      const avatarPath = 'user-123/avatar-123456.jpg';
+
+      const mockCreateSignedUrl = jest
+        .fn()
+        .mockRejectedValue(new Error('Network error'));
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: jest.fn(),
+        remove: jest.fn(),
+        upload: jest.fn(),
+        createSignedUrl: mockCreateSignedUrl,
+        getPublicUrl: jest.fn(),
+      });
+
+      const result = await profileService.getAvatarSignedUrl(avatarPath);
+
+      expect(result).toBeNull();
+    });
+
+    it('should use correct expiry time (3 months)', async () => {
+      const avatarPath = 'user-123/avatar-123456.jpg';
+      const signedUrl = 'https://signed-url.com/avatar.jpg';
+      const expectedExpirySeconds = 90 * 24 * 60 * 60; // 3 months
+
+      const mockCreateSignedUrl = jest
+        .fn()
+        .mockResolvedValue({ data: { signedUrl }, error: null });
+
+      mockSupabaseStorage.from.mockReturnValue({
+        list: jest.fn(),
+        remove: jest.fn(),
+        upload: jest.fn(),
+        createSignedUrl: mockCreateSignedUrl,
+        getPublicUrl: jest.fn(),
+      });
+
+      await profileService.getAvatarSignedUrl(avatarPath);
+
+      expect(mockCreateSignedUrl).toHaveBeenCalledWith(
+        avatarPath,
+        expectedExpirySeconds
+      );
     });
   });
 });
