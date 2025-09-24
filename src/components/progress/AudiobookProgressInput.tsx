@@ -1,13 +1,13 @@
-import { Typography } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
-import { ThemedText } from '../themed';
+import { StyleSheet, TextInput } from 'react-native';
+import { ThemedText, ThemedView } from '../themed';
 
 interface AudiobookProgressInputProps {
   value: number; // Always in minutes
   onChange: (minutes: number) => void;
   onBlur?: () => void;
+  totalQuantity?: number;
   placeholder?: string;
   testID?: string;
 }
@@ -96,10 +96,12 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
   value,
   onChange,
   onBlur,
+  totalQuantity,
   placeholder = 'e.g., 3h 2m or 3:02',
   testID,
 }) => {
   const { colors } = useTheme();
+  const primaryColor = colors.primary;
   const [displayValue, setDisplayValue] = useState('');
   const [isValid, setIsValid] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
@@ -171,25 +173,45 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        testID={testID}
-        value={displayValue}
-        onChangeText={handleChangeText}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        placeholder={placeholder}
-        placeholderTextColor={colors.textMuted}
-        style={[
-          styles.input,
-          {
-            backgroundColor: colors.background,
-            color: colors.primary,
-            borderColor: isValid ? colors.border : colors.danger,
-            borderWidth: isValid ? 1 : 2,
-          },
-        ]}
-      />
+    <ThemedView
+      style={[
+        styles.container,
+        {
+          backgroundColor: `${primaryColor}28`,
+          borderColor: `${primaryColor}50`,
+        },
+      ]}
+    >
+      <ThemedText variant="muted" style={styles.label}>
+        CURRENT TIME
+      </ThemedText>
+      <ThemedView style={[styles.inputRow, { backgroundColor: 'transparent' }]}>
+        <TextInput
+          testID={testID}
+          value={displayValue}
+          onChangeText={handleChangeText}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          placeholder={placeholder}
+          placeholderTextColor={colors.textMuted}
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.background,
+              color: colors.primary,
+              borderColor: isValid ? primaryColor : colors.danger,
+            },
+          ]}
+        />
+        {totalQuantity && (
+          <ThemedText
+            variant="default"
+            style={[styles.totalText, { color: `${colors.textOnSurface}79` }]}
+          >
+            /  {formatAudiobookTime(totalQuantity)}
+          </ThemedText>
+        )}
+      </ThemedView>
       {!isValid && isFocused && (
         <ThemedText
           variant="muted"
@@ -198,20 +220,44 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
           Use formats like: 3h 2m, 3:02, or 45m
         </ThemedText>
       )}
-    </View>
+    </ThemedView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    alignItems: 'center',
+    gap: 8,
+    justifyContent: 'center',
+    paddingVertical: 15,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  label: {
+    textAlign: 'center',
+    fontWeight: '900',
+    fontSize: 12,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
   },
   input: {
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    ...Typography.titleLarge,
-    fontSize: 22, // Override typography fontSize
+    fontSize: 30,
+    lineHeight: 34,
+    borderRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderWidth: 2,
+    fontWeight: '900',
+    textAlignVertical: 'center',
+  },
+  totalText: {
+    backgroundColor: 'transparent',
+    fontSize: 18,
+    fontWeight: '600',
   },
   helpText: {
     fontSize: 12,

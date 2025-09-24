@@ -33,17 +33,19 @@ describe('ProgressBar', () => {
   const defaultProps = {
     progressPercentage: 75,
     deadlineDate: '2024-01-20',
+    urgencyLevel: 'good' as const,
+    startDate: '2024-01-01',
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should render with correct progress percentage', () => {
-    const { getByText } = render(<ProgressBar {...defaultProps} />);
+  it('should render with LinearProgressBar', () => {
+    render(<ProgressBar {...defaultProps} />);
 
-    // Check if the progress percentage is displayed
-    expect(getByText('75%')).toBeTruthy();
+    // Check if LinearProgressBar is rendered
+    expect(screen.getByTestId('linear-progress-bar')).toBeTruthy();
   });
 
   it('should render LinearProgressBar with correct props', () => {
@@ -61,20 +63,18 @@ describe('ProgressBar', () => {
     expect(formatDeadlineDate).toHaveBeenCalledWith('2024-01-20');
 
     // Check if deadline text is displayed
-    expect(screen.getByText('Deadline: FormattedDate-2024-01-20')).toBeTruthy();
+    expect(screen.getByText('Due: FormattedDate-2024-01-20')).toBeTruthy();
   });
 
   it('should handle different progress percentages', () => {
     render(<ProgressBar {...defaultProps} progressPercentage={100} />);
 
-    expect(screen.getByText('100%')).toBeTruthy();
     expect(screen.getByTestId('linear-progress-bar')).toBeTruthy();
   });
 
   it('should handle zero progress', () => {
     render(<ProgressBar {...defaultProps} progressPercentage={0} />);
 
-    expect(screen.getByText('0%')).toBeTruthy();
     expect(screen.getByTestId('linear-progress-bar')).toBeTruthy();
   });
 
@@ -85,14 +85,14 @@ describe('ProgressBar', () => {
     render(<ProgressBar {...defaultProps} deadlineDate={customDate} />);
 
     expect(formatDeadlineDate).toHaveBeenCalledWith(customDate);
-    expect(screen.getByText('Deadline: FormattedDate-2024-12-25')).toBeTruthy();
+    expect(screen.getByText('Due: FormattedDate-2024-12-25')).toBeTruthy();
   });
 
   it('should apply correct styling structure', () => {
     render(<ProgressBar {...defaultProps} />);
 
-    // Verify that both progress percentage and deadline are rendered
-    expect(screen.getByText('75%')).toBeTruthy();
-    expect(screen.getByText('Deadline: FormattedDate-2024-01-20')).toBeTruthy();
+    // Verify that the linear progress bar and deadline are rendered
+    expect(screen.getByTestId('linear-progress-bar')).toBeTruthy();
+    expect(screen.getByText('Due: FormattedDate-2024-01-20')).toBeTruthy();
   });
 });

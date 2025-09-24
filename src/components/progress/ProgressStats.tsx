@@ -8,14 +8,14 @@ interface ProgressStatsProps {
   remaining: number;
   format: 'physical' | 'eBook' | 'audio';
   urgencyLevel: 'overdue' | 'urgent' | 'good' | 'approaching' | 'impossible';
+  progressPercentage: number;
 }
 
 const ProgressStats: React.FC<ProgressStatsProps> = ({
-  currentProgress,
-  totalQuantity,
   remaining,
   format,
   urgencyLevel,
+  progressPercentage,
 }) => {
   const urgencyTypeMap = {
     overdue: 'error' as const,
@@ -32,11 +32,10 @@ const ProgressStats: React.FC<ProgressStatsProps> = ({
           variant={urgencyTypeMap[urgencyLevel]}
           style={styles.statNumber}
         >
-          {formatProgressDisplay(format, currentProgress)}
+          {formatProgressDisplay(format, remaining)}
         </ThemedText>
         <ThemedText variant="muted" style={styles.statLabel}>
-          OF {formatProgressDisplay(format, totalQuantity)}
-          {format === 'audio' ? ' LISTENED' : ' READ'}
+          {format === 'audio' ? 'TIME LEFT' : 'PAGES LEFT'}
         </ThemedText>
       </View>
       <View style={[styles.statItem]}>
@@ -44,10 +43,10 @@ const ProgressStats: React.FC<ProgressStatsProps> = ({
           variant={urgencyTypeMap[urgencyLevel]}
           style={styles.statNumber}
         >
-          {formatProgressDisplay(format, remaining)}
+          {progressPercentage}%
         </ThemedText>
         <ThemedText variant="muted" style={styles.statLabel}>
-          {format === 'audio' ? 'REMAINING' : 'LEFT'}
+          COMPLETE
         </ThemedText>
       </View>
     </View>
@@ -57,8 +56,8 @@ const ProgressStats: React.FC<ProgressStatsProps> = ({
 const styles = StyleSheet.create({
   progressStats: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+    justifyContent: 'space-around',
+    marginVertical: 12,
   },
   statItem: {
     alignItems: 'center',
@@ -71,6 +70,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     letterSpacing: 1,
+    fontSize: 12,
   },
 });
 

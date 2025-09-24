@@ -495,16 +495,6 @@ export const createSuccessToast = (mode: FormMode) => {
       : 'Deadline updated successfully!';
 
   return () => {
-    if (mode === 'new') {
-      router.replace('/');
-    } else {
-      if (router.canGoBack()) {
-        router.back();
-        return;
-      } else {
-        router.replace('/');
-      }
-    }
     Toast.show({
       swipeable: true,
       type: 'success',
@@ -512,6 +502,17 @@ export const createSuccessToast = (mode: FormMode) => {
       autoHide: true,
       visibilityTime: 1500,
       position: 'top',
+      onHide: () => {
+        if (mode === 'new') {
+          router.replace('/');
+        } else {
+          if (router.canGoBack()) {
+            router.back();
+          } else {
+            router.replace('/');
+          }
+        }
+      },
     });
   };
 };

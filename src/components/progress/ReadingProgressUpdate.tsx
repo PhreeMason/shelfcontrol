@@ -3,13 +3,11 @@ import ProgressHeader from '@/components/progress/ProgressHeader';
 import ProgressInput from '@/components/progress/ProgressInput';
 import ProgressStats from '@/components/progress/ProgressStats';
 import QuickActionButtons from '@/components/progress/QuickActionButtons';
-import { ThemedButton, ThemedView } from '@/components/themed';
-import { Typography } from '@/constants/Colors';
+import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import {
   useDeleteFutureProgress,
   useUpdateDeadlineProgress,
 } from '@/hooks/useDeadlines';
-import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { formatProgressDisplay } from '@/utils/deadlineUtils';
@@ -29,7 +27,6 @@ const ReadingProgressUpdate = ({
   timeSpentReading?: number;
   onProgressSubmitted?: () => void;
 }) => {
-  const { colors } = useTheme();
   const { getDeadlineCalculations, completeDeadline } = useDeadlines();
   const calculations = getDeadlineCalculations(deadline);
   const {
@@ -262,28 +259,39 @@ const ReadingProgressUpdate = ({
     <ThemedView style={[styles.section]}>
       <ProgressHeader />
 
-      <ThemedView
-        style={[
-          styles.progressSection,
-          { borderColor: colors.border, borderWidth: 1 },
-        ]}
-      >
+      <ThemedView style={{ gap: 12 }}>
+        <ProgressInput
+          format={deadline.format}
+          control={control}
+          totalQuantity={totalQuantity}
+        />
+
         <ProgressStats
           currentProgress={currentProgress}
           totalQuantity={totalQuantity}
           remaining={remaining}
           format={deadline.format}
           urgencyLevel={urgencyLevel}
+          progressPercentage={progressPercentage}
         />
 
         <ProgressBar
           progressPercentage={progressPercentage}
           deadlineDate={deadline.deadline_date}
+          urgencyLevel={urgencyLevel}
+          startDate={deadline.created_at}
         />
       </ThemedView>
 
       <View style={styles.updateSection}>
-        <ProgressInput format={deadline.format} control={control} />
+        <View
+          style={{ height: 1, backgroundColor: '#cccccc30', marginVertical: 8 }}
+        />
+        <ThemedText variant="muted" style={styles.quickActionLabel}>
+          {deadline.format === 'audio'
+            ? 'Quick update time (minutes):'
+            : 'Quick update pages:'}
+        </ThemedText>
 
         <QuickActionButtons onQuickUpdate={handleQuickUpdate} />
 
@@ -305,35 +313,14 @@ export default ReadingProgressUpdate;
 const styles = StyleSheet.create({
   section: {
     padding: 8,
-    borderRadius: 12,
     marginBottom: 16,
   },
   updateSection: {
     marginTop: 8,
     gap: 12,
   },
-  sessionBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 12,
-    paddingHorizontal: 18,
-    backgroundColor: 'rgba(232, 194, 185, 0.05)',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(232, 194, 185, 0.41)',
-  },
-  sessionIcon: {
-    fontSize: 20,
-  },
-  sessionText: {
-    ...Typography.titleMedium,
-  },
-  progressSection: {
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+  quickActionLabel: {
+    fontWeight: '700',
+    textAlign: 'center',
   },
 });

@@ -1,5 +1,9 @@
 import React from 'react';
-import { TouchableOpacity, type TouchableOpacityProps } from 'react-native';
+import {
+  TextStyle,
+  TouchableOpacity,
+  type TouchableOpacityProps,
+} from 'react-native';
 
 import {
   ComponentVariants,
@@ -16,6 +20,7 @@ export type ThemedButtonProps = TouchableOpacityProps & {
   size?: 'sm' | 'md' | 'lg';
   backgroundColor?: ColorToken;
   textColor?: ColorToken;
+  textStyle?: TextStyle;
 };
 
 export function ThemedButton({
@@ -26,6 +31,7 @@ export function ThemedButton({
   backgroundColor,
   textColor,
   disabled,
+  textStyle = {},
   ...rest
 }: ThemedButtonProps) {
   const { colors } = useTheme();
@@ -83,6 +89,7 @@ export function ThemedButton({
         style={{
           color: disabled ? disabledTextColor : themeTextColor,
           textAlign: 'center',
+          ...textStyle,
         }}
       >
         {title}

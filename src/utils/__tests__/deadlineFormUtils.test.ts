@@ -871,6 +871,9 @@ describe('deadlineFormUtils', () => {
     });
 
     it('should navigate correctly on hide for edit mode', () => {
+      const { router } = require('expo-router');
+      router.canGoBack.mockReturnValue(true);
+
       const toastFn = createSuccessToast('edit');
       toastFn();
 

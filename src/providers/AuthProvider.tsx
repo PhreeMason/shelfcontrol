@@ -133,9 +133,9 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     }
   };
 
-  const signUp = async (email: string, password: string, username: string) => {
+  const signUp = async (email: string, password: string) => {
     try {
-      const result = await authService.signUp({ email, password, username });
+      const result = await authService.signUp({ email, password });
       if (result.error) {
         console.error('Sign up failed:', result.error);
       }

@@ -199,22 +199,28 @@ export const createThemedStyle = {
 
 // Common style mixins
 export const StyleMixins = {
-  card: {
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
+  get card() {
+    return {
+      borderRadius: BorderRadius.lg,
+      padding: Spacing.lg,
+    };
   },
 
-  listItem: {
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
+  get listItem() {
+    return {
+      paddingVertical: Spacing.md,
+      paddingHorizontal: Spacing.lg,
+    };
   },
 
-  input: {
-    borderRadius: BorderRadius.md,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.md,
-    borderWidth: 1,
-    ...Typography.bodyLarge,
+  get input() {
+    return {
+      borderRadius: BorderRadius.md,
+      paddingVertical: Spacing.md,
+      paddingHorizontal: Spacing.md,
+      borderWidth: 1,
+      ...Typography.bodyLarge,
+    };
   },
 
   shadow: {
@@ -261,49 +267,53 @@ export const StyleMixins = {
   },
 
   // Spacing presets
-  spacing: {
-    tight: { padding: Spacing.sm, gap: Spacing.xs },
-    normal: { padding: Spacing.md, gap: Spacing.sm },
-    loose: { padding: Spacing.lg, gap: Spacing.md },
-    extraLoose: { padding: Spacing.xl, gap: Spacing.lg },
+  get spacing() {
+    return {
+      tight: { padding: Spacing.sm, gap: Spacing.xs },
+      normal: { padding: Spacing.md, gap: Spacing.sm },
+      loose: { padding: Spacing.lg, gap: Spacing.md },
+      extraLoose: { padding: Spacing.xl, gap: Spacing.lg },
+    };
   },
 
   // Component presets
-  components: {
-    primaryButton: {
-      borderRadius: BorderRadius.md,
-      padding: Spacing.md,
-      minHeight: 44,
-      ...Typography.labelLarge,
-    },
-    secondaryButton: {
-      borderRadius: BorderRadius.md,
-      padding: Spacing.md,
-      minHeight: 44,
-      borderWidth: 1,
-      ...Typography.labelLarge,
-    },
-    textButton: {
-      borderRadius: BorderRadius.sm,
-      padding: Spacing.sm,
-      ...Typography.labelLarge,
-    },
-    card: {
-      borderRadius: BorderRadius.lg,
-      padding: Spacing.lg,
-      shadowOffset: {
-        width: 0,
-        height: 2,
+  get components() {
+    return {
+      primaryButton: {
+        borderRadius: BorderRadius.md,
+        padding: Spacing.md,
+        minHeight: 44,
+        ...Typography.labelLarge,
       },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    modal: {
-      borderRadius: BorderRadius.xl,
-      padding: Spacing.xl,
-      margin: Spacing.lg,
-    },
+      secondaryButton: {
+        borderRadius: BorderRadius.md,
+        padding: Spacing.md,
+        minHeight: 44,
+        borderWidth: 1,
+        ...Typography.labelLarge,
+      },
+      textButton: {
+        borderRadius: BorderRadius.sm,
+        padding: Spacing.sm,
+        ...Typography.labelLarge,
+      },
+      card: {
+        borderRadius: BorderRadius.lg,
+        padding: Spacing.lg,
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+      },
+      modal: {
+        borderRadius: BorderRadius.xl,
+        padding: Spacing.xl,
+        margin: Spacing.lg,
+      },
+    };
   },
 } as const;
 

@@ -66,14 +66,26 @@ describe('ProgressInput', () => {
     });
 
     it('should render AudiobookProgressInput', () => {
-      render(<ProgressInput format="audio" control={mockControl} />);
+      render(
+        <ProgressInput
+          format="audio"
+          control={mockControl}
+          totalQuantity={258}
+        />
+      );
 
       expect(screen.getByTestId('audiobook-progress-input')).toBeTruthy();
     });
 
     it('should call requiresAudiobookInput with correct format', () => {
       const { requiresAudiobookInput } = require('@/utils/formUtils');
-      render(<ProgressInput format="audio" control={mockControl} />);
+      render(
+        <ProgressInput
+          format="audio"
+          control={mockControl}
+          totalQuantity={258}
+        />
+      );
 
       expect(requiresAudiobookInput).toHaveBeenCalledWith('audio');
     });
@@ -93,27 +105,51 @@ describe('ProgressInput', () => {
       );
     });
 
-    it('should render TextInput for physical format', () => {
-      render(<ProgressInput format="physical" control={mockControl} />);
+    it('should render PagesProgressInput for physical format', () => {
+      render(
+        <ProgressInput
+          format="physical"
+          control={mockControl}
+          totalQuantity={258}
+        />
+      );
 
-      expect(screen.getByDisplayValue('50')).toBeTruthy();
+      expect(screen.getByTestId('pages-progress-input')).toBeTruthy();
     });
 
-    it('should render TextInput for eBook format', () => {
-      render(<ProgressInput format="eBook" control={mockControl} />);
+    it('should render PagesProgressInput for eBook format', () => {
+      render(
+        <ProgressInput
+          format="eBook"
+          control={mockControl}
+          totalQuantity={258}
+        />
+      );
 
-      expect(screen.getByDisplayValue('50')).toBeTruthy();
+      expect(screen.getByTestId('pages-progress-input')).toBeTruthy();
     });
 
     it('should call transformProgressValueToText with field value', () => {
       const { transformProgressValueToText } = require('@/utils/formUtils');
-      render(<ProgressInput format="physical" control={mockControl} />);
+      render(
+        <ProgressInput
+          format="physical"
+          control={mockControl}
+          totalQuantity={258}
+        />
+      );
 
       expect(transformProgressValueToText).toHaveBeenCalledWith(50);
     });
 
     it('should have correct placeholder text', () => {
-      render(<ProgressInput format="physical" control={mockControl} />);
+      render(
+        <ProgressInput
+          format="physical"
+          control={mockControl}
+          totalQuantity={258}
+        />
+      );
 
       expect(
         screen.getByPlaceholderText('Enter current progress')
@@ -122,7 +158,11 @@ describe('ProgressInput', () => {
 
     it('should have numeric keyboard type', () => {
       const { getByDisplayValue } = render(
-        <ProgressInput format="physical" control={mockControl} />
+        <ProgressInput
+          format="physical"
+          control={mockControl}
+          totalQuantity={258}
+        />
       );
       const textInput = getByDisplayValue('50');
 
@@ -132,7 +172,11 @@ describe('ProgressInput', () => {
     it('should handle text input changes', () => {
       const { transformProgressInputText } = require('@/utils/formUtils');
       const { getByDisplayValue } = render(
-        <ProgressInput format="physical" control={mockControl} />
+        <ProgressInput
+          format="physical"
+          control={mockControl}
+          totalQuantity={258}
+        />
       );
       const textInput = getByDisplayValue('50');
 
@@ -143,23 +187,27 @@ describe('ProgressInput', () => {
 
     it('should apply correct styling', () => {
       const { getByDisplayValue } = render(
-        <ProgressInput format="physical" control={mockControl} />
+        <ProgressInput
+          format="physical"
+          control={mockControl}
+          totalQuantity={258}
+        />
       );
       const textInput = getByDisplayValue('50');
 
       expect(textInput.props.style).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            fontSize: 22,
-            borderRadius: 8,
-            paddingHorizontal: 16,
-            paddingVertical: 12,
+            fontSize: 30,
+            borderRadius: 10,
+            paddingHorizontal: 20,
+            paddingVertical: 10,
             borderWidth: 2,
           }),
           expect.objectContaining({
             color: '#000000',
             backgroundColor: '#ffffff',
-            borderColor: '#cccccc',
+            borderColor: '#000000',
           }),
         ])
       );
@@ -167,7 +215,11 @@ describe('ProgressInput', () => {
 
     it('should have correct placeholder text color', () => {
       const { getByPlaceholderText } = render(
-        <ProgressInput format="physical" control={mockControl} />
+        <ProgressInput
+          format="physical"
+          control={mockControl}
+          totalQuantity={258}
+        />
       );
       const textInput = getByPlaceholderText('Enter current progress');
 
