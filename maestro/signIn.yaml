@@ -1,5 +1,0 @@
-appId: "com.grizzylabs.shelfControl"
-
----
-- launchApp
-- assertVisible: "email"
