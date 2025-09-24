@@ -1,10 +1,8 @@
-import { DeadlineCard } from '@/components/features/deadlines/DeadlineCard';
-import { ThemedScrollView, ThemedText, ThemedView } from '@/components/themed';
-import { ThemedButton } from '@/components/themed/ThemedButton';
+// components/FilteredDeadlines.tsx
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import React from 'react';
+import DeadlinesList from './DeadlinesList';
 
 type FilterType =
   | 'active'
@@ -14,22 +12,13 @@ type FilterType =
   | 'set_aside'
   | 'all';
 
-interface FilterOption {
-  key: FilterType;
-  label: string;
+interface FilteredDeadlinesProps {
+  selectedFilter: FilterType;
 }
 
-const filterOptions: FilterOption[] = [
-  { key: 'active', label: 'Active' },
-  { key: 'overdue', label: 'Overdue' },
-  { key: 'pending', label: 'Pending' },
-  { key: 'completed', label: 'Completed' },
-  { key: 'set_aside', label: 'Paused' },
-  { key: 'all', label: 'All' },
-];
-
-const FilteredDeadlines = () => {
-  const [selectedFilter, setSelectedFilter] = useState<FilterType>('active');
+const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
+  selectedFilter,
+}) => {
   const {
     deadlines,
     activeDeadlines,
@@ -79,93 +68,16 @@ const FilteredDeadlines = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <ThemedScrollView>
-        <ThemedView style={styles.container}>
-          <ThemedText>Loading deadlines...</ThemedText>
-        </ThemedView>
-      </ThemedScrollView>
-    );
-  }
-
-  if (error) {
-    return (
-      <ThemedScrollView>
-        <ThemedView style={styles.container}>
-          <ThemedText variant="error" style={styles.errorText}>
-            Error loading deadlines: {error.message}
-          </ThemedText>
-        </ThemedView>
-      </ThemedScrollView>
-    );
-  }
-
   const filteredDeadlines = getFilteredDeadlines();
 
   return (
-    <ThemedView style={styles.container}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.filterContainer}
-        contentContainerStyle={styles.filterContentContainer}
-      >
-        {filterOptions.map(option => (
-          <ThemedButton
-            key={option.key}
-            title={option.label}
-            variant={selectedFilter === option.key ? 'primary' : 'outline'}
-            size="sm"
-            style={styles.filterButton}
-            onPress={() => setSelectedFilter(option.key)}
-          />
-        ))}
-      </ScrollView>
-
-      <View style={styles.deadlinesContainer}>
-        {filteredDeadlines.length > 0 ? (
-          filteredDeadlines.map(deadline => (
-            <DeadlineCard key={deadline.id} deadline={deadline} />
-          ))
-        ) : (
-          <ThemedText style={styles.emptyText} variant="muted">
-            {getEmptyMessage()}
-          </ThemedText>
-        )}
-      </View>
-    </ThemedView>
+    <DeadlinesList
+      deadlines={filteredDeadlines}
+      isLoading={isLoading}
+      error={error}
+      emptyMessage={getEmptyMessage()}
+    />
   );
 };
 
 export default FilteredDeadlines;
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    gap: 20,
-  },
-  filterContainer: {
-    maxHeight: 50,
-  },
-  filterContentContainer: {
-    gap: 10,
-    paddingVertical: 5,
-  },
-  filterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  deadlinesContainer: {
-    gap: 20,
-  },
-  emptyText: {
-    fontSize: 14,
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  errorText: {
-    fontSize: 14,
-    textAlign: 'center',
-  },
-});

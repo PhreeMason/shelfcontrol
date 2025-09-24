@@ -115,7 +115,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
     marginBottom: 20,
   },
 });

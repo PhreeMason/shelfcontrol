@@ -34,7 +34,7 @@ const BookDetailsSection = ({
             Format
           </ThemedText>
           <ThemedText style={styles.detailsValue}>
-            {makeUpperCaseFirstLetter(deadline.format)}
+            {deadline.format.toLowerCase() === 'ebook' ? 'eBook' : makeUpperCaseFirstLetter(deadline.format)}
           </ThemedText>
         </ThemedView>
         <ThemedView style={styles.detailRow}>

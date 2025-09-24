@@ -1,6 +1,11 @@
 import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
-import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -9,7 +14,7 @@ import {
   TextStyle,
   TouchableOpacity,
   View,
-  ViewStyle
+  ViewStyle,
 } from 'react-native';
 import Animated, {
   interpolate,
@@ -18,7 +23,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-interface AnimatedCustomInputProps extends Omit<TextInputProps, 'onFocus' | 'onBlur' | 'onChangeText'> {
+interface AnimatedCustomInputProps
+  extends Omit<TextInputProps, 'onFocus' | 'onBlur' | 'onChangeText'> {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
@@ -35,7 +41,10 @@ export interface AnimatedCustomInputRef {
   blur: () => void;
 }
 
-export const AnimatedCustomInput = forwardRef<AnimatedCustomInputRef, AnimatedCustomInputProps>(
+export const AnimatedCustomInput = forwardRef<
+  AnimatedCustomInputRef,
+  AnimatedCustomInputProps
+>(
   (
     {
       label,
@@ -70,33 +79,17 @@ export const AnimatedCustomInput = forwardRef<AnimatedCustomInputRef, AnimatedCu
       return {
         transform: [
           {
-            translateY: interpolate(
-              labelAnimation.value,
-              [0, 1],
-              [18, -20]
-            ),
+            translateY: interpolate(labelAnimation.value, [0, 1], [18, -20]),
           },
           {
-            translateX: interpolate(
-              labelAnimation.value,
-              [0, 1],
-              [16, 0]
-            ),
+            translateX: interpolate(labelAnimation.value, [0, 1], [16, 0]),
           },
           {
-            scale: interpolate(
-              labelAnimation.value,
-              [0, 1],
-              [1, 0.85]
-            ),
+            scale: interpolate(labelAnimation.value, [0, 1], [1, 0.85]),
           },
         ],
         zIndex: 1,
-        fontSize: interpolate(
-          labelAnimation.value,
-          [0, 1],
-          [16, 14]
-        ),
+        fontSize: interpolate(labelAnimation.value, [0, 1], [16, 14]),
       };
     });
 
@@ -122,18 +115,24 @@ export const AnimatedCustomInput = forwardRef<AnimatedCustomInputRef, AnimatedCu
       if (value && !isFocused) {
         labelAnimation.value = withTiming(1, { duration: 200 });
       }
-    }, [value]);
+    }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
       <Pressable onPress={handlePressContainer}>
         <View style={[styles.container, containerStyle]}>
-          <Animated.Text style={[styles.label, { color: labelColor }, animatedLabelStyle]}>
+          <Animated.Text
+            style={[styles.label, { color: labelColor }, animatedLabelStyle]}
+          >
             {label}
           </Animated.Text>
           <View style={styles.inputWrapper}>
             <TextInput
               ref={inputRef}
-              style={[styles.input, inputStyle, secureTextEntry && styles.secureInput]}
+              style={[
+                styles.input,
+                inputStyle,
+                secureTextEntry && styles.secureInput,
+              ]}
               value={value}
               onChangeText={onChangeText}
               onFocus={handleFocus}
