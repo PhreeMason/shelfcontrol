@@ -72,6 +72,7 @@ export default function HomeScreen() {
       right: 0,
       zIndex: 1000,
       opacity: withSpring(shouldStick ? 1 : 0),
+      elevation: withSpring(shouldStick ? 4 : 0),
       pointerEvents: shouldStick ? 'auto' : 'none',
     };
   });
@@ -176,13 +177,13 @@ const styles = StyleSheet.create({
   },
   floatingActionButton: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 10,
     right: 30,
     width: 56,
     height: 56,
     padding: 0,
     borderRadius: 28,
-    elevation: 6,
+    elevation: 4,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

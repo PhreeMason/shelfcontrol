@@ -75,8 +75,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
   },
   filterContainer: {
     maxHeight: 60,
