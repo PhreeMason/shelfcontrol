@@ -208,7 +208,7 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
             variant="default"
             style={[styles.totalText, { color: `${colors.textOnSurface}79` }]}
           >
-            /  {formatAudiobookTime(totalQuantity)}
+            / {formatAudiobookTime(totalQuantity)}
           </ThemedText>
         )}
       </ThemedView>

@@ -97,14 +97,16 @@ export default function HomeScreen() {
 
   // Switch to first available filter if current is not available
   React.useEffect(() => {
-    if (availableFilters.length > 0 && !availableFilters.includes(selectedFilter)) {
+    if (
+      availableFilters.length > 0 &&
+      !availableFilters.includes(selectedFilter)
+    ) {
       setSelectedFilter(availableFilters[0]);
     }
   }, [availableFilters, selectedFilter]);
 
-
   return (
-    <ThemedView style={[ styles.container ]}>
+    <ThemedView style={[styles.container]}>
       <LinearGradient
         colors={['#E8C2B9', '#ccafc9']}
         start={{ x: 0, y: 0 }}
