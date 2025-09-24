@@ -310,6 +310,7 @@ export default function Profile() {
           <TouchableOpacity
             style={styles.signOutButton}
             onPress={handleSignOut}
+            testID="sign-out-button"
           >
             <ThemedText style={styles.signOutButtonText}>Sign Out</ThemedText>
           </TouchableOpacity>

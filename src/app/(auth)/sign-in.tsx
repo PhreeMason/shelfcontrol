@@ -123,6 +123,7 @@ export default function SignInScreen() {
                   keyboardType="email-address"
                   autoComplete="email"
                   inputStyle={styles.input}
+                  testID="email-input"
                 />
               )}
             />
@@ -149,6 +150,7 @@ export default function SignInScreen() {
                   onBlur={onBlur}
                   secureTextEntry
                   inputStyle={styles.input}
+                  testID="password-input"
                 />
               )}
             />
@@ -172,6 +174,7 @@ export default function SignInScreen() {
             ]}
             onPress={handleSubmit(onSignInPress)}
             disabled={isLoading || isSubmitting}
+            testID="sign-in-button"
           >
             <ThemedText style={styles.buttonText}>
               {isLoading || isSubmitting ? 'Signing in...' : 'Continue'}

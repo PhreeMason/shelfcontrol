@@ -1,0 +1,24 @@
+# ShelfControl App - Clear Authentication State Helper
+# Helper flow to clear authentication state and ensure clean test start
+
+appId: ${APP_ID}
+name: "Clear Auth State Helper"
+tags:
+  - helper
+  - setup
+
+---
+# Clear app state and keychain
+- clearState
+- clearKeychain
+
+# Launch app with clean state
+- launchApp:
+    appId: ${APP_ID}
+    clearState: true
+    clearKeychain: true
+
+# Wait for app to load
+- extendedWaitUntil:
+    visible: "ShelfControl"
+    timeout: 10000

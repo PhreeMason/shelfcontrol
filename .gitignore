@@ -38,7 +38,7 @@ yarn-error.*
 
 app-example
 
-.env
+.env*
 
 # ignore old folder
 old/

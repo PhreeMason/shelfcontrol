@@ -25,15 +25,9 @@
     "test:coverage": "jest --runInBand --coverage",
     "test:coverage:watch": "jest --runInBand --coverage --watch",
     "test:debug": "jest --runInBand --detectOpenHandles --forceExit --no-cache --logHeapUsage",
-    "maestro": "maestro test",
-    "maestro:auth": "maestro test maestro/auth-combined.yaml",
-    "maestro:signup": "maestro test maestro/signUp.yaml",
-    "maestro:signin": "maestro test maestro/signIn-complete.yaml",
-    "maestro:validation": "maestro test maestro/auth-validation.yaml",
-    "maestro:navigation": "maestro test maestro/auth-navigation.yaml",
-    "maestro:all": "maestro test maestro/",
-    "maestro:ios": "maestro test --platform ios maestro/",
-    "maestro:android": "maestro test --platform android maestro/"
+    "test:e2e": "maestro test @.env.maestro maestro/",
+    "test:e2e:ios": "maestro test @.env.maestro --platform ios maestro/",
+    "test:e2e:android": "maestro test @.env.maestro --platform android maestro/"
   },
   "dependencies": {
     "@expo/metro-runtime": "^5.0.4",

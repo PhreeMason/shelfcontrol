@@ -1,0 +1,101 @@
+# ShelfControl App - Sign Out Flow Test
+# This test signs out the current user and verifies the sign-out process
+
+appId: ${APP_ID}
+name: "ShelfControl Sign Out Flow"
+tags:
+  - auth
+  - signout
+
+---
+# Launch the app
+- launchApp:
+    appId: ${APP_ID}
+
+# Wait for app to load
+- extendedWaitUntil:
+    visible: "ShelfControl"
+    timeout: 10000
+
+# Handle development server screen (if in dev mode)
+- runFlow:
+    when:
+      visible: "Development servers"
+    commands:
+      # Tap on localhost development server
+      - tapOn:
+          text: "http://localhost:8081"
+      # Handle potential developer menu popup
+      - runFlow:
+          when:
+            visible: "Continue"
+          commands:
+            - tapOn: "Continue"
+
+# Check if user is signed in by looking for authenticated content
+- runFlow:
+    when:
+      notVisible: "Sign in"
+    commands:
+      # Navigate to profile tab
+      - tapOn:
+          id: "profile-tab"
+      
+      # Wait for profile page to load
+      - extendedWaitUntil:
+          visible: "Profile"
+          timeout: 5000
+      
+      # Scroll down to find sign out button
+      - scroll
+      - scroll
+      
+      # Take screenshot before sign out
+      - takeScreenshot: "before_sign_out"
+      
+      # Tap sign out button
+      - extendedWaitUntil:
+          visible: "Sign Out"
+          timeout: 3000
+      - tapOn:
+          text: "Sign Out"
+      
+      # Wait for and handle confirmation dialog
+      - extendedWaitUntil:
+          visible: "Are you sure you want to sign out?"
+          timeout: 3000
+
+      # Tap the confirmation "Sign Out" button in the dialog
+      - tapOn:
+          text: "Sign Out"
+          index: 1
+      
+      # Wait for sign out to complete and redirect to sign-in screen
+      - extendedWaitUntil:
+          visible: "Sign in"
+          timeout: 10000
+      
+      # Verify we're on the sign-in screen
+      - extendedWaitUntil:
+          visible:
+            id: "email-input"
+          timeout: 3000
+      - assertVisible:
+          id: "password-input"
+      - assertVisible:
+          id: "sign-in-button"
+      
+      # Take screenshot of successful sign out
+      - takeScreenshot: "successful_sign_out"
+
+# If user is already signed out, verify sign-in screen is displayed
+- runFlow:
+    when:
+      visible: "Sign in"
+    commands:
+      - assertVisible: "Sign in"
+      - assertVisible:
+          id: "email-input"
+      - assertVisible:
+          id: "password-input"
+      - takeScreenshot: "already_signed_out"

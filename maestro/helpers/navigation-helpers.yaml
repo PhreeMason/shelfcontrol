@@ -1,0 +1,29 @@
+# ShelfControl App - Navigation Helper Flows
+# Common navigation patterns used across multiple tests
+
+appId: ${APP_ID}
+name: "Navigation Helpers"
+tags:
+  - helper
+  - navigation
+
+---
+# Helper Flow 1: Navigate to Profile
+- runFlow:
+    name: "Navigate to Profile"
+    commands:
+      - tapOn:
+          id: "profile-tab"
+      - assertVisible:
+          text: "Profile"
+          timeout: 5000
+
+# Helper Flow 2: Navigate to Home
+- runFlow:
+    name: "Navigate to Home"
+    commands:
+      - tapOn:
+          id: "home-tab"
+      - assertVisible:
+          text: "My Deadlines"
+          timeout: 5000

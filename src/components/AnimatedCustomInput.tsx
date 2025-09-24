@@ -118,7 +118,7 @@ export const AnimatedCustomInput = forwardRef<
     }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
-      <Pressable onPress={handlePressContainer}>
+      <Pressable onPress={handlePressContainer} testID={textInputProps.testID}>
         <View style={[styles.container, containerStyle]}>
           <Animated.Text
             style={[styles.label, { color: labelColor }, animatedLabelStyle]}

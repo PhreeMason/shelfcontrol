@@ -18,13 +18,15 @@ export default function TabLayout() {
     // If not signed in, don't render the tabs
     return <Redirect href="/(auth)/sign-in" />;
   }
+
+  const HomeTabButton = (props: any) => <HapticTab {...props} testID="home-tab" />;
+  const ProfileTabButton = (props: any) => <HapticTab {...props} testID="profile-tab" />;
   return (
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
         ...(TabBarBackground ? { tabBarBackground: TabBarBackground } : {}),
         tabBarStyle: Platform.select({
           ios: {
@@ -41,6 +43,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
           ),
+          tabBarButton: HomeTabButton,
         }}
       />
       <Tabs.Screen
@@ -81,6 +84,7 @@ export default function TabLayout() {
               />
             </View>
           ),
+          tabBarButton: ProfileTabButton,
         }}
       />
     </Tabs>

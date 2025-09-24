@@ -1,0 +1,46 @@
+# ShelfControl App - Complete Test Suite Configuration
+# Configuration for running the full authentication test suite
+
+# Test execution order (recommended for auth flows)
+flowsOrder:
+  - clear-auth-state.yaml
+  - sign-in-flow.yaml
+  - verify-sign-in.yaml
+  - sign-out-flow.yaml
+
+# Global configuration for all tests
+includeTags:
+  - auth
+  - critical
+
+# Exclude helper files and flaky tests by default
+excludeTags:
+  - helper
+  - flaky
+  - slow
+
+# Test execution settings
+continueOnFailure: false  # Stop on first failure
+maxRetries: 2            # Retry failed tests up to 2 times
+
+# Environment-specific configurations
+env:
+  # Default test environment
+  ENVIRONMENT: "test"
+  TIMEOUT_MS: 10000
+  
+  # App-specific settings
+  APP_NAME: "ShelfControl"
+  
+
+# Reporting configuration
+reports:
+  enabled: true
+  format: "junit"
+  outputPath: "./test-results/"
+
+# Screenshots configuration  
+screenshots:
+  onFailure: true
+  onSuccess: false
+  compression: 0.8
