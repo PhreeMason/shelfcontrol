@@ -57,6 +57,8 @@ interface DeadlineContextType {
   pendingDeadlines: ReadingDeadlineWithProgress[];
   isLoading: boolean;
   error: Error | null;
+  refetch: () => void;
+  isRefreshing: boolean;
 
   // Pace data (merged from PaceProvider)
   userPaceData: UserPaceData;
@@ -184,7 +186,13 @@ interface DeadlineProviderProps {
 export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
   children,
 }) => {
-  const { data: deadlines = [], error, isLoading } = useGetDeadlines();
+  const {
+    data: deadlines = [],
+    error,
+    isLoading,
+    refetch,
+    isFetching,
+  } = useGetDeadlines();
   const { mutate: addDeadlineMutation } = useAddDeadline();
   const { mutate: updateDeadlineMutation } = useUpdateDeadline();
   const { mutate: deleteDeadlineMutation } = useDeleteDeadline();
@@ -455,6 +463,8 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     pendingDeadlines,
     isLoading,
     error,
+    refetch,
+    isRefreshing: isFetching,
 
     // Pace data (merged from PaceProvider)
     userPaceData,

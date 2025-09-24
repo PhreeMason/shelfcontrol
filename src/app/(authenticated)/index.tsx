@@ -8,7 +8,7 @@ import { useDeadlines } from '@/providers/DeadlineProvider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, RefreshControl, StyleSheet } from 'react-native';
 import Animated, {
   useAnimatedScrollHandler,
   useAnimatedStyle,
@@ -35,6 +35,8 @@ export default function HomeScreen() {
     pendingDeadlines,
     completedDeadlines,
     setAsideDeadlines,
+    refetch,
+    isRefreshing,
   } = useDeadlines();
 
   // Calculate gradient height once
@@ -128,6 +130,9 @@ export default function HomeScreen() {
         style={styles.scrollContainer}
         contentContainerStyle={[styles.scrollContent]}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={refetch} />
+        }
       >
         <Header />
 
@@ -144,14 +149,16 @@ export default function HomeScreen() {
       </Animated.ScrollView>
 
       {/* Floating action button */}
-      {Platform.OS === 'android' ? <Link href="/deadline/new" asChild>
-        <ThemedIconButton
-          icon="plus"
-          style={styles.floatingActionButton}
-          variant="primary"
-          size="lg"
-        />
-      </Link> : null}
+      {Platform.OS === 'android' ? (
+        <Link href="/deadline/new" asChild>
+          <ThemedIconButton
+            icon="plus"
+            style={styles.floatingActionButton}
+            variant="primary"
+            size="lg"
+          />
+        </Link>
+      ) : null}
     </ThemedView>
   );
 }
