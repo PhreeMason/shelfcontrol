@@ -39,7 +39,10 @@ export const createProgressUpdateSchema = (
 
         // Handle numbers
         if (typeof val === 'number') {
-          return isNaN(val) ? 'INVALID_NUMBER' : val;
+          if (isNaN(val) || !isFinite(val)) {
+            return 'INVALID_NUMBER';
+          }
+          return val;
         }
 
         return 'INVALID_NUMBER';

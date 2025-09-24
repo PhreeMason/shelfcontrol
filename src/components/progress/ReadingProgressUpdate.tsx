@@ -10,8 +10,18 @@ import {
 } from '@/hooks/useDeadlines';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { formatProgressDisplay } from '@/utils/deadlineUtils';
 import { createProgressUpdateSchema } from '@/utils/progressUpdateSchema';
+import {
+  calculateNewProgress,
+  isBookComplete,
+  shouldShowBackwardProgressWarning,
+  formatBackwardProgressWarning,
+  formatProgressUpdateMessage,
+  formatCompletionMessage,
+  getCompletionToastMessage,
+  getErrorToastMessage,
+  hasProgressChanged
+} from '@/utils/progressUpdateUtils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
@@ -57,11 +67,12 @@ const ReadingProgressUpdate = ({
       completeDeadline(
         deadlineId,
         () => {
+          const { title, message } = getCompletionToastMessage(bookTitle);
           Toast.show({
             swipeable: true,
             type: 'success',
-            text1: 'Deadline completed!',
-            text2: `Congratulations on finishing "${bookTitle}"!`,
+            text1: title,
+            text2: message,
             autoHide: true,
             visibilityTime: 1500,
             position: 'top',
@@ -69,11 +80,12 @@ const ReadingProgressUpdate = ({
           onProgressSubmitted?.();
         },
         error => {
+          const { title, message } = getErrorToastMessage('complete', error);
           Toast.show({
             swipeable: true,
             type: 'error',
-            text1: 'Failed to complete deadline',
-            text2: error.message || 'Please try again',
+            text1: title,
+            text2: message,
             autoHide: true,
             visibilityTime: 1500,
             position: 'top',
@@ -86,9 +98,10 @@ const ReadingProgressUpdate = ({
 
   const showCompletionDialog = useCallback(
     (newProgress: number, bookTitle: string) => {
+      const message = formatCompletionMessage(deadline.format, newProgress, bookTitle);
       Alert.alert(
         'Book Complete! 🎉',
-        `Progress updated to ${formatProgressDisplay(deadline.format, newProgress)}.\n\nYou've reached the end of "${bookTitle}". Would you like to mark this book as complete?`,
+        message,
         [
           {
             text: 'Not Yet',
@@ -108,16 +121,17 @@ const ReadingProgressUpdate = ({
 
   const handleProgressUpdateSuccess = useCallback(
     (newProgress: number) => {
-      const isBookComplete = newProgress >= totalQuantity;
+      const bookComplete = isBookComplete(newProgress, totalQuantity);
 
-      if (isBookComplete) {
+      if (bookComplete) {
         showCompletionDialog(newProgress, deadline.book_title);
       } else {
+        const message = formatProgressUpdateMessage(deadline.format, newProgress);
         Toast.show({
           swipeable: true,
           type: 'success',
           text1: 'Progress Updated!',
-          text2: `Updated to ${formatProgressDisplay(deadline.format, newProgress)}`,
+          text2: message,
         });
         onProgressSubmitted?.();
       }
@@ -142,11 +156,12 @@ const ReadingProgressUpdate = ({
         {
           onSuccess: () => handleProgressUpdateSuccess(newProgress),
           onError: error => {
+            const { title, message } = getErrorToastMessage('update');
             Toast.show({
               swipeable: true,
               type: 'error',
-              text1: 'Update Failed',
-              text2: 'Please try again',
+              text1: title,
+              text2: message,
             });
             console.error('Progress update error:', error);
           },
@@ -170,11 +185,12 @@ const ReadingProgressUpdate = ({
             handleProgressUpdate(newProgress);
           },
           onError: error => {
+            const { title, message } = getErrorToastMessage('deleteFuture');
             Toast.show({
               swipeable: true,
               type: 'error',
-              text1: 'Failed to Delete Future Progress',
-              text2: 'Please try again',
+              text1: title,
+              text2: message,
             });
             console.error('Delete future progress error:', error);
           },
@@ -186,16 +202,15 @@ const ReadingProgressUpdate = ({
 
   const showBackwardProgressWarning = useCallback(
     (newProgress: number) => {
-      const progressUnit = deadline.format === 'audio' ? 'time' : 'page';
-      const currentDisplay = formatProgressDisplay(
+      const { message } = formatBackwardProgressWarning(
         deadline.format,
-        currentProgress
+        currentProgress,
+        newProgress
       );
-      const newDisplay = formatProgressDisplay(deadline.format, newProgress);
 
       Alert.alert(
         'Backward Progress Warning',
-        `You're updating from ${currentDisplay} to ${newDisplay}. This will delete all progress entries greater than the new ${progressUnit}. Are you sure?`,
+        message,
         [
           {
             text: 'Cancel',
@@ -217,12 +232,12 @@ const ReadingProgressUpdate = ({
       const newProgress = data.currentProgress;
 
       // Check if the new progress is the same as current progress
-      if (newProgress === currentProgress) {
+      if (!hasProgressChanged(newProgress, currentProgress)) {
         return; // Do nothing if values are the same
       }
 
       // Check if the new progress is lower than current progress
-      if (newProgress < currentProgress) {
+      if (shouldShowBackwardProgressWarning(newProgress, currentProgress)) {
         showBackwardProgressWarning(newProgress);
       } else {
         // Normal forward progress update
@@ -234,24 +249,12 @@ const ReadingProgressUpdate = ({
 
   const handleQuickUpdate = (increment: number) => {
     const currentFormValue = getValues('currentProgress');
-
-    // Convert form value to number, handling both strings and numbers
-    let numericValue: number;
-
-    if (typeof currentFormValue === 'number' && !isNaN(currentFormValue)) {
-      numericValue = currentFormValue;
-    } else if (typeof currentFormValue === 'string') {
-      const parsed = parseFloat(currentFormValue.trim());
-      numericValue = isNaN(parsed) ? currentProgress : parsed;
-    } else {
-      numericValue = currentProgress;
-    }
-
-    const newProgress = Math.max(
-      0,
-      Math.min(totalQuantity, numericValue + increment)
+    const newProgress = calculateNewProgress(
+      currentFormValue as string | number | undefined,
+      increment,
+      currentProgress,
+      totalQuantity
     );
-
     setValue('currentProgress', newProgress, { shouldValidate: false });
   };
 
