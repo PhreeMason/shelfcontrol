@@ -1,4 +1,7 @@
-import { AnimatedCustomInput, AnimatedCustomInputRef } from '@/components/AnimatedCustomInput';
+import {
+  AnimatedCustomInput,
+  AnimatedCustomInputRef,
+} from '@/components/AnimatedCustomInput';
 import { AppleSSO } from '@/components/auth/AppleSSO';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
@@ -151,7 +154,6 @@ export default function SignUpScreen() {
                   }}
                   onBlur={onBlur}
                   secureTextEntry
-                  
                   inputStyle={styles.input}
                 />
               )}

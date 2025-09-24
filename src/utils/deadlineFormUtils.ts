@@ -511,7 +511,7 @@ export const createSuccessToast = (mode: FormMode) => {
       text1: message,
       autoHide: true,
       visibilityTime: 1500,
-      position: 'top'
+      position: 'top',
     });
   };
 };

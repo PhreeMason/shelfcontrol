@@ -152,7 +152,7 @@ describe('AuthService', () => {
 
       const result = await authService.signUp({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'password123',
       });
 
       expect(supabase.auth.signUp).toHaveBeenCalledWith({

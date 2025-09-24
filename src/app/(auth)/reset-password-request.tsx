@@ -1,4 +1,7 @@
-import { AnimatedCustomInput, AnimatedCustomInputRef } from '@/components/AnimatedCustomInput';
+import {
+  AnimatedCustomInput,
+  AnimatedCustomInputRef,
+} from '@/components/AnimatedCustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useAuth } from '@/providers/AuthProvider';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';

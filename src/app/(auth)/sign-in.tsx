@@ -1,4 +1,7 @@
-import { AnimatedCustomInput, AnimatedCustomInputRef } from '@/components/AnimatedCustomInput';
+import {
+  AnimatedCustomInput,
+  AnimatedCustomInputRef,
+} from '@/components/AnimatedCustomInput';
 import { AppleSSO } from '@/components/auth/AppleSSO';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
@@ -12,7 +15,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 
 import { z } from 'zod';
@@ -51,7 +54,6 @@ export default function SignInScreen() {
   const debouncedPasswordChange = useDebouncedInput((value: string) => {
     setValue('password', value);
   });
-
 
   const onSignInPress = async (data: SignInFields) => {
     if (isLoading || isSubmitting) return;

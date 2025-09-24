@@ -1,4 +1,7 @@
-import { AnimatedCustomInput, AnimatedCustomInputRef } from '@/components/AnimatedCustomInput';
+import {
+  AnimatedCustomInput,
+  AnimatedCustomInputRef,
+} from '@/components/AnimatedCustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
 import { useAuth } from '@/providers/AuthProvider';
@@ -193,7 +196,6 @@ export default function ResetPasswordUpdateScreen() {
                 }}
                 onBlur={onBlur}
                 secureTextEntry
-                
                 autoCapitalize="none"
                 inputStyle={styles.input}
               />
@@ -219,7 +221,6 @@ export default function ResetPasswordUpdateScreen() {
                 }}
                 onBlur={onBlur}
                 secureTextEntry
-                
                 autoCapitalize="none"
                 inputStyle={styles.input}
               />
