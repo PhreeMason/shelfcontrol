@@ -8,7 +8,7 @@ import { useDeadlines } from '@/providers/DeadlineProvider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import Animated, {
   useAnimatedScrollHandler,
   useAnimatedStyle,
@@ -144,14 +144,14 @@ export default function HomeScreen() {
       </Animated.ScrollView>
 
       {/* Floating action button */}
-      <Link href="/deadline/new" asChild>
+      {Platform.OS === 'android' ? <Link href="/deadline/new" asChild>
         <ThemedIconButton
           icon="plus"
           style={styles.floatingActionButton}
           variant="primary"
           size="lg"
         />
-      </Link>
+      </Link> : null}
     </ThemedView>
   );
 }

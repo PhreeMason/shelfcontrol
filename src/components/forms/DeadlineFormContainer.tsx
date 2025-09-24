@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import AppHeader from '@/components/shared/AppHeader';
 import {
@@ -99,6 +100,9 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
   // Track if form has been initialized to prevent infinite loops
   const isInitialized = useRef(false);
 
+  // Ref for the scroll view to control scrolling
+  const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
+
   // Form setup
   const { control, handleSubmit, watch, setValue, trigger } =
     useForm<DeadlineFormData>({
@@ -147,6 +151,13 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       isInitialized.current = true;
     }
   }, [mode, stableParams, existingDeadline, setValue]);
+
+  // Scroll to top when navigating to the last step
+  useEffect(() => {
+    if (currentStep === totalSteps && scrollViewRef.current) {
+      scrollViewRef.current.scrollToPosition(0, 0, true);
+    }
+  }, [currentStep, totalSteps]);
 
   // Calculate pace estimate when relevant values change
   useEffect(() => {
@@ -311,6 +322,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       </AppHeader>
 
       <ThemedKeyboardAwareScrollView
+        ref={scrollViewRef}
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         keyboardShouldPersistTaps="handled"

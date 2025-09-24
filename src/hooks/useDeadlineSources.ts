@@ -10,7 +10,7 @@ export const useDeadlineSources = () => {
   const userId = profile?.id || session?.user?.id;
 
   const result = useQuery({
-    queryKey: ['deadline-sources', userId],
+    queryKey: ['deadline', 'sources', userId],
     queryFn: async () => {
       try {
         if (!userId) {
@@ -47,9 +47,7 @@ export const useDeadlineSources = () => {
       }
     },
     enabled: !!userId,
-    initialData: DEFAULT_SOURCES, // Ensure data is always defined
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
 
   // If no user ID, always return default sources

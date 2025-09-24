@@ -11,17 +11,21 @@ export type ThemedKeyboardAwareScrollViewProps =
     backgroundColor?: ColorToken;
   };
 
-export function ThemedKeyboardAwareScrollView(
-  props: ThemedKeyboardAwareScrollViewProps
-) {
+export const ThemedKeyboardAwareScrollView = React.forwardRef<
+  KeyboardAwareScrollView,
+  ThemedKeyboardAwareScrollViewProps
+>((props, ref) => {
   const { style, backgroundColor: bgColorProp, ...otherProps } = props;
   const { colors } = useTheme();
   const backgroundColor = colors[bgColorProp || 'background'];
 
   return (
     <KeyboardAwareScrollView
+      ref={ref}
       style={[{ backgroundColor }, style]}
       {...otherProps}
     />
   );
-}
+});
+
+ThemedKeyboardAwareScrollView.displayName = 'ThemedKeyboardAwareScrollView';

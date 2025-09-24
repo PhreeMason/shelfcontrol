@@ -17,7 +17,6 @@ import {
 } from 'react-hook-form';
 import {
   ActivityIndicator,
-  FlatList,
   StyleSheet,
   Text,
   TextInput,
@@ -194,16 +193,11 @@ const SourceTypeaheadInput = <T extends FieldValues>({
                   },
                 ]}
               >
-                <FlatList
-                  data={filteredSuggestions.slice(0, 5)} // Show max 5 suggestions
-                  keyExtractor={(item, index) => `${item}-${index}`}
-                  renderItem={({ item }) =>
-                    renderSuggestionItem({ item, onChange })
-                  }
-                  style={styles.suggestionsList}
-                  keyboardShouldPersistTaps="handled"
-                  scrollEnabled={filteredSuggestions.length > 5}
-                />
+                {filteredSuggestions.slice(0, 5).map((item, index) => (
+                  <View key={`${item}-${index}`}>
+                    {renderSuggestionItem({ item, onChange })}
+                  </View>
+                ))}
               </View>
             )}
 
