@@ -25,7 +25,6 @@ const getBookReadingDays = (
   deadline: ReadingDeadlineWithProgress
 ): ReadingDay[] => {
   const dailyProgress: { [date: string]: number } = {};
-
   // Sort progress updates by date
   if (!deadline.progress || !Array.isArray(deadline.progress)) return [];
 
@@ -49,17 +48,13 @@ const getBookReadingDays = (
 };
 
 const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
-  const { colors } = useTheme();
+  const { colors, typography } = useTheme();
 
   // Get format-specific labels (moved up before early return)
   const getUnitLabel = (format: string) => {
     switch (format) {
       case 'audio':
         return 'min';
-      case 'eBook':
-        return '%';
-      case 'physical':
-        return 'pg';
       default:
         return 'pg';
     }
@@ -68,11 +63,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
   const getChartTitle = (format: string) => {
     switch (format) {
       case 'audio':
-        return 'Daily Reading Progress';
-      case 'eBook':
-        return 'Daily Reading Progress';
-      case 'physical':
-        return 'Daily Reading Progress';
+        return 'Daily Listening Progress';
       default:
         return 'Daily Reading Progress';
     }
@@ -161,58 +152,18 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     };
   });
 
-  // Create line data that matches the bar chart dates
-  const lineData = recentDays.map(day => {
-    // Calculate the required pace for this specific day
-    const dayDate = new Date(day.date);
-    const deadlineDate = new Date(deadline.deadline_date);
-
-    // Find the most recent progress before or on this day
-    let progressAtDay = 0;
-    if (deadline.progress && deadline.progress.length > 0) {
-      const sortedProgress = [...deadline.progress].sort(
-        (a, b) =>
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      );
-
-      // Find the last progress entry before or on this day
-      for (const progress of sortedProgress) {
-        const progressDate = new Date(progress.created_at);
-        if (progressDate <= dayDate) {
-          progressAtDay = progress.current_progress;
-        } else {
-          break;
-        }
-      }
-    }
-
-    // Calculate days remaining from this specific day to deadline
-    const daysRemaining = Math.max(
-      1,
-      Math.ceil(
-        (deadlineDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24)
-      )
-    );
-
-    // Calculate required pace for this day
-    const remainingUnits = Math.max(0, deadline.total_quantity - progressAtDay);
-    const requiredPace = remainingUnits / daysRemaining;
-
-    return {
-      value: requiredPace,
-      label: dayjs(day.date).format('M/DD'),
-      dataPointText: `${Math.round(requiredPace)}`,
-    };
-  });
-
   const maxBarValue = Math.max(...chartData.map(d => d.value));
-  const maxLineValue = Math.max(...lineData.map(d => d.value));
-  const maxValue = Math.max(maxBarValue, maxLineValue, displayDailyMinimum);
+  const maxValue = Math.max(maxBarValue, displayDailyMinimum);
   const yAxisMax = Math.ceil(maxValue * 1.2); // Add 20% padding
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText style={[styles.title, { color: colors.text }]}>
+      <ThemedText
+        style={[
+          typography.bodyLarge,
+          { color: colors.text, fontWeight: 'bold', marginBottom: 16 },
+        ]}
+      >
         {chartTitle}
       </ThemedText>
 
@@ -223,8 +174,6 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
             // Bar chart data
             data={chartData}
             // Enable line overlay
-            showLine={true}
-            lineData={lineData}
             // Chart dimensions
             width={350}
             height={200}
@@ -234,24 +183,11 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
             barWidth={(() => {
               const calculatedWidth = Math.max(
                 20,
-                Math.min(35, 320 / chartData.length)
+                Math.min(30, 320 / chartData.length)
               );
               return calculatedWidth;
             })()}
             roundedTop
-            // Line configuration (using your theme colors)
-            // lineConfig={{
-            //   thickness: 3,
-            //   color: colors.accent,
-            //   curved: true,
-            //   dataPointsShape: 'circular',
-            //   dataPointsWidth: 6,
-            //   dataPointsHeight: 6,
-            //   dataPointsColor: colors.accent,
-            //   hideDataPoints: false,
-            // }}
-            // Axis styling (maintain your existing styling)
-            hideRules
             xAxisThickness={2}
             yAxisThickness={2}
             xAxisColor={colors.border}
@@ -260,11 +196,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
               color: colors.textMuted,
               fontSize: 11,
             }}
-            xAxisLabelTextStyle={{
-              color: colors.textMuted,
-              fontSize: 10,
-              textAlign: 'left',
-            }}
+            // Grid lines
             // Y-axis configuration
             noOfSections={4}
             maxValue={yAxisMax > 0 ? yAxisMax : 10}
@@ -273,31 +205,6 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
             isAnimated
             animationDuration={1000}
           />
-        </View>
-
-        {/* Legend */}
-        <View style={styles.legendContainer}>
-          <View style={styles.legendItem}>
-            <View
-              style={[styles.legendBar, { backgroundColor: colors.primary }]}
-            />
-            <ThemedText
-              style={[styles.legendText, { color: colors.textMuted }]}
-            >
-              Daily Progress
-            </ThemedText>
-          </View>
-
-          <View style={styles.legendItem}>
-            <View
-              style={[styles.legendLine, { backgroundColor: colors.accent }]}
-            />
-            <ThemedText
-              style={[styles.legendText, { color: colors.textMuted }]}
-            >
-              Required Pace
-            </ThemedText>
-          </View>
         </View>
       </View>
     </ThemedView>
@@ -315,40 +222,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
-    textAlign: 'center',
   },
   chartContainer: {
     alignItems: 'center',
-    marginBottom: 12,
   },
   combinedChartSection: {
     alignItems: 'center',
-    marginBottom: 16,
-  },
-  legendContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    gap: 16,
-    marginBottom: 8,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  legendBar: {
-    width: 3,
-    height: 12,
-    borderRadius: 1.5,
-  },
-  legendLine: {
-    width: 12,
-    height: 2,
-    borderRadius: 1,
-  },
-  legendText: {
-    fontSize: 12,
   },
   emptyState: {
     alignItems: 'center',
