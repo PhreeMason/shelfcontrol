@@ -1015,3 +1015,142 @@ describe('Component Structure', () => {
 6. Test error scenarios and edge cases
 
 This pattern is now **proven successful** and should be the **standard approach** for all future component testing.
+
+## Phase 9: DeadlineFormStep2 Component Testing (Complete)
+
+**SUCCESS**: Applied proven testing patterns from DeadlineFormStep1 to successfully test DeadlineFormStep2.
+
+### Completed Component Testing
+```typescript
+// ✅ components/forms/__tests__/DeadlineFormStep2.test.tsx (50 tests)
+- ✅ Component Structure (11 tests) - All UI elements render correctly
+- ✅ Hook Integration (3 tests) - useWatch hook properly tested
+- ✅ Format-Based Conditional Rendering (6 tests) - Dynamic labels and inputs
+- ✅ Book Linking Indicators (4 tests) - Shows when book_id present
+- ✅ Edit Mode Behavior (3 tests) - Format selector disabled appropriately
+- ✅ Props Handling (8 tests) - All callbacks and props verified
+- ✅ Input Field Configuration (7 tests) - Correct testIDs and types
+- ✅ Dynamic Label/Placeholder (4 tests) - Updates based on format
+- ✅ Integration Scenarios (4 tests) - Complete workflows tested
+```
+
+### Key Testing Patterns for Form Components with Multiple Inputs
+
+#### 1. Mock Pattern for Form Input Components
+```typescript
+// Mock CustomInput to avoid react-hook-form complexity
+jest.mock('@/components/shared/CustomInput', () => {
+  const React = require('react');
+  return function MockCustomInput(props: any) {
+    return React.createElement('View', {
+      testID: props.testID,
+      'data-name': props.name,
+      'data-placeholder': props.placeholder,
+      'data-keyboard': props.keyboardType,
+      'data-input-type': props.inputType,
+      'data-transform': props.transformOnBlur ? 'toTitleCase' : undefined,
+    }, null);
+  };
+});
+```
+
+#### 2. Testing Conditional Rendering Based on Props
+```typescript
+describe('Format-Based Conditional Rendering', () => {
+  it('should show Minutes input field only for audio format', () => {
+    const { rerender } = render(<Component {...defaultProps} />);
+
+    // Physical format: no minutes input
+    expect(screen.queryByTestId('input-totalMinutes')).toBeNull();
+
+    // Change to audio format
+    rerender(<Component {...{ ...defaultProps, selectedFormat: 'audio' }} />);
+
+    // Audio format: shows minutes input
+    expect(screen.getByTestId('input-totalMinutes')).toBeTruthy();
+  });
+});
+```
+
+#### 3. Testing Hook Integration (useWatch)
+```typescript
+// Mock useWatch from react-hook-form
+jest.mock('react-hook-form', () => ({
+  useWatch: jest.fn(),
+}));
+
+// Test hook integration
+it('should watch book_id field from control', () => {
+  render(<Component {...defaultProps} />);
+
+  expect(useWatch).toHaveBeenCalledWith({
+    control: mockControl,
+    name: 'book_id',
+  });
+});
+
+// Test conditional rendering based on watched value
+it('should show indicators when book_id is present', () => {
+  (useWatch as jest.Mock).mockReturnValue('book-123');
+
+  render(<Component {...defaultProps} />);
+
+  expect(screen.getAllByText('✓ Linked from library')).toHaveLength(2);
+});
+```
+
+#### 4. Testing Complex State Interactions
+```typescript
+describe('Integration Scenarios', () => {
+  it('should handle format change updating labels and showing/hiding inputs', () => {
+    const { rerender } = render(<Component {...defaultProps} />);
+
+    // Physical format
+    expect(screen.getByText('Total Pages *')).toBeTruthy();
+    expect(screen.queryByTestId('input-totalMinutes')).toBeNull();
+
+    // Change to audio
+    rerender(<Component {...{ ...defaultProps, selectedFormat: 'audio' }} />);
+
+    // Audio format
+    expect(screen.getByText('Total Time *')).toBeTruthy();
+    expect(screen.getByTestId('input-totalMinutes')).toBeTruthy();
+  });
+});
+```
+
+### Testing Guidelines for Form Components
+
+1. **ALWAYS mock form input components** (CustomInput, TextInput, etc.) to avoid react-hook-form complexity
+2. **Use data attributes** on mocked components to verify props are passed correctly
+3. **Test all conditional rendering scenarios** thoroughly
+4. **Mock hooks at the module level** but control return values in individual tests
+5. **Use rerender** to test prop changes and state updates
+6. **Group related tests** in describe blocks for better organization
+7. **Test integration scenarios** that combine multiple features
+
+### Common Pitfalls to Avoid
+
+1. **DON'T** try to test react-hook-form's internal mechanics
+2. **DON'T** forget to clear mocks between tests (`beforeEach`)
+3. **DON'T** test implementation details of child components
+4. **DO** test that props are passed correctly to child components
+5. **DO** test user-facing behavior and integration points
+
+### Test Structure Template for Form Components
+```typescript
+describe('FormComponent', () => {
+  // Setup
+  const defaultProps = { /* ... */ };
+  beforeEach(() => { jest.clearAllMocks(); });
+
+  describe('Component Structure', () => { /* Test UI elements */ });
+  describe('Hook Integration', () => { /* Test hook calls */ });
+  describe('Conditional Rendering', () => { /* Test dynamic UI */ });
+  describe('Props Handling', () => { /* Test callbacks and prop passing */ });
+  describe('Input Configuration', () => { /* Test input attributes */ });
+  describe('Integration Scenarios', () => { /* Test complete workflows */ });
+});
+```
+
+This approach has proven successful for both DeadlineFormStep1 and DeadlineFormStep2, providing comprehensive coverage while maintaining test reliability and speed.
