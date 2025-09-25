@@ -354,8 +354,10 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         <>
           <ThemedButton
             title={isReactivating ? 'Reactivating...' : 'Resume Reading'}
-            variant="primary"
+            variant="secondary"
             style={styles.actionButton}
+            backgroundColor="warning"
+            textColor="textInverse"
             onPress={handleReactivate}
             disabled={isReactivating}
           />
