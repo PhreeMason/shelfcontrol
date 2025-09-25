@@ -394,6 +394,17 @@ describe('useDeadlines hooks', () => {
       );
     });
 
+    it('should invalidate queries with correct userId on success', () => {
+      useCompleteDeadline();
+
+      const mutationConfig = mockUseMutation.mock.calls[0][0];
+      mutationConfig.onSuccess();
+
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({
+        queryKey: ['deadlines', 'user-123'],
+      });
+    });
+
     it('should throw error when user not authenticated', async () => {
       mockUseAuth.mockReturnValue({
         profile: null,
@@ -435,6 +446,20 @@ describe('useDeadlines hooks', () => {
         'set_aside'
       );
     });
+
+    it('should invalidate queries with correct userId on success - FAILING TEST', () => {
+      useSetAsideDeadline();
+
+      const mutationConfig = mockUseMutation.mock.calls[0][0];
+      mutationConfig.onSuccess();
+
+      // This test should FAIL initially due to the query invalidation bug
+      // useSetAsideDeadline uses useUpdateDeadlineStatus which invalidates ['deadlines'] only
+      // instead of ['deadlines', userId] like other hooks
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({
+        queryKey: ['deadlines', 'user-123'],
+      });
+    });
   });
 
   describe('useReactivateDeadline', () => {
@@ -461,6 +486,20 @@ describe('useDeadlines hooks', () => {
         'deadline-123',
         'reading'
       );
+    });
+
+    it('should invalidate queries with correct userId on success - FAILING TEST', () => {
+      useReactivateDeadline();
+
+      const mutationConfig = mockUseMutation.mock.calls[0][0];
+      mutationConfig.onSuccess();
+
+      // This test should FAIL initially due to the query invalidation bug
+      // useReactivateDeadline uses useUpdateDeadlineStatus which invalidates ['deadlines'] only
+      // instead of ['deadlines', userId] like other hooks
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({
+        queryKey: ['deadlines', 'user-123'],
+      });
     });
   });
 

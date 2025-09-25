@@ -169,7 +169,7 @@ const useUpdateDeadlineStatus = (
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deadlines'] });
+      queryClient.invalidateQueries({ queryKey: ['deadlines', userId] });
     },
     onError: error => {
       console.error(`Error ${actionName} deadline:`, error);
