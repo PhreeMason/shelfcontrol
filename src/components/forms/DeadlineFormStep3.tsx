@@ -3,11 +3,11 @@ import { ThemedText } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Control, Controller } from 'react-hook-form';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PrioritySelector } from './PrioritySelector';
+import { PaceEstimateBox } from './PaceEstimateBox';
 
 interface DeadlineFormStep3Props {
   control: Control<DeadlineFormData>;
@@ -153,40 +153,7 @@ export const DeadlineFormStep3 = ({
         </ThemedText>
       </View>
 
-      {paceEstimate && (
-        <LinearGradient
-          colors={[
-            colors.accent,
-            paceEstimate.includes('⚠️')
-              ? `${colors.danger}20`
-              : `${colors.primary}`,
-          ]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[
-            styles.estimateContainer,
-            {
-              borderColor: paceEstimate.includes('⚠️')
-                ? colors.danger
-                : colors.primary,
-            },
-          ]}
-        >
-          <ThemedText
-            style={styles.paceEstimateStyle}
-            variant="defaultSemiBold"
-            color={paceEstimate.includes('⚠️') ? 'danger' : 'textOnPrimary'}
-          >
-            {paceEstimate}
-          </ThemedText>
-          <ThemedText
-            variant="defaultSemiBold"
-            color={paceEstimate.includes('⚠️') ? 'danger' : 'textOnPrimary'}
-          >
-            to finish on time
-          </ThemedText>
-        </LinearGradient>
-      )}
+      <PaceEstimateBox paceEstimate={paceEstimate} />
 
       <View
         style={[
@@ -223,19 +190,6 @@ export const DeadlineFormStep3 = ({
 };
 
 const styles = StyleSheet.create({
-  estimateContainer: {
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingVertical: 34,
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  paceEstimateStyle: {
-    fontSize: 26,
-    lineHeight: 30,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
   summaryCard: {
     borderRadius: 16,
     padding: 20,
