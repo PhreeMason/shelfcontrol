@@ -27,7 +27,6 @@ export const DeadlineFormStep2 = ({
   onStatusChange,
   isEditMode = false,
 }: DeadlineFormStep2Props) => {
-  // Watch for book linking
   const watchedBookId = useWatch({ control, name: 'book_id' });
 
   const getTotalQuantityLabel = () => {

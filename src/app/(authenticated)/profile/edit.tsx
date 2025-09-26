@@ -64,7 +64,6 @@ export default function EditProfile() {
     try {
       let avatarPath = profile?.avatar_url;
 
-      // Upload avatar if a new one was selected
       if (newAvatarUri) {
         const { data: uploadedPath, error: uploadError } =
           await uploadAvatar(newAvatarUri);
@@ -84,7 +83,7 @@ export default function EditProfile() {
         first_name: data.first_name || null,
         last_name: data.last_name || null,
         email: data.email || null,
-        avatar_url: avatarPath, // Now storing the path, not the URL
+        avatar_url: avatarPath,
       };
 
       const { error } = await updateProfile(updates);

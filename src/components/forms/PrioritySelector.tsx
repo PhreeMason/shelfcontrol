@@ -33,8 +33,8 @@ export const PrioritySelector = ({
             style={[
               styles.priorityOption,
               {
-                backgroundColor: isSelected ? `${primaryColor}20` : cardColor, // primary with opacity or card
-                borderColor: isSelected ? primaryColor : textMutedColor, // primary or textMuted
+                backgroundColor: isSelected ? `${primaryColor}20` : cardColor,
+                borderColor: isSelected ? primaryColor : textMutedColor,
               },
             ]}
             onPress={() =>

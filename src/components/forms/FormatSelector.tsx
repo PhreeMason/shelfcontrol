@@ -38,7 +38,7 @@ export const FormatSelector = ({
               {
                 backgroundColor: isSelected
                   ? `${primaryColor}20`
-                  : inputBlurBackground, // primary with opacity or card
+                  : inputBlurBackground,
                 opacity: disabled ? 0.5 : 1,
                 borderWidth: 2,
                 borderColor: isSelected ? primaryColor : borderColor,

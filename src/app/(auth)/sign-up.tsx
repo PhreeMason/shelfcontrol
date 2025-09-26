@@ -61,7 +61,6 @@ export default function SignUpScreen() {
       const { error } = await signUp(data.email, data.password, '');
       console.log('Sign up response error:', error);
       if (error) {
-        // Handle different Supabase auth errors
         if (error.message.includes('User already registered')) {
           setError('email', {
             message: 'An account with this email already exists',
@@ -72,7 +71,6 @@ export default function SignUpScreen() {
           setError('root', { message: error.message || 'Sign up failed' });
         }
       } else {
-        // Success - AuthProvider will handle navigation
         router.replace('/');
       }
     } catch (err) {

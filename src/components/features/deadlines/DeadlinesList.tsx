@@ -1,4 +1,3 @@
-// components/DeadlinesList.tsx
 import { DeadlineCard } from '@/components/features/deadlines/DeadlineCard';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';

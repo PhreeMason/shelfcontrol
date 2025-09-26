@@ -38,7 +38,6 @@ export function AppleSSO({
   }, []);
   const handleAppleSignIn = async () => {
     try {
-      // Double-check availability before attempting sign in
       const available = await AppleAuthentication.isAvailableAsync();
       if (!available) {
         throw new Error('Apple Authentication not available');
@@ -53,7 +52,6 @@ export function AppleSSO({
 
       console.log('Apple credential:', JSON.stringify(credential, null, 2));
 
-      // Extract real user data from Apple credential
       const appleUserData = {
         email: credential.email,
         fullName: credential.fullName,
@@ -74,7 +72,6 @@ export function AppleSSO({
         if (user) {
           console.log('Apple sign-in successful');
 
-          // Update profile with real Apple data after successful authentication
           try {
             const profileUpdateResult =
               await updateProfileFromApple(appleUserData);
@@ -87,7 +84,6 @@ export function AppleSSO({
               'Error updating profile from Apple data:',
               profileError
             );
-            // Don't fail the entire sign-in process if profile update fails
           }
 
           onSuccess?.();
@@ -99,7 +95,6 @@ export function AppleSSO({
       }
     } catch (e: any) {
       if (e.code === 'ERR_REQUEST_CANCELED') {
-        // User canceled the sign-in flow - don't show error
         console.log('Apple sign-in canceled by user');
       } else {
         console.error('Apple sign-in error:', e);
@@ -122,7 +117,7 @@ export function AppleSSO({
     );
   }
 
-  return null; // No Apple authentication on Android
+  return null;
 }
 
 const styles = StyleSheet.create({

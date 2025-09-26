@@ -9,7 +9,6 @@ export default function AuthLayout() {
     return <Loader />;
   }
   if (isSignedIn) {
-    // If the user is signed in, redirect them to the home screen
     return <Redirect href="/" />;
   }
   return <Slot />;

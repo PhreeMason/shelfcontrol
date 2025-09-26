@@ -43,7 +43,6 @@ export default function ResetPasswordUpdateScreen() {
   const passwordInputRef = useRef<AnimatedCustomInputRef>(null);
   const confirmPasswordInputRef = useRef<AnimatedCustomInputRef>(null);
 
-  // Listen for the incoming URL
   const url = Linking.useLinkingURL();
 
   const {
@@ -69,7 +68,6 @@ export default function ResetPasswordUpdateScreen() {
       try {
         console.log('Processing URL:', url);
 
-        // Parse the URL using expo-auth-session QueryParams
         const { params, errorCode } = QueryParams.getQueryParams(url);
 
         if (errorCode) {
@@ -85,7 +83,6 @@ export default function ResetPasswordUpdateScreen() {
           return;
         }
 
-        // Set the session using the tokens from the URL
         const { error } = await setSessionFromUrl(access_token, refresh_token);
 
         if (error) {
@@ -131,7 +128,6 @@ export default function ResetPasswordUpdateScreen() {
     }
   };
 
-  // Show error state if session establishment failed
   if (sessionError) {
     return (
       <ThemedView style={styles.container}>
@@ -157,7 +153,6 @@ export default function ResetPasswordUpdateScreen() {
     );
   }
 
-  // Show loading state while establishing session
   if (!isSessionEstablished) {
     return (
       <ThemedView style={styles.container}>
@@ -255,8 +250,6 @@ export default function ResetPasswordUpdateScreen() {
     </ThemedView>
   );
 }
-
-// ... keep your existing styles
 
 const styles = StyleSheet.create({
   container: {

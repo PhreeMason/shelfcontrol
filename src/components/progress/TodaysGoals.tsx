@@ -13,8 +13,6 @@ const TodaysGoals: React.FC = () => {
   const { calculateProgressForToday } = useDeadlines();
   const { audioDeadlines, readingDeadlines } = useTodaysDeadlines();
 
-  // Using specialized "today's goals" functions that maintain stable daily totals
-  // even when deadlines are completed and archived mid-day
   const audioTotals = useMemo(
     () => calculateTodaysAudioTotals(audioDeadlines, calculateProgressForToday),
     [audioDeadlines, calculateProgressForToday]

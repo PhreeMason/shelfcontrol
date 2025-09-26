@@ -33,7 +33,7 @@ export const SourceSelector = ({
               {
                 backgroundColor: isSelected
                   ? `${colors.primary}20`
-                  : colors.surface, // primary with opacity or card
+                  : colors.surface,
               },
             ]}
             onPress={() =>

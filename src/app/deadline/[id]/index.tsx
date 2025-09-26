@@ -23,21 +23,17 @@ const DeadlineView = () => {
   const { deadlines } = useDeadlines();
   const { colors } = useTheme();
 
-  // First try to find deadline in context (for active deadlines)
   let deadline = deadlines.find(d => d.id === id);
-  // If not found, use fallback hook (for archived deadlines)
   const {
     data: fallbackDeadline,
     isLoading: isFallbackLoading,
     error: fallbackError,
   } = useGetDeadlineById(deadline ? undefined : id);
 
-  // Use fallback deadline if context deadline not found
   if (!deadline && fallbackDeadline) {
     deadline = fallbackDeadline;
   }
 
-  // Show loading state when using fallback
   if (!deadline && isFallbackLoading) {
     return (
       <SafeAreaView
@@ -56,7 +52,6 @@ const DeadlineView = () => {
     );
   }
 
-  // Show error or not found state
   if (!deadline || fallbackError) {
     return (
       <SafeAreaView

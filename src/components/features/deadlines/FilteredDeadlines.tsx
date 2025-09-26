@@ -1,4 +1,3 @@
-// components/FilteredDeadlines.tsx
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import React from 'react';

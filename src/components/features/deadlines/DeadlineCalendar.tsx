@@ -37,11 +37,9 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
     }),
     [good, approaching, urgent, overdue, impossible]
   );
-  // Process deadlines to create marked dates
   const markedDates = useMemo(() => {
     const marked: any = {};
 
-    // Combine active, overdue, and pending deadlines
     const allActiveDeadlines = [
       ...activeDeadlines,
       ...overdueDeadlines,
@@ -52,14 +50,12 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
       if (deadline.deadline_date) {
         const dateStr = dayjs(deadline.deadline_date).format('YYYY-MM-DD');
 
-        // Check if this is a pending deadline
         const latestStatus =
           deadline.status && deadline.status.length > 0
             ? deadline.status[deadline.status.length - 1]?.status
             : null;
         const isPending = latestStatus === 'requested';
 
-        // Use set_aside color for pending, otherwise use urgency color
         let color;
         if (isPending) {
           color = colors.set_aside;
@@ -85,7 +81,6 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
       }
     });
 
-    // Add selection styling for selected date
     if (selectedDate) {
       marked[selectedDate] = {
         ...marked[selectedDate],
@@ -106,7 +101,6 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
     colors.set_aside,
   ]);
 
-  // Get deadlines for selected date
   const selectedDateDeadlines =
     selectedDate && markedDates[selectedDate]
       ? markedDates[selectedDate].deadlines
@@ -169,7 +163,6 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
         enableSwipeMonths={true}
       />
 
-      {/* Modal for deadline details */}
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -189,20 +182,17 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
             </View>
 
             <View style={styles.deadlinesList}>
-              {/* // TODO: Sort by urgency level */}
               {selectedDateDeadlines.map(
                 (deadline: ReadingDeadlineWithProgress) => {
                   const { urgencyLevel, daysLeft } =
                     getDeadlineCalculations(deadline);
 
-                  // Check if this is a pending deadline
                   const latestStatus =
                     deadline.status && deadline.status.length > 0
                       ? deadline.status[deadline.status.length - 1]?.status
                       : null;
                   const isPending = latestStatus === 'requested';
 
-                  // Use set_aside color for pending, otherwise use urgency color
                   const urgencyColor = isPending
                     ? colors.set_aside
                     : urgencyColorMap[urgencyLevel];

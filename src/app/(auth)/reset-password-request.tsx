@@ -48,7 +48,6 @@ export default function ResetPasswordRequestScreen() {
     if (isLoading || isSubmitting) return;
 
     try {
-      // Create the deep link URL for the password update screen
       const resetPasswordURL = Linking.createURL('/reset-password-update');
       const { error } = await requestResetPasswordEmail(
         data.email,
@@ -60,7 +59,6 @@ export default function ResetPasswordRequestScreen() {
           message: error.message || 'Failed to send reset email',
         });
       } else {
-        // Show success message and navigate back to sign-in
         alert('Password reset email sent! Please check your email.');
         router.replace('/sign-in');
       }

@@ -7,7 +7,6 @@ const EditDeadline = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { deadlines } = useDeadlines();
 
-  // Find the deadline to edit
   const deadline = deadlines.find(d => d.id === id);
 
   return <DeadlineFormContainer mode="edit" existingDeadline={deadline} />;
