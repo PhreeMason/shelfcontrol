@@ -93,11 +93,7 @@ export const getGradientBackground = (
   const dateSeed = new Date().getDate();
 
   const combinedSeed =
-    (titleSeed * 31 +
-      daysSeed * 17 +
-      idSeed * 7 +
-      formatSeed * 3 +
-      dateSeed) %
+    (titleSeed * 31 + daysSeed * 17 + idSeed * 7 + formatSeed * 3 + dateSeed) %
     10000;
   const index = Math.abs(combinedSeed) % gradients.length;
 

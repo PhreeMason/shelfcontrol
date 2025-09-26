@@ -8,13 +8,21 @@ import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { useRouter } from 'expo-router';
-import { getBookCoverIcon, getGradientBackground, formatRemainingDisplay } from '@/utils/deadlineDisplayUtils';
+import {
+  getBookCoverIcon,
+  getGradientBackground,
+  formatRemainingDisplay,
+} from '@/utils/deadlineDisplayUtils';
 
 // Mock all external dependencies
 jest.mock('@/components/themed', () => ({
   ThemedText: ({ children, ...props }: any) => {
     const React = require('react');
-    return React.createElement('Text', { ...props, testID: 'themed-text' }, children);
+    return React.createElement(
+      'Text',
+      { ...props, testID: 'themed-text' },
+      children
+    );
   },
 }));
 
@@ -39,7 +47,11 @@ jest.mock('@/utils/deadlineDisplayUtils', () => ({
 jest.mock('expo-linear-gradient', () => ({
   LinearGradient: ({ children, ...props }: any) => {
     const React = require('react');
-    return React.createElement('View', { ...props, testID: 'linear-gradient' }, children);
+    return React.createElement(
+      'View',
+      { ...props, testID: 'linear-gradient' },
+      children
+    );
   },
 }));
 
@@ -116,12 +128,19 @@ describe('DeadlineCard', () => {
     (useDeadlines as jest.Mock).mockReturnValue(mockDeadlines);
     (useFetchBookById as jest.Mock).mockReturnValue({ data: null });
 
-    mockDeadlines.getDeadlineCalculations.mockReturnValue(defaultMockCalculations);
+    mockDeadlines.getDeadlineCalculations.mockReturnValue(
+      defaultMockCalculations
+    );
     mockDeadlines.formatUnitsPerDayForDisplay.mockReturnValue('30 pages/day');
 
     (getBookCoverIcon as jest.Mock).mockReturnValue('📕');
-    (getGradientBackground as jest.Mock).mockReturnValue(['#FF6B6B', '#4DABF7']);
-    (formatRemainingDisplay as jest.Mock).mockReturnValue('150 pages remaining');
+    (getGradientBackground as jest.Mock).mockReturnValue([
+      '#FF6B6B',
+      '#4DABF7',
+    ]);
+    (formatRemainingDisplay as jest.Mock).mockReturnValue(
+      '150 pages remaining'
+    );
   });
 
   describe('Component Structure', () => {
@@ -194,7 +213,9 @@ describe('DeadlineCard', () => {
     it('should call getDeadlineCalculations with deadline', () => {
       render(<DeadlineCard deadline={mockDeadline} />);
 
-      expect(mockDeadlines.getDeadlineCalculations).toHaveBeenCalledWith(mockDeadline);
+      expect(mockDeadlines.getDeadlineCalculations).toHaveBeenCalledWith(
+        mockDeadline
+      );
     });
 
     it('should call formatUnitsPerDayForDisplay with calculations', () => {
@@ -378,7 +399,9 @@ describe('DeadlineCard', () => {
         id: 'deadline-abc-123',
       };
 
-      const { getByText } = render(<DeadlineCard deadline={stringIdDeadline} />);
+      const { getByText } = render(
+        <DeadlineCard deadline={stringIdDeadline} />
+      );
 
       const titleElement = getByText('Test Book');
       const pressable = titleElement.parent?.parent?.parent?.parent;
@@ -386,7 +409,9 @@ describe('DeadlineCard', () => {
         fireEvent.press(pressable);
       }
 
-      expect(mockRouter.push).toHaveBeenCalledWith('/deadline/deadline-abc-123');
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        '/deadline/deadline-abc-123'
+      );
     });
   });
 
@@ -491,7 +516,9 @@ describe('DeadlineCard', () => {
         ...defaultMockCalculations,
         urgencyLevel: 'overdue',
       });
-      (formatRemainingDisplay as jest.Mock).mockReturnValue('50 pages remaining');
+      (formatRemainingDisplay as jest.Mock).mockReturnValue(
+        '50 pages remaining'
+      );
 
       render(<DeadlineCard deadline={mockDeadline} />);
 
@@ -512,12 +539,17 @@ describe('DeadlineCard', () => {
     it('should handle very long book titles', () => {
       const longTitleDeadline = {
         ...mockDeadline,
-        book_title: 'This is a very long book title that should be truncated when displayed',
+        book_title:
+          'This is a very long book title that should be truncated when displayed',
       };
 
       render(<DeadlineCard deadline={longTitleDeadline} />);
 
-      expect(screen.getByText('This is a very long book title that should be truncated when displayed')).toBeTruthy();
+      expect(
+        screen.getByText(
+          'This is a very long book title that should be truncated when displayed'
+        )
+      ).toBeTruthy();
     });
 
     it('should handle zero days left', () => {

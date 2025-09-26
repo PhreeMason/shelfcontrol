@@ -1,6 +1,10 @@
 import { booksService } from '@/services';
 import { useQuery } from '@tanstack/react-query';
-import { SearchBooksResponse, FullBookData, BookSearchResult } from '@/types/bookSearch';
+import {
+  SearchBooksResponse,
+  FullBookData,
+  BookSearchResult,
+} from '@/types/bookSearch';
 import { Database } from '@/types/database.types';
 import {
   searchBookList,
@@ -58,15 +62,19 @@ describe('useBooks hooks', () => {
           epub_url: 'http://example.com/epub',
           metadata: {
             goodreads_id: 'gr123',
-            authors: ['Test Author']
-          }
+            authors: ['Test Author'],
+          },
         };
-        const mockResponse: SearchBooksResponse = { bookList: [mockSearchResult] };
+        const mockResponse: SearchBooksResponse = {
+          bookList: [mockSearchResult],
+        };
         mockBooksService.searchBooks.mockResolvedValue(mockResponse);
 
         const result = await searchBookList('Harry Potter');
 
-        expect(mockBooksService.searchBooks).toHaveBeenCalledWith('Harry Potter');
+        expect(mockBooksService.searchBooks).toHaveBeenCalledWith(
+          'Harry Potter'
+        );
         expect(result).toEqual(mockResponse);
       });
 
@@ -110,7 +118,7 @@ describe('useBooks hooks', () => {
           source: 'goodreads',
           title: 'Test Book',
           total_duration: null,
-          total_pages: 300
+          total_pages: 300,
         };
         mockBooksService.fetchBookData.mockResolvedValue(mockBookData);
 
@@ -152,7 +160,7 @@ describe('useBooks hooks', () => {
           title: 'Test Book',
           total_duration: null,
           total_pages: 300,
-          updated_at: '2024-01-01T00:00:00Z'
+          updated_at: '2024-01-01T00:00:00Z',
         };
         mockBooksService.fetchBookById.mockResolvedValue(mockBookData);
 
@@ -166,7 +174,9 @@ describe('useBooks hooks', () => {
         const mockError = new Error('Database fetch failed');
         mockBooksService.fetchBookById.mockRejectedValue(mockError);
 
-        await expect(fetchBookById('book-123')).rejects.toThrow('Database fetch failed');
+        await expect(fetchBookById('book-123')).rejects.toThrow(
+          'Database fetch failed'
+        );
         expect(mockBooksService.fetchBookById).toHaveBeenCalledWith('book-123');
       });
     });
@@ -256,7 +266,7 @@ describe('useBooks hooks', () => {
         source: 'goodreads',
         title: 'Test Book',
         total_duration: null,
-        total_pages: 300
+        total_pages: 300,
       };
       mockBooksService.fetchBookData.mockResolvedValue(mockBookData);
 
@@ -317,7 +327,7 @@ describe('useBooks hooks', () => {
         title: 'Test Book',
         total_duration: null,
         total_pages: 300,
-        updated_at: '2024-01-01T00:00:00Z'
+        updated_at: '2024-01-01T00:00:00Z',
       };
       mockBooksService.fetchBookById.mockResolvedValue(mockBookData);
 
@@ -367,7 +377,7 @@ describe('useBooks hooks', () => {
 
   describe('Edge cases and error handling', () => {
     it('should handle special characters in search query', () => {
-      const specialQuery = 'Harry Potter & the Philosopher\'s Stone!';
+      const specialQuery = "Harry Potter & the Philosopher's Stone!";
       useSearchBooksList(specialQuery);
 
       const queryConfig = mockUseQuery.mock.calls[0][0];

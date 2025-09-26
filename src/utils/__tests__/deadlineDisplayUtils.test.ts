@@ -1,4 +1,8 @@
-import { getBookCoverIcon, getGradientBackground, formatRemainingDisplay } from '../deadlineDisplayUtils';
+import {
+  getBookCoverIcon,
+  getGradientBackground,
+  formatRemainingDisplay,
+} from '../deadlineDisplayUtils';
 
 describe('deadlineDisplayUtils', () => {
   describe('getBookCoverIcon', () => {
@@ -96,8 +100,24 @@ describe('deadlineDisplayUtils', () => {
 
     it('should return one of the predefined icons', () => {
       const expectedIcons = [
-        '📕', '📗', '📘', '📙', '📔', '📓', '📑', '📜',
-        '💰', '⚔️', '🏃', '🎭', '🔬', '🎨', '🏛️', '🌟', '🔮', '⭐'
+        '📕',
+        '📗',
+        '📘',
+        '📙',
+        '📔',
+        '📓',
+        '📑',
+        '📜',
+        '💰',
+        '⚔️',
+        '🏃',
+        '🎭',
+        '🔬',
+        '🎨',
+        '🏛️',
+        '🌟',
+        '🔮',
+        '⭐',
       ];
 
       const icon = getBookCoverIcon(mockDeadline, 5);
@@ -119,7 +139,9 @@ describe('deadlineDisplayUtils', () => {
     });
 
     it('should be deterministic across multiple calls', () => {
-      const icons = Array.from({ length: 10 }, () => getBookCoverIcon(mockDeadline, 5));
+      const icons = Array.from({ length: 10 }, () =>
+        getBookCoverIcon(mockDeadline, 5)
+      );
       const allSame = icons.every(icon => icon === icons[0]);
       expect(allSame).toBe(true);
     });
@@ -212,10 +234,9 @@ describe('deadlineDisplayUtils', () => {
       const eBookGradient = getGradientBackground(eBookDeadline, 5);
 
       // At least one pair should be different due to different format seeds
-      const allSame = (
+      const allSame =
         JSON.stringify(physicalGradient) === JSON.stringify(audioGradient) &&
-        JSON.stringify(audioGradient) === JSON.stringify(eBookGradient)
-      );
+        JSON.stringify(audioGradient) === JSON.stringify(eBookGradient);
       expect(allSame).toBe(false);
     });
 
@@ -260,24 +281,37 @@ describe('deadlineDisplayUtils', () => {
 
     it('should return one of the predefined gradients', () => {
       const expectedGradients = [
-        ['#FF6B6B', '#4DABF7'], ['#9775FA', '#51CF66'], ['#FFD43B', '#FF6B6B'],
-        ['#4DABF7', '#E599F7'], ['#51CF66', '#FFB366'], ['#FF8787', '#74C0FC'],
-        ['#69DB7C', '#F783AC'], ['#FFB366', '#9775FA'], ['#E599F7', '#51CF66'],
-        ['#74C0FC', '#FFD43B'], ['#F783AC', '#69DB7C'], ['#8CE99A', '#A78BFA'],
-        ['#FFE066', '#FB7185'], ['#A78BFA', '#FFB366'], ['#FB7185', '#74C0FC']
+        ['#FF6B6B', '#4DABF7'],
+        ['#9775FA', '#51CF66'],
+        ['#FFD43B', '#FF6B6B'],
+        ['#4DABF7', '#E599F7'],
+        ['#51CF66', '#FFB366'],
+        ['#FF8787', '#74C0FC'],
+        ['#69DB7C', '#F783AC'],
+        ['#FFB366', '#9775FA'],
+        ['#E599F7', '#51CF66'],
+        ['#74C0FC', '#FFD43B'],
+        ['#F783AC', '#69DB7C'],
+        ['#8CE99A', '#A78BFA'],
+        ['#FFE066', '#FB7185'],
+        ['#A78BFA', '#FFB366'],
+        ['#FB7185', '#74C0FC'],
       ];
 
       const gradient = getGradientBackground(mockDeadline, 5);
-      const found = expectedGradients.some(expected =>
-        expected[0] === gradient[0] && expected[1] === gradient[1]
+      const found = expectedGradients.some(
+        expected => expected[0] === gradient[0] && expected[1] === gradient[1]
       );
       expect(found).toBe(true);
     });
 
     it('should be deterministic across multiple calls', () => {
-      const gradients = Array.from({ length: 10 }, () => getGradientBackground(mockDeadline, 5));
-      const allSame = gradients.every(gradient =>
-        gradient[0] === gradients[0][0] && gradient[1] === gradients[0][1]
+      const gradients = Array.from({ length: 10 }, () =>
+        getGradientBackground(mockDeadline, 5)
+      );
+      const allSame = gradients.every(
+        gradient =>
+          gradient[0] === gradients[0][0] && gradient[1] === gradients[0][1]
       );
       expect(allSame).toBe(true);
     });
@@ -334,7 +368,9 @@ describe('deadlineDisplayUtils', () => {
     });
 
     it('should handle large remaining amounts', () => {
-      expect(formatRemainingDisplay(1000, 'physical')).toBe('1000 pages remaining');
+      expect(formatRemainingDisplay(1000, 'physical')).toBe(
+        '1000 pages remaining'
+      );
       expect(formatRemainingDisplay(500, 'eBook')).toBe('500 pages remaining');
     });
 

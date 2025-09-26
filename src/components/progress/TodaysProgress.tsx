@@ -61,9 +61,7 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
         <ThemedText style={styles.encouragementText}>
           {encouragementMessage}
         </ThemedText>
-        <ThemedText style={styles.remainingText}>
-          {remainingText}
-        </ThemedText>
+        <ThemedText style={styles.remainingText}>{remainingText}</ThemedText>
       </View>
     </ThemedView>
   );

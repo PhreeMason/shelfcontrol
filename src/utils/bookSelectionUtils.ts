@@ -1,4 +1,8 @@
-import { BookSearchResult, SelectedBook, FullBookData } from '@/types/bookSearch';
+import {
+  BookSearchResult,
+  SelectedBook,
+  FullBookData,
+} from '@/types/bookSearch';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 
 export const transformBookSearchResult = (
@@ -26,9 +30,16 @@ export const getSearchStatusMessage = (
   isLoading: boolean,
   hasError: boolean,
   hasResults: boolean
-): { type: 'loading' | 'error' | 'no-results' | 'prompt' | null; message?: string; subMessage?: string } => {
+): {
+  type: 'loading' | 'error' | 'no-results' | 'prompt' | null;
+  message?: string;
+  subMessage?: string;
+} => {
   if (hasError) {
-    return { type: 'error', message: 'Failed to search books. Please try again.' };
+    return {
+      type: 'error',
+      message: 'Failed to search books. Please try again.',
+    };
   }
 
   if (isLoading && shouldTriggerSearch(query)) {
@@ -39,7 +50,7 @@ export const getSearchStatusMessage = (
     return {
       type: 'no-results',
       message: `No books found for "${query}"`,
-      subMessage: 'Try a different search or add manually'
+      subMessage: 'Try a different search or add manually',
     };
   }
 
@@ -47,7 +58,7 @@ export const getSearchStatusMessage = (
     return {
       type: 'prompt',
       message: 'Search for a book to get started',
-      subMessage: "We'll grab the page count and details for you"
+      subMessage: "We'll grab the page count and details for you",
     };
   }
 

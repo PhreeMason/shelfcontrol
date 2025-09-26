@@ -19,8 +19,12 @@ export default function TabLayout() {
     return <Redirect href="/(auth)/sign-in" />;
   }
 
-  const HomeTabButton = (props: any) => <HapticTab {...props} testID="home-tab" />;
-  const ProfileTabButton = (props: any) => <HapticTab {...props} testID="profile-tab" />;
+  const HomeTabButton = (props: any) => (
+    <HapticTab {...props} testID="home-tab" />
+  );
+  const ProfileTabButton = (props: any) => (
+    <HapticTab {...props} testID="profile-tab" />
+  );
   return (
     <Tabs
       screenOptions={{

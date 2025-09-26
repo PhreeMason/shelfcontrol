@@ -35,13 +35,17 @@ const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
               contentFit="cover"
             />
           ) : (
-            <View style={[styles.fallbackIcon, { backgroundColor: colors.accent }]}>
+            <View
+              style={[styles.fallbackIcon, { backgroundColor: colors.accent }]}
+            >
               <ThemedText style={styles.celebrationEmoji}>🎉</ThemedText>
             </View>
           )}
         </View>
 
-        <ThemedText color="textOnPrimary" style={styles.title}>Well Done!</ThemedText>
+        <ThemedText color="textOnPrimary" style={styles.title}>
+          Well Done!
+        </ThemedText>
 
         <ThemedText color="textOnPrimary" style={styles.subtitle}>
           Congratulations on finishing{' '}
@@ -60,7 +64,7 @@ const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
       </View>
       <ConfettiCannon
         count={200}
-        origin={{x: width/2, y: height - 10}}
+        origin={{ x: width / 2, y: height - 10 }}
         autoStart={true}
         fadeOut={true}
         fallSpeed={1800}

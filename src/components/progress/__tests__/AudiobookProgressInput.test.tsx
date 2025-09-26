@@ -44,7 +44,8 @@ describe('AudiobookProgressInput', () => {
     });
 
     it('should not display total time when totalQuantity not provided', () => {
-      const { totalQuantity: _totalQuantity, ...propsWithoutTotal } = defaultProps;
+      const { totalQuantity: _totalQuantity, ...propsWithoutTotal } =
+        defaultProps;
       render(<AudiobookProgressInput {...propsWithoutTotal} />);
       expect(screen.queryByText(/\//)).toBeFalsy();
     });
@@ -80,7 +81,10 @@ describe('AudiobookProgressInput', () => {
 
     it('should use custom placeholder when provided', () => {
       render(
-        <AudiobookProgressInput {...defaultProps} placeholder="Custom placeholder" />
+        <AudiobookProgressInput
+          {...defaultProps}
+          placeholder="Custom placeholder"
+        />
       );
       expect(screen.getByPlaceholderText('Custom placeholder')).toBeTruthy();
     });
@@ -181,7 +185,9 @@ describe('AudiobookProgressInput', () => {
       fireEvent(input, 'focus');
       fireEvent.changeText(input, 'invalid input');
 
-      expect(screen.getByText('Use formats like: 3h 2m, 3:02, or 45m')).toBeTruthy();
+      expect(
+        screen.getByText('Use formats like: 3h 2m, 3:02, or 45m')
+      ).toBeTruthy();
     });
 
     it('should not show validation error when not focused', () => {
@@ -192,7 +198,9 @@ describe('AudiobookProgressInput', () => {
 
       fireEvent.changeText(input, 'invalid input');
 
-      expect(screen.queryByText('Use formats like: 3h 2m, 3:02, or 45m')).toBeFalsy();
+      expect(
+        screen.queryByText('Use formats like: 3h 2m, 3:02, or 45m')
+      ).toBeFalsy();
     });
 
     it('should apply danger border color for invalid input when focused', () => {
@@ -308,7 +316,13 @@ describe('AudiobookProgressInput', () => {
     });
 
     it('should handle very large values correctly', () => {
-      render(<AudiobookProgressInput {...defaultProps} value={6030} totalQuantity={7200} />);
+      render(
+        <AudiobookProgressInput
+          {...defaultProps}
+          value={6030}
+          totalQuantity={7200}
+        />
+      );
       expect(screen.getByDisplayValue('100h 30m')).toBeTruthy();
       expect(screen.getByText('/ 120h')).toBeTruthy();
     });

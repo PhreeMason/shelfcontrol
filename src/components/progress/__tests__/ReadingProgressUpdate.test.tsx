@@ -2,7 +2,10 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import ReadingProgressUpdate from '../ReadingProgressUpdate';
-import { useUpdateDeadlineProgress, useDeleteFutureProgress } from '@/hooks/useDeadlines';
+import {
+  useUpdateDeadlineProgress,
+  useDeleteFutureProgress,
+} from '@/hooks/useDeadlines';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import Toast from 'react-native-toast-message';
 
@@ -133,10 +136,14 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
     mockGetValues.mockClear();
 
     // Set up default mocks
-    mockHandleSubmit.mockImplementation(fn => () => fn({ currentProgress: 180 }));
+    mockHandleSubmit.mockImplementation(
+      fn => () => fn({ currentProgress: 180 })
+    );
     mockGetValues.mockReturnValue({ currentProgress: 150 });
 
-    (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(mockUpdateMutation);
+    (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(
+      mockUpdateMutation
+    );
     (useDeleteFutureProgress as jest.Mock).mockReturnValue(mockDeleteMutation);
     (useDeadlines as jest.Mock).mockReturnValue(mockDeadlineContext);
   });
@@ -197,13 +204,17 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
     it('should call getDeadlineCalculations with deadline', () => {
       render(<ReadingProgressUpdate deadline={mockDeadline} />);
-      expect(mockDeadlineContext.getDeadlineCalculations).toHaveBeenCalledWith(mockDeadline);
+      expect(mockDeadlineContext.getDeadlineCalculations).toHaveBeenCalledWith(
+        mockDeadline
+      );
     });
   });
 
   describe('Props Handling', () => {
     it('should handle timeSpentReading prop', () => {
-      render(<ReadingProgressUpdate deadline={mockDeadline} timeSpentReading={30} />);
+      render(
+        <ReadingProgressUpdate deadline={mockDeadline} timeSpentReading={30} />
+      );
       expect(screen.getByText('Update Progress')).toBeTruthy();
     });
 
@@ -267,7 +278,13 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
   describe('Error Handling', () => {
     it('should render without errors when deadline calculations return different urgency levels', () => {
-      const testCases = ['good', 'urgent', 'overdue', 'approaching', 'impossible'] as const;
+      const testCases = [
+        'good',
+        'urgent',
+        'overdue',
+        'approaching',
+        'impossible',
+      ] as const;
 
       testCases.forEach(urgencyLevel => {
         (useDeadlines as jest.Mock).mockReturnValue({
@@ -281,7 +298,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           }),
         });
 
-        const { unmount } = render(<ReadingProgressUpdate deadline={mockDeadline} />);
+        const { unmount } = render(
+          <ReadingProgressUpdate deadline={mockDeadline} />
+        );
         expect(screen.getByText('Update Progress')).toBeTruthy();
         unmount();
       });
@@ -306,7 +325,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           mutate: jest.fn(),
           isPending: false,
         };
-        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(mockUpdateMutation);
+        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(
+          mockUpdateMutation
+        );
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
@@ -322,9 +343,16 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           mutate: jest.fn(),
           isPending: false,
         };
-        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(mockUpdateMutation);
+        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(
+          mockUpdateMutation
+        );
 
-        render(<ReadingProgressUpdate deadline={mockDeadline} timeSpentReading={30} />);
+        render(
+          <ReadingProgressUpdate
+            deadline={mockDeadline}
+            timeSpentReading={30}
+          />
+        );
 
         const button = screen.getByText('Update Progress');
         fireEvent.press(button);
@@ -344,7 +372,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           }),
           isPending: false,
         };
-        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(mockUpdateMutation);
+        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(
+          mockUpdateMutation
+        );
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
@@ -367,7 +397,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           }),
           isPending: false,
         };
-        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(mockUpdateMutation);
+        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(
+          mockUpdateMutation
+        );
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
@@ -404,10 +436,14 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           }),
           isPending: false,
         };
-        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(mockUpdateMutation);
+        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(
+          mockUpdateMutation
+        );
 
         // Mock handleSubmit to simulate completion progress (300 pages = complete)
-        mockHandleSubmit.mockImplementation(fn => () => fn({ currentProgress: 300 }));
+        mockHandleSubmit.mockImplementation(
+          fn => () => fn({ currentProgress: 300 })
+        );
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
@@ -443,11 +479,17 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
         });
 
         const mockUpdateMutation = {
-          mutate: jest.fn().mockImplementation((_, { onSuccess }) => onSuccess()),
+          mutate: jest
+            .fn()
+            .mockImplementation((_, { onSuccess }) => onSuccess()),
           isPending: false,
         };
-        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(mockUpdateMutation);
-        mockHandleSubmit.mockImplementation(fn => () => fn({ currentProgress: 300 }));
+        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(
+          mockUpdateMutation
+        );
+        mockHandleSubmit.mockImplementation(
+          fn => () => fn({ currentProgress: 300 })
+        );
 
         render(
           <ReadingProgressUpdate
@@ -466,7 +508,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
     describe('Backward Progress Handling', () => {
       it('should show warning dialog for backward progress', () => {
         // Mock handleSubmit to simulate backward progress (current is 150, new should be 100)
-        mockHandleSubmit.mockImplementation(fn => () => fn({ currentProgress: 100 }));
+        mockHandleSubmit.mockImplementation(
+          fn => () => fn({ currentProgress: 100 })
+        );
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
@@ -484,7 +528,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           mutate: jest.fn(),
           isPending: false,
         };
-        (useDeleteFutureProgress as jest.Mock).mockReturnValue(mockDeleteMutation);
+        (useDeleteFutureProgress as jest.Mock).mockReturnValue(
+          mockDeleteMutation
+        );
 
         // Mock Alert to simulate user clicking "Update"
         mockAlert.mockImplementation((_title, _message, buttons) => {
@@ -494,7 +540,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           }
         });
 
-        mockHandleSubmit.mockImplementation(fn => () => fn({ currentProgress: 100 }));
+        mockHandleSubmit.mockImplementation(
+          fn => () => fn({ currentProgress: 100 })
+        );
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
@@ -516,7 +564,11 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
         // The QuickActionButtons mock will automatically call onQuickUpdate with 10
-        expect(mockSetValue).toHaveBeenCalledWith('currentProgress', expect.any(Number), { shouldValidate: false });
+        expect(mockSetValue).toHaveBeenCalledWith(
+          'currentProgress',
+          expect.any(Number),
+          { shouldValidate: false }
+        );
       });
     });
 
@@ -525,17 +577,23 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
         const onProgressSubmitted = jest.fn();
 
         // Mock completion scenario (currentProgress >= totalQuantity)
-        mockHandleSubmit.mockImplementation(fn => () => fn({ currentProgress: 300 }));
+        mockHandleSubmit.mockImplementation(
+          fn => () => fn({ currentProgress: 300 })
+        );
 
         // Mock alert to simulate "Mark Complete" button press
         mockAlert.mockImplementation((_title, _message, buttons) => {
-          const completeButton = buttons.find((b: any) => b.text === 'Mark Complete');
+          const completeButton = buttons.find(
+            (b: any) => b.text === 'Mark Complete'
+          );
           if (completeButton && completeButton.onPress) {
             completeButton.onPress();
           }
         });
 
-        const mockCompleteDeadline = jest.fn().mockImplementation((_id, onSuccess) => onSuccess());
+        const mockCompleteDeadline = jest
+          .fn()
+          .mockImplementation((_id, onSuccess) => onSuccess());
         (useDeadlines as jest.Mock).mockReturnValue({
           ...mockDeadlineContext,
           getDeadlineCalculations: jest.fn().mockReturnValue({
@@ -549,10 +607,14 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
         });
 
         const mockUpdateMutation = {
-          mutate: jest.fn().mockImplementation((_, { onSuccess }) => onSuccess()),
+          mutate: jest
+            .fn()
+            .mockImplementation((_, { onSuccess }) => onSuccess()),
           isPending: false,
         };
-        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(mockUpdateMutation);
+        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(
+          mockUpdateMutation
+        );
 
         render(
           <ReadingProgressUpdate
@@ -581,8 +643,12 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           isPending: false,
         };
 
-        (useDeleteFutureProgress as jest.Mock).mockReturnValue(mockDeleteMutation);
-        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(mockUpdateMutation);
+        (useDeleteFutureProgress as jest.Mock).mockReturnValue(
+          mockDeleteMutation
+        );
+        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(
+          mockUpdateMutation
+        );
 
         // Mock Alert to confirm backward progress
         mockAlert.mockImplementation((_title, _message, buttons) => {
@@ -592,7 +658,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           }
         });
 
-        mockHandleSubmit.mockImplementation(fn => () => fn({ currentProgress: 100 }));
+        mockHandleSubmit.mockImplementation(
+          fn => () => fn({ currentProgress: 100 })
+        );
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
@@ -609,10 +677,14 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           mutate: jest.fn(),
           isPending: false,
         };
-        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(mockUpdateMutation);
+        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(
+          mockUpdateMutation
+        );
 
         // Mock form to return same progress as current
-        mockHandleSubmit.mockImplementation(fn => () => fn({ currentProgress: 150 }));
+        mockHandleSubmit.mockImplementation(
+          fn => () => fn({ currentProgress: 150 })
+        );
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
@@ -629,24 +701,33 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
         const mockError = new Error('Network error');
 
         const mockUpdateMutation = {
-          mutate: jest.fn().mockImplementation((_, { onError }) => onError(mockError)),
+          mutate: jest
+            .fn()
+            .mockImplementation((_, { onError }) => onError(mockError)),
           isPending: false,
         };
-        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(mockUpdateMutation);
+        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(
+          mockUpdateMutation
+        );
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
         const button = screen.getByText('Update Progress');
         fireEvent.press(button);
 
-        expect(consoleSpy).toHaveBeenCalledWith('Progress update error:', mockError);
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Progress update error:',
+          mockError
+        );
 
         consoleSpy.mockRestore();
       });
 
       it('should handle audio format with different labels', () => {
         const audioDeadline = { ...mockDeadline, format: 'audio' as const };
-        const { createProgressUpdateSchema } = require('@/utils/progressUpdateSchema');
+        const {
+          createProgressUpdateSchema,
+        } = require('@/utils/progressUpdateSchema');
 
         render(<ReadingProgressUpdate deadline={audioDeadline} />);
 

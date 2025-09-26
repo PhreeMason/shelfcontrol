@@ -68,11 +68,19 @@ const sortByPagesRemaining = (
   b: ReadingDeadlineWithProgress
 ) => {
   const aProgress = calculateProgress(a);
-  const aTotal = calculateTotalQuantity(a.format, a.total_quantity, (a as any).total_minutes);
+  const aTotal = calculateTotalQuantity(
+    a.format,
+    a.total_quantity,
+    (a as any).total_minutes
+  );
   const aRemaining = aTotal - aProgress;
 
   const bProgress = calculateProgress(b);
-  const bTotal = calculateTotalQuantity(b.format, b.total_quantity, (b as any).total_minutes);
+  const bTotal = calculateTotalQuantity(
+    b.format,
+    b.total_quantity,
+    (b as any).total_minutes
+  );
   const bRemaining = bTotal - bProgress;
 
   if (aRemaining !== bRemaining) return aRemaining - bRemaining;

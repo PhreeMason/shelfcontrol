@@ -18,7 +18,9 @@ interface PaceEstimateBoxProps {
   paceEstimate: string;
 }
 
-export const PaceEstimateBox: React.FC<PaceEstimateBoxProps> = ({ paceEstimate }) => {
+export const PaceEstimateBox: React.FC<PaceEstimateBoxProps> = ({
+  paceEstimate,
+}) => {
   const { colors } = useTheme();
   const borderOpacity = useSharedValue(0);
   const isOverdue = paceEstimate.includes('This deadline has already passed');
@@ -46,7 +48,7 @@ export const PaceEstimateBox: React.FC<PaceEstimateBoxProps> = ({ paceEstimate }
         [
           isOverdue ? colors.danger : colors.primary,
           isOverdue ? `${colors.danger}66` : colors.primary,
-          isOverdue ? colors.danger : colors.primary
+          isOverdue ? colors.danger : colors.primary,
         ]
       ),
       shadowColor: colors.danger,
@@ -66,13 +68,12 @@ export const PaceEstimateBox: React.FC<PaceEstimateBoxProps> = ({ paceEstimate }
       ]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[
-        styles.estimateContainer,
-        animatedBorderStyle,
-      ]}
+      style={[styles.estimateContainer, animatedBorderStyle]}
     >
       <ThemedText
-        style={isOverdue ? styles.overdueEstimateStyle : styles.paceEstimateStyle}
+        style={
+          isOverdue ? styles.overdueEstimateStyle : styles.paceEstimateStyle
+        }
         variant="defaultSemiBold"
         color="textOnPrimary"
       >

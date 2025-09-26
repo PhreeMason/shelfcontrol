@@ -40,7 +40,6 @@ class StorageService {
 
         return { success: true, data };
       } else {
-
         // Update bucket to ensure it's public
         const { data, error: updateError } =
           await supabase.storage.updateBucket('avatars', {

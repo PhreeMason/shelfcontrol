@@ -451,10 +451,7 @@ describe('StorageService', () => {
 
     it('should remove multiple files', async () => {
       const filePaths = ['user123/avatar1.jpg', 'user123/avatar2.png'];
-      const mockRemoveData = [
-        { name: 'avatar1.jpg' },
-        { name: 'avatar2.png' },
-      ];
+      const mockRemoveData = [{ name: 'avatar1.jpg' }, { name: 'avatar2.png' }];
 
       const mockFrom = jest.fn().mockReturnValue({
         remove: jest
@@ -580,7 +577,10 @@ describe('StorageService', () => {
         0
       );
 
-      expect(mockFrom().createSignedUrl).toHaveBeenCalledWith('temp-file.jpg', 0);
+      expect(mockFrom().createSignedUrl).toHaveBeenCalledWith(
+        'temp-file.jpg',
+        0
+      );
       expect(result).toBe(signedUrl);
     });
   });
@@ -594,10 +594,15 @@ describe('StorageService', () => {
       });
       mockSupabaseStorage.from = mockFrom;
 
-      const result = storageService.getPublicUrl('avatars', 'user123/avatar.jpg');
+      const result = storageService.getPublicUrl(
+        'avatars',
+        'user123/avatar.jpg'
+      );
 
       expect(mockFrom).toHaveBeenCalledWith('avatars');
-      expect(mockFrom().getPublicUrl).toHaveBeenCalledWith('user123/avatar.jpg');
+      expect(mockFrom().getPublicUrl).toHaveBeenCalledWith(
+        'user123/avatar.jpg'
+      );
       expect(result).toBe(publicUrl);
     });
 
@@ -609,7 +614,10 @@ describe('StorageService', () => {
       });
       mockSupabaseStorage.from = mockFrom;
 
-      const result = storageService.getPublicUrl('documents', 'folder/file.pdf');
+      const result = storageService.getPublicUrl(
+        'documents',
+        'folder/file.pdf'
+      );
 
       expect(result).toBe(publicUrl);
     });
@@ -629,16 +637,22 @@ describe('StorageService', () => {
     });
 
     it('should handle special characters in paths', () => {
-      const publicUrl = 'https://public-url.com/files/user%20files/file%20name.txt';
+      const publicUrl =
+        'https://public-url.com/files/user%20files/file%20name.txt';
 
       const mockFrom = jest.fn().mockReturnValue({
         getPublicUrl: jest.fn().mockReturnValue({ data: { publicUrl } }),
       });
       mockSupabaseStorage.from = mockFrom;
 
-      const result = storageService.getPublicUrl('files', 'user files/file name.txt');
+      const result = storageService.getPublicUrl(
+        'files',
+        'user files/file name.txt'
+      );
 
-      expect(mockFrom().getPublicUrl).toHaveBeenCalledWith('user files/file name.txt');
+      expect(mockFrom().getPublicUrl).toHaveBeenCalledWith(
+        'user files/file name.txt'
+      );
       expect(result).toBe(publicUrl);
     });
 

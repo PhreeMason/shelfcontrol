@@ -22,7 +22,11 @@ jest.mock('@/components/themed', () => ({
     return React.createElement(
       Text,
       { testID: `themed-text-${variant || 'default'}`, style },
-      typeof children === 'string' ? children : (Array.isArray(children) ? children.join('') : String(children))
+      typeof children === 'string'
+        ? children
+        : Array.isArray(children)
+          ? children.join('')
+          : String(children)
     );
   },
 }));
@@ -147,7 +151,9 @@ describe('ProgressStats', () => {
     });
 
     it('should handle large audio minutes', () => {
-      render(<ProgressStats {...defaultProps} format="audio" remaining={1440} />);
+      render(
+        <ProgressStats {...defaultProps} format="audio" remaining={1440} />
+      );
       expect(screen.getByText('24h 0m')).toBeTruthy();
     });
 

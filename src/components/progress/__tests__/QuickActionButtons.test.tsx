@@ -15,7 +15,13 @@ jest.mock('@/hooks/useTheme', () => ({
 
 // Mock ThemedButton
 jest.mock('@/components/themed', () => ({
-  ThemedButton: ({ title, onPress, variant: _variant, textStyle, style }: any) => {
+  ThemedButton: ({
+    title,
+    onPress,
+    variant: _variant,
+    textStyle,
+    style,
+  }: any) => {
     const React = require('react');
     const { TouchableOpacity, Text } = require('react-native');
     return React.createElement(
@@ -247,7 +253,9 @@ describe('QuickActionButtons', () => {
 
     it('should handle null onQuickUpdate gracefully', () => {
       // This should not crash
-      const { toJSON } = render(<QuickActionButtons onQuickUpdate={null as any} />);
+      const { toJSON } = render(
+        <QuickActionButtons onQuickUpdate={null as any} />
+      );
 
       expect(toJSON()).toBeTruthy();
     });

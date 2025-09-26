@@ -1,5 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from '@testing-library/react-native';
 import { DeadlineFormStep1 } from '../DeadlineFormStep1';
 import { useFetchBookData, useSearchBooksList } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
@@ -18,14 +23,22 @@ jest.mock('@/hooks/useThemeColor', () => ({
 jest.mock('@/components/themed', () => ({
   ThemedText: ({ children, ...props }: any) => {
     const React = require('react');
-    return React.createElement('Text', { ...props, testID: 'themed-text' }, children);
+    return React.createElement(
+      'Text',
+      { ...props, testID: 'themed-text' },
+      children
+    );
   },
 }));
 
 jest.mock('@/components/ui/IconSymbol', () => ({
   IconSymbol: ({ name, ...props }: any) => {
     const React = require('react');
-    return React.createElement('Text', { ...props, testID: `icon-${name}` }, name);
+    return React.createElement(
+      'Text',
+      { ...props, testID: `icon-${name}` },
+      name
+    );
   },
 }));
 
@@ -53,7 +66,7 @@ describe('DeadlineFormStep1', () => {
     bookList: [
       {
         api_id: 'book-1',
-        title: 'Harry Potter and the Sorcerer\'s Stone',
+        title: "Harry Potter and the Sorcerer's Stone",
         cover_image_url: 'https://example.com/cover1.jpg',
         metadata: {
           authors: ['J.K. Rowling'],
@@ -72,7 +85,7 @@ describe('DeadlineFormStep1', () => {
 
   const mockFullBookData = {
     id: 'db-book-1',
-    title: 'Harry Potter and the Sorcerer\'s Stone',
+    title: "Harry Potter and the Sorcerer's Stone",
     metadata: {
       authors: ['J.K. Rowling'],
     },
@@ -108,7 +121,9 @@ describe('DeadlineFormStep1', () => {
     it('should render search input with placeholder', () => {
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      expect(screen.getByPlaceholderText('Search by title or author...')).toBeTruthy();
+      expect(
+        screen.getByPlaceholderText('Search by title or author...')
+      ).toBeTruthy();
     });
 
     it('should render search icon', () => {
@@ -154,7 +169,9 @@ describe('DeadlineFormStep1', () => {
 
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const searchInput = screen.getByPlaceholderText('Search by title or author...');
+      const searchInput = screen.getByPlaceholderText(
+        'Search by title or author...'
+      );
       fireEvent.changeText(searchInput, 'Harry Potter');
 
       // Wait for debounce
@@ -172,7 +189,9 @@ describe('DeadlineFormStep1', () => {
     it('should update input value when typing', () => {
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const searchInput = screen.getByPlaceholderText('Search by title or author...');
+      const searchInput = screen.getByPlaceholderText(
+        'Search by title or author...'
+      );
       fireEvent.changeText(searchInput, 'Harry Potter');
 
       expect(searchInput.props.value).toBe('Harry Potter');
@@ -181,7 +200,9 @@ describe('DeadlineFormStep1', () => {
     it('should show clear button when input has text', () => {
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const searchInput = screen.getByPlaceholderText('Search by title or author...');
+      const searchInput = screen.getByPlaceholderText(
+        'Search by title or author...'
+      );
       fireEvent.changeText(searchInput, 'Harry');
 
       expect(screen.getByTestId('icon-xmark.circle.fill')).toBeTruthy();
@@ -190,7 +211,9 @@ describe('DeadlineFormStep1', () => {
     it('should clear input when clear button is pressed', () => {
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const searchInput = screen.getByPlaceholderText('Search by title or author...');
+      const searchInput = screen.getByPlaceholderText(
+        'Search by title or author...'
+      );
       fireEvent.changeText(searchInput, 'Harry');
 
       const clearButton = screen.getByTestId('icon-xmark.circle.fill');
@@ -216,7 +239,9 @@ describe('DeadlineFormStep1', () => {
 
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const searchInput = screen.getByPlaceholderText('Search by title or author...');
+      const searchInput = screen.getByPlaceholderText(
+        'Search by title or author...'
+      );
       fireEvent.changeText(searchInput, 'Harry Potter');
 
       expect(screen.getByText('Searching books...')).toBeTruthy();
@@ -231,7 +256,9 @@ describe('DeadlineFormStep1', () => {
 
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      expect(screen.getByText('Failed to search books. Please try again.')).toBeTruthy();
+      expect(
+        screen.getByText('Failed to search books. Please try again.')
+      ).toBeTruthy();
     });
 
     it('should show no results message when no books found', () => {
@@ -243,18 +270,26 @@ describe('DeadlineFormStep1', () => {
 
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const searchInput = screen.getByPlaceholderText('Search by title or author...');
+      const searchInput = screen.getByPlaceholderText(
+        'Search by title or author...'
+      );
       fireEvent.changeText(searchInput, 'NonexistentBook');
 
-      expect(screen.getByText(/No books found for "NonexistentBook"/)).toBeTruthy();
-      expect(screen.getByText('Try a different search or add manually')).toBeTruthy();
+      expect(
+        screen.getByText(/No books found for "NonexistentBook"/)
+      ).toBeTruthy();
+      expect(
+        screen.getByText('Try a different search or add manually')
+      ).toBeTruthy();
     });
 
     it('should show search prompt when input is empty', () => {
       render(<DeadlineFormStep1 {...defaultProps} />);
 
       expect(screen.getByText('Search for a book to get started')).toBeTruthy();
-      expect(screen.getByText("We'll grab the page count and details for you")).toBeTruthy();
+      expect(
+        screen.getByText("We'll grab the page count and details for you")
+      ).toBeTruthy();
     });
 
     it('should not show loading for queries 2 characters or less', () => {
@@ -266,7 +301,9 @@ describe('DeadlineFormStep1', () => {
 
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const searchInput = screen.getByPlaceholderText('Search by title or author...');
+      const searchInput = screen.getByPlaceholderText(
+        'Search by title or author...'
+      );
       fireEvent.changeText(searchInput, 'ab');
 
       expect(screen.queryByText('Searching books...')).toBeNull();
@@ -283,7 +320,9 @@ describe('DeadlineFormStep1', () => {
 
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      expect(screen.getByText('Harry Potter and the Sorcerer\'s Stone')).toBeTruthy();
+      expect(
+        screen.getByText("Harry Potter and the Sorcerer's Stone")
+      ).toBeTruthy();
       expect(screen.getByText('The Hobbit')).toBeTruthy();
       expect(screen.getByText('by J.K. Rowling')).toBeTruthy();
       expect(screen.getByText('by J.R.R. Tolkien')).toBeTruthy();
@@ -350,7 +389,9 @@ describe('DeadlineFormStep1', () => {
 
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const firstBookButton = screen.getByText('Harry Potter and the Sorcerer\'s Stone');
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
       fireEvent.press(firstBookButton);
 
       expect(useFetchBookData).toHaveBeenCalledWith('book-1');
@@ -396,7 +437,9 @@ describe('DeadlineFormStep1', () => {
 
       const { rerender } = render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const firstBookButton = screen.getByText('Harry Potter and the Sorcerer\'s Stone');
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
       fireEvent.press(firstBookButton);
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
@@ -413,7 +456,9 @@ describe('DeadlineFormStep1', () => {
 
       const { rerender } = render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const firstBookButton = screen.getByText('Harry Potter and the Sorcerer\'s Stone');
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
       fireEvent.press(firstBookButton);
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
@@ -456,12 +501,17 @@ describe('DeadlineFormStep1', () => {
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
 
-      const firstBookButton = screen.getByText('Harry Potter and the Sorcerer\'s Stone');
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
       fireEvent.press(firstBookButton);
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
 
-      expect(mockSetValue).toHaveBeenCalledWith('bookTitle', 'Harry Potter and the Sorcerer\'s Stone');
+      expect(mockSetValue).toHaveBeenCalledWith(
+        'bookTitle',
+        "Harry Potter and the Sorcerer's Stone"
+      );
       expect(mockSetValue).toHaveBeenCalledWith('bookAuthor', 'J.K. Rowling');
       expect(mockSetValue).toHaveBeenCalledWith('book_id', 'db-book-1');
       expect(mockSetValue).toHaveBeenCalledWith('api_id', 'book-1');
@@ -483,7 +533,9 @@ describe('DeadlineFormStep1', () => {
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
 
-      const firstBookButton = screen.getByText('Harry Potter and the Sorcerer\'s Stone');
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
       fireEvent.press(firstBookButton);
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
@@ -491,7 +543,7 @@ describe('DeadlineFormStep1', () => {
       expect(mockOnBookSelected).toHaveBeenCalledWith({
         id: 'db-book-1',
         api_id: 'book-1',
-        title: 'Harry Potter and the Sorcerer\'s Stone',
+        title: "Harry Potter and the Sorcerer's Stone",
         author: 'J.K. Rowling',
         cover_image_url: 'https://example.com/cover1.jpg',
         total_pages: 309,
@@ -520,12 +572,17 @@ describe('DeadlineFormStep1', () => {
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
 
-      const firstBookButton = screen.getByText('Harry Potter and the Sorcerer\'s Stone');
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
       fireEvent.press(firstBookButton);
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
 
-      expect(mockSetValue).not.toHaveBeenCalledWith('totalQuantity', expect.anything());
+      expect(mockSetValue).not.toHaveBeenCalledWith(
+        'totalQuantity',
+        expect.anything()
+      );
     });
   });
 
@@ -555,7 +612,9 @@ describe('DeadlineFormStep1', () => {
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
 
-      const firstBookButton = screen.getByText('Harry Potter and the Sorcerer\'s Stone');
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
       fireEvent.press(firstBookButton);
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
@@ -584,7 +643,9 @@ describe('DeadlineFormStep1', () => {
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
 
-      const firstBookButton = screen.getByText('Harry Potter and the Sorcerer\'s Stone');
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
       fireEvent.press(firstBookButton);
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
@@ -653,7 +714,9 @@ describe('DeadlineFormStep1', () => {
 
       const { rerender } = render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const searchInput = screen.getByPlaceholderText('Search by title or author...');
+      const searchInput = screen.getByPlaceholderText(
+        'Search by title or author...'
+      );
       fireEvent.changeText(searchInput, 'Harry Potter');
 
       jest.advanceTimersByTime(300);
@@ -666,7 +729,9 @@ describe('DeadlineFormStep1', () => {
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
 
-      const bookButton = screen.getByText('Harry Potter and the Sorcerer\'s Stone');
+      const bookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
       fireEvent.press(bookButton);
 
       (useFetchBookData as jest.Mock).mockReturnValue({
@@ -676,7 +741,10 @@ describe('DeadlineFormStep1', () => {
       rerender(<DeadlineFormStep1 {...defaultProps} />);
 
       expect(mockOnBookSelected).toHaveBeenCalled();
-      expect(mockSetValue).toHaveBeenCalledWith('bookTitle', 'Harry Potter and the Sorcerer\'s Stone');
+      expect(mockSetValue).toHaveBeenCalledWith(
+        'bookTitle',
+        "Harry Potter and the Sorcerer's Stone"
+      );
 
       jest.useRealTimers();
     });
@@ -684,7 +752,9 @@ describe('DeadlineFormStep1', () => {
     it('should handle search -> no results -> manual entry flow', () => {
       const { rerender } = render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const searchInput = screen.getByPlaceholderText('Search by title or author...');
+      const searchInput = screen.getByPlaceholderText(
+        'Search by title or author...'
+      );
       fireEvent.changeText(searchInput, 'Nonexistent Book');
 
       (useSearchBooksList as jest.Mock).mockReturnValue({
@@ -695,7 +765,9 @@ describe('DeadlineFormStep1', () => {
 
       rerender(<DeadlineFormStep1 {...defaultProps} />);
 
-      expect(screen.getByText(/No books found for "Nonexistent Book"/)).toBeTruthy();
+      expect(
+        screen.getByText(/No books found for "Nonexistent Book"/)
+      ).toBeTruthy();
 
       const manualEntryButton = screen.getByText(/Can't find your book/);
       fireEvent.press(manualEntryButton);
@@ -712,7 +784,9 @@ describe('DeadlineFormStep1', () => {
 
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      expect(screen.getByText('Failed to search books. Please try again.')).toBeTruthy();
+      expect(
+        screen.getByText('Failed to search books. Please try again.')
+      ).toBeTruthy();
 
       const manualEntryButton = screen.getByText(/Can't find your book/);
       fireEvent.press(manualEntryButton);

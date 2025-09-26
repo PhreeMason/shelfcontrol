@@ -79,7 +79,7 @@ export const formatBackwardProgressWarning = (
 
   return {
     unit: progressUnit,
-    message: `You're updating from ${currentDisplay} to ${newDisplay}. This will delete all progress entries greater than the new ${progressUnit}. Are you sure?`
+    message: `You're updating from ${currentDisplay} to ${newDisplay}. This will delete all progress entries greater than the new ${progressUnit}. Are you sure?`,
   };
 };
 
@@ -96,13 +96,15 @@ export const hasProgressChanged = (
 /**
  * Gets the appropriate toast message for book completion
  */
-export const getCompletionToastMessage = (bookTitle: string): {
+export const getCompletionToastMessage = (
+  bookTitle: string
+): {
   title: string;
   message: string;
 } => {
   return {
     title: 'Deadline completed!',
-    message: `Congratulations on finishing "${bookTitle}"!`
+    message: `Congratulations on finishing "${bookTitle}"!`,
   };
 };
 
@@ -120,22 +122,22 @@ export const getErrorToastMessage = (
     case 'update':
       return {
         title: 'Update Failed',
-        message: 'Please try again'
+        message: 'Please try again',
       };
     case 'complete':
       return {
         title: 'Failed to complete deadline',
-        message: error?.message || 'Please try again'
+        message: error?.message || 'Please try again',
       };
     case 'deleteFuture':
       return {
         title: 'Failed to Delete Future Progress',
-        message: 'Please try again'
+        message: 'Please try again',
       };
     default:
       return {
         title: 'Operation Failed',
-        message: 'Please try again'
+        message: 'Please try again',
       };
   }
 };

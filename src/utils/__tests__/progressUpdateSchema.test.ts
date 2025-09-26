@@ -1,4 +1,7 @@
-import { createProgressUpdateSchema, progressUpdateSchema } from '../progressUpdateSchema';
+import {
+  createProgressUpdateSchema,
+  progressUpdateSchema,
+} from '../progressUpdateSchema';
 
 describe('progressUpdateSchema', () => {
   describe('basic progressUpdateSchema', () => {
@@ -30,7 +33,9 @@ describe('progressUpdateSchema', () => {
       const result = progressUpdateSchema.safeParse({ currentProgress: -5 });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Progress cannot be negative');
+        expect(result.error.errors[0].message).toBe(
+          'Progress cannot be negative'
+        );
       }
     });
 
@@ -38,7 +43,9 @@ describe('progressUpdateSchema', () => {
       const result = progressUpdateSchema.safeParse({ currentProgress: 42.5 });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Progress must be a whole number');
+        expect(result.error.errors[0].message).toBe(
+          'Progress must be a whole number'
+        );
       }
     });
 
@@ -51,7 +58,9 @@ describe('progressUpdateSchema', () => {
     });
 
     it('should reject undefined values', () => {
-      const result = progressUpdateSchema.safeParse({ currentProgress: undefined });
+      const result = progressUpdateSchema.safeParse({
+        currentProgress: undefined,
+      });
       expect(result.success).toBe(false);
     });
   });
@@ -88,7 +97,9 @@ describe('progressUpdateSchema', () => {
         const result = schema.safeParse({ currentProgress: 301 });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.errors[0].message).toBe('Progress cannot exceed 300 pages');
+          expect(result.error.errors[0].message).toBe(
+            'Progress cannot exceed 300 pages'
+          );
         }
       });
 
@@ -134,7 +145,9 @@ describe('progressUpdateSchema', () => {
         const result = schema.safeParse({ currentProgress: -10 });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.errors[0].message).toBe('Progress cannot be negative');
+          expect(result.error.errors[0].message).toBe(
+            'Progress cannot be negative'
+          );
         }
       });
 
@@ -142,7 +155,9 @@ describe('progressUpdateSchema', () => {
         const result = schema.safeParse({ currentProgress: 150.5 });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.errors[0].message).toBe('Progress must be a whole number');
+          expect(result.error.errors[0].message).toBe(
+            'Progress must be a whole number'
+          );
         }
       });
 
@@ -192,7 +207,9 @@ describe('progressUpdateSchema', () => {
         const result = schema.safeParse({ currentProgress: 601 });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.errors[0].message).toBe('Progress cannot exceed 600 minutes');
+          expect(result.error.errors[0].message).toBe(
+            'Progress cannot exceed 600 minutes'
+          );
         }
       });
 
@@ -220,7 +237,9 @@ describe('progressUpdateSchema', () => {
         const result = schema.safeParse({ currentProgress: 451 });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.errors[0].message).toBe('Progress cannot exceed 450 pages');
+          expect(result.error.errors[0].message).toBe(
+            'Progress cannot exceed 450 pages'
+          );
         }
       });
     });
@@ -232,7 +251,9 @@ describe('progressUpdateSchema', () => {
         const result = schema.safeParse({ currentProgress: '123.7' });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.errors[0].message).toBe('Progress must be a whole number');
+          expect(result.error.errors[0].message).toBe(
+            'Progress must be a whole number'
+          );
         }
       });
 

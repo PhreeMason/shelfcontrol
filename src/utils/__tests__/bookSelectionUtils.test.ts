@@ -159,7 +159,12 @@ describe('bookSelectionUtils', () => {
     });
 
     it('should return no results message for valid query with no results', () => {
-      const result = getSearchStatusMessage('NonexistentBook', false, false, false);
+      const result = getSearchStatusMessage(
+        'NonexistentBook',
+        false,
+        false,
+        false
+      );
 
       expect(result).toEqual({
         type: 'no-results',
@@ -243,7 +248,10 @@ describe('bookSelectionUtils', () => {
 
       populateFormFromBook(bookWithoutPages, mockSetValue);
 
-      expect(mockSetValue).not.toHaveBeenCalledWith('totalQuantity', expect.anything());
+      expect(mockSetValue).not.toHaveBeenCalledWith(
+        'totalQuantity',
+        expect.anything()
+      );
       expect(mockSetValue).toHaveBeenCalledWith('bookTitle', 'Test Book');
       expect(mockSetValue).toHaveBeenCalledWith('bookAuthor', 'John Doe');
       expect(mockSetValue).toHaveBeenCalledWith('book_id', 'book-123');

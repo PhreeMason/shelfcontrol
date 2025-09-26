@@ -10,66 +10,86 @@ jest.mock('react-hook-form', () => ({
 
 // Mock utilities
 jest.mock('@/utils/stringUtils', () => ({
-  toTitleCase: jest.fn((text) => text),
+  toTitleCase: jest.fn(text => text),
 }));
 
 // Mock child components to isolate testing
 jest.mock('@/components/shared/CustomInput', () => {
   const React = require('react');
   return function MockCustomInput(props: any) {
-    return React.createElement('View', {
-      testID: props.testID,
-      'data-name': props.name,
-      'data-placeholder': props.placeholder,
-      'data-keyboard': props.keyboardType,
-      'data-input-type': props.inputType,
-      'data-transform': props.transformOnBlur ? 'toTitleCase' : undefined,
-    }, null);
+    return React.createElement(
+      'View',
+      {
+        testID: props.testID,
+        'data-name': props.name,
+        'data-placeholder': props.placeholder,
+        'data-keyboard': props.keyboardType,
+        'data-input-type': props.inputType,
+        'data-transform': props.transformOnBlur ? 'toTitleCase' : undefined,
+      },
+      null
+    );
   };
 });
 
 jest.mock('@/components/shared/SourceTypeaheadInput', () => {
   const React = require('react');
   return function MockSourceTypeaheadInput(props: any) {
-    return React.createElement('View', {
-      testID: props.testID,
-      'data-name': props.name,
-      'data-placeholder': props.placeholder,
-    }, null);
+    return React.createElement(
+      'View',
+      {
+        testID: props.testID,
+        'data-name': props.name,
+        'data-placeholder': props.placeholder,
+      },
+      null
+    );
   };
 });
 
 jest.mock('@/components/forms/FormatSelector', () => ({
   FormatSelector: ({ selectedFormat, onSelectFormat, disabled }: any) => {
     const React = require('react');
-    return React.createElement('View', {
-      testID: 'format-selector',
-      'data-selected': selectedFormat,
-      'data-disabled': disabled,
-      onPress: () => onSelectFormat && onSelectFormat('audio'),
-    }, null);
+    return React.createElement(
+      'View',
+      {
+        testID: 'format-selector',
+        'data-selected': selectedFormat,
+        'data-disabled': disabled,
+        onPress: () => onSelectFormat && onSelectFormat('audio'),
+      },
+      null
+    );
   },
 }));
 
 jest.mock('@/components/forms/StatusSelector', () => ({
   StatusSelector: ({ selectedStatus, onSelectStatus }: any) => {
     const React = require('react');
-    return React.createElement('View', {
-      testID: 'status-selector',
-      'data-selected': selectedStatus,
-      onPress: () => onSelectStatus && onSelectStatus('active'),
-    }, null);
+    return React.createElement(
+      'View',
+      {
+        testID: 'status-selector',
+        'data-selected': selectedStatus,
+        onPress: () => onSelectStatus && onSelectStatus('active'),
+      },
+      null
+    );
   },
 }));
 
 jest.mock('@/components/themed', () => ({
   ThemedText: ({ children, color, variant }: any) => {
     const React = require('react');
-    return React.createElement('Text', {
-      testID: 'themed-text',
-      'data-color': color,
-      'data-variant': variant,
-    }, children);
+    return React.createElement(
+      'Text',
+      {
+        testID: 'themed-text',
+        'data-color': color,
+        'data-variant': variant,
+      },
+      children
+    );
   },
 }));
 
@@ -98,7 +118,9 @@ describe('DeadlineFormStep2', () => {
     it('should render description text', () => {
       render(<DeadlineFormStep2 {...defaultProps} />);
 
-      expect(screen.getByText('Enter the book details and format information.')).toBeTruthy();
+      expect(
+        screen.getByText('Enter the book details and format information.')
+      ).toBeTruthy();
     });
 
     it('should render Book Title label and input', () => {
@@ -143,7 +165,9 @@ describe('DeadlineFormStep2', () => {
     });
 
     it('should render Total Time label for audio format', () => {
-      render(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />);
+      render(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />
+      );
 
       expect(screen.getByText('Total Time *')).toBeTruthy();
     });
@@ -151,13 +175,17 @@ describe('DeadlineFormStep2', () => {
     it('should show helper text under Status selector', () => {
       render(<DeadlineFormStep2 {...defaultProps} />);
 
-      expect(screen.getByText('Is this book actively being read or pending?')).toBeTruthy();
+      expect(
+        screen.getByText('Is this book actively being read or pending?')
+      ).toBeTruthy();
     });
 
     it('should show helper text under Total Quantity input', () => {
       render(<DeadlineFormStep2 {...defaultProps} />);
 
-      expect(screen.getByText("We'll use this to calculate your daily reading pace")).toBeTruthy();
+      expect(
+        screen.getByText("We'll use this to calculate your daily reading pace")
+      ).toBeTruthy();
     });
 
     it('should render all required components without errors', () => {
@@ -198,21 +226,29 @@ describe('DeadlineFormStep2', () => {
 
   describe('Format-Based Conditional Rendering', () => {
     it('should show "Total Pages *" label for physical format', () => {
-      render(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'physical' }} />);
+      render(
+        <DeadlineFormStep2
+          {...{ ...defaultProps, selectedFormat: 'physical' }}
+        />
+      );
 
       expect(screen.getByText('Total Pages *')).toBeTruthy();
       expect(screen.queryByText('Total Time *')).toBeNull();
     });
 
     it('should show "Total Pages *" label for eBook format', () => {
-      render(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'eBook' }} />);
+      render(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'eBook' }} />
+      );
 
       expect(screen.getByText('Total Pages *')).toBeTruthy();
       expect(screen.queryByText('Total Time *')).toBeNull();
     });
 
     it('should show "Total Time *" label for audio format', () => {
-      render(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />);
+      render(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />
+      );
 
       expect(screen.getByText('Total Time *')).toBeTruthy();
       expect(screen.queryByText('Total Pages *')).toBeNull();
@@ -222,11 +258,15 @@ describe('DeadlineFormStep2', () => {
       render(<DeadlineFormStep2 {...defaultProps} />);
 
       const totalQuantityInput = screen.getByTestId('input-totalQuantity');
-      expect(totalQuantityInput.props['data-placeholder']).toBe('How many pages total?');
+      expect(totalQuantityInput.props['data-placeholder']).toBe(
+        'How many pages total?'
+      );
     });
 
     it('should show "Hours" placeholder for audio format', () => {
-      render(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />);
+      render(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />
+      );
 
       const totalQuantityInput = screen.getByTestId('input-totalQuantity');
       expect(totalQuantityInput.props['data-placeholder']).toBe('Hours');
@@ -237,7 +277,9 @@ describe('DeadlineFormStep2', () => {
 
       expect(screen.queryByTestId('input-totalMinutes')).toBeNull();
 
-      rerender(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />);
+      rerender(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />
+      );
 
       expect(screen.getByTestId('input-totalMinutes')).toBeTruthy();
     });
@@ -293,7 +335,9 @@ describe('DeadlineFormStep2', () => {
     it('should show "Format cannot be changed after creation" text in edit mode', () => {
       render(<DeadlineFormStep2 {...{ ...defaultProps, isEditMode: true }} />);
 
-      expect(screen.getByText('Format cannot be changed after creation')).toBeTruthy();
+      expect(
+        screen.getByText('Format cannot be changed after creation')
+      ).toBeTruthy();
     });
 
     it('should enable FormatSelector when not in edit mode', () => {
@@ -308,7 +352,11 @@ describe('DeadlineFormStep2', () => {
     it('should pass control prop to all CustomInput components', () => {
       render(<DeadlineFormStep2 {...defaultProps} />);
 
-      const inputs = ['input-bookTitle', 'input-bookAuthor', 'input-totalQuantity'];
+      const inputs = [
+        'input-bookTitle',
+        'input-bookAuthor',
+        'input-totalQuantity',
+      ];
       inputs.forEach(testId => {
         expect(screen.getByTestId(testId)).toBeTruthy();
       });
@@ -339,14 +387,18 @@ describe('DeadlineFormStep2', () => {
     });
 
     it('should pass selectedFormat to FormatSelector', () => {
-      render(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'eBook' }} />);
+      render(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'eBook' }} />
+      );
 
       const formatSelector = screen.getByTestId('format-selector');
       expect(formatSelector.props['data-selected']).toBe('eBook');
     });
 
     it('should pass selectedStatus to StatusSelector', () => {
-      render(<DeadlineFormStep2 {...{ ...defaultProps, selectedStatus: 'active' }} />);
+      render(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedStatus: 'active' }} />
+      );
 
       const statusSelector = screen.getByTestId('status-selector');
       expect(statusSelector.props['data-selected']).toBe('active');
@@ -403,7 +455,9 @@ describe('DeadlineFormStep2', () => {
     });
 
     it('should configure totalMinutes input with numeric keyboard and integer type for audio', () => {
-      render(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />);
+      render(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />
+      );
 
       const input = screen.getByTestId('input-totalMinutes');
       expect(input.props['data-keyboard']).toBe('numeric');
@@ -436,13 +490,19 @@ describe('DeadlineFormStep2', () => {
 
   describe('Dynamic Label/Placeholder Tests', () => {
     it('should return correct label for physical format', () => {
-      render(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'physical' }} />);
+      render(
+        <DeadlineFormStep2
+          {...{ ...defaultProps, selectedFormat: 'physical' }}
+        />
+      );
 
       expect(screen.getByText('Total Pages *')).toBeTruthy();
     });
 
     it('should return correct label for audio format', () => {
-      render(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />);
+      render(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />
+      );
 
       expect(screen.getByText('Total Time *')).toBeTruthy();
     });
@@ -452,7 +512,9 @@ describe('DeadlineFormStep2', () => {
 
       expect(screen.getByText('Total Pages *')).toBeTruthy();
 
-      rerender(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />);
+      rerender(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />
+      );
 
       expect(screen.queryByText('Total Pages *')).toBeNull();
       expect(screen.getByText('Total Time *')).toBeTruthy();
@@ -464,7 +526,9 @@ describe('DeadlineFormStep2', () => {
       let input = screen.getByTestId('input-totalQuantity');
       expect(input.props['data-placeholder']).toBe('How many pages total?');
 
-      rerender(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />);
+      rerender(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />
+      );
 
       input = screen.getByTestId('input-totalQuantity');
       expect(input.props['data-placeholder']).toBe('Hours');
@@ -511,14 +575,18 @@ describe('DeadlineFormStep2', () => {
       expect(screen.queryByTestId('input-totalMinutes')).toBeNull();
 
       // Change to audio format
-      rerender(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />);
+      rerender(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'audio' }} />
+      );
 
       // Audio format: shows minutes input
       expect(screen.getByText('Total Time *')).toBeTruthy();
       expect(screen.getByTestId('input-totalMinutes')).toBeTruthy();
 
       // Change to eBook format
-      rerender(<DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'eBook' }} />);
+      rerender(
+        <DeadlineFormStep2 {...{ ...defaultProps, selectedFormat: 'eBook' }} />
+      );
 
       // eBook format: no minutes input
       expect(screen.getByText('Total Pages *')).toBeTruthy();
@@ -535,7 +603,9 @@ describe('DeadlineFormStep2', () => {
       expect(formatSelector.props['data-disabled']).toBe(true);
 
       // Should show disabled message
-      expect(screen.getByText('Format cannot be changed after creation')).toBeTruthy();
+      expect(
+        screen.getByText('Format cannot be changed after creation')
+      ).toBeTruthy();
 
       // Should show linked indicators
       expect(screen.getAllByText('✓ Linked from library')).toHaveLength(2);

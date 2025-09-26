@@ -25,12 +25,20 @@ jest.mock('@/components/themed', () => ({
   ThemedText: ({ children, style }: any) => {
     const React = require('react');
     const { Text } = require('react-native');
-    return React.createElement(Text, { testID: 'themed-text', style }, children);
+    return React.createElement(
+      Text,
+      { testID: 'themed-text', style },
+      children
+    );
   },
   ThemedView: ({ children, style }: any) => {
     const React = require('react');
     const { View } = require('react-native');
-    return React.createElement(View, { testID: 'themed-view', style }, children);
+    return React.createElement(
+      View,
+      { testID: 'themed-view', style },
+      children
+    );
   },
 }));
 
@@ -61,7 +69,8 @@ describe('TodaysProgress', () => {
   const mockGetDisplayValue = getDisplayValue as jest.Mock;
   const mockGetRemainingText = getRemainingText as jest.Mock;
   const mockGetEncouragementMessage = getEncouragementMessage as jest.Mock;
-  const mockGetProgressBackgroundColor = getProgressBackgroundColor as jest.Mock;
+  const mockGetProgressBackgroundColor =
+    getProgressBackgroundColor as jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();

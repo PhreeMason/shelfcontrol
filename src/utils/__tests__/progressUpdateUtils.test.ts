@@ -28,62 +28,122 @@ describe('progressUpdateUtils', () => {
     const totalQuantity = 500;
 
     it('should handle number input correctly', () => {
-      const result = calculateNewProgress(150, 10, currentProgress, totalQuantity);
+      const result = calculateNewProgress(
+        150,
+        10,
+        currentProgress,
+        totalQuantity
+      );
       expect(result).toBe(160);
     });
 
     it('should handle string input correctly', () => {
-      const result = calculateNewProgress('150', 10, currentProgress, totalQuantity);
+      const result = calculateNewProgress(
+        '150',
+        10,
+        currentProgress,
+        totalQuantity
+      );
       expect(result).toBe(160);
     });
 
     it('should handle string with whitespace', () => {
-      const result = calculateNewProgress('  150  ', 10, currentProgress, totalQuantity);
+      const result = calculateNewProgress(
+        '  150  ',
+        10,
+        currentProgress,
+        totalQuantity
+      );
       expect(result).toBe(160);
     });
 
     it('should use currentProgress for undefined input', () => {
-      const result = calculateNewProgress(undefined, 10, currentProgress, totalQuantity);
+      const result = calculateNewProgress(
+        undefined,
+        10,
+        currentProgress,
+        totalQuantity
+      );
       expect(result).toBe(110);
     });
 
     it('should use currentProgress for empty string', () => {
-      const result = calculateNewProgress('', 10, currentProgress, totalQuantity);
+      const result = calculateNewProgress(
+        '',
+        10,
+        currentProgress,
+        totalQuantity
+      );
       expect(result).toBe(110);
     });
 
     it('should use currentProgress for invalid string', () => {
-      const result = calculateNewProgress('abc', 10, currentProgress, totalQuantity);
+      const result = calculateNewProgress(
+        'abc',
+        10,
+        currentProgress,
+        totalQuantity
+      );
       expect(result).toBe(110);
     });
 
     it('should handle NaN input', () => {
-      const result = calculateNewProgress(NaN, 10, currentProgress, totalQuantity);
+      const result = calculateNewProgress(
+        NaN,
+        10,
+        currentProgress,
+        totalQuantity
+      );
       expect(result).toBe(110);
     });
 
     it('should cap at totalQuantity', () => {
-      const result = calculateNewProgress(490, 20, currentProgress, totalQuantity);
+      const result = calculateNewProgress(
+        490,
+        20,
+        currentProgress,
+        totalQuantity
+      );
       expect(result).toBe(500);
     });
 
     it('should floor at 0', () => {
-      const result = calculateNewProgress(10, -20, currentProgress, totalQuantity);
+      const result = calculateNewProgress(
+        10,
+        -20,
+        currentProgress,
+        totalQuantity
+      );
       expect(result).toBe(0);
     });
 
     it('should handle negative increment', () => {
-      const result = calculateNewProgress(150, -10, currentProgress, totalQuantity);
+      const result = calculateNewProgress(
+        150,
+        -10,
+        currentProgress,
+        totalQuantity
+      );
       expect(result).toBe(140);
     });
 
     it('should handle zero increment', () => {
-      const result = calculateNewProgress(150, 0, currentProgress, totalQuantity);
+      const result = calculateNewProgress(
+        150,
+        0,
+        currentProgress,
+        totalQuantity
+      );
       expect(result).toBe(150);
     });
 
     it('should handle decimal strings', () => {
-      const result = calculateNewProgress('150.5', 10, currentProgress, totalQuantity);
+      const result = calculateNewProgress(
+        '150.5',
+        10,
+        currentProgress,
+        totalQuantity
+      );
       expect(result).toBe(160.5);
     });
 
@@ -91,7 +151,12 @@ describe('progressUpdateUtils', () => {
       const result = calculateNewProgress(0, 0, currentProgress, totalQuantity);
       expect(result).toBe(0);
 
-      const result2 = calculateNewProgress(totalQuantity, 0, currentProgress, totalQuantity);
+      const result2 = calculateNewProgress(
+        totalQuantity,
+        0,
+        currentProgress,
+        totalQuantity
+      );
       expect(result2).toBe(totalQuantity);
     });
   });
@@ -184,7 +249,11 @@ describe('progressUpdateUtils', () => {
     });
 
     it('should handle special characters in book title', () => {
-      const result = formatCompletionMessage('eBook', 250, 'Book with "quotes"');
+      const result = formatCompletionMessage(
+        'eBook',
+        250,
+        'Book with "quotes"'
+      );
       expect(result).toContain('Book with "quotes"');
     });
   });
@@ -194,14 +263,18 @@ describe('progressUpdateUtils', () => {
       const result = formatBackwardProgressWarning('physical', 150, 100);
       expect(result.unit).toBe('page');
       expect(result.message).toContain('updating from 150 pages to 100 pages');
-      expect(result.message).toContain('delete all progress entries greater than the new page');
+      expect(result.message).toContain(
+        'delete all progress entries greater than the new page'
+      );
     });
 
     it('should format warning for audio book', () => {
       const result = formatBackwardProgressWarning('audio', 120, 60);
       expect(result.unit).toBe('time');
       expect(result.message).toContain('updating from 2h 0m to 1h 0m');
-      expect(result.message).toContain('delete all progress entries greater than the new time');
+      expect(result.message).toContain(
+        'delete all progress entries greater than the new time'
+      );
     });
 
     it('should format warning for eBook', () => {
@@ -240,7 +313,9 @@ describe('progressUpdateUtils', () => {
     it('should format completion toast message', () => {
       const result = getCompletionToastMessage('The Great Gatsby');
       expect(result.title).toBe('Deadline completed!');
-      expect(result.message).toBe('Congratulations on finishing "The Great Gatsby"!');
+      expect(result.message).toBe(
+        'Congratulations on finishing "The Great Gatsby"!'
+      );
     });
 
     it('should handle special characters in title', () => {

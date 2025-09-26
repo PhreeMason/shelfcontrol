@@ -6,7 +6,11 @@ import { dayjs } from '@/lib/dayjs';
 // import { useFetchBookById } from '@/hooks/useBooks';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { getBookCoverIcon, getGradientBackground, formatRemainingDisplay } from '@/utils/deadlineDisplayUtils';
+import {
+  getBookCoverIcon,
+  getGradientBackground,
+  formatRemainingDisplay,
+} from '@/utils/deadlineDisplayUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -48,7 +52,6 @@ export function DeadlineCard({
 
   const { daysLeft, unitsPerDay, urgencyLevel, remaining } =
     getDeadlineCalculations(deadline);
-
 
   const shadowStyle = Platform.select({
     ios: {
@@ -95,8 +98,6 @@ export function DeadlineCard({
       router.push(`/deadline/${deadline.id}`);
     }
   };
-
-
 
   // Book Cover Component
   const BookCover = () => {

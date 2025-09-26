@@ -20,7 +20,7 @@ import {
   formatCompletionMessage,
   getCompletionToastMessage,
   getErrorToastMessage,
-  hasProgressChanged
+  hasProgressChanged,
 } from '@/utils/progressUpdateUtils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback } from 'react';
@@ -98,23 +98,23 @@ const ReadingProgressUpdate = ({
 
   const showCompletionDialog = useCallback(
     (newProgress: number, bookTitle: string) => {
-      const message = formatCompletionMessage(deadline.format, newProgress, bookTitle);
-      Alert.alert(
-        'Book Complete! 🎉',
-        message,
-        [
-          {
-            text: 'Not Yet',
-            style: 'cancel',
-            onPress: () => onProgressSubmitted?.(),
-          },
-          {
-            text: 'Mark Complete',
-            style: 'default',
-            onPress: () => handleBookCompletion(deadline.id, bookTitle),
-          },
-        ]
+      const message = formatCompletionMessage(
+        deadline.format,
+        newProgress,
+        bookTitle
       );
+      Alert.alert('Book Complete! 🎉', message, [
+        {
+          text: 'Not Yet',
+          style: 'cancel',
+          onPress: () => onProgressSubmitted?.(),
+        },
+        {
+          text: 'Mark Complete',
+          style: 'default',
+          onPress: () => handleBookCompletion(deadline.id, bookTitle),
+        },
+      ]);
     },
     [deadline.format, deadline.id, handleBookCompletion, onProgressSubmitted]
   );
@@ -126,7 +126,10 @@ const ReadingProgressUpdate = ({
       if (bookComplete) {
         showCompletionDialog(newProgress, deadline.book_title);
       } else {
-        const message = formatProgressUpdateMessage(deadline.format, newProgress);
+        const message = formatProgressUpdateMessage(
+          deadline.format,
+          newProgress
+        );
         Toast.show({
           swipeable: true,
           type: 'success',
@@ -208,21 +211,17 @@ const ReadingProgressUpdate = ({
         newProgress
       );
 
-      Alert.alert(
-        'Backward Progress Warning',
-        message,
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Update',
-            style: 'destructive',
-            onPress: () => handleBackwardProgressDeletion(newProgress),
-          },
-        ]
-      );
+      Alert.alert('Backward Progress Warning', message, [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Update',
+          style: 'destructive',
+          onPress: () => handleBackwardProgressDeletion(newProgress),
+        },
+      ]);
     },
     [deadline.format, currentProgress, handleBackwardProgressDeletion]
   );

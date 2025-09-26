@@ -520,7 +520,9 @@ describe('ProfileService', () => {
 
       // The implementation splits on '.' and takes the last part, which gives 'com/test-image' for this URL
       expect(mockUpload).toHaveBeenCalledWith(
-        expect.stringMatching(new RegExp(`${userId}/avatar-\\d+\\.com/test-image`)),
+        expect.stringMatching(
+          new RegExp(`${userId}/avatar-\\d+\\.com/test-image`)
+        ),
         expect.any(ArrayBuffer),
         {
           contentType: 'image/com/test-image',
@@ -645,7 +647,9 @@ describe('ProfileService', () => {
       ];
       const signedUrl = 'https://signed-url.com/avatar.png';
 
-      const mockList = jest.fn().mockResolvedValue({ data: files, error: null });
+      const mockList = jest
+        .fn()
+        .mockResolvedValue({ data: files, error: null });
       const mockCreateSignedUrl = jest
         .fn()
         .mockResolvedValue({ data: { signedUrl }, error: null });
@@ -690,7 +694,9 @@ describe('ProfileService', () => {
         { name: 'not-avatar.png', created_at: '2022-01-02T00:00:00Z' },
       ];
 
-      const mockList = jest.fn().mockResolvedValue({ data: files, error: null });
+      const mockList = jest
+        .fn()
+        .mockResolvedValue({ data: files, error: null });
 
       mockSupabaseStorage.from.mockReturnValue({
         list: mockList,
@@ -734,7 +740,9 @@ describe('ProfileService', () => {
       ];
       const signedUrl = 'https://signed-url.com/avatar.jpg';
 
-      const mockList = jest.fn().mockResolvedValue({ data: files, error: null });
+      const mockList = jest
+        .fn()
+        .mockResolvedValue({ data: files, error: null });
       const mockCreateSignedUrl = jest
         .fn()
         .mockResolvedValue({ data: { signedUrl }, error: null });

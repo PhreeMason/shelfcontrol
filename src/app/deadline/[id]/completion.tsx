@@ -7,7 +7,7 @@ export default function DeadlineCompletionPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { deadlines } = useDeadlines();
 
-  const deadline = deadlines.find((d) => d.id === id);
+  const deadline = deadlines.find(d => d.id === id);
 
   if (!deadline) {
     router.replace('/');

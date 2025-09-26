@@ -111,7 +111,9 @@ export const getEncouragementMessage = (progressPercentage: number): string => {
  * @param progressPercentage - Progress percentage (0-infinity)
  * @returns Background color with transparency
  */
-export const getProgressBackgroundColor = (progressPercentage: number): string => {
+export const getProgressBackgroundColor = (
+  progressPercentage: number
+): string => {
   const colorThresholds = Object.keys(colorProgressThresholds)
     .map(Number)
     .sort((a, b) => b - a);
