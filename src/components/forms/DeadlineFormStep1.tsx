@@ -125,8 +125,9 @@ export const DeadlineFormStep1 = ({
           contentContainerStyle={styles.resultsContent}
           showsVerticalScrollIndicator={false}
         >
-          {searchResults.bookList.map(item => (
+          {searchResults.bookList.map((item, index) => (
             <TouchableOpacity
+              testID={`book-result-${index}`}
               key={item.api_id || Math.random().toString()}
               style={[
                 styles.resultItem,
