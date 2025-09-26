@@ -37,7 +37,6 @@ export function ThemedButton({
   const { colors } = useTheme();
   const buttonVariant = ComponentVariants.button[variant];
 
-  // Resolve colors
   const themeBackgroundColorResult =
     colors[backgroundColor || buttonVariant.container];
   const themeBackgroundColor =
@@ -47,7 +46,6 @@ export function ThemedButton({
 
   const themeTextColor = colors[textColor || buttonVariant.content];
 
-  // Resolve border color for outline variants
   const borderColorResult =
     colors[
       'border' in buttonVariant
@@ -60,7 +58,6 @@ export function ThemedButton({
       ? borderColorResult
       : undefined;
 
-  // Disabled colors
   const disabledBackgroundColor = colors.disabled;
   const disabledTextColor = colors.disabledText;
 

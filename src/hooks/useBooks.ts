@@ -19,10 +19,6 @@ export const fetchBookById = async (book_id: string) => {
   return booksService.fetchBookById(book_id);
 };
 
-/* 
-    React Query hooks for fetching book data 
-    returns a list of books matching the search query
-**/
 export const useSearchBooksList = (query: string) => {
   return useQuery({
     queryKey: ['books', 'search', query],
@@ -32,9 +28,6 @@ export const useSearchBooksList = (query: string) => {
   });
 };
 
-/* 
-    React Query hook for fetching book data by api_id ID
-**/
 export const useFetchBookData = (api_id: string) => {
   return useQuery({
     queryKey: ['book', api_id],
@@ -43,9 +36,6 @@ export const useFetchBookData = (api_id: string) => {
   });
 };
 
-/* 
-    React Query hook for fetching book data by book_id from the database
-**/
 export const useFetchBookById = (book_id: string | null) => {
   return useQuery({
     queryKey: ['book', 'id', book_id],
