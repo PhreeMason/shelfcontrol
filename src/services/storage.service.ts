@@ -38,10 +38,8 @@ class StorageService {
           return { success: false, error: createError };
         }
 
-        console.log('Avatars bucket created successfully:', data);
         return { success: true, data };
       } else {
-        console.log('Avatars bucket already exists');
 
         // Update bucket to ensure it's public
         const { data, error: updateError } =
@@ -81,7 +79,6 @@ class StorageService {
         return false;
       }
 
-      console.log('Avatars bucket is accessible. Files:', data);
       return true;
     } catch (error) {
       console.error('Error testing avatars bucket:', error);
