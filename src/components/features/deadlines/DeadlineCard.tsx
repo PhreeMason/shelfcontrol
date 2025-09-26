@@ -7,9 +7,9 @@ import { dayjs } from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
+  formatRemainingDisplay,
   getBookCoverIcon,
   getGradientBackground,
-  formatRemainingDisplay,
 } from '@/utils/deadlineDisplayUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -133,44 +133,31 @@ export function DeadlineCard({
           <>
             <ThemedText
               style={[
-                Platform.OS === 'android'
-                  ? styles.archivedIconAndroid
-                  : styles.archivedIcon,
-                { color: countdownColor },
+                styles.archivedIcon,
+                { paddingTop: Platform.select({ ios: 6, android: 3 }) },
               ]}
             >
               {latestStatus === 'complete' ? '🏆' : '⏸️'}
             </ThemedText>
             <ThemedText
               style={[
-                Platform.OS === 'android'
-                  ? styles.countdownLabelAndroid
-                  : styles.countdownLabel,
+                styles.countdownLabel,
                 { color: countdownColor },
+                { marginTop: Platform.select({ ios: -2, android: 1 }) },
               ]}
             >
-              {latestStatus === 'complete' ? 'Done' : 'Paused'}
+              {latestStatus === 'complete' ? 'done' : 'paused'}
             </ThemedText>
           </>
         ) : (
           <>
             <ThemedText
-              style={[
-                Platform.OS === 'android'
-                  ? styles.countdownNumberAndroid
-                  : styles.countdownNumber,
-                { color: countdownColor },
-              ]}
+              style={[styles.countdownNumber, { color: countdownColor }]}
             >
               {daysLeft}
             </ThemedText>
             <ThemedText
-              style={[
-                Platform.OS === 'android'
-                  ? styles.countdownLabelAndroid
-                  : styles.countdownLabel,
-                { color: countdownColor },
-              ]}
+              style={[styles.countdownLabel, { color: countdownColor }]}
             >
               days
             </ThemedText>
@@ -294,39 +281,19 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     textAlign: 'center',
     includeFontPadding: false,
-    paddingTop: 8,
-  },
-  countdownNumberAndroid: {
-    fontSize: 28,
-    fontWeight: '800',
-    lineHeight: 30,
-    textAlign: 'center',
-    includeFontPadding: false,
-    paddingTop: 3,
+    paddingTop: Platform.select({ ios: 8, android: 3 }),
   },
   countdownLabel: {
     fontSize: 13,
     fontWeight: '600',
     opacity: 0.8,
-    marginTop: -5,
-  },
-  countdownLabelAndroid: {
-    fontSize: 13,
-    fontWeight: '600',
-    opacity: 0.8,
-    marginTop: -2,
+    marginTop: Platform.select({ ios: -5, android: -2 }),
   },
   archivedIcon: {
     fontSize: 24,
     fontWeight: '700',
     lineHeight: 28,
-    marginBottom: 2,
-  },
-  archivedIconAndroid: {
-    fontSize: 24,
-    fontWeight: '700',
-    lineHeight: 28,
-    marginBottom: 0,
+    marginBottom: Platform.select({ ios: 2, android: 0 }),
   },
 });
 

@@ -1,18 +1,18 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react-native';
-import { DeadlineCard } from '../DeadlineCard';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { fireEvent, render, screen } from '@testing-library/react-native';
+import React from 'react';
+import { DeadlineCard } from '../DeadlineCard';
 
 // Import mocked dependencies after mocks are defined
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
-import { useRouter } from 'expo-router';
 import {
+  formatRemainingDisplay,
   getBookCoverIcon,
   getGradientBackground,
-  formatRemainingDisplay,
 } from '@/utils/deadlineDisplayUtils';
+import { useRouter } from 'expo-router';
 
 // Mock all external dependencies
 jest.mock('@/components/themed', () => ({
@@ -288,7 +288,7 @@ describe('DeadlineCard', () => {
       render(<DeadlineCard deadline={completedDeadline} />);
 
       expect(screen.getByText('🏆')).toBeTruthy();
-      expect(screen.getByText('Done')).toBeTruthy();
+      expect(screen.getByText('done')).toBeTruthy();
       expect(screen.queryByText('5')).toBeNull();
       expect(screen.queryByText('days')).toBeNull();
     });
@@ -310,7 +310,7 @@ describe('DeadlineCard', () => {
       render(<DeadlineCard deadline={setAsideDeadline} />);
 
       expect(screen.getByText('⏸️')).toBeTruthy();
-      expect(screen.getByText('Paused')).toBeTruthy();
+      expect(screen.getByText('paused')).toBeTruthy();
       expect(screen.queryByText('5')).toBeNull();
       expect(screen.queryByText('days')).toBeNull();
     });
