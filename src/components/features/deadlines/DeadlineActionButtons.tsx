@@ -5,6 +5,10 @@ import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
+import {
+  getDeadlineStatus,
+  getStatusFlags,
+} from '@/utils/deadlineActionUtils';
 
 interface DeadlineActionButtonsProps {
   deadline: ReadingDeadlineWithProgress;
@@ -27,15 +31,8 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   const [isStartingReading, setIsStartingReading] = useState(false);
 
   // Get current status
-  const latestStatus =
-    deadline.status && deadline.status.length > 0
-      ? deadline.status[deadline.status.length - 1].status
-      : 'reading';
-
-  const isCompleted = latestStatus === 'complete';
-  const isSetAside = latestStatus === 'set_aside';
-  const isActive = latestStatus === 'reading';
-  const isPending = latestStatus === 'requested';
+  const latestStatus = getDeadlineStatus(deadline);
+  const { isCompleted, isSetAside, isActive, isPending } = getStatusFlags(latestStatus);
   const handleComplete = () => {
     // Show confirmation dialog before completing
     Alert.alert(
