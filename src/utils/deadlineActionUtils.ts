@@ -3,7 +3,9 @@ import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 
-export const getDeadlineStatus = (deadline: ReadingDeadlineWithProgress): string => {
+export const getDeadlineStatus = (
+  deadline: ReadingDeadlineWithProgress
+): string => {
   if (!deadline.status || deadline.status.length === 0) {
     return 'reading';
   }
@@ -195,7 +197,9 @@ export interface ReadAgainParams {
   };
 }
 
-export const createReadAgainParams = (deadline: ReadingDeadlineWithProgress): ReadAgainParams => {
+export const createReadAgainParams = (
+  deadline: ReadingDeadlineWithProgress
+): ReadAgainParams => {
   const baseParams = {
     page: '3',
     bookTitle: deadline.book_title,
@@ -205,9 +209,10 @@ export const createReadAgainParams = (deadline: ReadingDeadlineWithProgress): Re
     book_id: (deadline as any).book_id || '',
   };
 
-  const formatSpecificParams = deadline.format === 'audio'
-    ? { totalMinutes: String(deadline.total_quantity) }
-    : { totalQuantity: String(deadline.total_quantity) };
+  const formatSpecificParams =
+    deadline.format === 'audio'
+      ? { totalMinutes: String(deadline.total_quantity) }
+      : { totalQuantity: String(deadline.total_quantity) };
 
   return {
     pathname: '/deadline/new',
@@ -218,7 +223,10 @@ export const createReadAgainParams = (deadline: ReadingDeadlineWithProgress): Re
   };
 };
 
-export const getEditDeadlineUrl = (deadlineId: string, page: number = 3): string => {
+export const getEditDeadlineUrl = (
+  deadlineId: string,
+  page: number = 3
+): string => {
   return `/deadline/${deadlineId}/edit?page=${page}`;
 };
 

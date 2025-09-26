@@ -277,7 +277,8 @@ describe('deadlineActionUtils', () => {
 
       expect(alert).toEqual({
         title: 'Delete Deadline',
-        message: 'Are you sure you want to delete "Test Book"? This action cannot be undone.',
+        message:
+          'Are you sure you want to delete "Test Book"? This action cannot be undone.',
         buttons: [
           {
             text: 'Cancel',
@@ -353,8 +354,12 @@ describe('deadlineActionUtils', () => {
     });
 
     it('should create update deadline prompt with custom message', () => {
-      const customMessage = "Would you like to update the deadline date since you're resuming this book?";
-      const alert = createUpdateDeadlinePromptAlert('deadline-456', customMessage);
+      const customMessage =
+        "Would you like to update the deadline date since you're resuming this book?";
+      const alert = createUpdateDeadlinePromptAlert(
+        'deadline-456',
+        customMessage
+      );
 
       expect(alert.message).toBe(customMessage);
     });
@@ -363,7 +368,9 @@ describe('deadlineActionUtils', () => {
       const alert = createUpdateDeadlinePromptAlert('deadline-789');
 
       alert.buttons[1].onPress?.();
-      expect(router.push).toHaveBeenCalledWith('/deadline/deadline-789/edit?page=3');
+      expect(router.push).toHaveBeenCalledWith(
+        '/deadline/deadline-789/edit?page=3'
+      );
     });
   });
 
@@ -549,7 +556,11 @@ describe('deadlineActionUtils', () => {
 
       showAlert(config);
 
-      expect(Alert.alert).toHaveBeenCalledWith(config.title, config.message, config.buttons);
+      expect(Alert.alert).toHaveBeenCalledWith(
+        config.title,
+        config.message,
+        config.buttons
+      );
     });
   });
 });

@@ -184,7 +184,9 @@ describe('DeadlineFormStep3', () => {
     it('should render helper text for date picker', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByText('Past dates will be marked as overdue')).toBeTruthy();
+      expect(
+        screen.getByText('Past dates will be marked as overdue')
+      ).toBeTruthy();
     });
 
     it('should render helper text for progress input', () => {
@@ -216,9 +218,7 @@ describe('DeadlineFormStep3', () => {
     it('should hide auto-filled indicator when deadlineFromPublicationDate=false', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(
-        screen.queryByText('✓ Set to book publication date')
-      ).toBeNull();
+      expect(screen.queryByText('✓ Set to book publication date')).toBeNull();
     });
 
     it('should render without errors with all props', () => {
@@ -230,9 +230,7 @@ describe('DeadlineFormStep3', () => {
     it('should display formatted date in date picker button', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(
-        screen.getByText(/December 30, 2024/)
-      ).toBeTruthy();
+      expect(screen.getByText(/December 30, 2024/)).toBeTruthy();
     });
   });
 
@@ -258,9 +256,7 @@ describe('DeadlineFormStep3', () => {
     it('should handle Controller field value correctly', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(
-        screen.getByText(/December 30, 2024/)
-      ).toBeTruthy();
+      expect(screen.getByText(/December 30, 2024/)).toBeTruthy();
     });
   });
 
@@ -455,9 +451,7 @@ describe('DeadlineFormStep3', () => {
         bookTitle: 'Custom Book Title',
         deadline: new Date('2024-08-15'),
       };
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />
-      );
+      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
 
       expect(screen.getByText(/Custom Book Title/)).toBeTruthy();
       expect(screen.getByText(/Aug 14/)).toBeTruthy();
@@ -599,9 +593,7 @@ describe('DeadlineFormStep3', () => {
         bookTitle: 'The Great Gatsby',
         deadline: new Date('2024-07-04'),
       };
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />
-      );
+      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
 
       expect(screen.getByText(/The Great Gatsby/)).toBeTruthy();
       expect(screen.getByText(/Jul 3/)).toBeTruthy();
@@ -612,9 +604,7 @@ describe('DeadlineFormStep3', () => {
         bookTitle: null,
         deadline: new Date('2024-07-04'),
       };
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />
-      );
+      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
 
       expect(
         screen.getByText("'Complete the form above to see your reading plan'")
@@ -626,9 +616,7 @@ describe('DeadlineFormStep3', () => {
         bookTitle: 'Test Book',
         deadline: null,
       };
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />
-      );
+      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
 
       expect(
         screen.getByText("'Complete the form above to see your reading plan'")
@@ -640,9 +628,7 @@ describe('DeadlineFormStep3', () => {
         bookTitle: 'Test Book',
         deadline: new Date('2024-12-25'),
       };
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />
-      );
+      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
 
       expect(screen.getByText(/Dec 24/)).toBeTruthy();
     });
@@ -658,14 +644,18 @@ describe('DeadlineFormStep3', () => {
       };
 
       const { rerender } = render(
-        <DeadlineFormStep3 {...{ ...defaultProps, watchedValues: initialWatched }} />
+        <DeadlineFormStep3
+          {...{ ...defaultProps, watchedValues: initialWatched }}
+        />
       );
 
       expect(screen.getByText(/Initial Book/)).toBeTruthy();
       expect(screen.getByText(/May 31/)).toBeTruthy();
 
       rerender(
-        <DeadlineFormStep3 {...{ ...defaultProps, watchedValues: updatedWatched }} />
+        <DeadlineFormStep3
+          {...{ ...defaultProps, watchedValues: updatedWatched }}
+        />
       );
 
       expect(screen.queryByText(/Initial Book/)).toBeNull();

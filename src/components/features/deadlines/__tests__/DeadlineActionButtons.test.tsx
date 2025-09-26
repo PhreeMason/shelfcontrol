@@ -1,5 +1,10 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { router } from 'expo-router';
@@ -17,8 +22,8 @@ jest.mock('react-native', () => ({
     alert: jest.fn(),
   },
   StyleSheet: {
-    create: jest.fn((styles) => styles),
-    flatten: jest.fn((styles) => styles),
+    create: jest.fn(styles => styles),
+    flatten: jest.fn(styles => styles),
   },
   AppState: {
     addEventListener: jest.fn(),
@@ -46,14 +51,20 @@ jest.mock('@/components/themed', () => ({
   },
   ThemedView: ({ children, testID, ...props }: any) => {
     const React = require('react');
-    return React.createElement('View', {
-      testID: testID || 'themed-view',
-      ...props,
-    }, children);
+    return React.createElement(
+      'View',
+      {
+        testID: testID || 'themed-view',
+        ...props,
+      },
+      children
+    );
   },
 }));
 
-const mockUseDeadlines = useDeadlines as jest.MockedFunction<typeof useDeadlines>;
+const mockUseDeadlines = useDeadlines as jest.MockedFunction<
+  typeof useDeadlines
+>;
 const mockRouter = router as jest.Mocked<typeof router>;
 const mockToast = Toast as jest.Mocked<typeof Toast>;
 
@@ -77,13 +88,15 @@ describe('DeadlineActionButtons', () => {
     source: 'manual' as const,
     user_id: 'user-123',
     updated_at: '2024-01-01T00:00:00Z',
-    status: [{
-      id: 'status-1',
-      deadline_id: 'deadline-123',
-      status: 'reading' as const,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z',
-    }],
+    status: [
+      {
+        id: 'status-1',
+        deadline_id: 'deadline-123',
+        status: 'reading' as const,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
+      },
+    ],
     progress: [],
   };
 
@@ -111,18 +124,22 @@ describe('DeadlineActionButtons', () => {
     });
 
     it('should always render delete button regardless of status', () => {
-      const { rerender } = render(<DeadlineActionButtons deadline={baseDeadline} />);
+      const { rerender } = render(
+        <DeadlineActionButtons deadline={baseDeadline} />
+      );
       expect(screen.getByTestId('button-delete-deadline')).toBeTruthy();
 
       const completedDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-2',
-          deadline_id: 'deadline-123',
-          status: 'complete' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-2',
+            deadline_id: 'deadline-123',
+            status: 'complete' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       rerender(<DeadlineActionButtons deadline={completedDeadline} />);
       expect(screen.getByTestId('button-delete-deadline')).toBeTruthy();
@@ -140,13 +157,15 @@ describe('DeadlineActionButtons', () => {
     it('should show Start Reading button for pending status', () => {
       const pendingDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-3',
-          deadline_id: 'deadline-123',
-          status: 'requested' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-3',
+            deadline_id: 'deadline-123',
+            status: 'requested' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={pendingDeadline} />);
 
@@ -158,13 +177,15 @@ describe('DeadlineActionButtons', () => {
     it('should show Complete and Pause buttons for active status', () => {
       const activeDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-4',
-          deadline_id: 'deadline-123',
-          status: 'reading' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-4',
+            deadline_id: 'deadline-123',
+            status: 'reading' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={activeDeadline} />);
 
@@ -176,13 +197,15 @@ describe('DeadlineActionButtons', () => {
     it('should show Resume and Complete buttons for set aside status', () => {
       const setAsideDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-5',
-          deadline_id: 'deadline-123',
-          status: 'set_aside' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-5',
+            deadline_id: 'deadline-123',
+            status: 'set_aside' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={setAsideDeadline} />);
 
@@ -194,13 +217,15 @@ describe('DeadlineActionButtons', () => {
     it('should show Read Again button for completed status', () => {
       const completedDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-2',
-          deadline_id: 'deadline-123',
-          status: 'complete' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-2',
+            deadline_id: 'deadline-123',
+            status: 'complete' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={completedDeadline} />);
 
@@ -224,10 +249,34 @@ describe('DeadlineActionButtons', () => {
       const multiStatusDeadline = {
         ...baseDeadline,
         status: [
-          { id: 'status-6', deadline_id: 'deadline-123', status: 'requested' as const, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' },
-          { id: 'status-7', deadline_id: 'deadline-123', status: 'reading' as const, created_at: '2024-01-02T00:00:00Z', updated_at: '2024-01-02T00:00:00Z' },
-          { id: 'status-8', deadline_id: 'deadline-123', status: 'set_aside' as const, created_at: '2024-01-03T00:00:00Z', updated_at: '2024-01-03T00:00:00Z' },
-          { id: 'status-9', deadline_id: 'deadline-123', status: 'reading' as const, created_at: '2024-01-04T00:00:00Z', updated_at: '2024-01-04T00:00:00Z' },
+          {
+            id: 'status-6',
+            deadline_id: 'deadline-123',
+            status: 'requested' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+          {
+            id: 'status-7',
+            deadline_id: 'deadline-123',
+            status: 'reading' as const,
+            created_at: '2024-01-02T00:00:00Z',
+            updated_at: '2024-01-02T00:00:00Z',
+          },
+          {
+            id: 'status-8',
+            deadline_id: 'deadline-123',
+            status: 'set_aside' as const,
+            created_at: '2024-01-03T00:00:00Z',
+            updated_at: '2024-01-03T00:00:00Z',
+          },
+          {
+            id: 'status-9',
+            deadline_id: 'deadline-123',
+            status: 'reading' as const,
+            created_at: '2024-01-04T00:00:00Z',
+            updated_at: '2024-01-04T00:00:00Z',
+          },
         ],
       };
       render(<DeadlineActionButtons deadline={multiStatusDeadline} />);
@@ -352,7 +401,9 @@ describe('DeadlineActionButtons', () => {
       const successCallback = mockCompleteDeadline.mock.calls[0][1];
       successCallback();
 
-      expect(mockRouter.push).toHaveBeenCalledWith('/deadline/deadline-123/completion');
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        '/deadline/deadline-123/completion'
+      );
     });
   });
 
@@ -392,13 +443,15 @@ describe('DeadlineActionButtons', () => {
     it('should call reactivateDeadline when resume button is pressed', () => {
       const setAsideDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-5',
-          deadline_id: 'deadline-123',
-          status: 'set_aside' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-5',
+            deadline_id: 'deadline-123',
+            status: 'set_aside' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={setAsideDeadline} />);
 
@@ -414,13 +467,15 @@ describe('DeadlineActionButtons', () => {
     it('should show update deadline prompt after reactivating set aside deadline', async () => {
       const setAsideDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-5',
-          deadline_id: 'deadline-123',
-          status: 'set_aside' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-5',
+            deadline_id: 'deadline-123',
+            status: 'set_aside' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={setAsideDeadline} />);
 
@@ -445,13 +500,15 @@ describe('DeadlineActionButtons', () => {
     it('should navigate to edit page when update deadline is accepted', async () => {
       const setAsideDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-5',
-          deadline_id: 'deadline-123',
-          status: 'set_aside' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-5',
+            deadline_id: 'deadline-123',
+            status: 'set_aside' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={setAsideDeadline} />);
 
@@ -462,9 +519,12 @@ describe('DeadlineActionButtons', () => {
       jest.advanceTimersByTime(2500);
 
       await waitFor(() => {
-        const updateButton = mockAlert.mock.calls[mockAlert.mock.calls.length - 1][2]?.[1];
+        const updateButton =
+          mockAlert.mock.calls[mockAlert.mock.calls.length - 1][2]?.[1];
         updateButton?.onPress?.();
-        expect(mockRouter.push).toHaveBeenCalledWith('/deadline/deadline-123/edit?page=3');
+        expect(mockRouter.push).toHaveBeenCalledWith(
+          '/deadline/deadline-123/edit?page=3'
+        );
       });
     });
   });
@@ -473,13 +533,15 @@ describe('DeadlineActionButtons', () => {
     it('should call startReadingDeadline when start reading button is pressed', () => {
       const pendingDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-3',
-          deadline_id: 'deadline-123',
-          status: 'requested' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-3',
+            deadline_id: 'deadline-123',
+            status: 'requested' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={pendingDeadline} />);
 
@@ -495,13 +557,15 @@ describe('DeadlineActionButtons', () => {
     it('should show update deadline prompt after starting reading', async () => {
       const pendingDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-3',
-          deadline_id: 'deadline-123',
-          status: 'requested' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-3',
+            deadline_id: 'deadline-123',
+            status: 'requested' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={pendingDeadline} />);
 
@@ -528,13 +592,15 @@ describe('DeadlineActionButtons', () => {
     it('should show read again confirmation alert when read again button is pressed', () => {
       const completedDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-2',
-          deadline_id: 'deadline-123',
-          status: 'complete' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-2',
+            deadline_id: 'deadline-123',
+            status: 'complete' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={completedDeadline} />);
 
@@ -553,13 +619,15 @@ describe('DeadlineActionButtons', () => {
     it('should navigate to new deadline page with correct params for physical book', () => {
       const completedDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-read-again',
-          deadline_id: 'deadline-123',
-          status: 'complete' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-read-again',
+            deadline_id: 'deadline-123',
+            status: 'complete' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
         flexibility: 'strict' as const,
         book_id: 'book-123',
       };
@@ -586,13 +654,15 @@ describe('DeadlineActionButtons', () => {
     it('should navigate with correct params for audio book', () => {
       const completedAudioDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-audio-complete',
-          deadline_id: 'deadline-123',
-          status: 'complete' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-audio-complete',
+            deadline_id: 'deadline-123',
+            status: 'complete' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
         format: 'audio' as const,
         total_quantity: 1200,
       };
@@ -656,13 +726,15 @@ describe('DeadlineActionButtons', () => {
     it('should show loading text and disable resume button during reactivate operation', () => {
       const setAsideDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-5',
-          deadline_id: 'deadline-123',
-          status: 'set_aside' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-5',
+            deadline_id: 'deadline-123',
+            status: 'set_aside' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={setAsideDeadline} />);
 
@@ -676,13 +748,15 @@ describe('DeadlineActionButtons', () => {
     it('should show loading text and disable start reading button during start operation', () => {
       const pendingDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-3',
-          deadline_id: 'deadline-123',
-          status: 'requested' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-3',
+            deadline_id: 'deadline-123',
+            status: 'requested' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={pendingDeadline} />);
 
@@ -737,13 +811,15 @@ describe('DeadlineActionButtons', () => {
     it('should handle reactivate error', () => {
       const setAsideDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-5',
-          deadline_id: 'deadline-123',
-          status: 'set_aside' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-5',
+            deadline_id: 'deadline-123',
+            status: 'set_aside' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={setAsideDeadline} />);
 
@@ -765,13 +841,15 @@ describe('DeadlineActionButtons', () => {
     it('should handle start reading error', () => {
       const pendingDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-3',
-          deadline_id: 'deadline-123',
-          status: 'requested' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-3',
+            deadline_id: 'deadline-123',
+            status: 'requested' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={pendingDeadline} />);
 
@@ -817,13 +895,15 @@ describe('DeadlineActionButtons', () => {
     it('should handle completed deadline being reactivated for read again', () => {
       const completedDeadline = {
         ...baseDeadline,
-        status: [{
-          id: 'status-2',
-          deadline_id: 'deadline-123',
-          status: 'complete' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        }],
+        status: [
+          {
+            id: 'status-2',
+            deadline_id: 'deadline-123',
+            status: 'complete' as const,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
       render(<DeadlineActionButtons deadline={completedDeadline} />);
 
