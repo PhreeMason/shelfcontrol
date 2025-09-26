@@ -483,7 +483,7 @@ describe('StorageService', () => {
     });
 
     it('should handle empty file paths array', async () => {
-      const mockRemoveData: Array<{ name: string }> = [];
+      const mockRemoveData: { name: string }[] = [];
 
       const mockFrom = jest.fn().mockReturnValue({
         remove: jest

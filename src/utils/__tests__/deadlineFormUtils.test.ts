@@ -841,7 +841,6 @@ describe('deadlineFormUtils', () => {
         autoHide: true,
         visibilityTime: 1500,
         position: 'top',
-        onHide: expect.any(Function),
       });
     });
 
@@ -856,31 +855,34 @@ describe('deadlineFormUtils', () => {
         autoHide: true,
         visibilityTime: 1500,
         position: 'top',
-        onHide: expect.any(Function),
       });
     });
 
-    it('should navigate correctly on hide for new mode', () => {
+    it('should navigate correctly for new mode', () => {
       const toastFn = createSuccessToast('new');
       toastFn();
-
-      const onHide = Toast.show.mock.calls[0][0].onHide;
-      onHide();
 
       expect(router.replace).toHaveBeenCalledWith('/');
     });
 
-    it('should navigate correctly on hide for edit mode', () => {
+    it('should navigate correctly for edit mode when can go back', () => {
       const { router } = require('expo-router');
       router.canGoBack.mockReturnValue(true);
 
       const toastFn = createSuccessToast('edit');
       toastFn();
 
-      const onHide = Toast.show.mock.calls[0][0].onHide;
-      onHide();
-
       expect(router.back).toHaveBeenCalled();
+    });
+
+    it('should navigate to home for edit mode when cannot go back', () => {
+      const { router } = require('expo-router');
+      router.canGoBack.mockReturnValue(false);
+
+      const toastFn = createSuccessToast('edit');
+      toastFn();
+
+      expect(router.replace).toHaveBeenCalledWith('/');
     });
   });
 

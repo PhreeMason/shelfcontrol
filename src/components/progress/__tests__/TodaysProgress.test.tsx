@@ -2,6 +2,13 @@ import React from 'react';
 import { render, screen } from '@testing-library/react-native';
 import TodaysProgress from '../TodaysProgress';
 
+import {
+  getDisplayValue,
+  getRemainingText,
+  getEncouragementMessage,
+  getProgressBackgroundColor,
+} from '@/utils/todaysProgressUtils';
+
 // Mock the theme hook
 jest.mock('@/hooks/useThemeColor', () => ({
   useTheme: () => ({
@@ -41,13 +48,6 @@ jest.mock('@/components/shared/LinearProgressBar', () => {
     });
   };
 });
-
-import {
-  getDisplayValue,
-  getRemainingText,
-  getEncouragementMessage,
-  getProgressBackgroundColor,
-} from '@/utils/todaysProgressUtils';
 
 // Mock utility functions
 jest.mock('@/utils/todaysProgressUtils', () => ({
