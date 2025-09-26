@@ -143,6 +143,48 @@ export type Database = {
         };
         Relationships: [];
       };
+      deadline_notes: {
+        Row: {
+          created_at: string | null;
+          deadline_id: string;
+          id: string;
+          note_text: string;
+          updated_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          deadline_id: string;
+          id?: string;
+          note_text: string;
+          updated_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          deadline_id?: string;
+          id?: string;
+          note_text?: string;
+          updated_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'deadline_notes_deadline_id_fkey';
+            columns: ['deadline_id'];
+            isOneToOne: false;
+            referencedRelation: 'deadlines';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'deadline_notes_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       deadline_progress: {
         Row: {
           created_at: string;
