@@ -132,11 +132,9 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
   const handleChangeText = (text: string) => {
     setDisplayValue(text);
 
-    // Parse in real-time to show validation
     const parsed = parseAudiobookTime(text);
     setIsValid(parsed !== null);
 
-    // Only update parent if valid
     if (parsed !== null) {
       onChange(parsed);
     }
@@ -149,22 +147,17 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
   const handleBlur = () => {
     setIsFocused(false);
 
-    // Parse and validate
     const parsed = parseAudiobookTime(displayValue);
 
     if (parsed !== null) {
-      // Update with parsed value
       onChange(parsed);
-      // Format for display
       setDisplayValue(formatAudiobookTime(parsed));
       setIsValid(true);
     } else if (displayValue.trim() === '') {
-      // Empty is valid (0 minutes)
       onChange(0);
       setDisplayValue('0m');
       setIsValid(true);
     } else {
-      // Invalid input - restore previous valid value
       setDisplayValue(formatAudiobookTime(value));
       setIsValid(true);
     }

@@ -12,8 +12,8 @@ interface AvatarProps {
   editable?: boolean;
   onImageChange?: (uri: string) => void;
   username?: string | null | undefined;
-  newImageUri?: string | null; // For displaying newly selected images before upload
-  showIcon?: boolean; // Show person icon instead of initials
+  newImageUri?: string | null;
+  showIcon?: boolean;
 }
 
 const Avatar: React.FC<AvatarProps> = ({
@@ -31,16 +31,12 @@ const Avatar: React.FC<AvatarProps> = ({
   useEffect(() => {
     const loadAvatar = async () => {
       try {
-        // Priority: 1. New image URI (for edit preview), 2. Stored path, 3. Find in storage
         if (newImageUri) {
-          // For newly selected images, use the local URI directly
           setDisplayUrl(newImageUri);
         } else if (avatarUrl) {
-          // avatarUrl is now a path, get signed URL for it
           const signedUrl = await profileService.getAvatarSignedUrl(avatarUrl);
           setDisplayUrl(signedUrl);
         } else if (session?.user?.id) {
-          // If no path is stored, try to find the latest avatar in user folder
           const url = await profileService.getAvatarUrl(session.user.id);
           setDisplayUrl(url);
         } else {
@@ -57,7 +53,6 @@ const Avatar: React.FC<AvatarProps> = ({
   const pickImage = async () => {
     if (!editable || !onImageChange) return;
 
-    // Request permission
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -69,7 +64,6 @@ const Avatar: React.FC<AvatarProps> = ({
       return;
     }
 
-    // Show options
     Alert.alert('Change Profile Picture', 'Choose an option', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Take Photo', onPress: () => openCamera() },

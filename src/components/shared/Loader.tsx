@@ -19,7 +19,6 @@ export function Loader({
   fullScreen = false,
   indicatorColor: _indicatorColor = 'primary',
 }: LoaderProps) {
-  // Note: indicatorColor is ignored for now, always use primary
   const { colors } = useTheme();
 
   return (

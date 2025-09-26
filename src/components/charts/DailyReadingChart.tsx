@@ -25,7 +25,6 @@ const getBookReadingDays = (
   deadline: ReadingDeadlineWithProgress
 ): ReadingDay[] => {
   const dailyProgress: { [date: string]: number } = {};
-  // Sort progress updates by date
   if (!deadline.progress || !Array.isArray(deadline.progress)) return [];
 
   const cutoffTime = calculateCutoffTime([deadline]);
@@ -35,7 +34,6 @@ const getBookReadingDays = (
 
   processBookProgress(deadline, cutoffTime, dailyProgress, deadline.format);
 
-  // Convert dictionary to sorted array
   const result = Object.entries(dailyProgress)
     .map(([date, progressRead]) => ({
       date,
@@ -50,7 +48,6 @@ const getBookReadingDays = (
 const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
   const { colors, typography } = useTheme();
 
-  // Get format-specific labels (moved up before early return)
   const getUnitLabel = (format: string) => {
     switch (format) {
       case 'audio':
@@ -74,7 +71,6 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
 
   const recentDays = getBookReadingDays(deadline);
 
-  // If no reading data, show empty state
   if (recentDays.length === 0) {
     return (
       <ThemedView style={styles.container}>
@@ -97,7 +93,6 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     );
   }
 
-  // Calculate daily minimum goal
   const currentProgress =
     deadline.progress?.length > 0
       ? deadline.progress[deadline.progress.length - 1].current_progress
@@ -119,10 +114,8 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     deadline.format
   );
 
-  // Display daily minimum directly (no conversion needed)
   const displayDailyMinimum = dailyMinimum;
 
-  // Prepare data for the bar chart
   const chartData = recentDays.map(day => {
     const label = dayjs(day.date).format('M/DD');
     return {
@@ -154,7 +147,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
 
   const maxBarValue = Math.max(...chartData.map(d => d.value));
   const maxValue = Math.max(maxBarValue, displayDailyMinimum);
-  const yAxisMax = Math.ceil(maxValue * 1.2); // Add 20% padding
+  const yAxisMax = Math.ceil(maxValue * 1.2);
 
   return (
     <ThemedView style={styles.container}>
@@ -168,18 +161,13 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
       </ThemedText>
 
       <View style={styles.chartContainer}>
-        {/* Combined Bar Chart with Line Overlay */}
         <View style={styles.combinedChartSection} testID="combined-chart">
           <BarChart
-            // Bar chart data
             data={chartData}
-            // Enable line overlay
-            // Chart dimensions
             width={350}
             height={200}
             initialSpacing={10}
             endSpacing={10}
-            // Bar styling (maintain your existing styling)
             barWidth={(() => {
               const calculatedWidth = Math.max(
                 20,
@@ -196,12 +184,9 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
               color: colors.textMuted,
               fontSize: 11,
             }}
-            // Grid lines
-            // Y-axis configuration
             noOfSections={4}
             maxValue={yAxisMax > 0 ? yAxisMax : 10}
             yAxisLabelSuffix={` ${unitLabel}`}
-            // Animation
             isAnimated
             animationDuration={1000}
           />

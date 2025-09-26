@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     ...Typography.titleLarge,
-    fontSize: 26, // Override typography fontSize
+    fontSize: 26,
     letterSpacing: -0.4,
     lineHeight: 30,
     color: 'rgba(250, 248, 245, 1)',

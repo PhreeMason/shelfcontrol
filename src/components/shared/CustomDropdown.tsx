@@ -50,7 +50,6 @@ const CustomDropdown = <T extends FieldValues>({
   const dangerColor = colors.danger;
   const primaryColor = colors.primary;
 
-  // Custom filter function for options
   const filterFunction = (
     items: { label: string; value: string }[],
     searchText: string
@@ -61,7 +60,6 @@ const CustomDropdown = <T extends FieldValues>({
       item.label.toLowerCase().includes(searchText.toLowerCase())
     );
 
-    // Add "Other..." option if custom input is allowed and not already in filtered results
     if (allowCustom && !filtered.find(item => item.value === '__custom__')) {
       filtered.push({ label: 'Other...', value: '__custom__' });
     }
@@ -79,7 +77,6 @@ const CustomDropdown = <T extends FieldValues>({
     setFilteredData(filtered);
     setShowSuggestions(text.length > 0);
 
-    // If text exactly matches an option, select it
     const exactMatch = options.find(
       option => option.label.toLowerCase() === text.toLowerCase()
     );
@@ -125,7 +122,6 @@ const CustomDropdown = <T extends FieldValues>({
       control={control}
       name={name}
       render={({ field: { value, onChange }, fieldState: { error } }) => {
-        // Check if current value is a custom value (not in predefined options)
         const isCustomValue =
           value &&
           !options.find(opt => opt.value === value) &&
@@ -184,7 +180,6 @@ const CustomDropdown = <T extends FieldValues>({
               </View>
             </View>
 
-            {/* Suggestions dropdown */}
             {showSuggestions && filteredData.length > 0 && (
               <View
                 style={[
@@ -214,7 +209,6 @@ const CustomDropdown = <T extends FieldValues>({
               </ThemedText>
             )}
 
-            {/* Custom Input Modal */}
             <Modal
               visible={showCustomInput}
               transparent
