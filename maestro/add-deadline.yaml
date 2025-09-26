@@ -1,0 +1,140 @@
+# ShelfControl App - Add Deadline Flow Test
+# This test adds a new book deadline by searching for a book,
+# setting status, and configuring deadline date
+
+appId: ${APP_ID}
+name: "ShelfControl Add Deadline Flow"
+tags:
+  - deadline
+  - add-book
+
+---
+# Launch the app
+- launchApp:
+    appId: ${APP_ID}
+
+# Wait for app to load
+- extendedWaitUntil:
+    visible: "ShelfControl"
+    timeout: 10000
+
+# Handle development server screen (if in dev mode)
+- runFlow:
+    when:
+      visible: "Development servers"
+    commands:
+      # Tap on localhost development server
+      - tapOn:
+          text: "http://localhost:8081"
+      # Handle potential developer menu popup
+      - runFlow:
+          when:
+            visible: "Continue"
+          commands:
+            - tapOn: "Continue"
+
+# Navigate to the deadline/new-deadline tab (2 of 3)
+- extendedWaitUntil:
+    visible: "new-deadline, tab, 2 of 3"
+    timeout: 5000
+- tapOn: "new-deadline, tab, 2 of 3"
+
+# Wait for search input to be visible and tap it
+- extendedWaitUntil:
+    visible: "Search by title or author..."
+    timeout: 5000
+- tapOn: "Search by title or author..."
+
+# Input search text for book
+- inputText: "Mistborn: The Final Empire sanderson"
+
+# Wait for search results to appear and select first book result
+- extendedWaitUntil:
+    visible:
+      id: "book-result-0"
+    timeout: 10000
+- tapOn:
+    id: "book-result-0"
+    repeat: 2
+    delay: 500
+
+# Wait for status options to appear and select pending status
+- extendedWaitUntil:
+    visible:
+      id: "status-option-pending"
+    timeout: 5000
+- tapOn:
+    id: "status-option-pending"
+
+# Confirm pending status selection (double tap may be needed)
+- extendedWaitUntil:
+    visible:
+      id: "status-option-pending"
+    timeout: 3000
+- tapOn:
+    id: "status-option-pending"
+
+# Scroll to reveal continue button
+- scroll
+
+# Wait for and tap continue button
+- extendedWaitUntil:
+    visible: "Continue"
+    timeout: 5000
+- tapOn: "Continue"
+
+# Wait for date picker button and tap it
+- extendedWaitUntil:
+    visible:
+      id: "date-picker-button"
+    timeout: 5000
+- tapOn:
+    id: "date-picker-button"
+
+# Navigate to next month in date picker
+- extendedWaitUntil:
+    visible:
+      id: "DatePicker.NextMonth"
+    timeout: 3000
+- tapOn:
+    id: "DatePicker.NextMonth"
+
+# Select day 13 in the calendar
+- extendedWaitUntil:
+    visible: "13"
+    timeout: 3000
+- tapOn: "13"
+
+# Select hour (0 for midnight)
+- extendedWaitUntil:
+    visible: "0"
+    timeout: 3000
+- tapOn: "0"
+
+# Input minutes (10)
+- inputText: "10"
+
+# Scroll to reveal Add Book button
+- scroll
+
+# Wait for and tap Add Book button
+- extendedWaitUntil:
+    visible: "Add Book"
+    timeout: 5000
+- tapOn: "Add Book"
+
+# Wait for navigation to pending section
+- extendedWaitUntil:
+    visible: "Pending"
+    timeout: 5000
+- tapOn: "Pending"
+
+# Verify the book was successfully added to the list
+- extendedWaitUntil:
+    visible: ".*Mistborn: The Final Empire.*"
+    timeout: 10000
+
+- assertVisible: ".*Mistborn: The Final Empire.*"
+
+# Take screenshot of successful book addition
+- takeScreenshot: "successful_deadline_added"
