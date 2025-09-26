@@ -1,12 +1,12 @@
-import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
+import { ThemedButton, ThemedText } from '@/components/themed';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
-
 interface DeadlineCompletionScreenProps {
   deadline: ReadingDeadlineWithProgress;
   onContinue: () => void;
@@ -25,7 +25,13 @@ const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
   };
 
   return (
-    <ThemedView backgroundColor="complete" style={styles.container}>
+    <LinearGradient
+      colors={['#E8C2B9', '#ccafc9']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.container}
+    >
+
       <View style={styles.content}>
         <View style={styles.bookContainer}>
           {bookData?.cover_image_url ? (
@@ -44,12 +50,12 @@ const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
         </View>
 
         <ThemedText color="textOnPrimary" style={styles.title}>
-          Well Done!
+          You finished!
         </ThemedText>
 
         <ThemedText color="textOnPrimary" style={styles.subtitle}>
           Congratulations on finishing{' '}
-          <ThemedText color="accent" style={styles.bookTitle}>
+          <ThemedText color="textOnPrimary" style={styles.bookTitle}>
             "{deadline.book_title}"
           </ThemedText>
           !
@@ -57,7 +63,7 @@ const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
 
         <ThemedButton
           title="Continue"
-          variant="accent"
+          variant="success"
           style={styles.continueButton}
           onPress={handleContinue}
         />
@@ -69,7 +75,7 @@ const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
         fadeOut={true}
         fallSpeed={1800}
       />
-    </ThemedView>
+    </LinearGradient>
   );
 };
 
@@ -85,6 +91,11 @@ const styles = StyleSheet.create({
   },
   bookContainer: {
     marginBottom: 32,
+  },
+  bookCover: {
+    width: 160,
+    height: 240,
+    borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -93,11 +104,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 10,
-  },
-  bookCover: {
-    width: 160,
-    height: 240,
-    borderRadius: 8,
   },
   fallbackIcon: {
     width: 160,
