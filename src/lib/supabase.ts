@@ -1,9 +1,9 @@
-import 'react-native-get-random-values';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import * as aesjs from 'aes-js';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
+import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
 import { v4 as uuidv4 } from 'uuid';
 import { Database } from '../types/database.types';
@@ -71,7 +71,7 @@ const supabase = createClient<Database>(supabaseUrl!, supabaseAnonKey!, {
     ...(Platform.OS !== 'web' ? { storage: new LargeSecureStore() } : {}),
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    detectSessionInUrl: true,
   },
 });
 

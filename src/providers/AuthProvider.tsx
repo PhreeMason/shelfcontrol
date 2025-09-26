@@ -1,4 +1,4 @@
-import { authService, profileService, AppleProfileData } from '@/services';
+import { AppleProfileData, authService, profileService } from '@/services';
 import { Database } from '@/types/database.types';
 import { AuthError, AuthResponse, Session } from '@supabase/supabase-js';
 import { router, useSegments } from 'expo-router';
@@ -127,9 +127,14 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   const signOut = async () => {
     try {
       await authService.signOut();
+      // Always clear local state regardless of API response
       setProfile(null);
-    } catch (error) {
+      setSession(null); // Add this line to ensure session is cleared
+    } catch (error: any) {
       console.error('Error signing out:', error);
+      // Even if signout fails, clear local state to prevent UI inconsistency
+      setProfile(null);
+      setSession(null); // Add this line
     }
   };
 

@@ -86,8 +86,16 @@ class AuthService {
    * Sign out the current user
    */
   async signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    try {
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
+      if (error && !error.message?.includes('Auth session missing')) {
+        throw error;
+      }
+    } catch (error: any) {
+      if (!error.message?.includes('Auth session missing')) {
+        throw error;
+      }
+    }
   }
 
   /**
