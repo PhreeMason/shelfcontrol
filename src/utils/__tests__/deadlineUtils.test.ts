@@ -258,6 +258,100 @@ describe('deadlineUtils', () => {
       expect(result.setAside[0].id).toBe('2');
       expect(result.setAside[1].id).toBe('1');
     });
+
+    it('should sort overdue deadlines by pages remaining (least remaining first)', () => {
+      const overdueDeadline1 = createMockDeadline(
+        '1',
+        '2023-01-01',
+        '2023-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 250, created_at: '2023-01-05T00:00:00Z' }]
+      );
+      overdueDeadline1.total_quantity = 300;
+
+      const overdueDeadline2 = createMockDeadline(
+        '2',
+        '2023-01-01',
+        '2023-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 100, created_at: '2023-01-05T00:00:00Z' }]
+      );
+      overdueDeadline2.total_quantity = 400;
+
+      const overdueDeadline3 = createMockDeadline(
+        '3',
+        '2023-01-01',
+        '2023-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 180, created_at: '2023-01-05T00:00:00Z' }]
+      );
+      overdueDeadline3.total_quantity = 200;
+
+      const result = separateDeadlines([
+        overdueDeadline1,
+        overdueDeadline2,
+        overdueDeadline3,
+      ]);
+
+      expect(result.overdue[0].id).toBe('3');
+      expect(result.overdue[1].id).toBe('1');
+      expect(result.overdue[2].id).toBe('2');
+    });
+
+    it('should handle overdue deadlines with audio format (minutes remaining)', () => {
+      const overdueAudioDeadline1 = createMockDeadline(
+        '1',
+        '2023-01-01',
+        '2023-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 120, created_at: '2023-01-05T00:00:00Z' }]
+      );
+      overdueAudioDeadline1.format = 'audio';
+      overdueAudioDeadline1.total_quantity = 180;
+
+      const overdueAudioDeadline2 = createMockDeadline(
+        '2',
+        '2023-01-01',
+        '2023-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 200, created_at: '2023-01-05T00:00:00Z' }]
+      );
+      overdueAudioDeadline2.format = 'audio';
+      overdueAudioDeadline2.total_quantity = 250;
+
+      const result = separateDeadlines([
+        overdueAudioDeadline1,
+        overdueAudioDeadline2,
+      ]);
+
+      expect(result.overdue[0].id).toBe('2');
+      expect(result.overdue[1].id).toBe('1');
+    });
+
+    it('should fall back to default sorting when pages remaining are equal', () => {
+      const overdueDeadline1 = createMockDeadline(
+        '1',
+        '2023-01-02',
+        '2023-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 100, created_at: '2023-01-05T00:00:00Z' }]
+      );
+      overdueDeadline1.total_quantity = 200;
+
+      const overdueDeadline2 = createMockDeadline(
+        '2',
+        '2023-01-01',
+        '2023-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 150, created_at: '2023-01-05T00:00:00Z' }]
+      );
+      overdueDeadline2.total_quantity = 250;
+
+      const result = separateDeadlines([overdueDeadline1, overdueDeadline2]);
+
+      expect(result.overdue[0].id).toBe('2');
+      expect(result.overdue[1].id).toBe('1');
+    });
   });
 
   describe('calculateDaysLeft', () => {

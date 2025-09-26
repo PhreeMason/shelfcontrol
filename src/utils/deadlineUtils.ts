@@ -61,6 +61,26 @@ const sortByStatusDate = (
 };
 
 /**
+ * Sorts overdue deadlines by the amount of pages/minutes remaining (ascending order - least remaining first)
+ */
+const sortByPagesRemaining = (
+  a: ReadingDeadlineWithProgress,
+  b: ReadingDeadlineWithProgress
+) => {
+  const aProgress = calculateProgress(a);
+  const aTotal = calculateTotalQuantity(a.format, a.total_quantity, (a as any).total_minutes);
+  const aRemaining = aTotal - aProgress;
+
+  const bProgress = calculateProgress(b);
+  const bTotal = calculateTotalQuantity(b.format, b.total_quantity, (b as any).total_minutes);
+  const bRemaining = bTotal - bProgress;
+
+  if (aRemaining !== bRemaining) return aRemaining - bRemaining;
+
+  return sortDeadlines(a, b);
+};
+
+/**
  * Separation Strategy
  * -------------------
  * Uses normalized local start-of-day for comparisons.
@@ -97,7 +117,7 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   });
 
   active.sort(sortDeadlines);
-  overdue.sort(sortDeadlines);
+  overdue.sort(sortByPagesRemaining);
   completed.sort(sortByStatusDate);
   setAside.sort(sortByStatusDate);
   pending.sort(sortDeadlines);

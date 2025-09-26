@@ -6,6 +6,7 @@ import { dayjs } from '@/lib/dayjs';
 // import { useFetchBookById } from '@/hooks/useBooks';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { formatProgressDisplay, getUnitForFormat } from '@/utils/deadlineUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -47,6 +48,19 @@ export function DeadlineCard({
 
   const { daysLeft, unitsPerDay, urgencyLevel, remaining } =
     getDeadlineCalculations(deadline);
+
+  // Helper function to format remaining content for display
+  const formatRemainingDisplay = (
+    remaining: number,
+    format: 'physical' | 'eBook' | 'audio'
+  ): string => {
+    if (remaining <= 0) return 'Complete!';
+    const unit = getUnitForFormat(format);
+    if (format === 'audio') {
+      return `${formatProgressDisplay(format, remaining)} remaining`;
+    }
+    return `${remaining} ${unit} remaining`;
+  };
 
   const shadowStyle = Platform.select({
     ios: {
@@ -228,7 +242,7 @@ export function DeadlineCard({
                 { color: countdownColor },
               ]}
             >
-              {latestStatus === 'complete' ? '✓' : '"'}
+              {latestStatus === 'complete' ? '🏆' : '⏸️'}
             </ThemedText>
             <ThemedText
               style={[
@@ -292,12 +306,14 @@ export function DeadlineCard({
             <ThemedText style={styles.bookDeadline}>
               {(isArchived || isRequested) && latestStatusDate
                 ? dayjs(latestStatusDate).format('MMM D, YYYY')
-                : formatUnitsPerDayForDisplay(
-                    unitsPerDay,
-                    deadline.format,
-                    remaining,
-                    daysLeft
-                  )}
+                : urgencyLevel === 'overdue'
+                  ? formatRemainingDisplay(remaining, deadline.format)
+                  : formatUnitsPerDayForDisplay(
+                      unitsPerDay,
+                      deadline.format,
+                      remaining,
+                      daysLeft
+                    )}
             </ThemedText>
           </View>
         </View>
