@@ -12,6 +12,7 @@ export default function DeadlineLayout() {
       <Stack.Screen name="new" options={{ headerShown: false }} />
       <Stack.Screen name="[id]/index" options={{ headerShown: false }} />
       <Stack.Screen name="[id]/edit" options={{ headerShown: false }} />
+      <Stack.Screen name="[id]/completion" options={{ headerShown: false }} />
     </Stack>
   );
 }

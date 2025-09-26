@@ -56,15 +56,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
               // Success callback
               () => {
                 setIsCompleting(false);
-                Toast.show({
-                  swipeable: true,
-                  type: 'success',
-                  text1: 'Deadline completed!',
-                  text2: `Congratulations on finishing "${deadline.book_title}"!`,
-                  autoHide: true,
-                  visibilityTime: 1000,
-                  position: 'top',
-                });
+                router.push(`/deadline/${deadline.id}/completion`);
               },
               // Error callback
               error => {
