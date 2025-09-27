@@ -230,12 +230,10 @@ const ReadingProgressUpdate = ({
     (data: any) => {
       const newProgress = data.currentProgress;
 
-      // Check if the new progress is the same as current progress
       if (!hasProgressChanged(newProgress, currentProgress)) {
         return; // Do nothing if values are the same
       }
 
-      // Check if the new progress is lower than current progress
       if (shouldShowBackwardProgressWarning(newProgress, currentProgress)) {
         showBackwardProgressWarning(newProgress);
       } else {

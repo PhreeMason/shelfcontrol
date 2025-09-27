@@ -33,7 +33,6 @@ export const DeadlineFormStep1 = ({
   const [selectedApiId, setSelectedApiId] = useState<string | null>(null);
   const [isLoadingBookDetails, setIsLoadingBookDetails] = useState(false);
 
-  // Debounce search query
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(query);
@@ -42,17 +41,14 @@ export const DeadlineFormStep1 = ({
     return () => clearTimeout(timer);
   }, [query]);
 
-  // Search books hook
   const {
     data: searchResults,
     isLoading: searchLoading,
     error: searchError,
   } = useSearchBooksList(debouncedQuery);
 
-  // Fetch full book data hook
   const { data: fullBookData } = useFetchBookData(selectedApiId || '');
 
-  // Handle book selection and fetch full data
   const handleBookSelection = useCallback(async (book: BookSearchResult) => {
     if (!book.api_id) return;
 
@@ -60,7 +56,6 @@ export const DeadlineFormStep1 = ({
     setIsLoadingBookDetails(true);
   }, []);
 
-  // When full book data is fetched, populate form and proceed
   useEffect(() => {
     if (fullBookData && selectedApiId && isLoadingBookDetails) {
       const selectedBookData: SelectedBook = {
@@ -79,7 +74,6 @@ export const DeadlineFormStep1 = ({
       setValue('book_id', selectedBookData.id);
       setValue('api_id', selectedBookData.api_id);
 
-      // Auto-populate total pages if available
       if (selectedBookData.total_pages) {
         setValue('totalQuantity', selectedBookData.total_pages);
       }

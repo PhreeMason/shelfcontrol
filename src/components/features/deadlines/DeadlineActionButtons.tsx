@@ -27,12 +27,10 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   const [isReactivating, setIsReactivating] = useState(false);
   const [isStartingReading, setIsStartingReading] = useState(false);
 
-  // Get current status
   const latestStatus = getDeadlineStatus(deadline);
   const { isCompleted, isSetAside, isActive, isPending } =
     getStatusFlags(latestStatus);
   const handleComplete = () => {
-    // Show confirmation dialog before completing
     Alert.alert(
       'Complete Book',
       `Are you sure you want to mark "${deadline.book_title}" as complete?`,
@@ -48,12 +46,10 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
             setIsCompleting(true);
             completeDeadline(
               deadline.id,
-              // Success callback
               () => {
                 setIsCompleting(false);
                 router.push(`/deadline/${deadline.id}/completion`);
               },
-              // Error callback
               error => {
                 setIsCompleting(false);
                 Toast.show({
@@ -77,7 +73,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
     setIsSettingAside(true);
     setAsideDeadline(
       deadline.id,
-      // Success callback
       () => {
         setIsSettingAside(false);
         Toast.show({
@@ -90,7 +85,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           position: 'top',
         });
       },
-      // Error callback
       error => {
         setIsSettingAside(false);
         Toast.show({
@@ -107,7 +101,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   };
 
   const handleDelete = () => {
-    // Show confirmation dialog
     Alert.alert(
       'Delete Deadline',
       `Are you sure you want to delete "${deadline.book_title}"? This action cannot be undone.`,
@@ -123,7 +116,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
             setIsDeleting(true);
             deleteDeadline(
               deadline.id,
-              // Success callback
               () => {
                 setIsDeleting(false);
                 router.replace('/');
@@ -137,7 +129,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                   position: 'top',
                 });
               },
-              // Error callback
               error => {
                 setIsDeleting(false);
                 Toast.show({
@@ -161,7 +152,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
     setIsReactivating(true);
     reactivateDeadline(
       deadline.id,
-      // Success callback
       () => {
         setIsReactivating(false);
         Toast.show({
@@ -174,9 +164,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           position: 'top',
         });
 
-        // Only show update prompt for set-aside deadlines (not completed ones)
         if (isSetAside) {
-          // Show prompt to update deadline after reactivation
           setTimeout(() => {
             Alert.alert(
               'Update Deadline?',
@@ -189,17 +177,15 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                 {
                   text: 'Yes, Update',
                   onPress: () => {
-                    // Navigate to edit form page 3 (deadline page)
                     // @ts-ignore
                     router.push(`/deadline/${deadline.id}/edit?page=3`);
                   },
                 },
               ]
             );
-          }, 2500); // Wait for toast to show first
+          }, 2500);
         }
       },
-      // Error callback
       error => {
         setIsReactivating(false);
         Toast.show({
@@ -248,7 +234,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
     setIsStartingReading(true);
     startReadingDeadline(
       deadline.id,
-      // Success callback
       () => {
         setIsStartingReading(false);
         Toast.show({
@@ -261,7 +246,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           position: 'top',
         });
 
-        // Show prompt to update deadline after starting
         setTimeout(() => {
           Alert.alert(
             'Update Deadline?',
@@ -274,16 +258,14 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
               {
                 text: 'Yes, Update',
                 onPress: () => {
-                  // Navigate to edit form page 3 (deadline page)
                   // @ts-ignore
                   router.push(`/deadline/${deadline.id}/edit?page=3`);
                 },
               },
             ]
           );
-        }, 2500); // Wait for toast to show first
+        }, 2500);
       },
-      // Error callback
       error => {
         setIsStartingReading(false);
         Toast.show({
@@ -301,7 +283,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
 
   return (
     <ThemedView style={styles.actionButtons}>
-      {/* For pending deadlines - show start reading button */}
       {isPending && (
         <>
           <ThemedButton
@@ -314,7 +295,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         </>
       )}
 
-      {/* For active deadlines - show start reading session, complete and set aside */}
       {isActive && (
         <>
           <ThemedButton
@@ -336,7 +316,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         </>
       )}
 
-      {/* For set aside deadlines - show reactivate and complete */}
       {isSetAside && (
         <>
           <ThemedButton
@@ -358,7 +337,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         </>
       )}
 
-      {/* For completed deadlines - show reactivate only */}
       {isCompleted && (
         <ThemedButton
           title={'Read Again?'}
@@ -369,7 +347,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         />
       )}
 
-      {/* Delete is always available */}
       <ThemedButton
         title={isDeleting ? 'Deleting...' : 'Delete Deadline'}
         variant="dangerOutline"

@@ -68,7 +68,6 @@ export function DeadlineCard({
   let countdownColor = urgencyTextColorMap[urgencyLevel];
   let borderColor = urgencyTextColorMap[urgencyLevel];
 
-  // Check if deadline is archived (completed or set aside)
   const latestStatus =
     deadline.status && deadline.status.length > 0
       ? deadline.status[deadline.status.length - 1].status
@@ -94,7 +93,6 @@ export function DeadlineCard({
 
   const handlePress = () => {
     if (!disableNavigation) {
-      // Check if we're already in a deadline view
       router.push(`/deadline/${deadline.id}`);
     }
   };

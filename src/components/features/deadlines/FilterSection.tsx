@@ -41,7 +41,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   onLayout,
   availableFilters,
 }) => {
-  // Filter options to only show available ones
   const visibleOptions = availableFilters
     ? filterOptions.filter(option => availableFilters.includes(option.key))
     : filterOptions;

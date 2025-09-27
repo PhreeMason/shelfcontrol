@@ -304,7 +304,6 @@ export const populateFormFromDeadline = (
       | 'flexible'
       | 'strict';
 
-    // Set status based on the latest status
     const latestStatus =
       deadline.status && deadline.status.length > 0
         ? deadline.status[deadline.status.length - 1]
@@ -317,13 +316,11 @@ export const populateFormFromDeadline = (
       setValue('status', selectedStatus);
     }
 
-    // Get the latest progress entry
     const latestProgress =
       deadline.progress && deadline.progress.length > 0
         ? deadline.progress[deadline.progress.length - 1]
         : null;
 
-    // Set quantity/time based on format
     if (deadline.format === 'audio') {
       // Convert total minutes to hours and minutes for form display
       const { hours, minutes } = convertMinutesToHoursAndMinutes(
@@ -346,7 +343,6 @@ export const populateFormFromDeadline = (
     return { selectedFormat, selectedPriority, selectedStatus };
   } catch (error) {
     console.error('Error populating form from deadline:', error);
-    // Return safe defaults if there's an error
     return {
       selectedFormat: 'physical' as const,
       selectedPriority: 'flexible' as const,
@@ -424,7 +420,6 @@ export const createDateChangeHandler = (
     setShowDatePicker(false);
     if (selectedDate) {
       setValue('deadline', selectedDate);
-      // If user manually changes the deadline, clear the publication date flag
       if (setDeadlineFromPublicationDate) {
         setDeadlineFromPublicationDate(false);
       }

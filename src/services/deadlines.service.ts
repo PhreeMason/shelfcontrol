@@ -40,7 +40,6 @@ class DeadlinesService {
   async addDeadline(userId: string, params: AddDeadlineParams) {
     const { deadlineDetails, progressDetails, status, bookData } = params;
 
-    // Generate IDs
     const finalDeadlineId = generateId('rd');
     const finalProgressId = generateId('rdp');
 
@@ -48,7 +47,6 @@ class DeadlinesService {
     progressDetails.id = finalProgressId;
     progressDetails.deadline_id = finalDeadlineId;
 
-    // Handle book linking if bookData is provided
     let finalBookId = deadlineDetails.book_id;
     if (bookData?.api_id && !bookData.book_id) {
       const existingBook = await booksService.getBookByApiId(bookData.api_id);
@@ -74,7 +72,6 @@ class DeadlinesService {
       finalBookId = bookData.book_id;
     }
 
-    // Insert deadline
     const { data: deadlineData, error: deadlineError } = await supabase
       .from('deadlines')
       .insert({
@@ -87,7 +84,6 @@ class DeadlinesService {
 
     if (deadlineError) throw deadlineError;
 
-    // Insert progress
     const { data: progressData, error: progressError } = await supabase
       .from('deadline_progress')
       .insert(progressDetails)
@@ -325,7 +321,6 @@ class DeadlinesService {
    * Complete a deadline (sets progress to max if needed)
    */
   async completeDeadline(userId: string, deadlineId: string) {
-    // First, get the deadline details
     const { data: deadline, error: deadlineError } = await supabase
       .from('deadlines')
       .select(
@@ -340,13 +335,11 @@ class DeadlinesService {
 
     if (deadlineError) throw deadlineError;
 
-    // Calculate current progress
     const latestProgress =
       deadline.progress?.length > 0
         ? Math.max(...deadline.progress.map(p => p.current_progress))
         : 0;
 
-    // If current progress is not at max, update it
     if (latestProgress < deadline.total_quantity) {
       const finalProgressId = generateId('rdp');
       const { error: progressError } = await supabase

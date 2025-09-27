@@ -16,14 +16,11 @@ export const useDeadlineSources = () => {
         if (!userId) {
           return DEFAULT_SOURCES;
         }
-        // Fetch unique sources from the database
         const userSources = await deadlinesService.getUniqueSources(userId);
 
-        // Combine defaults with user sources, removing duplicates
         const allSources = [...DEFAULT_SOURCES];
 
         userSources.forEach(source => {
-          // Add user source if it's not already in defaults (case-insensitive)
           if (
             !DEFAULT_SOURCES.some(
               defaultSource =>
@@ -34,7 +31,6 @@ export const useDeadlineSources = () => {
           }
         });
 
-        // Sort alphabetically, but keep defaults at the top
         const sortedDefaults = DEFAULT_SOURCES;
         const sortedUserSources = allSources
           .filter(s => !DEFAULT_SOURCES.includes(s))
@@ -47,10 +43,9 @@ export const useDeadlineSources = () => {
       }
     },
     enabled: !!userId,
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // If no user ID, always return default sources
   if (!userId) {
     return {
       ...result,

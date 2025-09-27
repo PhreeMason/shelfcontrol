@@ -103,7 +103,6 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
   // Ref for the scroll view to control scrolling
   const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
 
-  // Form setup
   const { control, handleSubmit, watch, setValue, trigger } =
     useForm<DeadlineFormData>({
       resolver: zodResolver(deadlineFormSchema),
@@ -116,7 +115,6 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
   const paramsString = JSON.stringify(params);
   const stableParams = useMemo(() => {
     if (!params) return null;
-    // Create a stable object by stringifying and parsing
     return JSON.parse(paramsString);
   }, [params, paramsString]);
 
@@ -128,7 +126,6 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     isInitialized.current = false;
   }, [mode, existingDeadlineId]);
 
-  // Initialize form data based on mode
   useEffect(() => {
     // Prevent re-initialization if already done
     if (isInitialized.current) return;
@@ -184,7 +181,6 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     watchedValues.currentMinutes,
   ]);
 
-  // Form submission handler
   const onSubmit = (data: DeadlineFormData) => {
     if (isSubmitting) return;
     setIsSubmitting(true);

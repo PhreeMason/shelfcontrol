@@ -61,7 +61,6 @@ export const Colors = {
     onSuccess: '#FFFFFF',
     onSuccessContainer: '#064E3B',
 
-    // Additional gradient colors for toast messages
     peach: '#E8C2B9',
     darkPink: '#C8698A',
     orange: '#F5C2A1',
@@ -153,7 +152,6 @@ export const Colors = {
     onSuccess: '#FFFFFF',
     onSuccessContainer: '#064E3B',
 
-    // Additional gradient colors for toast messages
     peach: '#E8C2B9',
     darkPink: '#C8698A',
     orange: '#F5C2A1',
