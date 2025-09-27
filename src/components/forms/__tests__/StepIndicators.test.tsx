@@ -4,14 +4,14 @@ import { useTheme } from '@/hooks/useThemeColor';
 import { StepIndicators } from '../StepIndicators';
 
 jest.mock('@/hooks/useThemeColor', () => ({
-  useTheme: jest.fn()
+  useTheme: jest.fn(),
 }));
 
 describe('StepIndicators', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useTheme as jest.Mock).mockReturnValue({
-      colors: { textOnPrimary: '#ffffff' }
+      colors: { textOnPrimary: '#ffffff' },
     });
   });
 

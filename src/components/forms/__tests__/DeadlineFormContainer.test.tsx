@@ -12,24 +12,24 @@ jest.mock('expo-router', () => ({
   router: {
     back: jest.fn(),
     canGoBack: jest.fn(() => true),
-    replace: jest.fn()
-  }
+    replace: jest.fn(),
+  },
 }));
 
 jest.mock('@/providers/DeadlineProvider', () => ({
-  useDeadlines: jest.fn()
+  useDeadlines: jest.fn(),
 }));
 
 jest.mock('@/hooks/useThemeColor', () => ({
-  useTheme: jest.fn()
+  useTheme: jest.fn(),
 }));
 
 jest.mock('react-native-safe-area-context', () => ({
-  SafeAreaView: 'SafeAreaView'
+  SafeAreaView: 'SafeAreaView',
 }));
 
 jest.mock('react-native-keyboard-aware-scroll-view', () => ({
-  KeyboardAwareScrollView: 'KeyboardAwareScrollView'
+  KeyboardAwareScrollView: 'KeyboardAwareScrollView',
 }));
 
 jest.mock('@/lib/supabase', () => ({
@@ -39,11 +39,10 @@ jest.mock('@/lib/supabase', () => ({
       insert: jest.fn().mockReturnThis(),
       update: jest.fn().mockReturnThis(),
       eq: jest.fn().mockReturnThis(),
-      single: jest.fn().mockResolvedValue({ data: null, error: null })
-    }))
-  }
+      single: jest.fn().mockResolvedValue({ data: null, error: null }),
+    })),
+  },
 }));
-
 
 // Mock app header
 jest.mock('@/components/shared/AppHeader', () => {
@@ -51,13 +50,21 @@ jest.mock('@/components/shared/AppHeader', () => {
   const { TouchableOpacity } = require('react-native');
   return function MockAppHeader({ title, children, onBack }: any) {
     return React.createElement('View', { testID: 'app-header' }, [
-      React.createElement('Text', { testID: 'header-title', key: 'title' }, title),
-      React.createElement(TouchableOpacity, {
-        testID: 'back-button',
-        onPress: onBack,
-        key: 'back'
-      }, React.createElement('Text', null, 'Back')),
-      children
+      React.createElement(
+        'Text',
+        { testID: 'header-title', key: 'title' },
+        title
+      ),
+      React.createElement(
+        TouchableOpacity,
+        {
+          testID: 'back-button',
+          onPress: onBack,
+          key: 'back',
+        },
+        React.createElement('Text', null, 'Back')
+      ),
+      children,
     ]);
   };
 });
@@ -67,20 +74,32 @@ jest.mock('../DeadlineFormStep1', () => {
   const React = require('react');
   const { TouchableOpacity } = require('react-native');
   return {
-    DeadlineFormStep1: function MockDeadlineFormStep1({ onBookSelected, onManualEntry }: any) {
+    DeadlineFormStep1: function MockDeadlineFormStep1({
+      onBookSelected,
+      onManualEntry,
+    }: any) {
       return React.createElement('View', { testID: 'deadline-form-step1' }, [
-        React.createElement(TouchableOpacity, {
-          testID: 'select-book-button',
-          onPress: () => onBookSelected?.({ id: 'test', title: 'Test', author: 'Test' }),
-          key: 'book'
-        }, React.createElement('Text', null, 'Select Book')),
-        React.createElement(TouchableOpacity, {
-          testID: 'manual-entry-button',
-          onPress: () => onManualEntry?.(),
-          key: 'manual'
-        }, React.createElement('Text', null, 'Manual Entry'))
+        React.createElement(
+          TouchableOpacity,
+          {
+            testID: 'select-book-button',
+            onPress: () =>
+              onBookSelected?.({ id: 'test', title: 'Test', author: 'Test' }),
+            key: 'book',
+          },
+          React.createElement('Text', null, 'Select Book')
+        ),
+        React.createElement(
+          TouchableOpacity,
+          {
+            testID: 'manual-entry-button',
+            onPress: () => onManualEntry?.(),
+            key: 'manual',
+          },
+          React.createElement('Text', null, 'Manual Entry')
+        ),
       ]);
-    }
+    },
   };
 });
 
@@ -88,13 +107,19 @@ jest.mock('../DeadlineFormStep1', () => {
 jest.mock('@/components/shared/CustomInput', () => {
   const React = require('react');
   const { TextInput } = require('react-native');
-  return function MockCustomInput({ testID, onChangeText, value, placeholder, ...props }: any) {
+  return function MockCustomInput({
+    testID,
+    onChangeText,
+    value,
+    placeholder,
+    ...props
+  }: any) {
     return React.createElement(TextInput, {
       testID,
       onChangeText,
       value,
       placeholder,
-      ...props
+      ...props,
     });
   };
 });
@@ -102,13 +127,19 @@ jest.mock('@/components/shared/CustomInput', () => {
 jest.mock('@/components/shared/SourceTypeaheadInput', () => {
   const React = require('react');
   const { TextInput } = require('react-native');
-  return function MockSourceTypeaheadInput({ testID, onChangeText, value, placeholder, ...props }: any) {
+  return function MockSourceTypeaheadInput({
+    testID,
+    onChangeText,
+    value,
+    placeholder,
+    ...props
+  }: any) {
     return React.createElement(TextInput, {
       testID: testID || 'source-input',
       onChangeText,
       value,
       placeholder,
-      ...props
+      ...props,
     });
   };
 });
@@ -117,25 +148,52 @@ jest.mock('../FormatSelector', () => {
   const React = require('react');
   const { TouchableOpacity } = require('react-native');
   return {
-    FormatSelector: function MockFormatSelector({ selectedFormat, onFormatChange }: any) {
+    FormatSelector: function MockFormatSelector({
+      selectedFormat,
+      onFormatChange,
+    }: any) {
       return React.createElement('View', { testID: 'format-selector' }, [
-        React.createElement(TouchableOpacity, {
-          testID: 'format-physical',
-          onPress: () => onFormatChange?.('physical'),
-          key: 'physical'
-        }, React.createElement('Text', null, `Physical ${selectedFormat === 'physical' ? '✓' : ''}`)),
-        React.createElement(TouchableOpacity, {
-          testID: 'format-ebook',
-          onPress: () => onFormatChange?.('eBook'),
-          key: 'ebook'
-        }, React.createElement('Text', null, `eBook ${selectedFormat === 'eBook' ? '✓' : ''}`)),
-        React.createElement(TouchableOpacity, {
-          testID: 'format-audio',
-          onPress: () => onFormatChange?.('audio'),
-          key: 'audio'
-        }, React.createElement('Text', null, `Audio ${selectedFormat === 'audio' ? '✓' : ''}`))
+        React.createElement(
+          TouchableOpacity,
+          {
+            testID: 'format-physical',
+            onPress: () => onFormatChange?.('physical'),
+            key: 'physical',
+          },
+          React.createElement(
+            'Text',
+            null,
+            `Physical ${selectedFormat === 'physical' ? '✓' : ''}`
+          )
+        ),
+        React.createElement(
+          TouchableOpacity,
+          {
+            testID: 'format-ebook',
+            onPress: () => onFormatChange?.('eBook'),
+            key: 'ebook',
+          },
+          React.createElement(
+            'Text',
+            null,
+            `eBook ${selectedFormat === 'eBook' ? '✓' : ''}`
+          )
+        ),
+        React.createElement(
+          TouchableOpacity,
+          {
+            testID: 'format-audio',
+            onPress: () => onFormatChange?.('audio'),
+            key: 'audio',
+          },
+          React.createElement(
+            'Text',
+            null,
+            `Audio ${selectedFormat === 'audio' ? '✓' : ''}`
+          )
+        ),
       ]);
-    }
+    },
   };
 });
 
@@ -143,20 +201,39 @@ jest.mock('../StatusSelector', () => {
   const React = require('react');
   const { TouchableOpacity } = require('react-native');
   return {
-    StatusSelector: function MockStatusSelector({ selectedStatus, onStatusChange }: any) {
+    StatusSelector: function MockStatusSelector({
+      selectedStatus,
+      onStatusChange,
+    }: any) {
       return React.createElement('View', { testID: 'status-selector' }, [
-        React.createElement(TouchableOpacity, {
-          testID: 'status-pending',
-          onPress: () => onStatusChange?.('pending'),
-          key: 'pending'
-        }, React.createElement('Text', null, `Pending ${selectedStatus === 'pending' ? '✓' : ''}`)),
-        React.createElement(TouchableOpacity, {
-          testID: 'status-active',
-          onPress: () => onStatusChange?.('active'),
-          key: 'active'
-        }, React.createElement('Text', null, `Active ${selectedStatus === 'active' ? '✓' : ''}`))
+        React.createElement(
+          TouchableOpacity,
+          {
+            testID: 'status-pending',
+            onPress: () => onStatusChange?.('pending'),
+            key: 'pending',
+          },
+          React.createElement(
+            'Text',
+            null,
+            `Pending ${selectedStatus === 'pending' ? '✓' : ''}`
+          )
+        ),
+        React.createElement(
+          TouchableOpacity,
+          {
+            testID: 'status-active',
+            onPress: () => onStatusChange?.('active'),
+            key: 'active',
+          },
+          React.createElement(
+            'Text',
+            null,
+            `Active ${selectedStatus === 'active' ? '✓' : ''}`
+          )
+        ),
       ]);
-    }
+    },
   };
 });
 
@@ -164,20 +241,39 @@ jest.mock('../PrioritySelector', () => {
   const React = require('react');
   const { TouchableOpacity } = require('react-native');
   return {
-    PrioritySelector: function MockPrioritySelector({ selectedPriority, onPriorityChange }: any) {
+    PrioritySelector: function MockPrioritySelector({
+      selectedPriority,
+      onPriorityChange,
+    }: any) {
       return React.createElement('View', { testID: 'priority-selector' }, [
-        React.createElement(TouchableOpacity, {
-          testID: 'priority-flexible',
-          onPress: () => onPriorityChange?.('flexible'),
-          key: 'flexible'
-        }, React.createElement('Text', null, `Flexible ${selectedPriority === 'flexible' ? '✓' : ''}`)),
-        React.createElement(TouchableOpacity, {
-          testID: 'priority-strict',
-          onPress: () => onPriorityChange?.('strict'),
-          key: 'strict'
-        }, React.createElement('Text', null, `Strict ${selectedPriority === 'strict' ? '✓' : ''}`))
+        React.createElement(
+          TouchableOpacity,
+          {
+            testID: 'priority-flexible',
+            onPress: () => onPriorityChange?.('flexible'),
+            key: 'flexible',
+          },
+          React.createElement(
+            'Text',
+            null,
+            `Flexible ${selectedPriority === 'flexible' ? '✓' : ''}`
+          )
+        ),
+        React.createElement(
+          TouchableOpacity,
+          {
+            testID: 'priority-strict',
+            onPress: () => onPriorityChange?.('strict'),
+            key: 'strict',
+          },
+          React.createElement(
+            'Text',
+            null,
+            `Strict ${selectedPriority === 'strict' ? '✓' : ''}`
+          )
+        ),
       ]);
-    }
+    },
   };
 });
 
@@ -186,9 +282,13 @@ jest.mock('../PaceEstimateBox', () => {
   return {
     PaceEstimateBox: function MockPaceEstimateBox({ estimate }: any) {
       return React.createElement('View', { testID: 'pace-estimate-box' }, [
-        React.createElement('Text', { key: 'estimate' }, estimate || 'No estimate')
+        React.createElement(
+          'Text',
+          { key: 'estimate' },
+          estimate || 'No estimate'
+        ),
       ]);
-    }
+    },
   };
 });
 
@@ -196,10 +296,26 @@ jest.mock('@react-native-community/datetimepicker', () => {
   const React = require('react');
   const { TouchableOpacity } = require('react-native');
   return function MockDateTimePicker({ value, onChange, testID }: any) {
-    return React.createElement(TouchableOpacity, {
-      testID: testID || 'date-time-picker',
-      onPress: () => onChange?.({ nativeEvent: { timestamp: new Date('2024-12-25T00:00:00Z').getTime() } }, new Date('2024-12-25T00:00:00Z'))
-    }, React.createElement('Text', null, value ? value.toDateString() : 'Select Date'));
+    return React.createElement(
+      TouchableOpacity,
+      {
+        testID: testID || 'date-time-picker',
+        onPress: () =>
+          onChange?.(
+            {
+              nativeEvent: {
+                timestamp: new Date('2024-12-25T00:00:00Z').getTime(),
+              },
+            },
+            new Date('2024-12-25T00:00:00Z')
+          ),
+      },
+      React.createElement(
+        'Text',
+        null,
+        value ? value.toDateString() : 'Select Date'
+      )
+    );
   };
 });
 
@@ -220,7 +336,7 @@ describe('DeadlineFormContainer', () => {
     total_quantity: 300,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
-    progress: []
+    progress: [],
   };
 
   beforeEach(() => {
@@ -229,12 +345,11 @@ describe('DeadlineFormContainer', () => {
     (useLocalSearchParams as jest.Mock).mockReturnValue({});
     (useDeadlines as jest.Mock).mockReturnValue({
       addDeadline: mockAddDeadline,
-      updateDeadline: mockUpdateDeadline
+      updateDeadline: mockUpdateDeadline,
     });
     (useTheme as jest.Mock).mockReturnValue({
-      colors: { background: '#ffffff' }
+      colors: { background: '#ffffff' },
     });
-
   });
 
   describe('Component Rendering', () => {
@@ -244,7 +359,9 @@ describe('DeadlineFormContainer', () => {
     });
 
     it('should render in edit mode with deadline', () => {
-      render(<DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />);
+      render(
+        <DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />
+      );
       expect(screen.getByTestId('app-header')).toBeTruthy();
     });
 
@@ -259,7 +376,7 @@ describe('DeadlineFormContainer', () => {
     it('should populate form from URL params', () => {
       (useLocalSearchParams as jest.Mock).mockReturnValue({
         format: 'audio',
-        priority: 'high'
+        priority: 'high',
       });
 
       render(<DeadlineFormContainer mode="new" />);
@@ -270,10 +387,12 @@ describe('DeadlineFormContainer', () => {
       const editDeadline = {
         ...mockDeadline,
         format: 'audio' as const,
-        total_quantity: 500
+        total_quantity: 500,
       };
 
-      render(<DeadlineFormContainer mode="edit" existingDeadline={editDeadline} />);
+      render(
+        <DeadlineFormContainer mode="edit" existingDeadline={editDeadline} />
+      );
       expect(useDeadlines).toHaveBeenCalled();
     });
 
@@ -324,9 +443,11 @@ describe('DeadlineFormContainer', () => {
     });
 
     it('should handle errors in the flow gracefully', () => {
-      mockAddDeadline.mockImplementation((_data, _successCallback, errorCallback) => {
-        errorCallback(new Error('Network error'));
-      });
+      mockAddDeadline.mockImplementation(
+        (_data, _successCallback, errorCallback) => {
+          errorCallback(new Error('Network error'));
+        }
+      );
 
       render(<DeadlineFormContainer mode="new" />);
 
@@ -357,10 +478,12 @@ describe('DeadlineFormContainer', () => {
       const testDeadline = {
         ...mockDeadline,
         format: 'physical' as const,
-        total_quantity: 300
+        total_quantity: 300,
       };
 
-      render(<DeadlineFormContainer mode="edit" existingDeadline={testDeadline} />);
+      render(
+        <DeadlineFormContainer mode="edit" existingDeadline={testDeadline} />
+      );
 
       expect(screen.getByTestId('app-header')).toBeTruthy();
     });
@@ -378,7 +501,7 @@ describe('DeadlineFormContainer', () => {
       (useLocalSearchParams as jest.Mock).mockReturnValue({
         title: 'Test Book',
         author: 'Test Author',
-        format: 'audio'
+        format: 'audio',
       });
 
       render(<DeadlineFormContainer mode="new" />);
@@ -392,17 +515,21 @@ describe('DeadlineFormContainer', () => {
       const invalidDeadline = {
         ...mockDeadline,
         deadline_date: 'invalid-date',
-        total_quantity: -1
+        total_quantity: -1,
       };
 
-      render(<DeadlineFormContainer mode="edit" existingDeadline={invalidDeadline} />);
+      render(
+        <DeadlineFormContainer mode="edit" existingDeadline={invalidDeadline} />
+      );
       expect(screen.getByTestId('app-header')).toBeTruthy();
     });
 
     it('should handle network failures during submission', async () => {
-      mockAddDeadline.mockImplementation((_data, _successCallback, errorCallback) => {
-        errorCallback(new Error('Network timeout'));
-      });
+      mockAddDeadline.mockImplementation(
+        (_data, _successCallback, errorCallback) => {
+          errorCallback(new Error('Network timeout'));
+        }
+      );
 
       render(<DeadlineFormContainer mode="new" />);
       expect(useDeadlines).toHaveBeenCalled();
@@ -412,10 +539,12 @@ describe('DeadlineFormContainer', () => {
       const largeDeadline = {
         ...mockDeadline,
         total_quantity: 999999,
-        book_title: 'A'.repeat(1000)
+        book_title: 'A'.repeat(1000),
       };
 
-      render(<DeadlineFormContainer mode="edit" existingDeadline={largeDeadline} />);
+      render(
+        <DeadlineFormContainer mode="edit" existingDeadline={largeDeadline} />
+      );
       expect(screen.getByTestId('app-header')).toBeTruthy();
     });
 
@@ -423,7 +552,9 @@ describe('DeadlineFormContainer', () => {
       const { rerender } = render(<DeadlineFormContainer mode="new" />);
 
       for (let i = 0; i < 5; i++) {
-        rerender(<DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />);
+        rerender(
+          <DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />
+        );
         rerender(<DeadlineFormContainer mode="new" />);
       }
 
@@ -435,7 +566,7 @@ describe('DeadlineFormContainer', () => {
         format: 'invalid-format',
         priority: null,
         deadline: 'not-a-date',
-        quantity: 'not-a-number'
+        quantity: 'not-a-number',
       });
 
       render(<DeadlineFormContainer mode="new" />);
@@ -445,7 +576,7 @@ describe('DeadlineFormContainer', () => {
     it('should handle provider unavailability', () => {
       (useDeadlines as jest.Mock).mockReturnValue({
         addDeadline: undefined,
-        updateDeadline: undefined
+        updateDeadline: undefined,
       });
 
       render(<DeadlineFormContainer mode="new" />);
@@ -459,17 +590,24 @@ describe('DeadlineFormContainer', () => {
 
       const deadlineWithLargeHistory = {
         ...mockDeadline,
-        progress: Array(100).fill(null).map((_, i) => ({
-          id: `progress-${i}`,
-          deadline_id: mockDeadline.id,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-          current_progress: i * 10,
-          time_spent_reading: null
-        }))
+        progress: Array(100)
+          .fill(null)
+          .map((_, i) => ({
+            id: `progress-${i}`,
+            deadline_id: mockDeadline.id,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+            current_progress: i * 10,
+            time_spent_reading: null,
+          })),
       };
 
-      render(<DeadlineFormContainer mode="edit" existingDeadline={deadlineWithLargeHistory} />);
+      render(
+        <DeadlineFormContainer
+          mode="edit"
+          existingDeadline={deadlineWithLargeHistory}
+        />
+      );
 
       const endTime = performance.now();
       expect(endTime - startTime).toBeLessThan(100);
@@ -484,9 +622,11 @@ describe('DeadlineFormContainer', () => {
         const testDeadline = {
           ...mockDeadline,
           id: `deadline-${i}`,
-          total_quantity: i * 10
+          total_quantity: i * 10,
         };
-        rerender(<DeadlineFormContainer mode="edit" existingDeadline={testDeadline} />);
+        rerender(
+          <DeadlineFormContainer mode="edit" existingDeadline={testDeadline} />
+        );
       }
 
       const endTime = performance.now();
@@ -508,7 +648,9 @@ describe('DeadlineFormContainer', () => {
 
     it('should maintain performance with complex URL params', () => {
       const complexParams = Object.fromEntries(
-        Array(50).fill(null).map((_, i) => [`param${i}`, `value${i}`])
+        Array(50)
+          .fill(null)
+          .map((_, i) => [`param${i}`, `value${i}`])
       );
 
       (useLocalSearchParams as jest.Mock).mockReturnValue(complexParams);
@@ -528,12 +670,12 @@ describe('DeadlineFormContainer', () => {
         book: {
           api_id: 'mistborn-123',
           title: 'Mistborn: The Final Empire',
-          author: 'Brandon Sanderson'
+          author: 'Brandon Sanderson',
         },
         deadline: '2024-12-31T23:59:59Z',
         format: 'physical' as const,
         priority: 'high' as const,
-        totalQuantity: 647
+        totalQuantity: 647,
       };
 
       mockAddDeadline.mockImplementation((_data, successCallback) => {
@@ -543,7 +685,7 @@ describe('DeadlineFormContainer', () => {
       (useLocalSearchParams as jest.Mock).mockReturnValue({
         api_id: workflowData.book.api_id,
         title: workflowData.book.title,
-        author: workflowData.book.author
+        author: workflowData.book.author,
       });
 
       render(<DeadlineFormContainer mode="new" />);
@@ -557,14 +699,19 @@ describe('DeadlineFormContainer', () => {
         ...mockDeadline,
         format: 'physical' as const,
         total_quantity: 300,
-        deadline_date: '2024-12-25T00:00:00Z'
+        deadline_date: '2024-12-25T00:00:00Z',
       };
 
       mockUpdateDeadline.mockImplementation((_data, successCallback) => {
         successCallback();
       });
 
-      render(<DeadlineFormContainer mode="edit" existingDeadline={originalDeadline} />);
+      render(
+        <DeadlineFormContainer
+          mode="edit"
+          existingDeadline={originalDeadline}
+        />
+      );
 
       expect(useDeadlines).toHaveBeenCalled();
       expect(screen.getByTestId('app-header')).toBeTruthy();
@@ -572,14 +719,16 @@ describe('DeadlineFormContainer', () => {
 
     it('should handle complete error recovery workflow', async () => {
       let attemptCount = 0;
-      mockAddDeadline.mockImplementation((_data, successCallback, errorCallback) => {
-        attemptCount++;
-        if (attemptCount === 1) {
-          errorCallback(new Error('Network error'));
-        } else {
-          successCallback();
+      mockAddDeadline.mockImplementation(
+        (_data, successCallback, errorCallback) => {
+          attemptCount++;
+          if (attemptCount === 1) {
+            errorCallback(new Error('Network error'));
+          } else {
+            successCallback();
+          }
         }
-      });
+      );
 
       render(<DeadlineFormContainer mode="new" />);
 
@@ -590,11 +739,12 @@ describe('DeadlineFormContainer', () => {
     it('should handle workflow with complex book data', () => {
       const complexBookData = {
         api_id: 'complex-book-456',
-        title: 'A Very Long Book Title That Might Cause Issues: The Complete Guide to Everything You Need to Know',
+        title:
+          'A Very Long Book Title That Might Cause Issues: The Complete Guide to Everything You Need to Know',
         author: 'Multiple Authors, Co-Author Name, Another Author',
         format: 'audio' as const,
         total_quantity: 15600,
-        deadline_date: '2025-06-15T12:30:00Z'
+        deadline_date: '2025-06-15T12:30:00Z',
       };
 
       (useLocalSearchParams as jest.Mock).mockReturnValue(complexBookData);
@@ -609,7 +759,7 @@ describe('DeadlineFormContainer', () => {
         title: 'Test Book',
         author: 'Test Author',
         format: 'eBook',
-        priority: 'medium'
+        priority: 'medium',
       };
 
       (useLocalSearchParams as jest.Mock).mockReturnValue(workflowState);
@@ -624,7 +774,9 @@ describe('DeadlineFormContainer', () => {
     it('should handle workflow interruption and recovery', () => {
       render(<DeadlineFormContainer mode="new" />);
 
-      const { rerender } = render(<DeadlineFormContainer mode="edit" existingDeadline={undefined} />);
+      const { rerender } = render(
+        <DeadlineFormContainer mode="edit" existingDeadline={undefined} />
+      );
       expect(screen.getByText('Deadline not found')).toBeTruthy();
 
       rerender(<DeadlineFormContainer mode="new" />);
@@ -690,7 +842,9 @@ describe('DeadlineFormContainer', () => {
     });
 
     it('should render edit mode with form controls', () => {
-      render(<DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />);
+      render(
+        <DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />
+      );
 
       // Should show form controls
       expect(screen.getByTestId('format-selector')).toBeTruthy();
@@ -699,7 +853,9 @@ describe('DeadlineFormContainer', () => {
     });
 
     it('should show error screen for missing deadline in edit mode', () => {
-      render(<DeadlineFormContainer mode="edit" existingDeadline={undefined} />);
+      render(
+        <DeadlineFormContainer mode="edit" existingDeadline={undefined} />
+      );
 
       expect(screen.getByText('Deadline not found')).toBeTruthy();
       expect(screen.getByText('Go Back')).toBeTruthy();
@@ -722,7 +878,9 @@ describe('DeadlineFormContainer', () => {
       // For edit mode, page: '2' = step 2 (final step)
       (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '2' });
 
-      render(<DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />);
+      render(
+        <DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />
+      );
 
       // Should be on final step
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
@@ -732,7 +890,9 @@ describe('DeadlineFormContainer', () => {
       // Set up to start directly on final step for edit mode
       (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '2' });
 
-      render(<DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />);
+      render(
+        <DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />
+      );
 
       // Should be on final step with priority selector and date picker
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
@@ -784,10 +944,12 @@ describe('DeadlineFormContainer', () => {
       let formSubmitted = false;
 
       // Test new mode submission with book data
-      mockAddDeadline.mockImplementation((_data, successCallback, _errorCallback) => {
-        formSubmitted = true;
-        successCallback();
-      });
+      mockAddDeadline.mockImplementation(
+        (_data, successCallback, _errorCallback) => {
+          formSubmitted = true;
+          successCallback();
+        }
+      );
 
       // For new mode, page: '3' = step 3 (final step) with all required form data
       (useLocalSearchParams as jest.Mock).mockReturnValue({
@@ -798,7 +960,7 @@ describe('DeadlineFormContainer', () => {
         source: 'Library',
         totalQuantity: '300',
         format: 'physical',
-        page: '3'
+        page: '3',
       });
 
       render(<DeadlineFormContainer mode="new" />);
@@ -822,16 +984,20 @@ describe('DeadlineFormContainer', () => {
       // Test edit mode submission (line 234-238)
       let formSubmitted = false;
 
-      mockUpdateDeadline.mockImplementation((_data, successCallback, _errorCallback) => {
-        formSubmitted = true;
-        successCallback();
-      });
+      mockUpdateDeadline.mockImplementation(
+        (_data, successCallback, _errorCallback) => {
+          formSubmitted = true;
+          successCallback();
+        }
+      );
 
       // For edit mode, page: '2' = step 2 (final step)
       (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '2' });
 
       // Use the existing mockDeadline which already has the correct structure
-      render(<DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />);
+      render(
+        <DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />
+      );
 
       // Verify we're on the final step
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
@@ -852,10 +1018,12 @@ describe('DeadlineFormContainer', () => {
       const testError = new Error('Test submission error');
       let errorHandled = false;
 
-      mockAddDeadline.mockImplementation((_data, _successCallback, errorCallback) => {
-        errorHandled = true;
-        errorCallback(testError);
-      });
+      mockAddDeadline.mockImplementation(
+        (_data, _successCallback, errorCallback) => {
+          errorHandled = true;
+          errorCallback(testError);
+        }
+      );
 
       // For new mode, page: '3' = step 3 (final step) with all required form data
       (useLocalSearchParams as jest.Mock).mockReturnValue({
@@ -864,7 +1032,7 @@ describe('DeadlineFormContainer', () => {
         source: 'Library',
         totalQuantity: '300',
         format: 'physical',
-        page: '3'
+        page: '3',
       });
 
       render(<DeadlineFormContainer mode="new" />);

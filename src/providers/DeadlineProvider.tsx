@@ -227,7 +227,6 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     return userPaceData.calculationMethod;
   };
 
-
   // Calculate units per day needed based on format (now using utility function)
 
   // Calculate progress as of the start of today (now using utility function)
