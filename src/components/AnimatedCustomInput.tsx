@@ -177,6 +177,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     top: 0,
+    paddingHorizontal: 4,
   },
   input: {
     borderWidth: 1,

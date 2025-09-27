@@ -72,7 +72,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
       const { session } = await authService.getSession();
       setSession(session);
       if (session) {
-        // fetch profile
         const profileData = await profileService.getProfile(session.user.id);
         setProfile(profileData);
       }
@@ -94,20 +93,16 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     if (!isLoading) {
       const inAuthGroup = segments[0] === '(auth)';
 
-      // Add a small delay to prevent flickering during auth state transitions
       const timeoutId = setTimeout(() => {
         if (!session && !inAuthGroup) {
-          // Redirect to login if not authenticated
           router.replace('/(auth)/sign-in');
         } else if (session && inAuthGroup) {
-          // Redirect to home if already authenticated
           router.replace('/');
         }
       }, 100);
 
       return () => clearTimeout(timeoutId);
     }
-    // Return undefined for the case when isLoading is true
     return undefined;
   }, [session, segments, isLoading]);
 
@@ -127,14 +122,12 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   const signOut = async () => {
     try {
       await authService.signOut();
-      // Always clear local state regardless of API response
       setProfile(null);
-      setSession(null); // Add this line to ensure session is cleared
+      setSession(null);
     } catch (error: any) {
       console.error('Error signing out:', error);
-      // Even if signout fails, clear local state to prevent UI inconsistency
       setProfile(null);
-      setSession(null); // Add this line
+      setSession(null);
     }
   };
 
@@ -232,7 +225,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
       });
       if (session) {
         setSession(session);
-        // Fetch profile for the new session
         const profileData = await profileService.getProfile(session.user.id);
         setProfile(profileData);
       }

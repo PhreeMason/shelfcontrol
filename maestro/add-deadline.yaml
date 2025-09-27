@@ -46,7 +46,7 @@ tags:
 - tapOn: "Search by title or author..."
 
 # Input search text for book
-- inputText: "Mistborn: The Final Empire sanderson"
+- inputText: "Fourth Wing"
 
 # Wait for search results to appear and select first book result
 - extendedWaitUntil:
@@ -131,10 +131,10 @@ tags:
 
 # Verify the book was successfully added to the list
 - extendedWaitUntil:
-    visible: ".*Mistborn: The Final Empire.*"
+    visible: ".*Fourth Wing.*"
     timeout: 10000
 
-- assertVisible: ".*Mistborn: The Final Empire.*"
+- assertVisible: ".*Fourth Wing.*"
 
 # Take screenshot of successful book addition
 - takeScreenshot: "successful_deadline_added"

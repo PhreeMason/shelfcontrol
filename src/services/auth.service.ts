@@ -2,7 +2,6 @@ import { supabase } from '@/lib/supabase';
 import { AuthError, AuthResponse, Session } from '@supabase/supabase-js';
 import { AppState } from 'react-native';
 
-// Setup auto-refresh for session management
 AppState.addEventListener('change', state => {
   if (state === 'active') {
     supabase.auth.startAutoRefresh();

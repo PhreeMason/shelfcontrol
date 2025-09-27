@@ -48,7 +48,6 @@ import {
 import React, { createContext, ReactNode, useContext, useMemo } from 'react';
 
 interface DeadlineContextType {
-  // Data
   deadlines: ReadingDeadlineWithProgress[];
   activeDeadlines: ReadingDeadlineWithProgress[];
   overdueDeadlines: ReadingDeadlineWithProgress[];
@@ -60,11 +59,8 @@ interface DeadlineContextType {
   refetch: () => void;
   isRefreshing: boolean;
 
-  // Pace data (merged from PaceProvider)
   userPaceData: UserPaceData;
   userListeningPaceData: UserListeningPaceData;
-
-  // Actions
   addDeadline: (
     params: {
       deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
@@ -109,8 +105,6 @@ interface DeadlineContextType {
     onSuccess?: () => void,
     onError?: (error: Error) => void
   ) => void;
-
-  // Calculations for individual deadlines (updated with pace-based logic)
   getDeadlineCalculations: (deadline: ReadingDeadlineWithProgress) => {
     currentProgress: number;
     totalQuantity: number;
@@ -124,7 +118,6 @@ interface DeadlineContextType {
     readingEstimate: string;
     paceEstimate: string;
     unit: string;
-    // New pace-based fields
     userPace: number;
     requiredPace: number;
     paceStatus: 'green' | 'orange' | 'red';
@@ -141,8 +134,6 @@ interface DeadlineContextType {
     remaining: number,
     daysLeft: number
   ) => string;
-
-  // Pace functions (merged from PaceProvider)
   getDeadlinePaceStatus: (deadline: ReadingDeadlineWithProgress) => {
     userPace: number;
     requiredPace: number;
@@ -162,12 +153,9 @@ interface DeadlineContextType {
   getUserListeningPaceReliability: () => boolean;
   getUserListeningPaceMethod: () => 'recent_data' | 'default_fallback';
 
-  // Counts
   activeCount: number;
   overdueCount: number;
   setAsideCount: number;
-
-  // Progress calculations
   calculateProgressAsOfStartOfDay: (
     deadline: ReadingDeadlineWithProgress
   ) => number;
@@ -182,7 +170,6 @@ interface DeadlineProviderProps {
   children: ReactNode;
 }
 
-// Single, clean DeadlineProvider that handles all deadline and pace logic
 export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
   children,
 }) => {
@@ -201,7 +188,6 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
   const { mutate: reactivateDeadlineMutation } = useReactivateDeadline();
   const { mutate: startReadingDeadlineMutation } = useStartReadingDeadline();
 
-  // Separate deadlines by active and overdue status
   const {
     active: activeDeadlines,
     overdue: overdueDeadlines,
@@ -210,7 +196,6 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     pending: pendingDeadlines,
   } = separateDeadlines(deadlines);
 
-  // Calculate pace data (merged from PaceProvider)
   const userPaceData = useMemo(() => {
     return calculateUserPace(activeDeadlines);
   }, [activeDeadlines]);
@@ -219,7 +204,6 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     return calculateUserListeningPace(activeDeadlines);
   }, [activeDeadlines]);
 
-  // Pace calculation functions (merged from PaceProvider)
   const getDeadlinePaceStatus = (deadline: ReadingDeadlineWithProgress) => {
     return calculateDeadlinePaceStatus(
       deadline,
@@ -243,13 +227,6 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     return userPaceData.calculationMethod;
   };
 
-  const getUserListeningPaceReliability = (): boolean => {
-    return userListeningPaceData.isReliable;
-  };
-
-  const getUserListeningPaceMethod = (): 'recent_data' | 'default_fallback' => {
-    return userListeningPaceData.calculationMethod;
-  };
 
   // Calculate units per day needed based on format (now using utility function)
 
@@ -262,6 +239,14 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
   // Special formatting for DeadlineCard display (now using utility function)
 
   // Comprehensive calculations for a single deadline (enhanced with pace-based logic)
+
+  const getUserListeningPaceReliability = (): boolean => {
+    return userListeningPaceData.isReliable;
+  };
+
+  const getUserListeningPaceMethod = (): 'recent_data' | 'default_fallback' => {
+    return userListeningPaceData.calculationMethod;
+  };
   const getDeadlineCalculations = (
     deadline: ReadingDeadlineWithProgress
   ): DeadlineCalculationResult => {
@@ -278,11 +263,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
       undefined
     );
     const progressPercentage = calculateProgressPercentage(deadline);
-
-    // Check if deadline is completed or set aside
     const deadlineStatus = getDeadlineStatus(deadline);
-
-    // For archived deadlines, don't calculate countdown-related metrics
     let daysLeft,
       unitsPerDay,
       urgencyLevel,
@@ -298,7 +279,6 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
       statusMessage = deadlineStatus.isCompleted ? 'Completed!' : 'Set aside';
       paceData = createArchivedPaceData(statusMessage);
     } else {
-      // Calculate normally for active deadlines
       daysLeft = calculateDaysLeft(deadline.deadline_date);
       const currentProgressAsOfStartOfDay =
         calculateProgressAsOfStartOfDay(deadline);
@@ -309,10 +289,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         deadline.format
       );
 
-      // Get pace-based calculations
       paceData = getDeadlinePaceStatus(deadline);
-
-      // Map pace status to urgency level and color
       urgencyLevel = mapPaceToUrgency(paceData.status, daysLeft);
       urgencyColor = mapPaceColorToUrgencyColor(paceData.status.color);
       statusMessage = paceData.statusMessage;
@@ -466,11 +443,8 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     refetch,
     isRefreshing: isFetching,
 
-    // Pace data (merged from PaceProvider)
     userPaceData,
     userListeningPaceData,
-
-    // Actions
     addDeadline,
     updateDeadline,
     deleteDeadline,
@@ -484,7 +458,6 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     formatUnitsPerDay,
     formatUnitsPerDayForDisplay,
 
-    // Pace functions (merged from PaceProvider)
     getDeadlinePaceStatus,
     formatPaceForFormat,
     getUserPaceReliability,
@@ -492,12 +465,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     getUserListeningPaceReliability,
     getUserListeningPaceMethod,
 
-    // Counts
     activeCount: activeDeadlines.length,
     overdueCount: overdueDeadlines.length,
     setAsideCount: setAsideDeadlines.length,
-
-    // Progress calculations
     calculateProgressAsOfStartOfDay,
     calculateProgressForToday,
   };
