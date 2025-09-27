@@ -74,7 +74,6 @@ export const DeadlineFormStep1 = ({
         publication_date: fullBookData.publication_date,
       };
 
-      // Set form values
       setValue('bookTitle', selectedBookData.title);
       setValue('bookAuthor', selectedBookData.author || '');
       setValue('book_id', selectedBookData.id);

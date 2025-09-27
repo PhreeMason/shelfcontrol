@@ -141,7 +141,6 @@ export function calculateProgressAsOfStartOfDay(
 ): number {
   if (!deadline.progress || deadline.progress.length === 0) return 0;
 
-  // Get the start of today in local time
   const startOfToday = dayjs().startOf('day').toDate();
 
   // Filter progress entries to only include those from before or at the start of today

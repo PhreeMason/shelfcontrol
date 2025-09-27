@@ -113,7 +113,6 @@ class ProfileService {
       // Fetch the image and convert to arraybuffer
       const arraybuffer = await fetch(uri).then(res => res.arrayBuffer());
 
-      // Get file extension from URI
       const fileExt = uri.split('.').pop()?.toLowerCase() ?? 'jpeg';
       const fileName = `avatar-${Date.now()}.${fileExt}`;
       const path = `${userId}/${fileName}`;
@@ -149,7 +148,6 @@ class ProfileService {
         return null;
       }
 
-      // Get the most recent file (highest timestamp)
       const sortedFiles = files
         .filter(file => file.name.startsWith('avatar-'))
         .sort((a, b) => b.created_at?.localeCompare(a.created_at || '') || 0);

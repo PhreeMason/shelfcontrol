@@ -98,9 +98,7 @@ export default function SignInScreen() {
           />
         </ThemedView>
 
-        <ThemedText
-          style={[styles.title, { fontSize: 32, fontWeight: 'bold' }]}
-        >
+        <ThemedText variant="headline" style={styles.title}>
           Sign in
         </ThemedText>
 

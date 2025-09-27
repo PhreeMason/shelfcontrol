@@ -6,7 +6,6 @@ class StorageService {
    */
   async setupAvatarsBucket() {
     try {
-      // Check if bucket exists
       const { data: buckets, error: listError } =
         await supabase.storage.listBuckets();
 
@@ -20,7 +19,6 @@ class StorageService {
       );
 
       if (!avatarsBucketExists) {
-        // Create the avatars bucket
         const { data, error: createError } =
           await supabase.storage.createBucket('avatars', {
             public: true,
@@ -40,7 +38,6 @@ class StorageService {
 
         return { success: true, data };
       } else {
-        // Update bucket to ensure it's public
         const { data, error: updateError } =
           await supabase.storage.updateBucket('avatars', {
             public: true,

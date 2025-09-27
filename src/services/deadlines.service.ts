@@ -51,7 +51,6 @@ class DeadlinesService {
     // Handle book linking if bookData is provided
     let finalBookId = deadlineDetails.book_id;
     if (bookData?.api_id && !bookData.book_id) {
-      // Check if book exists first
       const existingBook = await booksService.getBookByApiId(bookData.api_id);
 
       if (existingBook) {
@@ -97,7 +96,6 @@ class DeadlinesService {
 
     if (progressError) throw progressError;
 
-    // Create initial status
     const { data: statusData, error: statusError } = await supabase
       .from('deadline_status')
       .insert({
@@ -125,7 +123,6 @@ class DeadlinesService {
   async updateDeadline(userId: string, params: UpdateDeadlineParams) {
     const { deadlineDetails, progressDetails, status } = params;
 
-    // Update deadline
     const { data: deadlineData, error: deadlineError } = await supabase
       .from('deadlines')
       .update({
@@ -139,10 +136,8 @@ class DeadlinesService {
 
     if (deadlineError) throw deadlineError;
 
-    // Update or create progress entry
     let progressData;
     if (progressDetails.id) {
-      // Update existing progress
       const { data, error } = await supabase
         .from('deadline_progress')
         .update({
@@ -156,7 +151,6 @@ class DeadlinesService {
       if (error) throw error;
       progressData = data;
     } else {
-      // Create new progress entry
       const finalProgressId = generateId('rdp');
       const { data, error } = await supabase
         .from('deadline_progress')
@@ -174,7 +168,6 @@ class DeadlinesService {
       progressData = data;
     }
 
-    // Update status if provided
     if (status) {
       const { error: statusError } = await supabase
         .from('deadline_status')
@@ -198,7 +191,6 @@ class DeadlinesService {
    * Delete a deadline
    */
   async deleteDeadline(userId: string, deadlineId: string) {
-    // Delete associated progress entries first
     const { error: progressError } = await supabase
       .from('deadline_progress')
       .delete()
@@ -206,7 +198,6 @@ class DeadlinesService {
 
     if (progressError) throw progressError;
 
-    // Delete the deadline
     const { error: deadlineError } = await supabase
       .from('deadlines')
       .delete()
