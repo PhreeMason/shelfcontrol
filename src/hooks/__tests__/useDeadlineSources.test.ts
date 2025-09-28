@@ -21,7 +21,9 @@ jest.mock('@tanstack/react-query', () => ({
 
 const mockUseAuth = useAuth as jest.Mock;
 const mockUseQuery = useQuery as jest.Mock;
-const mockDeadlinesService = deadlinesService as jest.Mocked<typeof deadlinesService>;
+const mockDeadlinesService = deadlinesService as jest.Mocked<
+  typeof deadlinesService
+>;
 
 const DEFAULT_SOURCES = ['ARC', 'Library', 'Personal', 'Book Club'];
 
@@ -159,11 +161,15 @@ describe('useDeadlineSources', () => {
       useDeadlineSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueSources.mockResolvedValue(['Custom Source']);
+      mockDeadlinesService.getUniqueSources.mockResolvedValue([
+        'Custom Source',
+      ]);
 
       await queryConfig.queryFn();
 
-      expect(mockDeadlinesService.getUniqueSources).toHaveBeenCalledWith('profile-123');
+      expect(mockDeadlinesService.getUniqueSources).toHaveBeenCalledWith(
+        'profile-123'
+      );
     });
 
     it('should return DEFAULT_SOURCES when no userId', async () => {
@@ -197,7 +203,7 @@ describe('useDeadlineSources', () => {
         'Book Club',
         'Academic',
         'Bookstore',
-        'Gift'
+        'Gift',
       ]);
     });
 
@@ -215,7 +221,7 @@ describe('useDeadlineSources', () => {
         'Library',
         'Personal',
         'Book Club',
-        'Bookstore'
+        'Bookstore',
       ]);
     });
 
@@ -235,7 +241,7 @@ describe('useDeadlineSources', () => {
         'Book Club',
         'Alpha Source',
         'Beta Source',
-        'Zebra Source'
+        'Zebra Source',
       ]);
     });
 
@@ -257,7 +263,9 @@ describe('useDeadlineSources', () => {
       useDeadlineSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueSources.mockRejectedValue(new Error('Database connection failed'));
+      mockDeadlinesService.getUniqueSources.mockRejectedValue(
+        new Error('Database connection failed')
+      );
 
       const result = await queryConfig.queryFn();
 
@@ -280,7 +288,10 @@ describe('useDeadlineSources', () => {
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual(DEFAULT_SOURCES);
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching deadline sources:', null);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Error fetching deadline sources:',
+        null
+      );
 
       consoleErrorSpy.mockRestore();
     });
@@ -290,7 +301,9 @@ describe('useDeadlineSources', () => {
       useDeadlineSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueSources.mockRejectedValue(new Error('Network timeout'));
+      mockDeadlinesService.getUniqueSources.mockRejectedValue(
+        new Error('Network timeout')
+      );
 
       const result = await queryConfig.queryFn();
 
@@ -321,7 +334,7 @@ describe('useDeadlineSources', () => {
         'Book Club',
         'B&N Store',
         'Mom & Dad',
-        'Re-read'
+        'Re-read',
       ]);
     });
 
@@ -340,7 +353,7 @@ describe('useDeadlineSources', () => {
         'Library',
         'Personal',
         'Book Club',
-        longSourceName
+        longSourceName,
       ]);
     });
 
@@ -355,7 +368,9 @@ describe('useDeadlineSources', () => {
 
       expect(result.slice(0, 4)).toEqual(DEFAULT_SOURCES);
       const userPortion = result.slice(4);
-      expect(userPortion).toEqual([...userSources].sort((a, b) => a.localeCompare(b)));
+      expect(userPortion).toEqual(
+        [...userSources].sort((a, b) => a.localeCompare(b))
+      );
       expect(result).toHaveLength(8);
     });
 
@@ -363,7 +378,10 @@ describe('useDeadlineSources', () => {
       useDeadlineSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userSources = Array.from({ length: 50 }, (_, i) => `Source ${i + 1}`);
+      const userSources = Array.from(
+        { length: 50 },
+        (_, i) => `Source ${i + 1}`
+      );
       mockDeadlinesService.getUniqueSources.mockResolvedValue(userSources);
 
       const result = await queryConfig.queryFn();
@@ -390,7 +408,7 @@ describe('useDeadlineSources', () => {
         '\t',
         '\n',
         '   ',
-        'Valid Source'
+        'Valid Source',
       ]);
     });
 
@@ -410,7 +428,7 @@ describe('useDeadlineSources', () => {
         'Book Club',
         'Café ☕',
         'École 🏫',
-        'Librairie 📚'
+        'Librairie 📚',
       ]);
     });
   });

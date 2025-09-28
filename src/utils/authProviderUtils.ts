@@ -50,11 +50,17 @@ export const createAuthHandlers = (
 };
 
 export const createNavigationLogic = () => {
-  const shouldRedirectToAuth = (session: Session | null, inAuthGroup: boolean) => {
+  const shouldRedirectToAuth = (
+    session: Session | null,
+    inAuthGroup: boolean
+  ) => {
     return !session && !inAuthGroup;
   };
 
-  const shouldRedirectToHome = (session: Session | null, inAuthGroup: boolean) => {
+  const shouldRedirectToHome = (
+    session: Session | null,
+    inAuthGroup: boolean
+  ) => {
     return Boolean(session && inAuthGroup);
   };
 
@@ -134,16 +140,20 @@ export const createProfileOperations = (
   profile: Profile | null,
   setProfile: (profile: Profile | null) => void
 ) => {
-  const { validateUserAuthentication, validateProfileExists, createAuthResponse } =
-    createAuthHandlers(session, profile, setProfile);
+  const {
+    validateUserAuthentication,
+    validateProfileExists,
+    createAuthResponse,
+  } = createAuthHandlers(session, profile, setProfile);
 
   const validateAndExecuteProfileUpdate = async (
     updateOperation: () => Promise<Profile>,
     validationType: 'user' | 'profile' = 'profile'
   ) => {
-    const validation = validationType === 'user'
-      ? validateUserAuthentication(session?.user?.id)
-      : validateProfileExists(profile?.id);
+    const validation =
+      validationType === 'user'
+        ? validateUserAuthentication(session?.user?.id)
+        : validateProfileExists(profile?.id);
 
     if (!validation.isValid) {
       return createAuthResponse(null, validation.error);

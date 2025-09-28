@@ -1,12 +1,18 @@
 import { renderHook } from '@testing-library/react-native';
-import { useTheme, useThemeColors, createThemedStyles, useThemedStyles } from '../useThemeColor';
+import {
+  useTheme,
+  useThemeColors,
+  createThemedStyles,
+  useThemedStyles,
+} from '../useThemeColor';
 import { Colors, Typography, Spacing, BorderRadius } from '@/constants/Colors';
 
 jest.mock('@/hooks/useColorScheme', () => ({
   useColorScheme: jest.fn(),
 }));
 
-const mockUseColorScheme = require('@/hooks/useColorScheme').useColorScheme as jest.Mock;
+const mockUseColorScheme = require('@/hooks/useColorScheme')
+  .useColorScheme as jest.Mock;
 
 describe('useThemeColor hooks', () => {
   beforeEach(() => {
@@ -340,13 +346,15 @@ describe('useThemeColor hooks', () => {
 
         themedStylesHook();
 
-        expect(stylesFn).toHaveBeenCalledWith(expect.objectContaining({
-          colors: Colors.light,
-          typography: Typography,
-          spacing: Spacing,
-          borderRadius: BorderRadius,
-          isDark: false,
-        }));
+        expect(stylesFn).toHaveBeenCalledWith(
+          expect.objectContaining({
+            colors: Colors.light,
+            typography: Typography,
+            spacing: Spacing,
+            borderRadius: BorderRadius,
+            isDark: false,
+          })
+        );
       });
 
       it('should pass dark theme when colorScheme is dark', () => {
@@ -356,10 +364,12 @@ describe('useThemeColor hooks', () => {
 
         themedStylesHook();
 
-        expect(stylesFn).toHaveBeenCalledWith(expect.objectContaining({
-          colors: Colors.dark,
-          isDark: true,
-        }));
+        expect(stylesFn).toHaveBeenCalledWith(
+          expect.objectContaining({
+            colors: Colors.dark,
+            isDark: true,
+          })
+        );
       });
 
       it('should call styles function on each invocation', () => {
@@ -413,14 +423,20 @@ describe('useThemeColor hooks', () => {
         themedStylesHook();
 
         expect(stylesFn).toHaveBeenCalledTimes(2);
-        expect(stylesFn).toHaveBeenNthCalledWith(1, expect.objectContaining({
-          colors: Colors.light,
-          isDark: false,
-        }));
-        expect(stylesFn).toHaveBeenNthCalledWith(2, expect.objectContaining({
-          colors: Colors.dark,
-          isDark: true,
-        }));
+        expect(stylesFn).toHaveBeenNthCalledWith(
+          1,
+          expect.objectContaining({
+            colors: Colors.light,
+            isDark: false,
+          })
+        );
+        expect(stylesFn).toHaveBeenNthCalledWith(
+          2,
+          expect.objectContaining({
+            colors: Colors.dark,
+            isDark: true,
+          })
+        );
       });
     });
   });
@@ -445,13 +461,15 @@ describe('useThemeColor hooks', () => {
 
         renderHook(() => useThemedStyles(stylesFn));
 
-        expect(stylesFn).toHaveBeenCalledWith(expect.objectContaining({
-          colors: Colors.light,
-          typography: Typography,
-          spacing: Spacing,
-          borderRadius: BorderRadius,
-          isDark: false,
-        }));
+        expect(stylesFn).toHaveBeenCalledWith(
+          expect.objectContaining({
+            colors: Colors.light,
+            typography: Typography,
+            spacing: Spacing,
+            borderRadius: BorderRadius,
+            isDark: false,
+          })
+        );
       });
 
       it('should create StyleSheet on each render', () => {
@@ -473,10 +491,12 @@ describe('useThemeColor hooks', () => {
         mockUseColorScheme.mockReturnValue('light');
         renderHook(() => useThemedStyles(stylesFn));
 
-        expect(stylesFn).toHaveBeenCalledWith(expect.objectContaining({
-          colors: Colors.light,
-          isDark: false,
-        }));
+        expect(stylesFn).toHaveBeenCalledWith(
+          expect.objectContaining({
+            colors: Colors.light,
+            isDark: false,
+          })
+        );
       });
 
       it('should update styles when theme changes', () => {
@@ -485,7 +505,9 @@ describe('useThemeColor hooks', () => {
         }));
 
         mockUseColorScheme.mockReturnValue('light');
-        const { result, rerender } = renderHook(() => useThemedStyles(stylesFn));
+        const { result, rerender } = renderHook(() =>
+          useThemedStyles(stylesFn)
+        );
 
         const lightResult = result.current;
 
@@ -556,7 +578,9 @@ describe('useThemeColor hooks', () => {
       const stylesFn = (theme: any) => ({
         container: { backgroundColor: theme.colors.background },
       });
-      const { result: stylesResult } = renderHook(() => useThemedStyles(stylesFn));
+      const { result: stylesResult } = renderHook(() =>
+        useThemedStyles(stylesFn)
+      );
 
       expect(stylesResult.current.container).toBeDefined();
     });
@@ -571,14 +595,15 @@ describe('useThemeColor hooks', () => {
       const themes = results.current;
       const firstTheme = themes[0];
 
-      themes.forEach((theme) => {
+      themes.forEach(theme => {
         expect(theme).toEqual(firstTheme);
       });
     });
 
     it('should handle destructuring of returned objects', () => {
       const { result } = renderHook(() => {
-        const { colors, typography, spacing, borderRadius, isDark } = useTheme();
+        const { colors, typography, spacing, borderRadius, isDark } =
+          useTheme();
         return { colors, typography, spacing, borderRadius, isDark };
       });
 

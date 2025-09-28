@@ -213,7 +213,9 @@ export const createReadAgainParams = (
   const formatSpecificParams =
     deadline.format === 'audio'
       ? (() => {
-          const { hours, minutes } = convertMinutesToHoursAndMinutes(deadline.total_quantity);
+          const { hours, minutes } = convertMinutesToHoursAndMinutes(
+            deadline.total_quantity
+          );
           return {
             totalQuantity: String(hours),
             totalMinutes: String(minutes),

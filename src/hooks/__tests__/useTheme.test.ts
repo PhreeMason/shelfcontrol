@@ -311,7 +311,7 @@ describe('useTheme hooks', () => {
       const themes = Array.from({ length: 10 }, () => useTheme());
       const firstTheme = themes[0];
 
-      themes.forEach((theme) => {
+      themes.forEach(theme => {
         expect(theme).toEqual(firstTheme);
       });
     });

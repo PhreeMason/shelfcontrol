@@ -53,7 +53,11 @@ describe('authProviderUtils', () => {
 
     beforeEach(() => {
       mockSetProfile = jest.fn();
-      authHandlers = createAuthHandlers(mockSession, mockProfile, mockSetProfile);
+      authHandlers = createAuthHandlers(
+        mockSession,
+        mockProfile,
+        mockSetProfile
+      );
     });
 
     describe('validateUserAuthentication', () => {
@@ -109,7 +113,10 @@ describe('authProviderUtils', () => {
         const error = new Error('Test error');
         const result = authHandlers.handleAuthError('Test operation', error);
 
-        expect(console.error).toHaveBeenCalledWith('Test operation error:', error);
+        expect(console.error).toHaveBeenCalledWith(
+          'Test operation error:',
+          error
+        );
         expect(result).toBe(error);
       });
     });
@@ -228,28 +235,50 @@ describe('authProviderUtils', () => {
 
     describe('determineRedirectAction', () => {
       it('should return no redirect when loading', () => {
-        const result = navigationLogic.determineRedirectAction(null, ['(auth)'], true);
+        const result = navigationLogic.determineRedirectAction(
+          null,
+          ['(auth)'],
+          true
+        );
         expect(result).toEqual({ shouldRedirect: false, path: null });
       });
 
       it('should return redirect to auth when no session and not in auth group', () => {
-        const result = navigationLogic.determineRedirectAction(null, ['home'], false);
-        expect(result).toEqual({ shouldRedirect: true, path: '/(auth)/sign-in' });
+        const result = navigationLogic.determineRedirectAction(
+          null,
+          ['home'],
+          false
+        );
+        expect(result).toEqual({
+          shouldRedirect: true,
+          path: '/(auth)/sign-in',
+        });
       });
 
       it('should return redirect to home when session exists and in auth group', () => {
-        const result = navigationLogic.determineRedirectAction(mockSession, ['(auth)'], false);
+        const result = navigationLogic.determineRedirectAction(
+          mockSession,
+          ['(auth)'],
+          false
+        );
         expect(result).toEqual({ shouldRedirect: true, path: '/' });
       });
 
       it('should return no redirect when session exists and not in auth group', () => {
-        const result = navigationLogic.determineRedirectAction(mockSession, ['home'], false);
+        const result = navigationLogic.determineRedirectAction(
+          mockSession,
+          ['home'],
+          false
+        );
         expect(result).toEqual({ shouldRedirect: false, path: null });
       });
 
       it('should handle empty segments array', () => {
         const result = navigationLogic.determineRedirectAction(null, [], false);
-        expect(result).toEqual({ shouldRedirect: true, path: '/(auth)/sign-in' });
+        expect(result).toEqual({
+          shouldRedirect: true,
+          path: '/(auth)/sign-in',
+        });
       });
     });
   });
@@ -269,7 +298,10 @@ describe('authProviderUtils', () => {
     describe('wrapAuthOperation', () => {
       it('should execute operation successfully and return result', async () => {
         const mockOperation = jest.fn().mockResolvedValue('success');
-        const result = await asyncOps.wrapAuthOperation(mockOperation, 'Test Operation');
+        const result = await asyncOps.wrapAuthOperation(
+          mockOperation,
+          'Test Operation'
+        );
 
         expect(mockOperation).toHaveBeenCalled();
         expect(result).toBe('success');
@@ -283,7 +315,10 @@ describe('authProviderUtils', () => {
           asyncOps.wrapAuthOperation(mockOperation, 'Test Operation')
         ).rejects.toThrow('Operation failed');
 
-        expect(console.error).toHaveBeenCalledWith('Test Operation failed:', error);
+        expect(console.error).toHaveBeenCalledWith(
+          'Test Operation failed:',
+          error
+        );
       });
     });
 
@@ -295,7 +330,10 @@ describe('authProviderUtils', () => {
         };
         const mockServiceCall = jest.fn().mockResolvedValue(mockResponse);
 
-        const result = await asyncOps.wrapAuthServiceCall(mockServiceCall, 'Test Service');
+        const result = await asyncOps.wrapAuthServiceCall(
+          mockServiceCall,
+          'Test Service'
+        );
 
         expect(mockServiceCall).toHaveBeenCalled();
         expect(result).toEqual(mockResponse);
@@ -309,9 +347,15 @@ describe('authProviderUtils', () => {
         };
         const mockServiceCall = jest.fn().mockResolvedValue(mockResponse);
 
-        const result = await asyncOps.wrapAuthServiceCall(mockServiceCall, 'Test Service');
+        const result = await asyncOps.wrapAuthServiceCall(
+          mockServiceCall,
+          'Test Service'
+        );
 
-        expect(console.error).toHaveBeenCalledWith('Test Service failed:', mockError);
+        expect(console.error).toHaveBeenCalledWith(
+          'Test Service failed:',
+          mockError
+        );
         expect(result).toEqual(mockResponse);
       });
 
@@ -323,7 +367,10 @@ describe('authProviderUtils', () => {
           asyncOps.wrapAuthServiceCall(mockServiceCall, 'Test Service')
         ).rejects.toThrow('Service call failed');
 
-        expect(console.error).toHaveBeenCalledWith('Test Service error:', error);
+        expect(console.error).toHaveBeenCalledWith(
+          'Test Service error:',
+          error
+        );
       });
     });
   });
@@ -334,7 +381,11 @@ describe('authProviderUtils', () => {
 
     beforeEach(() => {
       mockSetProfile = jest.fn();
-      profileOps = createProfileOperations(mockSession, mockProfile, mockSetProfile);
+      profileOps = createProfileOperations(
+        mockSession,
+        mockProfile,
+        mockSetProfile
+      );
       jest.spyOn(console, 'error').mockImplementation(() => {});
     });
 
@@ -347,7 +398,10 @@ describe('authProviderUtils', () => {
         const updatedProfile = { ...mockProfile, username: 'updated' };
         const mockOperation = jest.fn().mockResolvedValue(updatedProfile);
 
-        const result = await profileOps.validateAndExecuteProfileUpdate(mockOperation, 'profile');
+        const result = await profileOps.validateAndExecuteProfileUpdate(
+          mockOperation,
+          'profile'
+        );
 
         expect(mockOperation).toHaveBeenCalled();
         expect(mockSetProfile).toHaveBeenCalledWith(updatedProfile);
@@ -358,7 +412,10 @@ describe('authProviderUtils', () => {
         const updatedProfile = { ...mockProfile, username: 'updated' };
         const mockOperation = jest.fn().mockResolvedValue(updatedProfile);
 
-        const result = await profileOps.validateAndExecuteProfileUpdate(mockOperation, 'user');
+        const result = await profileOps.validateAndExecuteProfileUpdate(
+          mockOperation,
+          'user'
+        );
 
         expect(mockOperation).toHaveBeenCalled();
         expect(mockSetProfile).toHaveBeenCalledWith(updatedProfile);
@@ -366,30 +423,55 @@ describe('authProviderUtils', () => {
       });
 
       it('should return error when profile validation fails', async () => {
-        const profileOpsNoProfile = createProfileOperations(mockSession, null, mockSetProfile);
+        const profileOpsNoProfile = createProfileOperations(
+          mockSession,
+          null,
+          mockSetProfile
+        );
         const mockOperation = jest.fn();
 
-        const result = await profileOpsNoProfile.validateAndExecuteProfileUpdate(mockOperation, 'profile');
+        const result =
+          await profileOpsNoProfile.validateAndExecuteProfileUpdate(
+            mockOperation,
+            'profile'
+          );
 
         expect(mockOperation).not.toHaveBeenCalled();
-        expect(result).toEqual({ data: null, error: new Error('Profile not found') });
+        expect(result).toEqual({
+          data: null,
+          error: new Error('Profile not found'),
+        });
       });
 
       it('should return error when user validation fails', async () => {
-        const profileOpsNoSession = createProfileOperations(null, mockProfile, mockSetProfile);
+        const profileOpsNoSession = createProfileOperations(
+          null,
+          mockProfile,
+          mockSetProfile
+        );
         const mockOperation = jest.fn();
 
-        const result = await profileOpsNoSession.validateAndExecuteProfileUpdate(mockOperation, 'user');
+        const result =
+          await profileOpsNoSession.validateAndExecuteProfileUpdate(
+            mockOperation,
+            'user'
+          );
 
         expect(mockOperation).not.toHaveBeenCalled();
-        expect(result).toEqual({ data: null, error: new Error('User not authenticated') });
+        expect(result).toEqual({
+          data: null,
+          error: new Error('User not authenticated'),
+        });
       });
 
       it('should handle operation errors', async () => {
         const error = new Error('Update failed');
         const mockOperation = jest.fn().mockRejectedValue(error);
 
-        const result = await profileOps.validateAndExecuteProfileUpdate(mockOperation, 'profile');
+        const result = await profileOps.validateAndExecuteProfileUpdate(
+          mockOperation,
+          'profile'
+        );
 
         expect(result).toEqual({ data: null, error });
       });
@@ -400,28 +482,47 @@ describe('authProviderUtils', () => {
         const operationResult = 'operation-success';
         const mockOperation = jest.fn().mockResolvedValue(operationResult);
 
-        const result = await profileOps.validateAndExecuteUserOperation(mockOperation);
+        const result =
+          await profileOps.validateAndExecuteUserOperation(mockOperation);
 
         expect(mockOperation).toHaveBeenCalled();
         expect(result).toEqual({ data: operationResult, error: null });
       });
 
       it('should return error when user validation fails', async () => {
-        const profileOpsNoSession = createProfileOperations(null, mockProfile, mockSetProfile);
+        const profileOpsNoSession = createProfileOperations(
+          null,
+          mockProfile,
+          mockSetProfile
+        );
         const mockOperation = jest.fn();
 
-        const result = await profileOpsNoSession.validateAndExecuteUserOperation(mockOperation);
+        const result =
+          await profileOpsNoSession.validateAndExecuteUserOperation(
+            mockOperation
+          );
 
         expect(mockOperation).not.toHaveBeenCalled();
-        expect(result).toEqual({ data: null, error: new Error('User not authenticated') });
+        expect(result).toEqual({
+          data: null,
+          error: new Error('User not authenticated'),
+        });
       });
 
       it('should use custom error message when provided', async () => {
-        const profileOpsNoSession = createProfileOperations(null, mockProfile, mockSetProfile);
+        const profileOpsNoSession = createProfileOperations(
+          null,
+          mockProfile,
+          mockSetProfile
+        );
         const mockOperation = jest.fn();
         const customError = 'Custom error message';
 
-        const result = await profileOpsNoSession.validateAndExecuteUserOperation(mockOperation, customError);
+        const result =
+          await profileOpsNoSession.validateAndExecuteUserOperation(
+            mockOperation,
+            customError
+          );
 
         expect(result).toEqual({ data: null, error: new Error(customError) });
       });
@@ -430,9 +531,13 @@ describe('authProviderUtils', () => {
         const error = new Error('Operation failed');
         const mockOperation = jest.fn().mockRejectedValue(error);
 
-        const result = await profileOps.validateAndExecuteUserOperation(mockOperation);
+        const result =
+          await profileOps.validateAndExecuteUserOperation(mockOperation);
 
-        expect(console.error).toHaveBeenCalledWith('User operation error:', error);
+        expect(console.error).toHaveBeenCalledWith(
+          'User operation error:',
+          error
+        );
         expect(result).toEqual({ data: null, error });
       });
     });
@@ -467,7 +572,11 @@ describe('authProviderUtils', () => {
       it('should log error and cleanup user state', () => {
         const error = new Error('Session error');
 
-        sessionManager.handleSessionError(error, mockSetProfile, mockSetSession);
+        sessionManager.handleSessionError(
+          error,
+          mockSetProfile,
+          mockSetSession
+        );
 
         expect(console.error).toHaveBeenCalledWith('Error signing out:', error);
         expect(mockSetProfile).toHaveBeenCalledWith(null);

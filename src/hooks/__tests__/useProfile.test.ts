@@ -29,7 +29,9 @@ jest.mock('@tanstack/react-query', () => ({
 const mockProfileService = profileService as jest.Mocked<typeof profileService>;
 const mockUseQuery = useQuery as jest.MockedFunction<typeof useQuery>;
 const mockUseMutation = useMutation as jest.MockedFunction<typeof useMutation>;
-const mockUseQueryClient = useQueryClient as jest.MockedFunction<typeof useQueryClient>;
+const mockUseQueryClient = useQueryClient as jest.MockedFunction<
+  typeof useQueryClient
+>;
 
 describe('useProfile hooks', () => {
   const mockQueryClient = {
@@ -107,7 +109,9 @@ describe('useProfile hooks', () => {
       useProfile(userId);
       const queryCall = mockUseQuery.mock.calls[0][0];
 
-      await expect((queryCall.queryFn as any)()).rejects.toThrow('Profile not found');
+      await expect((queryCall.queryFn as any)()).rejects.toThrow(
+        'Profile not found'
+      );
     });
   });
 
@@ -165,7 +169,9 @@ describe('useProfile hooks', () => {
       useAvatarUrl(userId);
       const queryCall = mockUseQuery.mock.calls[0][0];
 
-      await expect((queryCall.queryFn as any)()).rejects.toThrow('Avatar not found');
+      await expect((queryCall.queryFn as any)()).rejects.toThrow(
+        'Avatar not found'
+      );
     });
   });
 
@@ -213,7 +219,9 @@ describe('useProfile hooks', () => {
       const queryCall = mockUseQuery.mock.calls[0][0];
       const result = await (queryCall.queryFn as any)();
 
-      expect(mockProfileService.getAvatarSignedUrl).toHaveBeenCalledWith(avatarPath);
+      expect(mockProfileService.getAvatarSignedUrl).toHaveBeenCalledWith(
+        avatarPath
+      );
       expect(result).toBe(signedUrl);
     });
 
@@ -243,7 +251,9 @@ describe('useProfile hooks', () => {
       useAvatarSignedUrl(avatarPath);
       const queryCall = mockUseQuery.mock.calls[0][0];
 
-      await expect((queryCall.queryFn as any)()).rejects.toThrow('Signed URL generation failed');
+      await expect((queryCall.queryFn as any)()).rejects.toThrow(
+        'Signed URL generation failed'
+      );
     });
   });
 
@@ -289,9 +299,15 @@ describe('useProfile hooks', () => {
 
       useUpdateProfile();
       const mutationCall = mockUseMutation.mock.calls[0][0];
-      const result = await (mutationCall.mutationFn as any)({ profileId, updates });
+      const result = await (mutationCall.mutationFn as any)({
+        profileId,
+        updates,
+      });
 
-      expect(mockProfileService.updateProfile).toHaveBeenCalledWith(profileId, updates);
+      expect(mockProfileService.updateProfile).toHaveBeenCalledWith(
+        profileId,
+        updates
+      );
       expect(result).toEqual(mockResult);
     });
 
@@ -332,7 +348,9 @@ describe('useProfile hooks', () => {
       useUpdateProfile();
       const mutationCall = mockUseMutation.mock.calls[0][0];
 
-      await expect((mutationCall.mutationFn as any)({ profileId, updates })).rejects.toThrow('Service error');
+      await expect(
+        (mutationCall.mutationFn as any)({ profileId, updates })
+      ).rejects.toThrow('Service error');
     });
   });
 
@@ -384,9 +402,15 @@ describe('useProfile hooks', () => {
 
       useUpdateProfileFromApple();
       const mutationCall = mockUseMutation.mock.calls[0][0];
-      const result = await (mutationCall.mutationFn as any)({ userId, appleData });
+      const result = await (mutationCall.mutationFn as any)({
+        userId,
+        appleData,
+      });
 
-      expect(mockProfileService.updateProfileFromApple).toHaveBeenCalledWith(userId, appleData);
+      expect(mockProfileService.updateProfileFromApple).toHaveBeenCalledWith(
+        userId,
+        appleData
+      );
       expect(result).toEqual(mockResult);
     });
 
@@ -417,7 +441,10 @@ describe('useProfile hooks', () => {
       const mutationCall = mockUseMutation.mock.calls[0][0];
       await (mutationCall.onError as any)(error);
 
-      expect(consoleSpy).toHaveBeenCalledWith('Error updating profile from Apple:', error);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error updating profile from Apple:',
+        error
+      );
       consoleSpy.mockRestore();
     });
 
@@ -436,7 +463,9 @@ describe('useProfile hooks', () => {
       useUpdateProfileFromApple();
       const mutationCall = mockUseMutation.mock.calls[0][0];
 
-      await expect((mutationCall.mutationFn as any)({ userId, appleData })).rejects.toThrow('Apple service error');
+      await expect(
+        (mutationCall.mutationFn as any)({ userId, appleData })
+      ).rejects.toThrow('Apple service error');
     });
   });
 
@@ -517,7 +546,9 @@ describe('useProfile hooks', () => {
       useUploadAvatar();
       const mutationCall = mockUseMutation.mock.calls[0][0];
 
-      await expect((mutationCall.mutationFn as any)({ userId, uri })).rejects.toThrow('Upload service error');
+      await expect(
+        (mutationCall.mutationFn as any)({ userId, uri })
+      ).rejects.toThrow('Upload service error');
     });
   });
 
@@ -570,7 +601,10 @@ describe('useProfile hooks', () => {
       // Test upload avatar invalidation (most complex)
       useUploadAvatar();
       const uploadCall = mockUseMutation.mock.calls[0][0];
-      await (uploadCall.onSuccess as any)({}, { userId, uri: 'file://test.jpg' });
+      await (uploadCall.onSuccess as any)(
+        {},
+        { userId, uri: 'file://test.jpg' }
+      );
 
       // Should invalidate 3 different query patterns
       expect(mockQueryClient.invalidateQueries).toHaveBeenCalledTimes(3);

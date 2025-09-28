@@ -76,9 +76,17 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
   const navigationLogic = createNavigationLogic();
   const { wrapAuthServiceCall } = createAsyncAuthOperations();
-  const profileOperations = createProfileOperations(session, profile, setProfile);
+  const profileOperations = createProfileOperations(
+    session,
+    profile,
+    setProfile
+  );
   const sessionManager = createSessionManager();
-  const { createAuthErrorResponse } = createAuthHandlers(session, profile, setProfile);
+  const { createAuthErrorResponse } = createAuthHandlers(
+    session,
+    profile,
+    setProfile
+  );
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -104,7 +112,11 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (!isLoading) {
-      const redirectAction = navigationLogic.determineRedirectAction(session, segments, isLoading);
+      const redirectAction = navigationLogic.determineRedirectAction(
+        session,
+        segments,
+        isLoading
+      );
 
       const timeoutId = setTimeout(() => {
         if (redirectAction.shouldRedirect && redirectAction.path) {
@@ -141,8 +153,8 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   };
 
   const uploadAvatar = async (uri: string) => {
-    return profileOperations.validateAndExecuteUserOperation(
-      () => profileService.uploadAvatar(session!.user.id, uri)
+    return profileOperations.validateAndExecuteUserOperation(() =>
+      profileService.uploadAvatar(session!.user.id, uri)
     );
   };
 
@@ -160,22 +172,20 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   };
 
   const updateProfile = async (updates: Partial<Profile>) => {
-    return profileOperations.validateAndExecuteProfileUpdate(
-      () => profileService.updateProfile(profile!.id, updates)
+    return profileOperations.validateAndExecuteProfileUpdate(() =>
+      profileService.updateProfile(profile!.id, updates)
     );
   };
 
   const updateProfileFromApple = async (appleData: AppleProfileData) => {
-    return profileOperations.validateAndExecuteUserOperation(
-      async () => {
-        const data = await profileService.updateProfileFromApple(
-          session!.user.id,
-          appleData
-        );
-        setProfile(data);
-        return data;
-      }
-    );
+    return profileOperations.validateAndExecuteUserOperation(async () => {
+      const data = await profileService.updateProfileFromApple(
+        session!.user.id,
+        appleData
+      );
+      setProfile(data);
+      return data;
+    });
   };
 
   const requestResetPasswordEmail = async (

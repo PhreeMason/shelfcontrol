@@ -6,10 +6,14 @@ import CustomInput from '../CustomInput';
 jest.mock('@/components/themed', () => ({
   ThemedText: function MockThemedText({ children, color, style }: any) {
     const React = require('react');
-    return React.createElement('Text', {
-      testID: `themed-text-${color}`,
-      style
-    }, children);
+    return React.createElement(
+      'Text',
+      {
+        testID: `themed-text-${color}`,
+        style,
+      },
+      children
+    );
   },
 }));
 
@@ -41,16 +45,16 @@ describe('CustomInput', () => {
     [key: string]: any;
   }) => {
     const { control } = useForm({
-      defaultValues: { testField: initialValue }
+      defaultValues: { testField: initialValue },
     });
 
     const inputProps: any = {
       control,
-      name: "testField" as const,
+      name: 'testField' as const,
       inputType,
-      testID: "custom-input",
-      placeholder: "Test placeholder",
-      ...props
+      testID: 'custom-input',
+      placeholder: 'Test placeholder',
+      ...props,
     };
 
     if (transformOnBlur) {
@@ -183,7 +187,9 @@ describe('CustomInput', () => {
 
     it('should apply transformOnBlur when value is string', () => {
       const toUpperCase = (value: string) => value.toUpperCase();
-      render(<TestWrapper transformOnBlur={toUpperCase} initialValue="hello world" />);
+      render(
+        <TestWrapper transformOnBlur={toUpperCase} initialValue="hello world" />
+      );
 
       const input = screen.getByTestId('custom-input');
       fireEvent(input, 'blur');
@@ -404,7 +410,9 @@ describe('CustomInput', () => {
 
     it('should handle empty transformOnBlur function', () => {
       const emptyTransform = () => '';
-      render(<TestWrapper transformOnBlur={emptyTransform} initialValue="test" />);
+      render(
+        <TestWrapper transformOnBlur={emptyTransform} initialValue="test" />
+      );
 
       const input = screen.getByTestId('custom-input');
       fireEvent(input, 'blur');
@@ -416,7 +424,9 @@ describe('CustomInput', () => {
       const titleCase = (value: string) =>
         value.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
 
-      render(<TestWrapper transformOnBlur={titleCase} initialValue="hello world" />);
+      render(
+        <TestWrapper transformOnBlur={titleCase} initialValue="hello world" />
+      );
 
       const input = screen.getByTestId('custom-input');
       fireEvent(input, 'blur');
