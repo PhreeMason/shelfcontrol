@@ -448,7 +448,8 @@ describe('deadlineActionUtils', () => {
           bookAuthor: 'Michelle Obama',
           format: 'audio',
           flexibility: 'flexible',
-          totalMinutes: '1140',
+          totalQuantity: '19',
+          totalMinutes: '0',
           book_id: 'book-456',
         },
       });

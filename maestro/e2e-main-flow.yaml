@@ -18,6 +18,9 @@ tags:
 # Run the add deadline flow
 - runFlow: add-deadline.yaml
 
+# Run the progress complete deadline flow
+- runFlow: progress-complete-deadline.yaml
+
 # Run the sign-out flow
 - runFlow: sign-out-flow.yaml
 

@@ -2,6 +2,7 @@ import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { convertMinutesToHoursAndMinutes } from './audiobookTimeUtils';
 
 export const getDeadlineStatus = (
   deadline: ReadingDeadlineWithProgress
@@ -211,7 +212,13 @@ export const createReadAgainParams = (
 
   const formatSpecificParams =
     deadline.format === 'audio'
-      ? { totalMinutes: String(deadline.total_quantity) }
+      ? (() => {
+          const { hours, minutes } = convertMinutesToHoursAndMinutes(deadline.total_quantity);
+          return {
+            totalQuantity: String(hours),
+            totalMinutes: String(minutes),
+          };
+        })()
       : { totalQuantity: String(deadline.total_quantity) };
 
   return {

@@ -1,0 +1,193 @@
+# ShelfControl App - Progress and Complete Deadline Flow Test
+# This test updates progress on a book deadline and marks it as complete
+
+appId: ${APP_ID}
+name: "ShelfControl Progress and Complete Deadline Flow"
+tags:
+  - deadline
+  - progress
+  - complete
+
+---
+# Launch the app
+- launchApp:
+    appId: ${APP_ID}
+
+# Wait for app to fully load
+- extendedWaitUntil:
+    visible: "ShelfControl"
+    timeout: 10000
+
+# Handle development server screen (if in dev mode)
+- runFlow:
+    when:
+      visible: "Development servers"
+    commands:
+      - tapOn:
+          text: "http://localhost:8081"
+      - runFlow:
+          when:
+            visible: "Continue"
+          commands:
+            - tapOn: "Continue"
+
+# Navigate to Pending section
+- extendedWaitUntil:
+    visible: "Pending"
+    timeout: 5000
+- tapOn: "Pending"
+
+# Wait for and tap on Fourth Wing book
+- extendedWaitUntil:
+    visible: ".*Fourth Wing.*"
+    timeout: 10000
+- tapOn: ".*Fourth Wing.*"
+
+# Scroll to see more details
+- scroll
+- scroll
+
+# Wait for and tap Start Reading button
+- extendedWaitUntil:
+    visible: "Start Reading"
+    timeout: 5000
+- tapOn: "Start Reading"
+
+# Handle potential "Not Now" dialog if it appears
+- runFlow:
+    when:
+      visible: "Not Now"
+    commands:
+      - tapOn: "Not Now"
+
+# Update progress using increment buttons
+- extendedWaitUntil:
+    visible: "+10"
+    timeout: 3000
+- tapOn: "+10"
+- tapOn: "+10"
+- tapOn: "+10"
+
+- extendedWaitUntil:
+    visible: "+5"
+    timeout: 3000
+- tapOn: "+5"
+
+- extendedWaitUntil:
+    visible: "+1"
+    timeout: 3000
+- tapOn: "+1"
+
+# Verify the progress value is updated to 46
+- extendedWaitUntil:
+    visible: "46"
+    timeout: 3000
+- assertVisible: "46"
+
+# Tap Update Progress button
+- extendedWaitUntil:
+    visible: "Update Progress"
+    timeout: 5000
+- tapOn: "Update Progress"
+
+# Verify total pages updated (should show 471)
+- extendedWaitUntil:
+    visible: "471"
+    timeout: 5000
+- assertVisible: "471"
+
+# Scroll to navigate back
+- scroll
+- scroll
+
+# Navigate back
+- extendedWaitUntil:
+    visible: "Back"
+    timeout: 3000
+- tapOn: "Back"
+
+# Scroll to see deadline details
+- scroll
+- scroll
+
+# Verify the deadline shows updated information
+- extendedWaitUntil:
+    visible: ".*Fourth Wing.*"
+    timeout: 5000
+- assertVisible: ".*Fourth Wing.*"
+
+# Tap on the deadline to open details
+- tapOn: ".*Fourth Wing.*"
+
+# Scroll to find Mark as Complete button
+- scroll
+- scroll
+- scroll
+
+# Mark deadline as complete
+- extendedWaitUntil:
+    visible: "Mark as Complete"
+    timeout: 5000
+- tapOn: "Mark as Complete"
+
+# Confirm completion
+- extendedWaitUntil:
+    visible: "Complete"
+    timeout: 3000
+- tapOn: "Complete"
+
+# Verify completion message
+- extendedWaitUntil:
+    visible: "You finished!"
+    timeout: 5000
+- assertVisible: "You finished!"
+
+# Continue from completion screen
+- extendedWaitUntil:
+    visible: "Continue"
+    timeout: 3000
+- tapOn: "Continue"
+
+# Navigate back twice
+- extendedWaitUntil:
+    visible: "Back"
+    timeout: 3000
+- tapOn: "Back"
+
+- extendedWaitUntil:
+    visible: "Back"
+    timeout: 3000
+- tapOn: "Back"
+
+# Navigate to Completed section
+- extendedWaitUntil:
+    visible: "Completed"
+    timeout: 5000
+- assertVisible: "Completed"
+- tapOn: "Completed"
+
+# Verify book is in completed section with trophy emoji
+- extendedWaitUntil:
+    visible: "Fourth Wing.* 🏆 done"
+    timeout: 10000
+- tapOn: "Fourth Wing.* 🏆 done"
+
+# Scroll to find Delete Deadline option
+- scroll
+- scroll
+- scroll
+
+# Delete the completed deadline
+- extendedWaitUntil:
+    visible: "Delete Deadline"
+    timeout: 5000
+- tapOn: "Delete Deadline"
+
+# Confirm deletion
+- extendedWaitUntil:
+    visible: "Delete"
+    timeout: 3000
+- tapOn: "Delete"
+
+# Take screenshot of final state
+- takeScreenshot: "deadline_deleted"
