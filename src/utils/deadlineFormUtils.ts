@@ -100,7 +100,7 @@ export const getFormDefaultValues = (
     bookTitle: '',
     bookAuthor: '',
     format: 'eBook' as const,
-    source: 'ARC' as const,
+    source: '' as const,
     status: 'active' as const,
     deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
     flexibility: 'flexible' as const,
@@ -256,6 +256,9 @@ export const populateFormFromParams = (
   const bookAuthor = str(params.bookAuthor);
   if (bookAuthor) setValue('bookAuthor', bookAuthor);
 
+  const source = str(params.source);
+  if (source) setValue('source', source);
+
   const totalQuantity = str(params.totalQuantity);
   if (totalQuantity && !isNaN(Number(totalQuantity))) {
     setValue('totalQuantity', Number(totalQuantity));
@@ -291,7 +294,7 @@ export const populateFormFromDeadline = (
     setValue('bookTitle', deadline.book_title || '');
     setValue('bookAuthor', deadline.author || '');
     setValue('format', deadline.format || 'physical');
-    setValue('source', deadline.source || 'ARC');
+    setValue('source', deadline.source || '');
     setValue(
       'deadline',
       deadline.deadline_date ? new Date(deadline.deadline_date) : new Date()

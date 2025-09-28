@@ -43,7 +43,7 @@ describe('deadlineFormUtils', () => {
       expect(defaults.bookTitle).toBe('');
       expect(defaults.bookAuthor).toBe('');
       expect(defaults.format).toBe('eBook');
-      expect(defaults.source).toBe('ARC');
+      expect(defaults.source).toBe('');
       expect(defaults.status).toBe('active');
       expect(defaults.flexibility).toBe('flexible');
       expect(defaults.deadline).toBeInstanceOf(Date);
