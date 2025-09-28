@@ -122,7 +122,7 @@ describe('useDeadlines hooks', () => {
       await mutationConfig.mutationFn(mockAddParams);
 
       expect(mockDeadlinesService.addDeadline).toHaveBeenCalledWith(
-        'user-123',
+        'session-user-123',
         mockAddParams
       );
     });
@@ -154,7 +154,7 @@ describe('useDeadlines hooks', () => {
       mutationConfig.onSuccess();
 
       expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: ['deadlines', 'user-123'],
+        queryKey: ['deadlines', 'session-user-123'],
       });
     });
   });
@@ -186,7 +186,7 @@ describe('useDeadlines hooks', () => {
       await mutationConfig.mutationFn(mockUpdateParams);
 
       expect(mockDeadlinesService.updateDeadline).toHaveBeenCalledWith(
-        'user-123',
+        'session-user-123',
         mockUpdateParams
       );
     });
@@ -233,7 +233,7 @@ describe('useDeadlines hooks', () => {
       await mutationConfig.mutationFn('deadline-123');
 
       expect(mockDeadlinesService.deleteDeadline).toHaveBeenCalledWith(
-        'user-123',
+        'session-user-123',
         'deadline-123'
       );
     });
@@ -311,7 +311,7 @@ describe('useDeadlines hooks', () => {
 
       expect(mockUseQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          queryKey: ['deadlines', 'user-123'],
+          queryKey: ['deadlines', 'session-user-123'],
           queryFn: expect.any(Function),
           enabled: true,
         })
@@ -325,7 +325,7 @@ describe('useDeadlines hooks', () => {
       await queryConfig.queryFn();
 
       expect(mockDeadlinesService.getDeadlines).toHaveBeenCalledWith(
-        'user-123'
+        'session-user-123'
       );
     });
 
@@ -389,7 +389,7 @@ describe('useDeadlines hooks', () => {
       await mutationConfig.mutationFn('deadline-123');
 
       expect(mockDeadlinesService.completeDeadline).toHaveBeenCalledWith(
-        'user-123',
+        'session-user-123',
         'deadline-123'
       );
     });
@@ -401,7 +401,7 @@ describe('useDeadlines hooks', () => {
       mutationConfig.onSuccess();
 
       expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: ['deadlines', 'user-123'],
+        queryKey: ['deadlines', 'session-user-123'],
       });
     });
 
@@ -457,7 +457,7 @@ describe('useDeadlines hooks', () => {
       // useSetAsideDeadline uses useUpdateDeadlineStatus which invalidates ['deadlines'] only
       // instead of ['deadlines', userId] like other hooks
       expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: ['deadlines', 'user-123'],
+        queryKey: ['deadlines', 'session-user-123'],
       });
     });
   });
@@ -498,7 +498,7 @@ describe('useDeadlines hooks', () => {
       // useReactivateDeadline uses useUpdateDeadlineStatus which invalidates ['deadlines'] only
       // instead of ['deadlines', userId] like other hooks
       expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: ['deadlines', 'user-123'],
+        queryKey: ['deadlines', 'session-user-123'],
       });
     });
   });
@@ -509,7 +509,7 @@ describe('useDeadlines hooks', () => {
 
       expect(mockUseQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          queryKey: ['deadline', 'user-123', 'deadline-123'],
+          queryKey: ['deadline', 'session-user-123', 'deadline-123'],
           queryFn: expect.any(Function),
           enabled: true,
           refetchOnWindowFocus: false,
@@ -525,7 +525,7 @@ describe('useDeadlines hooks', () => {
       await queryConfig.queryFn();
 
       expect(mockDeadlinesService.getDeadlineById).toHaveBeenCalledWith(
-        'user-123',
+        'session-user-123',
         'deadline-123'
       );
     });

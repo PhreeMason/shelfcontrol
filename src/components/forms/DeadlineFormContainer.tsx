@@ -161,7 +161,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     const deadline = watchedValues.deadline;
     const remaining = calculateRemainingFromForm(
       selectedFormat,
-      watchedValues.totalQuantity || 0,
+      watchedValues.totalQuantity,
       watchedValues.totalMinutes,
       watchedValues.currentProgress || 0,
       watchedValues.currentMinutes
