@@ -24,6 +24,11 @@ const signUpSchema = z.object({
   password: z
     .string({ message: 'Password is required' })
     .min(8, 'Password should be at least 8 characters long'),
+  confirmPassword: z
+    .string({ message: 'Please confirm your password' }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'],
 });
 
 type SignUpFields = z.infer<typeof signUpSchema>;
@@ -33,8 +38,10 @@ export default function SignUpScreen() {
   const router = useRouter();
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
   const emailInputRef = useRef<AnimatedCustomInputRef>(null);
   const passwordInputRef = useRef<AnimatedCustomInputRef>(null);
+  const confirmPasswordInputRef = useRef<AnimatedCustomInputRef>(null);
 
   const {
     control,
@@ -52,6 +59,10 @@ export default function SignUpScreen() {
 
   const debouncedPasswordChange = useDebouncedInput((value: string) => {
     setValue('password', value);
+  });
+
+  const debouncedConfirmPasswordChange = useDebouncedInput((value: string) => {
+    setValue('confirmPassword', value);
   });
 
   const onSignUpPress = async (data: SignUpFields) => {
@@ -153,12 +164,40 @@ export default function SignUpScreen() {
                   onBlur={onBlur}
                   secureTextEntry
                   inputStyle={styles.input}
+                  testID="password-input"
                 />
               )}
             />
             {errors.password && (
               <ThemedText style={styles.errorText}>
                 {errors.password.message}
+              </ThemedText>
+            )}
+          </ThemedView>
+
+          <ThemedView style={styles.inputGroup}>
+            <Controller
+              control={control}
+              name="confirmPassword"
+              render={({ field: { onBlur } }) => (
+                <AnimatedCustomInput
+                  ref={confirmPasswordInputRef}
+                  label="Confirm Password"
+                  value={confirmPasswordInput}
+                  onChangeText={text => {
+                    setConfirmPasswordInput(text);
+                    debouncedConfirmPasswordChange(text);
+                  }}
+                  onBlur={onBlur}
+                  secureTextEntry
+                  inputStyle={styles.input}
+                  testID="confirm-password-input"
+                />
+              )}
+            />
+            {errors.confirmPassword && (
+              <ThemedText style={styles.errorText}>
+                {errors.confirmPassword.message}
               </ThemedText>
             )}
           </ThemedView>
@@ -238,6 +277,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   input: {
+    color : '#000',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
