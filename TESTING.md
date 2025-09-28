@@ -1173,6 +1173,87 @@ describe('FormComponent', () => {
 
 This approach has proven successful for both DeadlineFormStep1 and DeadlineFormStep2, providing comprehensive coverage while maintaining test reliability and speed.
 
+## Animation Testing Best Practices
+
+### ⚠️ **CRITICAL: Avoid Slow Animation Tests**
+
+**Problem**: Animation tests using `jest.requireActual('react-native-reanimated/mock')` can be significantly slower than necessary.
+
+**Solution**: Use minimal mocking strategy with timer controls.
+
+#### ❌ **Slow Pattern** (Avoid):
+```typescript
+// DON'T: Test animations without timer control - this can be slow and unreliable
+it('should trigger animation', () => {
+  // Animation test without fake timers - may wait for real timeouts
+  const mockWithTiming = require('react-native-reanimated').withTiming;
+  render(<AnimatedComponent {...props} />);
+  fireEvent(input, 'focus');
+  expect(mockWithTiming).toHaveBeenCalledWith(1, { duration: 200 });
+});
+```
+
+#### ✅ **Optimized Pattern** (Use This):
+```typescript
+// DO: Use existing reanimated mock but add timer controls for animation tests
+jest.mock('react-native-reanimated', () => ({
+  ...jest.requireActual('react-native-reanimated/mock'),
+  useSharedValue: jest.fn(() => ({ value: 0 })),
+  useAnimatedStyle: jest.fn(() => ({})),
+  withTiming: jest.fn(value => value),
+  interpolate: jest.fn((_value, _input, output) => output[0]),
+}));
+
+// DO: Use fake timers for animation tests
+describe('Animation Integration', () => {
+  it('should trigger animation on focus', () => {
+    jest.useFakeTimers();
+    const mockWithTiming = require('react-native-reanimated').withTiming;
+
+    render(<AnimatedComponent {...props} />);
+    fireEvent(input, 'focus');
+
+    expect(mockWithTiming).toHaveBeenCalledWith(1, { duration: 200 });
+    jest.useRealTimers();
+  });
+});
+```
+
+### Key Benefits of Optimized Pattern:
+- **Improved test reliability** - fake timers prevent timing issues
+- **Faster execution** - no waiting for real animation timeouts
+- **Better control** - deterministic timing in tests
+- **Proven successful** - now implemented in AnimatedCustomInput and other components
+
+### When to Use Fake Timers:
+- Any test involving `withTiming()` calls
+- Animation state changes over time
+- Tests with debounced inputs (already implemented correctly)
+- Timeout or delay testing
+
+### Implementation Template:
+```typescript
+describe('Component with Animations', () => {
+  describe('Animation Tests', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should handle animation trigger', () => {
+      jest.useFakeTimers();
+
+      // Test animation logic
+
+      jest.useRealTimers();
+    });
+  });
+});
+```
+
+**Investigation Result**: The main issue with AnimatedCustomInput.test.tsx was missing timer controls in animation tests. The fix added `jest.useFakeTimers()` and `jest.useRealTimers()` to all animation-related tests, which prevents waiting for real timeouts and makes tests more reliable.
+
+**Fixed**: AnimatedCustomInput.test.tsx now uses fake timers for animation tests and should run more reliably without timing issues.
+
 ## Phase 10: DeadlineFormContainer Testing - MAJOR BREAKTHROUGH (Complete)
 
 **MASSIVE SUCCESS**: Achieved 80%+ coverage across ALL metrics with revolutionary minimal mocking strategy!

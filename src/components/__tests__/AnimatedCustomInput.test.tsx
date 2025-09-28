@@ -5,7 +5,7 @@ import {
   AnimatedCustomInputRef,
 } from '../AnimatedCustomInput';
 
-// Mock external dependencies - minimal mocking strategy
+// Mock external dependencies - optimized for performance
 jest.mock('react-native-reanimated', () => ({
   ...jest.requireActual('react-native-reanimated/mock'),
   useSharedValue: jest.fn(() => ({ value: 0 })),
@@ -222,6 +222,7 @@ describe('AnimatedCustomInput', () => {
     });
 
     it('should trigger animation on focus', () => {
+      jest.useFakeTimers();
       const mockWithTiming = require('react-native-reanimated').withTiming;
       render(<AnimatedCustomInput {...defaultProps} />);
 
@@ -229,9 +230,11 @@ describe('AnimatedCustomInput', () => {
       fireEvent(input, 'focus');
 
       expect(mockWithTiming).toHaveBeenCalledWith(1, { duration: 200 });
+      jest.useRealTimers();
     });
 
     it('should trigger animation on blur with empty value', () => {
+      jest.useFakeTimers();
       const mockWithTiming = require('react-native-reanimated').withTiming;
       render(<AnimatedCustomInput {...defaultProps} value="" />);
 
@@ -239,9 +242,11 @@ describe('AnimatedCustomInput', () => {
       fireEvent(input, 'blur');
 
       expect(mockWithTiming).toHaveBeenCalledWith(0, { duration: 200 });
+      jest.useRealTimers();
     });
 
     it('should not reset animation on blur with value', () => {
+      jest.useFakeTimers();
       const mockWithTiming = require('react-native-reanimated').withTiming;
       jest.clearAllMocks();
 
@@ -252,6 +257,7 @@ describe('AnimatedCustomInput', () => {
 
       // Should not call withTiming(0) when there's a value
       expect(mockWithTiming).not.toHaveBeenCalledWith(0, { duration: 200 });
+      jest.useRealTimers();
     });
 
     it('should use animated style for label', () => {
@@ -334,6 +340,7 @@ describe('AnimatedCustomInput', () => {
 
   describe('Value-based Animation Trigger', () => {
     it('should trigger animation when value changes from empty to filled', () => {
+      jest.useFakeTimers();
       const mockWithTiming = require('react-native-reanimated').withTiming;
       const { rerender } = render(
         <AnimatedCustomInput {...defaultProps} value="" />
@@ -345,9 +352,11 @@ describe('AnimatedCustomInput', () => {
       rerender(<AnimatedCustomInput {...defaultProps} value="new value" />);
 
       expect(mockWithTiming).toHaveBeenCalledWith(1, { duration: 200 });
+      jest.useRealTimers();
     });
 
     it('should not trigger animation when already focused', () => {
+      jest.useFakeTimers();
       const mockWithTiming = require('react-native-reanimated').withTiming;
       const { rerender } = render(
         <AnimatedCustomInput {...defaultProps} value="" />
@@ -364,6 +373,7 @@ describe('AnimatedCustomInput', () => {
 
       // Should not trigger additional animation since already focused
       expect(mockWithTiming).not.toHaveBeenCalledWith(1, { duration: 200 });
+      jest.useRealTimers();
     });
   });
 });
