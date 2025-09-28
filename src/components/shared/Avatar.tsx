@@ -1,9 +1,9 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useAvatarSignedUrl, useAvatarUrl } from '@/hooks/useProfile';
 import { useAuth } from '@/providers/AuthProvider';
-import { profileService } from '@/services';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Alert, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface AvatarProps {
@@ -25,31 +25,23 @@ const Avatar: React.FC<AvatarProps> = ({
   newImageUri,
   showIcon = false,
 }) => {
-  const [displayUrl, setDisplayUrl] = useState<string | null>(null);
   const { session } = useAuth();
 
-  useEffect(() => {
-    const loadAvatar = async () => {
-      try {
-        if (newImageUri) {
-          setDisplayUrl(newImageUri);
-        } else if (avatarUrl) {
-          const signedUrl = await profileService.getAvatarSignedUrl(avatarUrl);
-          setDisplayUrl(signedUrl);
-        } else if (session?.user?.id) {
-          const url = await profileService.getAvatarUrl(session.user.id);
-          setDisplayUrl(url);
-        } else {
-          setDisplayUrl(null);
-        }
-      } catch (error) {
-        console.error('Error loading avatar:', error);
-        setDisplayUrl(null);
-      }
-    };
+  const shouldFetchUserAvatar = !newImageUri && !avatarUrl && !!session?.user?.id;
+  const { data: userAvatarUrl } = useAvatarUrl(
+    shouldFetchUserAvatar ? session?.user?.id : undefined
+  );
 
-    loadAvatar();
-  }, [newImageUri, avatarUrl, session?.user?.id]);
+  const avatarPathToFetch = avatarUrl || userAvatarUrl;
+  const { data: signedUrl } = useAvatarSignedUrl(
+    !newImageUri ? avatarPathToFetch : null
+  );
+
+  const displayUrl = useMemo(() => {
+    if (newImageUri) return newImageUri;
+    if (signedUrl) return signedUrl;
+    return null;
+  }, [newImageUri, signedUrl]);
   const pickImage = async () => {
     if (!editable || !onImageChange) return;
 
