@@ -1,7 +1,6 @@
 import { toastConfig } from '@/components/ui/ToastConfig';
 import AuthProvider from '@/providers/AuthProvider';
 import { DeadlineProvider } from '@/providers/DeadlineProvider';
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -31,7 +30,6 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider value={DefaultTheme}>
           <DeadlineProvider>
             <Stack>
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
@@ -44,7 +42,6 @@ export default function RootLayout() {
             </Stack>
           </DeadlineProvider>
           <Toast config={toastConfig} />
-        </ThemeProvider>
       </QueryClientProvider>
     </AuthProvider>
   );
