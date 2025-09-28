@@ -32,9 +32,17 @@ export const DeadlineFormStep2 = ({
   const getTotalQuantityLabel = () => {
     switch (selectedFormat) {
       case 'audio':
-        return 'Total Time *';
+        return (
+          <>
+            Total Time <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
+          </>
+        );
       default:
-        return 'Total Pages *';
+        return (
+          <>
+            Total Pages <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
+          </>
+        );
     }
   };
 
@@ -55,7 +63,7 @@ export const DeadlineFormStep2 = ({
 
       <View>
         <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
-          Book Title *
+          Book Title <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
         <CustomInput
           control={control}
@@ -122,7 +130,7 @@ export const DeadlineFormStep2 = ({
 
       <View>
         <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
-          Book type
+          Book type <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
         <SourceTypeaheadInput
           control={control}

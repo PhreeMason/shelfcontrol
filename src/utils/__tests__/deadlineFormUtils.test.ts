@@ -500,7 +500,7 @@ describe('deadlineFormUtils', () => {
       handler('audio');
 
       expect(mockSetPreviousPageCount).toHaveBeenCalledWith(250);
-      expect(mockSetValue).toHaveBeenCalledWith('totalQuantity', 0);
+      expect(mockSetValue).toHaveBeenCalledWith('totalQuantity', '');
       expect(mockSetValue).toHaveBeenCalledWith('totalMinutes', undefined);
       expect(mockSetSelectedFormat).toHaveBeenCalledWith('audio');
       expect(mockSetValue).toHaveBeenCalledWith('format', 'audio');

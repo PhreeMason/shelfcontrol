@@ -377,7 +377,7 @@ export const createFormatChangeHandler = (
         setPreviousPageCount(currentTotalQuantity);
       }
       // Reset values for audio format
-      setValue('totalQuantity', 0);
+      setValue('totalQuantity', '');
       setValue('totalMinutes', undefined);
     }
 

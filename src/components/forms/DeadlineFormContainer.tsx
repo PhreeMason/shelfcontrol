@@ -3,8 +3,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import AppHeader from '@/components/shared/AppHeader';
 import {
@@ -323,6 +323,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
         contentContainerStyle={styles.contentContainer}
         keyboardShouldPersistTaps="handled"
         enableOnAndroid={true}
+        extraScrollHeight={200}
         scrollEnabled={true}
       >
         <ThemedView style={styles.content}>

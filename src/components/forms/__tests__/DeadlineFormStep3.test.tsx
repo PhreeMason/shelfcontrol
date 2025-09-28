@@ -146,7 +146,8 @@ describe('DeadlineFormStep3', () => {
     it('should render "Deadline Date *" label and date picker button', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByText('Deadline Date *')).toBeTruthy();
+      // Check that deadline date label exists (split across multiple text components)
+      expect(screen.getByText('Deadline Date', { exact: false })).toBeTruthy();
       expect(screen.getByTestId('date-picker-button')).toBeTruthy();
     });
 
@@ -476,7 +477,7 @@ describe('DeadlineFormStep3', () => {
       expect(input.props['data-name']).toBe('currentProgress');
       expect(input.props['data-keyboard']).toBe('numeric');
       expect(input.props['data-input-type']).toBe('integer');
-      expect(input.props['data-placeholder']).toBe('0');
+      expect(input.props['data-placeholder']).toBe('How many pages total?');
     });
 
     it('should configure currentMinutes input with numeric keyboard and integer type for audio', () => {
@@ -488,24 +489,24 @@ describe('DeadlineFormStep3', () => {
       expect(input.props['data-name']).toBe('currentMinutes');
       expect(input.props['data-keyboard']).toBe('numeric');
       expect(input.props['data-input-type']).toBe('integer');
-      expect(input.props['data-placeholder']).toBe('minutes');
+      expect(input.props['data-placeholder']).toBe('Minutes');
     });
 
     it('should set correct placeholders for progress inputs', () => {
       const { rerender } = render(<DeadlineFormStep3 {...defaultProps} />);
 
       let progressInput = screen.getByTestId('input-currentProgress');
-      expect(progressInput.props['data-placeholder']).toBe('0');
+      expect(progressInput.props['data-placeholder']).toBe('How many pages total?');
 
       rerender(
         <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
       );
 
       progressInput = screen.getByTestId('input-currentProgress');
-      expect(progressInput.props['data-placeholder']).toBe('0');
+      expect(progressInput.props['data-placeholder']).toBe('Hours');
 
       const minutesInput = screen.getByTestId('input-currentMinutes');
-      expect(minutesInput.props['data-placeholder']).toBe('minutes');
+      expect(minutesInput.props['data-placeholder']).toBe('Minutes');
     });
 
     it('should set correct testIDs for all inputs', () => {
@@ -535,7 +536,8 @@ describe('DeadlineFormStep3', () => {
     it('should ensure required field indicators are present', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByText('Deadline Date *')).toBeTruthy();
+      // Check that deadline date label exists (split across multiple text components)
+      expect(screen.getByText('Deadline Date', { exact: false })).toBeTruthy();
     });
   });
 

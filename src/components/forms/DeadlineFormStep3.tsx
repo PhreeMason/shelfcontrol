@@ -6,8 +6,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import React from 'react';
 import { Control, Controller } from 'react-hook-form';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { PrioritySelector } from './PrioritySelector';
 import { PaceEstimateBox } from './PaceEstimateBox';
+import { PrioritySelector } from './PrioritySelector';
 
 interface DeadlineFormStep3Props {
   control: Control<DeadlineFormData>;
@@ -47,7 +47,14 @@ export const DeadlineFormStep3 = ({
         return 'Pages Already Read';
     }
   };
-
+  const getTotalQuantityPlaceholder = () => {
+    switch (selectedFormat) {
+      case 'audio':
+        return 'Hours';
+      default:
+        return 'How many pages total?';
+    }
+  };
   return (
     <View style={{ flex: 1, gap: 24 }}>
       <ThemedText color="textMuted" style={{ fontSize: 16 }}>
@@ -57,7 +64,7 @@ export const DeadlineFormStep3 = ({
 
       <View>
         <ThemedText variant="default" style={{ marginBottom: 8 }}>
-          Deadline Date *
+          Deadline Date <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
         <Controller
           control={control}
@@ -116,7 +123,7 @@ export const DeadlineFormStep3 = ({
               control={control}
               name="currentProgress"
               inputType="integer"
-              placeholder="0"
+              placeholder={getTotalQuantityPlaceholder()}
               keyboardType="numeric"
             />
           </View>
@@ -126,7 +133,7 @@ export const DeadlineFormStep3 = ({
                 control={control}
                 name="currentMinutes"
                 inputType="integer"
-                placeholder="minutes"
+                placeholder="Minutes"
                 keyboardType="numeric"
               />
             </View>
