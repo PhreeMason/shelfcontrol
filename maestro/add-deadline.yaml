@@ -66,6 +66,14 @@ tags:
 - tapOn:
     id: "status-option-pending"
 
+- extendedWaitUntil:
+    visible:
+      id: "input-source"
+    timeout: 3000
+- tapOn:
+      id: "input-source"
+- inputText: "Personal"
+
 # Confirm pending status selection (double tap may be needed)
 - extendedWaitUntil:
     visible:
@@ -105,13 +113,7 @@ tags:
     timeout: 3000
 - tapOn: "13"
 
-# Select hour (0 for midnight)
-- extendedWaitUntil:
-    visible: "0"
-    timeout: 3000
-- tapOn: "0"
-
-# Input minutes (10)
+- tapOn: How many pages total?
 - inputText: "10"
 
 # Scroll to reveal Add Book button
