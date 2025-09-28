@@ -1,12 +1,15 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
-import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
-  calculateCutoffTime,
-  calculateRequiredPace,
-  processBookProgress,
-} from '@/utils/paceCalculations';
+  calculateChartMaxValue,
+  calculateDailyMinimum,
+  calculateDynamicBarWidth,
+  getBookReadingDays,
+  getChartTitle,
+  getUnitLabel,
+  transformReadingDaysToChartData,
+} from '@/utils/chartDataUtils';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
@@ -15,56 +18,8 @@ interface DailyReadingChartProps {
   deadline: ReadingDeadlineWithProgress;
 }
 
-interface ReadingDay {
-  date: string;
-  progressRead: number;
-  format: 'physical' | 'eBook' | 'audio';
-}
-
-const getBookReadingDays = (
-  deadline: ReadingDeadlineWithProgress
-): ReadingDay[] => {
-  const dailyProgress: { [date: string]: number } = {};
-  if (!deadline.progress || !Array.isArray(deadline.progress)) return [];
-
-  const cutoffTime = calculateCutoffTime([deadline]);
-  if (cutoffTime === null) {
-    return [];
-  }
-
-  processBookProgress(deadline, cutoffTime, dailyProgress, deadline.format);
-
-  const result = Object.entries(dailyProgress)
-    .map(([date, progressRead]) => ({
-      date,
-      progressRead: Number(progressRead.toFixed(2)),
-      format: deadline.format as 'physical' | 'eBook' | 'audio',
-    }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-  return result;
-};
-
 const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
   const { colors, typography } = useTheme();
-
-  const getUnitLabel = (format: string) => {
-    switch (format) {
-      case 'audio':
-        return 'min';
-      default:
-        return 'pg';
-    }
-  };
-
-  const getChartTitle = (format: string) => {
-    switch (format) {
-      case 'audio':
-        return 'Daily Listening Progress';
-      default:
-        return 'Daily Reading Progress';
-    }
-  };
 
   const unitLabel = getUnitLabel(deadline.format);
   const chartTitle = getChartTitle(deadline.format);
@@ -93,61 +48,30 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     );
   }
 
-  const currentProgress =
-    deadline.progress?.length > 0
-      ? deadline.progress[deadline.progress.length - 1].current_progress
-      : 0;
-
-  const deadlineDate = new Date(deadline.deadline_date);
-  const today = new Date();
-  const daysLeft = Math.max(
-    1,
-    Math.ceil(
-      (deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    )
-  );
-
-  const dailyMinimum = calculateRequiredPace(
-    deadline.total_quantity,
-    currentProgress,
-    daysLeft,
-    deadline.format
-  );
-
+  const dailyMinimum = calculateDailyMinimum(deadline);
   const displayDailyMinimum = dailyMinimum;
 
-  const chartData = recentDays.map(day => {
-    const label = dayjs(day.date).format('M/DD');
-    return {
-      value: Math.round(day.progressRead),
-      label: label,
-      frontColor: colors.primary,
-      spacing: 2,
-      labelWidth: 40,
-      labelTextStyle: {
+  const topLabelComponentFactory = (value: number) => (
+    <ThemedText
+      style={{
         color: colors.text,
-        fontSize: 9,
-        fontWeight: 'normal' as const,
-      },
-      topLabelComponent: () => (
-        <ThemedText
-          style={{
-            color: colors.text,
-            fontSize: 10,
-            fontWeight: 'bold',
-            textAlign: 'center',
-            backgroundColor: 'transparent',
-          }}
-        >
-          {Math.round(day.progressRead)}
-        </ThemedText>
-      ),
-    };
-  });
+        fontSize: 10,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        backgroundColor: 'transparent',
+      }}
+    >
+      {value}
+    </ThemedText>
+  );
 
-  const maxBarValue = Math.max(...chartData.map(d => d.value));
-  const maxValue = Math.max(maxBarValue, displayDailyMinimum);
-  const yAxisMax = Math.ceil(maxValue * 1.2);
+  const chartData = transformReadingDaysToChartData(
+    recentDays,
+    colors,
+    topLabelComponentFactory
+  ) || [];
+
+  const yAxisMax = calculateChartMaxValue(chartData, displayDailyMinimum);
 
   return (
     <ThemedView style={styles.container}>
@@ -168,13 +92,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
             height={200}
             initialSpacing={10}
             endSpacing={10}
-            barWidth={(() => {
-              const calculatedWidth = Math.max(
-                20,
-                Math.min(30, 320 / chartData.length)
-              );
-              return calculatedWidth;
-            })()}
+            barWidth={calculateDynamicBarWidth(chartData.length)}
             roundedTop
             xAxisThickness={2}
             yAxisThickness={2}

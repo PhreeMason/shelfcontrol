@@ -13,6 +13,8 @@ module.exports = defineConfig([
     files: ['**/__tests__/**/*', '**/__mocks__/**/*', '**/*.test.*', '**/*.spec.*'],
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
+      'react/jsx-no-undef': 'error',
+      'react/react-in-jsx-scope': 'error',
     },
   },
   {
