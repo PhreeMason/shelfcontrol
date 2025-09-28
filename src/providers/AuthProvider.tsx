@@ -9,6 +9,13 @@ import {
   useEffect,
   useState,
 } from 'react';
+import {
+  createNavigationLogic,
+  createAsyncAuthOperations,
+  createProfileOperations,
+  createSessionManager,
+  createAuthHandlers,
+} from '@/utils/authProviderUtils';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -67,6 +74,12 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const segments = useSegments();
 
+  const navigationLogic = createNavigationLogic();
+  const { wrapAuthServiceCall } = createAsyncAuthOperations();
+  const profileOperations = createProfileOperations(session, profile, setProfile);
+  const sessionManager = createSessionManager();
+  const { createAuthErrorResponse } = createAuthHandlers(session, profile, setProfile);
+
   useEffect(() => {
     const fetchSession = async () => {
       const { session } = await authService.getSession();
@@ -91,71 +104,46 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (!isLoading) {
-      const inAuthGroup = segments[0] === '(auth)';
+      const redirectAction = navigationLogic.determineRedirectAction(session, segments, isLoading);
 
       const timeoutId = setTimeout(() => {
-        if (!session && !inAuthGroup) {
-          router.replace('/(auth)/sign-in');
-        } else if (session && inAuthGroup) {
-          router.replace('/');
+        if (redirectAction.shouldRedirect && redirectAction.path) {
+          router.replace(redirectAction.path as any);
         }
       }, 100);
 
       return () => clearTimeout(timeoutId);
     }
     return undefined;
-  }, [session, segments, isLoading]);
+  }, [session, segments, isLoading, navigationLogic]);
 
   const signIn = async (email: string, password: string) => {
-    try {
-      const result = await authService.signIn({ email, password });
-      if (result.error) {
-        console.error('Sign in failed:', result.error);
-      }
-      return result;
-    } catch (error) {
-      console.error('Sign in error:', error);
-      throw error;
-    }
+    return wrapAuthServiceCall(
+      () => authService.signIn({ email, password }),
+      'Sign in'
+    );
   };
 
   const signOut = async () => {
     try {
       await authService.signOut();
-      setProfile(null);
-      setSession(null);
+      sessionManager.cleanupUserState(setProfile, setSession);
     } catch (error: any) {
-      console.error('Error signing out:', error);
-      setProfile(null);
-      setSession(null);
+      sessionManager.handleSessionError(error, setProfile, setSession);
     }
   };
 
   const signUp = async (email: string, password: string) => {
-    try {
-      const result = await authService.signUp({ email, password });
-      if (result.error) {
-        console.error('Sign up failed:', result.error);
-      }
-      return result;
-    } catch (error) {
-      console.error('Sign up error:', error);
-      throw error;
-    }
+    return wrapAuthServiceCall(
+      () => authService.signUp({ email, password }),
+      'Sign up'
+    );
   };
 
   const uploadAvatar = async (uri: string) => {
-    if (!session?.user?.id) {
-      return { data: null, error: new Error('User not authenticated') };
-    }
-
-    try {
-      const path = await profileService.uploadAvatar(session.user.id, uri);
-      return { data: path, error: null };
-    } catch (err) {
-      console.error('Avatar upload error:', err);
-      return { data: null, error: err as Error };
-    }
+    return profileOperations.validateAndExecuteUserOperation(
+      () => profileService.uploadAvatar(session!.user.id, uri)
+    );
   };
 
   const refreshProfile = async () => {
@@ -172,34 +160,22 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   };
 
   const updateProfile = async (updates: Partial<Profile>) => {
-    if (!profile?.id) {
-      return { data: null, error: new Error('Profile not found') };
-    }
-
-    try {
-      const data = await profileService.updateProfile(profile.id, updates);
-      setProfile(data);
-      return { data, error: null };
-    } catch (err) {
-      return { data: null, error: err as Error };
-    }
+    return profileOperations.validateAndExecuteProfileUpdate(
+      () => profileService.updateProfile(profile!.id, updates)
+    );
   };
 
   const updateProfileFromApple = async (appleData: AppleProfileData) => {
-    if (!session?.user?.id) {
-      return { data: null, error: new Error('User not authenticated') };
-    }
-
-    try {
-      const data = await profileService.updateProfileFromApple(
-        session.user.id,
-        appleData
-      );
-      setProfile(data);
-      return { data, error: null };
-    } catch (err) {
-      return { data: null, error: err as Error };
-    }
+    return profileOperations.validateAndExecuteUserOperation(
+      async () => {
+        const data = await profileService.updateProfileFromApple(
+          session!.user.id,
+          appleData
+        );
+        setProfile(data);
+        return data;
+      }
+    );
   };
 
   const requestResetPasswordEmail = async (
@@ -208,9 +184,9 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   ) => {
     try {
       await authService.requestPasswordReset({ email, redirectTo });
-      return { error: null };
+      return createAuthErrorResponse(null);
     } catch (error) {
-      return { error: error as AuthError };
+      return createAuthErrorResponse(error as AuthError);
     }
   };
 
@@ -237,9 +213,9 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   const updatePassword = async (password: string) => {
     try {
       await authService.updatePassword(password);
-      return { error: null };
+      return createAuthErrorResponse(null);
     } catch (error) {
-      return { error: error as AuthError };
+      return createAuthErrorResponse(error as AuthError);
     }
   };
 

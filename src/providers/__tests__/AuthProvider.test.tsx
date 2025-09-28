@@ -505,7 +505,7 @@ describe('AuthProvider', () => {
         });
 
         expect(consoleSpy).toHaveBeenCalledWith(
-          'Avatar upload error:',
+          'User operation error:',
           mockError
         );
         consoleSpy.mockRestore();
