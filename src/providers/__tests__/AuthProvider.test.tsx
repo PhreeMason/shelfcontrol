@@ -1,7 +1,12 @@
 import { authService, profileService } from '@/services';
 import { Database } from '@/types/database.types';
 import { AuthError, AuthResponse, Session } from '@supabase/supabase-js';
-import { act, render, renderHook, waitFor } from '@testing-library/react-native';
+import {
+  act,
+  render,
+  renderHook,
+  waitFor,
+} from '@testing-library/react-native';
 import React from 'react';
 import { View } from 'react-native';
 import AuthProvider, { useAuth } from '../AuthProvider';
@@ -78,9 +83,18 @@ describe('AuthProvider', () => {
     jest.useFakeTimers();
 
     // Default mocks
-    mockAuthService.getSession.mockResolvedValue({ session: null, error: null });
+    mockAuthService.getSession.mockResolvedValue({
+      session: null,
+      error: null,
+    });
     mockAuthService.onAuthStateChange.mockReturnValue({
-      data: { subscription: { unsubscribe: mockUnsubscribe, id: 'test-id', callback: jest.fn() } },
+      data: {
+        subscription: {
+          unsubscribe: mockUnsubscribe,
+          id: 'test-id',
+          callback: jest.fn(),
+        },
+      },
     });
     mockUseSegments.mockReturnValue([]);
     mockProfileService.getProfile.mockResolvedValue(null);
@@ -148,7 +162,11 @@ describe('AuthProvider', () => {
     });
 
     it('should call authService.getSession on mount', async () => {
-      render(<AuthProvider><View /></AuthProvider>);
+      render(
+        <AuthProvider>
+          <View />
+        </AuthProvider>
+      );
 
       await waitFor(() => {
         expect(mockAuthService.getSession).toHaveBeenCalled();
@@ -156,7 +174,11 @@ describe('AuthProvider', () => {
     });
 
     it('should set up auth state change listener', async () => {
-      render(<AuthProvider><View /></AuthProvider>);
+      render(
+        <AuthProvider>
+          <View />
+        </AuthProvider>
+      );
 
       await waitFor(() => {
         expect(mockAuthService.onAuthStateChange).toHaveBeenCalled();
@@ -164,10 +186,17 @@ describe('AuthProvider', () => {
     });
 
     it('should fetch profile when session exists on mount', async () => {
-      mockAuthService.getSession.mockResolvedValue({ session: mockSession, error: null });
+      mockAuthService.getSession.mockResolvedValue({
+        session: mockSession,
+        error: null,
+      });
       mockProfileService.getProfile.mockResolvedValue(mockProfile);
 
-      render(<AuthProvider><View /></AuthProvider>);
+      render(
+        <AuthProvider>
+          <View />
+        </AuthProvider>
+      );
 
       await waitFor(() => {
         expect(mockProfileService.getProfile).toHaveBeenCalledWith('user-123');
@@ -210,7 +239,10 @@ describe('AuthProvider', () => {
         });
 
         await act(async () => {
-          const response = await result.current.signIn('test@example.com', 'password');
+          const response = await result.current.signIn(
+            'test@example.com',
+            'password'
+          );
           expect(response).toEqual(mockResponse);
         });
       });
@@ -246,7 +278,10 @@ describe('AuthProvider', () => {
           await result.current.signIn('test@example.com', 'password');
         });
 
-        expect(consoleSpy).toHaveBeenCalledWith('Sign in failed:', mockResponse.error);
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Sign in failed:',
+          mockResponse.error
+        );
         consoleSpy.mockRestore();
       });
     });
@@ -289,7 +324,10 @@ describe('AuthProvider', () => {
           await result.current.signOut();
         });
 
-        expect(consoleSpy).toHaveBeenCalledWith('Error signing out:', expect.any(Error));
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Error signing out:',
+          expect.any(Error)
+        );
         expect(result.current.profile).toBe(null);
         expect(result.current.session).toBe(null);
         consoleSpy.mockRestore();
@@ -309,7 +347,11 @@ describe('AuthProvider', () => {
         });
 
         await act(async () => {
-          await result.current.signUp('test@example.com', 'password', 'testuser');
+          await result.current.signUp(
+            'test@example.com',
+            'password',
+            'testuser'
+          );
         });
 
         expect(mockAuthService.signUp).toHaveBeenCalledWith({
@@ -330,7 +372,11 @@ describe('AuthProvider', () => {
         });
 
         await act(async () => {
-          const response = await result.current.signUp('test@example.com', 'password', 'testuser');
+          const response = await result.current.signUp(
+            'test@example.com',
+            'password',
+            'testuser'
+          );
           expect(response).toEqual(mockResponse);
         });
       });
@@ -363,10 +409,17 @@ describe('AuthProvider', () => {
         });
 
         await act(async () => {
-          await result.current.signUp('test@example.com', 'password', 'testuser');
+          await result.current.signUp(
+            'test@example.com',
+            'password',
+            'testuser'
+          );
         });
 
-        expect(consoleSpy).toHaveBeenCalledWith('Sign up failed:', mockResponse.error);
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Sign up failed:',
+          mockResponse.error
+        );
         consoleSpy.mockRestore();
       });
     });
@@ -375,8 +428,13 @@ describe('AuthProvider', () => {
   describe('Profile Management Functions', () => {
     describe('uploadAvatar', () => {
       it('should upload avatar when user is authenticated', async () => {
-        mockAuthService.getSession.mockResolvedValue({ session: mockSession, error: null });
-        mockProfileService.uploadAvatar.mockResolvedValue('avatars/user-123/avatar.jpg');
+        mockAuthService.getSession.mockResolvedValue({
+          session: mockSession,
+          error: null,
+        });
+        mockProfileService.uploadAvatar.mockResolvedValue(
+          'avatars/user-123/avatar.jpg'
+        );
 
         const { result } = renderHook(() => useAuth(), {
           wrapper: AuthProvider,
@@ -388,14 +446,18 @@ describe('AuthProvider', () => {
         });
 
         await act(async () => {
-          const response = await result.current.uploadAvatar('file://avatar.jpg');
+          const response =
+            await result.current.uploadAvatar('file://avatar.jpg');
           expect(response).toEqual({
             data: 'avatars/user-123/avatar.jpg',
             error: null,
           });
         });
 
-        expect(mockProfileService.uploadAvatar).toHaveBeenCalledWith('user-123', 'file://avatar.jpg');
+        expect(mockProfileService.uploadAvatar).toHaveBeenCalledWith(
+          'user-123',
+          'file://avatar.jpg'
+        );
       });
 
       it('should return error when user is not authenticated', async () => {
@@ -404,7 +466,8 @@ describe('AuthProvider', () => {
         });
 
         await act(async () => {
-          const response = await result.current.uploadAvatar('file://avatar.jpg');
+          const response =
+            await result.current.uploadAvatar('file://avatar.jpg');
           expect(response).toEqual({
             data: null,
             error: new Error('User not authenticated'),
@@ -417,7 +480,10 @@ describe('AuthProvider', () => {
       it('should handle upload errors', async () => {
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
         const mockError = new Error('Upload failed');
-        mockAuthService.getSession.mockResolvedValue({ session: mockSession, error: null });
+        mockAuthService.getSession.mockResolvedValue({
+          session: mockSession,
+          error: null,
+        });
         mockProfileService.uploadAvatar.mockRejectedValue(mockError);
 
         const { result } = renderHook(() => useAuth(), {
@@ -430,21 +496,28 @@ describe('AuthProvider', () => {
         });
 
         await act(async () => {
-          const response = await result.current.uploadAvatar('file://avatar.jpg');
+          const response =
+            await result.current.uploadAvatar('file://avatar.jpg');
           expect(response).toEqual({
             data: null,
             error: mockError,
           });
         });
 
-        expect(consoleSpy).toHaveBeenCalledWith('Avatar upload error:', mockError);
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Avatar upload error:',
+          mockError
+        );
         consoleSpy.mockRestore();
       });
     });
 
     describe('refreshProfile', () => {
       it('should refresh profile when user is authenticated', async () => {
-        mockAuthService.getSession.mockResolvedValue({ session: mockSession, error: null });
+        mockAuthService.getSession.mockResolvedValue({
+          session: mockSession,
+          error: null,
+        });
         mockProfileService.getProfile.mockResolvedValue(mockProfile);
 
         const { result } = renderHook(() => useAuth(), {
@@ -478,7 +551,10 @@ describe('AuthProvider', () => {
       it('should handle refresh errors', async () => {
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
         const mockError = new Error('Profile fetch failed');
-        mockAuthService.getSession.mockResolvedValue({ session: mockSession, error: null });
+        mockAuthService.getSession.mockResolvedValue({
+          session: mockSession,
+          error: null,
+        });
 
         // First, let the initial profile fetch succeed
         mockProfileService.getProfile.mockResolvedValueOnce(mockProfile);
@@ -499,7 +575,10 @@ describe('AuthProvider', () => {
           await result.current.refreshProfile();
         });
 
-        expect(consoleSpy).toHaveBeenCalledWith('Error refreshing profile:', mockError);
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Error refreshing profile:',
+          mockError
+        );
         consoleSpy.mockRestore();
       });
     });
@@ -508,7 +587,10 @@ describe('AuthProvider', () => {
       it('should update profile when profile exists', async () => {
         const updates = { first_name: 'Updated', last_name: 'Name' };
         const updatedProfile = { ...mockProfile, ...updates };
-        mockAuthService.getSession.mockResolvedValue({ session: mockSession, error: null });
+        mockAuthService.getSession.mockResolvedValue({
+          session: mockSession,
+          error: null,
+        });
         mockProfileService.getProfile.mockResolvedValue(mockProfile);
         mockProfileService.updateProfile.mockResolvedValue(updatedProfile);
 
@@ -529,7 +611,10 @@ describe('AuthProvider', () => {
           });
         });
 
-        expect(mockProfileService.updateProfile).toHaveBeenCalledWith('user-123', updates);
+        expect(mockProfileService.updateProfile).toHaveBeenCalledWith(
+          'user-123',
+          updates
+        );
       });
 
       it('should return error when profile is not found', async () => {
@@ -538,7 +623,9 @@ describe('AuthProvider', () => {
         });
 
         await act(async () => {
-          const response = await result.current.updateProfile({ first_name: 'Test' });
+          const response = await result.current.updateProfile({
+            first_name: 'Test',
+          });
           expect(response).toEqual({
             data: null,
             error: new Error('Profile not found'),
@@ -550,7 +637,10 @@ describe('AuthProvider', () => {
 
       it('should handle update errors', async () => {
         const mockError = new Error('Update failed');
-        mockAuthService.getSession.mockResolvedValue({ session: mockSession, error: null });
+        mockAuthService.getSession.mockResolvedValue({
+          session: mockSession,
+          error: null,
+        });
         mockProfileService.getProfile.mockResolvedValue(mockProfile);
         mockProfileService.updateProfile.mockRejectedValue(mockError);
 
@@ -564,7 +654,9 @@ describe('AuthProvider', () => {
         });
 
         await act(async () => {
-          const response = await result.current.updateProfile({ first_name: 'Test' });
+          const response = await result.current.updateProfile({
+            first_name: 'Test',
+          });
           expect(response).toEqual({
             data: null,
             error: mockError,
@@ -575,10 +667,18 @@ describe('AuthProvider', () => {
 
     describe('updateProfileFromApple', () => {
       it('should update profile from Apple data when authenticated', async () => {
-        const appleData = { email: 'apple@example.com', fullName: { givenName: 'John' } };
+        const appleData = {
+          email: 'apple@example.com',
+          fullName: { givenName: 'John' },
+        };
         const updatedProfile = { ...mockProfile, email: 'apple@example.com' };
-        mockAuthService.getSession.mockResolvedValue({ session: mockSession, error: null });
-        mockProfileService.updateProfileFromApple.mockResolvedValue(updatedProfile);
+        mockAuthService.getSession.mockResolvedValue({
+          session: mockSession,
+          error: null,
+        });
+        mockProfileService.updateProfileFromApple.mockResolvedValue(
+          updatedProfile
+        );
 
         const { result } = renderHook(() => useAuth(), {
           wrapper: AuthProvider,
@@ -590,14 +690,18 @@ describe('AuthProvider', () => {
         });
 
         await act(async () => {
-          const response = await result.current.updateProfileFromApple(appleData);
+          const response =
+            await result.current.updateProfileFromApple(appleData);
           expect(response).toEqual({
             data: updatedProfile,
             error: null,
           });
         });
 
-        expect(mockProfileService.updateProfileFromApple).toHaveBeenCalledWith('user-123', appleData);
+        expect(mockProfileService.updateProfileFromApple).toHaveBeenCalledWith(
+          'user-123',
+          appleData
+        );
       });
 
       it('should return error when user is not authenticated', async () => {
@@ -613,12 +717,17 @@ describe('AuthProvider', () => {
           });
         });
 
-        expect(mockProfileService.updateProfileFromApple).not.toHaveBeenCalled();
+        expect(
+          mockProfileService.updateProfileFromApple
+        ).not.toHaveBeenCalled();
       });
 
       it('should handle Apple update errors', async () => {
         const mockError = new Error('Apple update failed');
-        mockAuthService.getSession.mockResolvedValue({ session: mockSession, error: null });
+        mockAuthService.getSession.mockResolvedValue({
+          session: mockSession,
+          error: null,
+        });
         mockProfileService.updateProfileFromApple.mockRejectedValue(mockError);
 
         const { result } = renderHook(() => useAuth(), {
@@ -691,7 +800,9 @@ describe('AuthProvider', () => {
           expect(response).toEqual({ error: null });
         });
 
-        expect(mockAuthService.updatePassword).toHaveBeenCalledWith('newpassword');
+        expect(mockAuthService.updatePassword).toHaveBeenCalledWith(
+          'newpassword'
+        );
       });
 
       it('should handle password update errors', async () => {
@@ -711,7 +822,10 @@ describe('AuthProvider', () => {
 
     describe('setSessionFromUrl', () => {
       it('should set session from tokens and fetch profile', async () => {
-        mockAuthService.setSession.mockResolvedValue({ session: mockSession, user: mockSession.user });
+        mockAuthService.setSession.mockResolvedValue({
+          session: mockSession,
+          user: mockSession.user,
+        });
         mockProfileService.getProfile.mockResolvedValue(mockProfile);
 
         const { result } = renderHook(() => useAuth(), {
@@ -719,7 +833,10 @@ describe('AuthProvider', () => {
         });
 
         await act(async () => {
-          const response = await result.current.setSessionFromUrl('access-token', 'refresh-token');
+          const response = await result.current.setSessionFromUrl(
+            'access-token',
+            'refresh-token'
+          );
           expect(response).toEqual({ error: null });
         });
 
@@ -739,20 +856,29 @@ describe('AuthProvider', () => {
         });
 
         await act(async () => {
-          const response = await result.current.setSessionFromUrl('invalid', 'tokens');
+          const response = await result.current.setSessionFromUrl(
+            'invalid',
+            'tokens'
+          );
           expect(response).toEqual({ error: mockError });
         });
       });
 
       it('should not fetch profile when session is null', async () => {
-        mockAuthService.setSession.mockResolvedValue({ session: null, user: null });
+        mockAuthService.setSession.mockResolvedValue({
+          session: null,
+          user: null,
+        });
 
         const { result } = renderHook(() => useAuth(), {
           wrapper: AuthProvider,
         });
 
         await act(async () => {
-          await result.current.setSessionFromUrl('access-token', 'refresh-token');
+          await result.current.setSessionFromUrl(
+            'access-token',
+            'refresh-token'
+          );
         });
 
         expect(mockProfileService.getProfile).not.toHaveBeenCalled();
@@ -768,9 +894,16 @@ describe('AuthProvider', () => {
 
     it('should redirect to sign-in when no session and not in auth group', async () => {
       mockUseSegments.mockReturnValue(['home']);
-      mockAuthService.getSession.mockResolvedValue({ session: null, error: null });
+      mockAuthService.getSession.mockResolvedValue({
+        session: null,
+        error: null,
+      });
 
-      render(<AuthProvider><View /></AuthProvider>);
+      render(
+        <AuthProvider>
+          <View />
+        </AuthProvider>
+      );
 
       await act(async () => {
         jest.runAllTimers();
@@ -783,9 +916,16 @@ describe('AuthProvider', () => {
 
     it('should redirect to home when session exists and in auth group', async () => {
       mockUseSegments.mockReturnValue(['(auth)', 'sign-in']);
-      mockAuthService.getSession.mockResolvedValue({ session: mockSession, error: null });
+      mockAuthService.getSession.mockResolvedValue({
+        session: mockSession,
+        error: null,
+      });
 
-      render(<AuthProvider><View /></AuthProvider>);
+      render(
+        <AuthProvider>
+          <View />
+        </AuthProvider>
+      );
 
       await act(async () => {
         jest.runAllTimers();
@@ -798,9 +938,16 @@ describe('AuthProvider', () => {
 
     it('should not redirect when session exists and not in auth group', async () => {
       mockUseSegments.mockReturnValue(['home']);
-      mockAuthService.getSession.mockResolvedValue({ session: mockSession, error: null });
+      mockAuthService.getSession.mockResolvedValue({
+        session: mockSession,
+        error: null,
+      });
 
-      render(<AuthProvider><View /></AuthProvider>);
+      render(
+        <AuthProvider>
+          <View />
+        </AuthProvider>
+      );
 
       await act(async () => {
         jest.runAllTimers();
@@ -811,9 +958,16 @@ describe('AuthProvider', () => {
 
     it('should not redirect when no session but in auth group', async () => {
       mockUseSegments.mockReturnValue(['(auth)', 'sign-in']);
-      mockAuthService.getSession.mockResolvedValue({ session: null, error: null });
+      mockAuthService.getSession.mockResolvedValue({
+        session: null,
+        error: null,
+      });
 
-      render(<AuthProvider><View /></AuthProvider>);
+      render(
+        <AuthProvider>
+          <View />
+        </AuthProvider>
+      );
 
       await act(async () => {
         jest.runAllTimers();
@@ -825,7 +979,11 @@ describe('AuthProvider', () => {
     it('should not redirect while loading', () => {
       mockUseSegments.mockReturnValue(['home']);
 
-      render(<AuthProvider><View /></AuthProvider>);
+      render(
+        <AuthProvider>
+          <View />
+        </AuthProvider>
+      );
 
       // Don't advance timers - should still be loading
       expect(mockRouter.replace).not.toHaveBeenCalled();
@@ -836,12 +994,24 @@ describe('AuthProvider', () => {
     it('should update session when auth state changes', async () => {
       let authCallback: (event: string, session: Session | null) => void;
 
-      mockAuthService.onAuthStateChange.mockImplementation((callback) => {
+      mockAuthService.onAuthStateChange.mockImplementation(callback => {
         authCallback = callback;
-        return { data: { subscription: { unsubscribe: mockUnsubscribe, id: 'test-id', callback: jest.fn() } } };
+        return {
+          data: {
+            subscription: {
+              unsubscribe: mockUnsubscribe,
+              id: 'test-id',
+              callback: jest.fn(),
+            },
+          },
+        };
       });
 
-      render(<AuthProvider><View /></AuthProvider>);
+      render(
+        <AuthProvider>
+          <View />
+        </AuthProvider>
+      );
 
       await waitFor(() => {
         expect(mockAuthService.onAuthStateChange).toHaveBeenCalled();
@@ -859,12 +1029,24 @@ describe('AuthProvider', () => {
     it('should handle null session in auth state change', async () => {
       let authCallback: (event: string, session: Session | null) => void;
 
-      mockAuthService.onAuthStateChange.mockImplementation((callback) => {
+      mockAuthService.onAuthStateChange.mockImplementation(callback => {
         authCallback = callback;
-        return { data: { subscription: { unsubscribe: mockUnsubscribe, id: 'test-id', callback: jest.fn() } } };
+        return {
+          data: {
+            subscription: {
+              unsubscribe: mockUnsubscribe,
+              id: 'test-id',
+              callback: jest.fn(),
+            },
+          },
+        };
       });
 
-      render(<AuthProvider><View /></AuthProvider>);
+      render(
+        <AuthProvider>
+          <View />
+        </AuthProvider>
+      );
 
       await waitFor(() => {
         expect(mockAuthService.onAuthStateChange).toHaveBeenCalled();
@@ -881,7 +1063,11 @@ describe('AuthProvider', () => {
 
   describe('Cleanup', () => {
     it('should unsubscribe from auth state changes on unmount', async () => {
-      const { unmount } = render(<AuthProvider><View /></AuthProvider>);
+      const { unmount } = render(
+        <AuthProvider>
+          <View />
+        </AuthProvider>
+      );
 
       await waitFor(() => {
         expect(mockAuthService.onAuthStateChange).toHaveBeenCalled();
@@ -893,7 +1079,11 @@ describe('AuthProvider', () => {
     });
 
     it('should clear navigation timeout on unmount', async () => {
-      const { unmount } = render(<AuthProvider><View /></AuthProvider>);
+      const { unmount } = render(
+        <AuthProvider>
+          <View />
+        </AuthProvider>
+      );
 
       // Let loading complete
       await act(async () => {
@@ -924,9 +1114,16 @@ describe('AuthProvider', () => {
       });
 
       const expectedMethods = [
-        'signIn', 'signOut', 'signUp', 'updateProfile', 'uploadAvatar',
-        'refreshProfile', 'updateProfileFromApple', 'requestResetPasswordEmail',
-        'updatePassword', 'setSessionFromUrl'
+        'signIn',
+        'signOut',
+        'signUp',
+        'updateProfile',
+        'uploadAvatar',
+        'refreshProfile',
+        'updateProfileFromApple',
+        'requestResetPasswordEmail',
+        'updatePassword',
+        'setSessionFromUrl',
       ];
 
       expectedMethods.forEach(method => {

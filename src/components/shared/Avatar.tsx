@@ -27,7 +27,8 @@ const Avatar: React.FC<AvatarProps> = ({
 }) => {
   const { session } = useAuth();
 
-  const shouldFetchUserAvatar = !newImageUri && !avatarUrl && !!session?.user?.id;
+  const shouldFetchUserAvatar =
+    !newImageUri && !avatarUrl && !!session?.user?.id;
   const { data: userAvatarUrl } = useAvatarUrl(
     shouldFetchUserAvatar ? session?.user?.id : undefined
   );

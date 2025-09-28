@@ -86,7 +86,8 @@ export const transformReadingDaysToChartData = (
         fontSize: 9,
         fontWeight: 'normal' as const,
       },
-      topLabelComponent: () => topLabelComponentFactory(Math.round(day.progressRead)),
+      topLabelComponent: () =>
+        topLabelComponentFactory(Math.round(day.progressRead)),
     };
   });
 };

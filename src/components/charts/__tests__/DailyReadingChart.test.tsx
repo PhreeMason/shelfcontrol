@@ -17,15 +17,19 @@ import {
 jest.mock('react-native-gifted-charts', () => ({
   BarChart: function MockBarChart(props: any) {
     const React = require('react');
-    return React.createElement('View', {
-      testID: 'bar-chart',
-      'data-width': props.width,
-      'data-height': props.height,
-      'data-bar-width': props.barWidth,
-      'data-max-value': props.maxValue,
-      'data-y-axis-label-suffix': props.yAxisLabelSuffix,
-      'data-data-length': props.data?.length ?? 0,
-    }, null);
+    return React.createElement(
+      'View',
+      {
+        testID: 'bar-chart',
+        'data-width': props.width,
+        'data-height': props.height,
+        'data-bar-width': props.barWidth,
+        'data-max-value': props.maxValue,
+        'data-y-axis-label-suffix': props.yAxisLabelSuffix,
+        'data-data-length': props.data?.length ?? 0,
+      },
+      null
+    );
   },
 }));
 
@@ -72,7 +76,8 @@ jest.mock('@/utils/chartDataUtils', () => ({
 const mockGetBookReadingDays = getBookReadingDays as jest.Mock;
 const mockGetUnitLabel = getUnitLabel as jest.Mock;
 const mockGetChartTitle = getChartTitle as jest.Mock;
-const mockTransformReadingDaysToChartData = transformReadingDaysToChartData as jest.Mock;
+const mockTransformReadingDaysToChartData =
+  transformReadingDaysToChartData as jest.Mock;
 const mockCalculateChartMaxValue = calculateChartMaxValue as jest.Mock;
 const mockCalculateDailyMinimum = calculateDailyMinimum as jest.Mock;
 const mockCalculateDynamicBarWidth = calculateDynamicBarWidth as jest.Mock;
@@ -84,8 +89,22 @@ describe('DailyReadingChart', () => {
     format: 'physical',
     total_quantity: 300,
     progress: [
-      { id: '1', deadline_id: 'test-deadline', current_progress: 50, created_at: '2024-01-15T10:00:00Z', updated_at: '2024-01-15T10:00:00Z', time_spent_reading: null },
-      { id: '2', deadline_id: 'test-deadline', current_progress: 100, created_at: '2024-01-16T10:00:00Z', updated_at: '2024-01-16T10:00:00Z', time_spent_reading: null },
+      {
+        id: '1',
+        deadline_id: 'test-deadline',
+        current_progress: 50,
+        created_at: '2024-01-15T10:00:00Z',
+        updated_at: '2024-01-15T10:00:00Z',
+        time_spent_reading: null,
+      },
+      {
+        id: '2',
+        deadline_id: 'test-deadline',
+        current_progress: 100,
+        created_at: '2024-01-16T10:00:00Z',
+        updated_at: '2024-01-16T10:00:00Z',
+        time_spent_reading: null,
+      },
     ],
     user_id: 'user-1',
     book_id: 'book-1',
@@ -110,7 +129,11 @@ describe('DailyReadingChart', () => {
       frontColor: '#007AFF',
       spacing: 2,
       labelWidth: 40,
-      labelTextStyle: { color: '#000000', fontSize: 9, fontWeight: 'normal' as const },
+      labelTextStyle: {
+        color: '#000000',
+        fontSize: 9,
+        fontWeight: 'normal' as const,
+      },
       topLabelComponent: () => React.createElement('Text', null, '50'),
     },
     {
@@ -119,7 +142,11 @@ describe('DailyReadingChart', () => {
       frontColor: '#007AFF',
       spacing: 2,
       labelWidth: 40,
-      labelTextStyle: { color: '#000000', fontSize: 9, fontWeight: 'normal' as const },
+      labelTextStyle: {
+        color: '#000000',
+        fontSize: 9,
+        fontWeight: 'normal' as const,
+      },
       topLabelComponent: () => React.createElement('Text', null, '25'),
     },
   ];
@@ -182,7 +209,10 @@ describe('DailyReadingChart', () => {
     it('should call calculate chart max value with correct parameters', () => {
       render(<DailyReadingChart deadline={mockDeadline} />);
 
-      expect(mockCalculateChartMaxValue).toHaveBeenCalledWith(mockChartData, 40);
+      expect(mockCalculateChartMaxValue).toHaveBeenCalledWith(
+        mockChartData,
+        40
+      );
     });
 
     it('should call calculate dynamic bar width with correct parameters', () => {
@@ -200,7 +230,9 @@ describe('DailyReadingChart', () => {
 
       expect(screen.getByText('Daily Reading Progress')).toBeTruthy();
       expect(screen.getByText('No activity recorded')).toBeTruthy();
-      expect(screen.getByText('Start reading to see your daily progress')).toBeTruthy();
+      expect(
+        screen.getByText('Start reading to see your daily progress')
+      ).toBeTruthy();
       expect(screen.queryByTestId('bar-chart')).toBeNull();
     });
 
@@ -291,7 +323,8 @@ describe('DailyReadingChart', () => {
         book_title: 'Audio Book',
         author: 'Audio Author',
         source: 'manual',
-        flexibility: 'flexible' as Database['public']['Enums']['deadline_flexibility'],
+        flexibility:
+          'flexible' as Database['public']['Enums']['deadline_flexibility'],
         status: [],
         created_at: '2024-01-01T10:00:00Z',
         updated_at: '2024-01-20T10:00:00Z',
@@ -369,7 +402,9 @@ describe('DailyReadingChart', () => {
       render(<DailyReadingChart deadline={mockDeadline} />);
 
       const emptyText = screen.getByText('No activity recorded');
-      const emptySubtext = screen.getByText('Start reading to see your daily progress');
+      const emptySubtext = screen.getByText(
+        'Start reading to see your daily progress'
+      );
 
       expect(emptyText.props.style).toEqual(
         expect.arrayContaining([
@@ -399,7 +434,8 @@ describe('DailyReadingChart', () => {
       );
 
       // Verify the factory function was passed correctly
-      const factoryFunction = mockTransformReadingDaysToChartData.mock.calls[0][2];
+      const factoryFunction =
+        mockTransformReadingDaysToChartData.mock.calls[0][2];
       expect(typeof factoryFunction).toBe('function');
 
       // Test that the factory function can be called
@@ -453,7 +489,9 @@ describe('DailyReadingChart', () => {
 
     it('should maintain component structure with both states', () => {
       // Test with data
-      const { rerender } = render(<DailyReadingChart deadline={mockDeadline} />);
+      const { rerender } = render(
+        <DailyReadingChart deadline={mockDeadline} />
+      );
       expect(screen.getByTestId('combined-chart')).toBeTruthy();
 
       // Test without data

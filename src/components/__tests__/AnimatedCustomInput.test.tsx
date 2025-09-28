@@ -1,23 +1,30 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import { AnimatedCustomInput, AnimatedCustomInputRef } from '../AnimatedCustomInput';
+import {
+  AnimatedCustomInput,
+  AnimatedCustomInputRef,
+} from '../AnimatedCustomInput';
 
 // Mock external dependencies - minimal mocking strategy
 jest.mock('react-native-reanimated', () => ({
   ...jest.requireActual('react-native-reanimated/mock'),
   useSharedValue: jest.fn(() => ({ value: 0 })),
   useAnimatedStyle: jest.fn(() => ({})),
-  withTiming: jest.fn((value) => value),
+  withTiming: jest.fn(value => value),
   interpolate: jest.fn((_value, _input, output) => output[0]),
 }));
 
 jest.mock('@expo/vector-icons', () => ({
   Ionicons: ({ name, ...props }: any) => {
     const React = require('react');
-    return React.createElement('Text', {
-      ...props,
-      testID: `ionicons-${name}`,
-    }, name);
+    return React.createElement(
+      'Text',
+      {
+        ...props,
+        testID: `ionicons-${name}`,
+      },
+      name
+    );
   },
 }));
 
@@ -51,7 +58,11 @@ describe('AnimatedCustomInput', () => {
     it('should render with custom container style', () => {
       const containerStyle = { backgroundColor: 'red' };
       render(
-        <AnimatedCustomInput {...defaultProps} containerStyle={containerStyle} testID="container-test" />
+        <AnimatedCustomInput
+          {...defaultProps}
+          containerStyle={containerStyle}
+          testID="container-test"
+        />
       );
 
       const containers = screen.getAllByTestId('container-test');
@@ -66,9 +77,7 @@ describe('AnimatedCustomInput', () => {
     });
 
     it('should render with custom label color', () => {
-      render(
-        <AnimatedCustomInput {...defaultProps} labelColor="#ff0000" />
-      );
+      render(<AnimatedCustomInput {...defaultProps} labelColor="#ff0000" />);
 
       expect(screen.getByText('Test Label')).toBeTruthy();
     });
@@ -78,7 +87,10 @@ describe('AnimatedCustomInput', () => {
     it('should call onChangeText when text input changes', () => {
       const mockOnChangeText = jest.fn();
       render(
-        <AnimatedCustomInput {...defaultProps} onChangeText={mockOnChangeText} />
+        <AnimatedCustomInput
+          {...defaultProps}
+          onChangeText={mockOnChangeText}
+        />
       );
 
       const input = screen.getByDisplayValue('');
@@ -138,7 +150,9 @@ describe('AnimatedCustomInput', () => {
     });
 
     it('should focus input when container is pressed', () => {
-      render(<AnimatedCustomInput {...defaultProps} testID="focus-container" />);
+      render(
+        <AnimatedCustomInput {...defaultProps} testID="focus-container" />
+      );
 
       const containers = screen.getAllByTestId('focus-container');
       const pressableContainer = containers[0]; // Pressable is the first element
@@ -153,26 +167,20 @@ describe('AnimatedCustomInput', () => {
 
   describe('Secure Text Entry', () => {
     it('should render eye toggle when secureTextEntry is true', () => {
-      render(
-        <AnimatedCustomInput {...defaultProps} secureTextEntry={true} />
-      );
+      render(<AnimatedCustomInput {...defaultProps} secureTextEntry={true} />);
 
       expect(screen.getByTestId('ionicons-eye-off-outline')).toBeTruthy();
     });
 
     it('should not render eye toggle when secureTextEntry is false', () => {
-      render(
-        <AnimatedCustomInput {...defaultProps} secureTextEntry={false} />
-      );
+      render(<AnimatedCustomInput {...defaultProps} secureTextEntry={false} />);
 
       expect(screen.queryByTestId('ionicons-eye-off-outline')).toBeNull();
       expect(screen.queryByTestId('ionicons-eye-outline')).toBeNull();
     });
 
     it('should toggle secure text entry when eye icon is pressed', () => {
-      render(
-        <AnimatedCustomInput {...defaultProps} secureTextEntry={true} />
-      );
+      render(<AnimatedCustomInput {...defaultProps} secureTextEntry={true} />);
 
       const eyeIcon = screen.getByTestId('ionicons-eye-off-outline');
       fireEvent.press(eyeIcon);
@@ -182,9 +190,7 @@ describe('AnimatedCustomInput', () => {
     });
 
     it('should toggle back when eye icon is pressed again', () => {
-      render(
-        <AnimatedCustomInput {...defaultProps} secureTextEntry={true} />
-      );
+      render(<AnimatedCustomInput {...defaultProps} secureTextEntry={true} />);
 
       const eyeIcon = screen.getByTestId('ionicons-eye-off-outline');
 
@@ -199,9 +205,7 @@ describe('AnimatedCustomInput', () => {
     });
 
     it('should apply secure input styling when secureTextEntry is true', () => {
-      render(
-        <AnimatedCustomInput {...defaultProps} secureTextEntry={true} />
-      );
+      render(<AnimatedCustomInput {...defaultProps} secureTextEntry={true} />);
 
       const input = screen.getByDisplayValue('');
       expect(input.props.secureTextEntry).toBe(true);
@@ -210,7 +214,8 @@ describe('AnimatedCustomInput', () => {
 
   describe('Animation Integration', () => {
     it('should initialize with animation value', () => {
-      const mockUseSharedValue = require('react-native-reanimated').useSharedValue;
+      const mockUseSharedValue =
+        require('react-native-reanimated').useSharedValue;
       render(<AnimatedCustomInput {...defaultProps} />);
 
       expect(mockUseSharedValue).toHaveBeenCalledWith(0);
@@ -250,7 +255,8 @@ describe('AnimatedCustomInput', () => {
     });
 
     it('should use animated style for label', () => {
-      const mockUseAnimatedStyle = require('react-native-reanimated').useAnimatedStyle;
+      const mockUseAnimatedStyle =
+        require('react-native-reanimated').useAnimatedStyle;
       render(<AnimatedCustomInput {...defaultProps} />);
 
       expect(mockUseAnimatedStyle).toHaveBeenCalled();
@@ -299,7 +305,9 @@ describe('AnimatedCustomInput', () => {
     });
 
     it('should handle missing onChangeText callback gracefully', () => {
-      render(<AnimatedCustomInput label="Test" value="" onChangeText={jest.fn()} />);
+      render(
+        <AnimatedCustomInput label="Test" value="" onChangeText={jest.fn()} />
+      );
 
       const input = screen.getByDisplayValue('');
       expect(() => fireEvent.changeText(input, 'test')).not.toThrow();
@@ -314,7 +322,9 @@ describe('AnimatedCustomInput', () => {
     });
 
     it('should handle container press without crashing', () => {
-      render(<AnimatedCustomInput {...defaultProps} testID="press-container" />);
+      render(
+        <AnimatedCustomInput {...defaultProps} testID="press-container" />
+      );
 
       const containers = screen.getAllByTestId('press-container');
       const pressableContainer = containers[0];
@@ -325,7 +335,9 @@ describe('AnimatedCustomInput', () => {
   describe('Value-based Animation Trigger', () => {
     it('should trigger animation when value changes from empty to filled', () => {
       const mockWithTiming = require('react-native-reanimated').withTiming;
-      const { rerender } = render(<AnimatedCustomInput {...defaultProps} value="" />);
+      const { rerender } = render(
+        <AnimatedCustomInput {...defaultProps} value="" />
+      );
 
       jest.clearAllMocks();
 
@@ -337,7 +349,9 @@ describe('AnimatedCustomInput', () => {
 
     it('should not trigger animation when already focused', () => {
       const mockWithTiming = require('react-native-reanimated').withTiming;
-      const { rerender } = render(<AnimatedCustomInput {...defaultProps} value="" />);
+      const { rerender } = render(
+        <AnimatedCustomInput {...defaultProps} value="" />
+      );
 
       // Focus first
       const input = screen.getByDisplayValue('');

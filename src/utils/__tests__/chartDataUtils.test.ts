@@ -1,6 +1,10 @@
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { Database } from '@/types/database.types';
-import { calculateCutoffTime, calculateRequiredPace, processBookProgress } from '@/utils/paceCalculations';
+import {
+  calculateCutoffTime,
+  calculateRequiredPace,
+  processBookProgress,
+} from '@/utils/paceCalculations';
 import {
   calculateChartMaxValue,
   calculateDailyMinimum,
@@ -110,15 +114,30 @@ describe('chartDataUtils', () => {
       format: 'physical',
       total_quantity: 300,
       progress: [
-        { id: '1', deadline_id: 'test-id', current_progress: 50, created_at: '2024-01-15T10:00:00Z', updated_at: '2024-01-15T10:00:00Z', time_spent_reading: null },
-        { id: '2', deadline_id: 'test-id', current_progress: 100, created_at: '2024-01-16T10:00:00Z', updated_at: '2024-01-16T10:00:00Z', time_spent_reading: null },
+        {
+          id: '1',
+          deadline_id: 'test-id',
+          current_progress: 50,
+          created_at: '2024-01-15T10:00:00Z',
+          updated_at: '2024-01-15T10:00:00Z',
+          time_spent_reading: null,
+        },
+        {
+          id: '2',
+          deadline_id: 'test-id',
+          current_progress: 100,
+          created_at: '2024-01-16T10:00:00Z',
+          updated_at: '2024-01-16T10:00:00Z',
+          time_spent_reading: null,
+        },
       ],
       user_id: 'user-1',
       book_id: 'book-1',
       book_title: 'Test Book',
       author: 'Test Author',
       source: 'manual',
-      flexibility: 'fixed' as Database['public']['Enums']['deadline_flexibility'],
+      flexibility:
+        'fixed' as Database['public']['Enums']['deadline_flexibility'],
       status: [],
       created_at: '2024-01-10T10:00:00Z',
       updated_at: '2024-01-20T10:00:00Z',
@@ -152,11 +171,13 @@ describe('chartDataUtils', () => {
     it('should process progress data and return sorted reading days', () => {
       const cutoffTime = new Date('2024-01-14T00:00:00Z');
       mockCalculateCutoffTime.mockReturnValue(cutoffTime);
-      mockProcessBookProgress.mockImplementation((_deadline, _cutoff, dailyProgress, _format) => {
-        dailyProgress['2024-01-15'] = 50.5;
-        dailyProgress['2024-01-16'] = 25.75;
-        dailyProgress['2024-01-17'] = 30.123;
-      });
+      mockProcessBookProgress.mockImplementation(
+        (_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-15'] = 50.5;
+          dailyProgress['2024-01-16'] = 25.75;
+          dailyProgress['2024-01-17'] = 30.123;
+        }
+      );
 
       const result = getBookReadingDays(mockDeadline);
 
@@ -179,9 +200,11 @@ describe('chartDataUtils', () => {
       const audioDeadline = { ...mockDeadline, format: 'audio' as const };
       const cutoffTime = new Date('2024-01-14T00:00:00Z');
       mockCalculateCutoffTime.mockReturnValue(cutoffTime);
-      mockProcessBookProgress.mockImplementation((_deadline, _cutoff, dailyProgress, _format) => {
-        dailyProgress['2024-01-15'] = 120.0;
-      });
+      mockProcessBookProgress.mockImplementation(
+        (_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-15'] = 120.0;
+        }
+      );
 
       const result = getBookReadingDays(audioDeadline);
 
@@ -194,9 +217,11 @@ describe('chartDataUtils', () => {
       const eBookDeadline = { ...mockDeadline, format: 'eBook' as const };
       const cutoffTime = new Date('2024-01-14T00:00:00Z');
       mockCalculateCutoffTime.mockReturnValue(cutoffTime);
-      mockProcessBookProgress.mockImplementation((_deadline, _cutoff, dailyProgress, _format) => {
-        dailyProgress['2024-01-15'] = 45.33;
-      });
+      mockProcessBookProgress.mockImplementation(
+        (_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-15'] = 45.33;
+        }
+      );
 
       const result = getBookReadingDays(eBookDeadline);
 
@@ -208,11 +233,13 @@ describe('chartDataUtils', () => {
     it('should sort dates chronologically', () => {
       const cutoffTime = new Date('2024-01-14T00:00:00Z');
       mockCalculateCutoffTime.mockReturnValue(cutoffTime);
-      mockProcessBookProgress.mockImplementation((_deadline, _cutoff, dailyProgress, _format) => {
-        dailyProgress['2024-01-17'] = 30;
-        dailyProgress['2024-01-15'] = 50;
-        dailyProgress['2024-01-16'] = 25;
-      });
+      mockProcessBookProgress.mockImplementation(
+        (_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-17'] = 30;
+          dailyProgress['2024-01-15'] = 50;
+          dailyProgress['2024-01-16'] = 25;
+        }
+      );
 
       const result = getBookReadingDays(mockDeadline);
 
@@ -224,10 +251,12 @@ describe('chartDataUtils', () => {
     it('should round progress to 2 decimal places', () => {
       const cutoffTime = new Date('2024-01-14T00:00:00Z');
       mockCalculateCutoffTime.mockReturnValue(cutoffTime);
-      mockProcessBookProgress.mockImplementation((_deadline, _cutoff, dailyProgress, _format) => {
-        dailyProgress['2024-01-15'] = 50.123456789;
-        dailyProgress['2024-01-16'] = 25.999999;
-      });
+      mockProcessBookProgress.mockImplementation(
+        (_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-15'] = 50.123456789;
+          dailyProgress['2024-01-16'] = 25.999999;
+        }
+      );
 
       const result = getBookReadingDays(mockDeadline);
 
@@ -248,10 +277,13 @@ describe('chartDataUtils', () => {
       text: '#000000',
     };
 
-    const mockTopLabelComponentFactory = jest.fn((value: number) => ({
-      type: 'ThemedText',
-      props: { children: value.toString() },
-    } as any));
+    const mockTopLabelComponentFactory = jest.fn(
+      (value: number) =>
+        ({
+          type: 'ThemedText',
+          props: { children: value.toString() },
+        }) as any
+    );
 
     beforeEach(() => {
       mockTopLabelComponentFactory.mockClear();
@@ -373,7 +405,7 @@ describe('chartDataUtils', () => {
         spacing: 2,
         labelWidth: 40,
         labelTextStyle: { color: '#000', fontSize: 9, fontWeight: 'normal' },
-        topLabelComponent: () => ({} as any),
+        topLabelComponent: () => ({}) as any,
       },
       {
         value: 75,
@@ -382,7 +414,7 @@ describe('chartDataUtils', () => {
         spacing: 2,
         labelWidth: 40,
         labelTextStyle: { color: '#000', fontSize: 9, fontWeight: 'normal' },
-        topLabelComponent: () => ({} as any),
+        topLabelComponent: () => ({}) as any,
       },
     ];
 
@@ -481,7 +513,8 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         source: 'manual',
-        flexibility: 'fixed' as Database['public']['Enums']['deadline_flexibility'],
+        flexibility:
+          'fixed' as Database['public']['Enums']['deadline_flexibility'],
         status: [],
         created_at: '2024-01-10T10:00:00Z',
         updated_at: '2024-01-20T10:00:00Z',
@@ -502,7 +535,8 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         source: 'manual',
-        flexibility: 'fixed' as Database['public']['Enums']['deadline_flexibility'],
+        flexibility:
+          'fixed' as Database['public']['Enums']['deadline_flexibility'],
         status: [],
         created_at: '2024-01-10T10:00:00Z',
         updated_at: '2024-01-20T10:00:00Z',
@@ -523,7 +557,8 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         source: 'manual',
-        flexibility: 'fixed' as Database['public']['Enums']['deadline_flexibility'],
+        flexibility:
+          'fixed' as Database['public']['Enums']['deadline_flexibility'],
         status: [],
         created_at: '2024-01-10T10:00:00Z',
         updated_at: '2024-01-20T10:00:00Z',
@@ -536,9 +571,30 @@ describe('chartDataUtils', () => {
       const deadline: ReadingDeadlineWithProgress = {
         id: 'test',
         progress: [
-          { id: '1', deadline_id: 'test', current_progress: 50, created_at: '2024-01-15T10:00:00Z', updated_at: '2024-01-15T10:00:00Z', time_spent_reading: null },
-          { id: '2', deadline_id: 'test', current_progress: 75, created_at: '2024-01-16T10:00:00Z', updated_at: '2024-01-16T10:00:00Z', time_spent_reading: null },
-          { id: '3', deadline_id: 'test', current_progress: 125, created_at: '2024-01-17T10:00:00Z', updated_at: '2024-01-17T10:00:00Z', time_spent_reading: null },
+          {
+            id: '1',
+            deadline_id: 'test',
+            current_progress: 50,
+            created_at: '2024-01-15T10:00:00Z',
+            updated_at: '2024-01-15T10:00:00Z',
+            time_spent_reading: null,
+          },
+          {
+            id: '2',
+            deadline_id: 'test',
+            current_progress: 75,
+            created_at: '2024-01-16T10:00:00Z',
+            updated_at: '2024-01-16T10:00:00Z',
+            time_spent_reading: null,
+          },
+          {
+            id: '3',
+            deadline_id: 'test',
+            current_progress: 125,
+            created_at: '2024-01-17T10:00:00Z',
+            updated_at: '2024-01-17T10:00:00Z',
+            time_spent_reading: null,
+          },
         ],
         deadline_date: '2024-01-30',
         format: 'physical',
@@ -548,7 +604,8 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         source: 'manual',
-        flexibility: 'fixed' as Database['public']['Enums']['deadline_flexibility'],
+        flexibility:
+          'fixed' as Database['public']['Enums']['deadline_flexibility'],
         status: [],
         created_at: '2024-01-10T10:00:00Z',
         updated_at: '2024-01-20T10:00:00Z',
@@ -561,7 +618,14 @@ describe('chartDataUtils', () => {
       const deadline: ReadingDeadlineWithProgress = {
         id: 'test',
         progress: [
-          { id: '1', deadline_id: 'test', current_progress: 42, created_at: '2024-01-15T10:00:00Z', updated_at: '2024-01-15T10:00:00Z', time_spent_reading: null },
+          {
+            id: '1',
+            deadline_id: 'test',
+            current_progress: 42,
+            created_at: '2024-01-15T10:00:00Z',
+            updated_at: '2024-01-15T10:00:00Z',
+            time_spent_reading: null,
+          },
         ],
         deadline_date: '2024-01-30',
         format: 'physical',
@@ -571,7 +635,8 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         source: 'manual',
-        flexibility: 'fixed' as Database['public']['Enums']['deadline_flexibility'],
+        flexibility:
+          'fixed' as Database['public']['Enums']['deadline_flexibility'],
         status: [],
         created_at: '2024-01-10T10:00:00Z',
         updated_at: '2024-01-20T10:00:00Z',
@@ -626,14 +691,22 @@ describe('chartDataUtils', () => {
       format: 'physical',
       total_quantity: 300,
       progress: [
-        { id: '1', deadline_id: 'test', current_progress: 100, created_at: '2024-01-18T10:00:00Z', updated_at: '2024-01-18T10:00:00Z', time_spent_reading: null },
+        {
+          id: '1',
+          deadline_id: 'test',
+          current_progress: 100,
+          created_at: '2024-01-18T10:00:00Z',
+          updated_at: '2024-01-18T10:00:00Z',
+          time_spent_reading: null,
+        },
       ],
       user_id: 'user-1',
       book_id: 'book-1',
       book_title: 'Test Book',
       author: 'Test Author',
       source: 'manual',
-      flexibility: 'fixed' as Database['public']['Enums']['deadline_flexibility'],
+      flexibility:
+        'fixed' as Database['public']['Enums']['deadline_flexibility'],
       status: [],
       created_at: '2024-01-10T10:00:00Z',
       updated_at: '2024-01-20T10:00:00Z',
@@ -647,7 +720,7 @@ describe('chartDataUtils', () => {
       expect(mockCalculateRequiredPace).toHaveBeenCalledWith(
         300, // total_quantity
         100, // current progress (from last entry)
-        5,   // days left (Jan 25 - Jan 20)
+        5, // days left (Jan 25 - Jan 20)
         'physical' // format
       );
       expect(result).toBe(40);
@@ -661,8 +734,8 @@ describe('chartDataUtils', () => {
 
       expect(mockCalculateRequiredPace).toHaveBeenCalledWith(
         300, // total_quantity
-        0,   // current progress (0 when no progress)
-        5,   // days left
+        0, // current progress (0 when no progress)
+        5, // days left
         'physical' // format
       );
       expect(result).toBe(60);
@@ -677,7 +750,7 @@ describe('chartDataUtils', () => {
       expect(mockCalculateRequiredPace).toHaveBeenCalledWith(
         300, // total_quantity
         100, // current progress
-        5,   // days left
+        5, // days left
         'audio' // format
       );
       expect(result).toBe(120);
@@ -692,7 +765,7 @@ describe('chartDataUtils', () => {
       expect(mockCalculateRequiredPace).toHaveBeenCalledWith(
         300, // total_quantity
         100, // current progress
-        1,   // minimum 1 day for past deadlines
+        1, // minimum 1 day for past deadlines
         'physical' // format
       );
       expect(result).toBe(200);
@@ -707,7 +780,7 @@ describe('chartDataUtils', () => {
       expect(mockCalculateRequiredPace).toHaveBeenCalledWith(
         300, // total_quantity
         100, // current progress
-        5,   // days left
+        5, // days left
         'eBook' // format
       );
       expect(result).toBe(35);
@@ -722,7 +795,7 @@ describe('chartDataUtils', () => {
       expect(mockCalculateRequiredPace).toHaveBeenCalledWith(
         300, // total_quantity
         100, // current progress
-        1,   // minimum 1 day for today's deadline
+        1, // minimum 1 day for today's deadline
         'physical' // format
       );
       expect(result).toBe(200);

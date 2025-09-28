@@ -65,11 +65,12 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     </ThemedText>
   );
 
-  const chartData = transformReadingDaysToChartData(
-    recentDays,
-    colors,
-    topLabelComponentFactory
-  ) || [];
+  const chartData =
+    transformReadingDaysToChartData(
+      recentDays,
+      colors,
+      topLabelComponentFactory
+    ) || [];
 
   const yAxisMax = calculateChartMaxValue(chartData, displayDailyMinimum);
 

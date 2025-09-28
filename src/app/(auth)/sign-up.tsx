@@ -19,17 +19,18 @@ import {
 } from 'react-native';
 import { z } from 'zod';
 
-const signUpSchema = z.object({
-  email: z.string({ message: 'Email is required' }).email('Invalid email'),
-  password: z
-    .string({ message: 'Password is required' })
-    .min(8, 'Password should be at least 8 characters long'),
-  confirmPassword: z
-    .string({ message: 'Please confirm your password' }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword'],
-});
+const signUpSchema = z
+  .object({
+    email: z.string({ message: 'Email is required' }).email('Invalid email'),
+    password: z
+      .string({ message: 'Password is required' })
+      .min(8, 'Password should be at least 8 characters long'),
+    confirmPassword: z.string({ message: 'Please confirm your password' }),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 type SignUpFields = z.infer<typeof signUpSchema>;
 
@@ -277,7 +278,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   input: {
-    color : '#000',
+    color: '#000',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,

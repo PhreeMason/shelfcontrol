@@ -5,7 +5,11 @@ This document provides comprehensive guidance for understanding and extending th
 ## Testing Goals
 
 - **Target Coverage**: 80% overall test coverage
-- **Current Status**: Phase 10 complete with DeadlineFormContainer testing, 80%+ coverage across all metrics achieved
+- **Current Status**: **1600 tests passing** across 50 test suites
+  - **Statements**: 74.94% (target: 70% ✅)
+  - **Branches**: 71% (target: 70% ✅)
+  - **Functions**: 68.93% (target: 70% ❌ - close!)
+  - **Lines**: 75.09% (target: 70% ✅)
 - **Testing Philosophy**: Test internal business logic separately from components for better maintainability
 
 ## Project Structure
@@ -118,6 +122,20 @@ npm run test:coverage:watch    # Run tests with coverage in watch mode
 npm run test:ff                # Run tests with fail-fast (stop on first failure)
 npm run test:debug             # Run tests with debugging info
 ```
+
+### Post-Testing Requirements
+
+**CRITICAL**: After writing any tests, always run both lint and typecheck to ensure code quality:
+
+```bash
+npm run lint && npm run typecheck
+```
+
+This ensures:
+- Code follows project linting standards
+- TypeScript type safety is maintained
+- No formatting or style issues are introduced
+- All imports and exports are properly typed
 
 ## Testing Patterns
 
@@ -675,7 +693,7 @@ expect(mockFormatFunction).toHaveBeenCalledWith('2024-01-20');
 7. **Keep Tests Simple**: One assertion per test when possible
 8. **Update Tests with Code Changes**: Maintain tests as you refactor
 9. **Type Safety First**: Ensure all mocks and test data match actual TypeScript types
-10. **Run Lint and TypeCheck**: Always validate with `npm run lint && npm run typecheck`
+10. **ALWAYS Run Post-Test Validation**: After writing any test, run `npm run lint && npm run typecheck` to ensure code quality and type safety
 
 ## Resources
 

@@ -11,8 +11,10 @@ jest.mock('@/utils/dateNormalization');
 
 const mockUseDeadlines = useDeadlines as jest.Mock;
 const mockDayjs = dayjs as unknown as jest.Mock;
-const mockNormalizeServerDate = dateNormalization.normalizeServerDate as jest.Mock;
-const mockNormalizeServerDateStartOfDay = dateNormalization.normalizeServerDateStartOfDay as jest.Mock;
+const mockNormalizeServerDate =
+  dateNormalization.normalizeServerDate as jest.Mock;
+const mockNormalizeServerDateStartOfDay =
+  dateNormalization.normalizeServerDateStartOfDay as jest.Mock;
 
 describe('useTodaysDeadlines', () => {
   const mockToday = {
@@ -95,7 +97,7 @@ describe('useTodaysDeadlines', () => {
       const futureDeadline = createMockDeadline('1', 'physical', '2024-12-31');
       const pastDeadline = createMockDeadline('2', 'physical', '2024-01-01');
 
-      mockNormalizeServerDateStartOfDay.mockImplementation((date) => ({
+      mockNormalizeServerDateStartOfDay.mockImplementation(date => ({
         isValid: () => true,
         isAfter: () => date === '2024-12-31',
       }));
@@ -112,7 +114,11 @@ describe('useTodaysDeadlines', () => {
     });
 
     it('should exclude deadlines without deadline_date', () => {
-      const deadlineWithDate = createMockDeadline('1', 'physical', '2024-12-31');
+      const deadlineWithDate = createMockDeadline(
+        '1',
+        'physical',
+        '2024-12-31'
+      );
       const deadlineWithoutDate = createMockDeadline('2', 'physical', null);
 
       mockUseDeadlines.mockReturnValue({
@@ -128,9 +134,13 @@ describe('useTodaysDeadlines', () => {
 
     it('should exclude deadlines with invalid dates', () => {
       const validDeadline = createMockDeadline('1', 'physical', '2024-12-31');
-      const invalidDeadline = createMockDeadline('2', 'physical', 'invalid-date');
+      const invalidDeadline = createMockDeadline(
+        '2',
+        'physical',
+        'invalid-date'
+      );
 
-      mockNormalizeServerDateStartOfDay.mockImplementation((date) => ({
+      mockNormalizeServerDateStartOfDay.mockImplementation(date => ({
         isValid: () => date === '2024-12-31',
         isAfter: () => true,
       }));
@@ -151,11 +161,20 @@ describe('useTodaysDeadlines', () => {
     it('should separate audio and reading deadlines correctly', () => {
       const audioDeadline1 = createMockDeadline('1', 'audio', '2024-12-31');
       const audioDeadline2 = createMockDeadline('2', 'audio', '2024-12-31');
-      const physicalDeadline = createMockDeadline('3', 'physical', '2024-12-31');
+      const physicalDeadline = createMockDeadline(
+        '3',
+        'physical',
+        '2024-12-31'
+      );
       const ebookDeadline = createMockDeadline('4', 'eBook', '2024-12-31');
 
       mockUseDeadlines.mockReturnValue({
-        activeDeadlines: [audioDeadline1, audioDeadline2, physicalDeadline, ebookDeadline],
+        activeDeadlines: [
+          audioDeadline1,
+          audioDeadline2,
+          physicalDeadline,
+          ebookDeadline,
+        ],
         completedDeadlines: [],
       });
 
@@ -271,7 +290,7 @@ describe('useTodaysDeadlines', () => {
         ]
       );
 
-      mockNormalizeServerDate.mockImplementation((date) => ({
+      mockNormalizeServerDate.mockImplementation(date => ({
         isValid: () => true,
         isAfter: () => {
           return date === '2024-12-30T10:00:00Z';
@@ -285,17 +304,31 @@ describe('useTodaysDeadlines', () => {
 
       const { result } = renderHook(() => useTodaysDeadlines());
 
-      expect(mockNormalizeServerDate).toHaveBeenCalledWith('2024-12-30T10:00:00Z');
+      expect(mockNormalizeServerDate).toHaveBeenCalledWith(
+        '2024-12-30T10:00:00Z'
+      );
       expect(result.current.allDeadlines).toHaveLength(1);
     });
 
     it('should exclude completed deadlines without status', () => {
-      const completedDeadlineNoStatus = createMockDeadline('1', 'physical', '2024-12-31');
-      const completedDeadlineEmptyStatus = createMockDeadline('2', 'physical', '2024-12-31', []);
+      const completedDeadlineNoStatus = createMockDeadline(
+        '1',
+        'physical',
+        '2024-12-31'
+      );
+      const completedDeadlineEmptyStatus = createMockDeadline(
+        '2',
+        'physical',
+        '2024-12-31',
+        []
+      );
 
       mockUseDeadlines.mockReturnValue({
         activeDeadlines: [],
-        completedDeadlines: [completedDeadlineNoStatus, completedDeadlineEmptyStatus],
+        completedDeadlines: [
+          completedDeadlineNoStatus,
+          completedDeadlineEmptyStatus,
+        ],
       });
 
       const { result } = renderHook(() => useTodaysDeadlines());
@@ -397,7 +430,7 @@ describe('useTodaysDeadlines', () => {
         [{ created_at: '2024-01-01T10:00:00Z' }]
       );
 
-      mockNormalizeServerDate.mockImplementation((date) => ({
+      mockNormalizeServerDate.mockImplementation(date => ({
         isValid: () => true,
         isAfter: () => date === '2024-12-30T10:00:00Z',
       }));
@@ -415,7 +448,11 @@ describe('useTodaysDeadlines', () => {
     });
 
     it('should handle deadline at exactly start of day', () => {
-      const deadlineAtStartOfDay = createMockDeadline('1', 'physical', '2024-12-31T00:00:00Z');
+      const deadlineAtStartOfDay = createMockDeadline(
+        '1',
+        'physical',
+        '2024-12-31T00:00:00Z'
+      );
 
       mockNormalizeServerDateStartOfDay.mockImplementation(() => ({
         isValid: () => true,

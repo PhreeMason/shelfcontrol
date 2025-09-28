@@ -39,7 +39,9 @@ describe('useDebouncedInput', () => {
     it('should debounce callback execution with custom delay', () => {
       const mockCallback = jest.fn();
       const customDelay = 500;
-      const { result } = renderHook(() => useDebouncedInput(mockCallback, customDelay));
+      const { result } = renderHook(() =>
+        useDebouncedInput(mockCallback, customDelay)
+      );
 
       act(() => {
         result.current('custom delay test');
@@ -196,7 +198,9 @@ describe('useDebouncedInput', () => {
     it('should handle very long delay', () => {
       const mockCallback = jest.fn();
       const longDelay = 10000;
-      const { result } = renderHook(() => useDebouncedInput(mockCallback, longDelay));
+      const { result } = renderHook(() =>
+        useDebouncedInput(mockCallback, longDelay)
+      );
 
       act(() => {
         result.current('long wait');
@@ -292,8 +296,13 @@ describe('useDebouncedInput', () => {
     it('should maintain stable debounced function reference across renders', () => {
       const mockCallback = jest.fn();
       const { result, rerender } = renderHook(
-        ({ callback, delay }: { callback: (value: string) => void; delay: number }) =>
-          useDebouncedInput(callback, delay),
+        ({
+          callback,
+          delay,
+        }: {
+          callback: (value: string) => void;
+          delay: number;
+        }) => useDebouncedInput(callback, delay),
         {
           initialProps: { callback: mockCallback, delay: 200 },
         }
@@ -310,8 +319,13 @@ describe('useDebouncedInput', () => {
       const mockCallback1 = jest.fn();
       const mockCallback2 = jest.fn();
       const { result, rerender } = renderHook(
-        ({ callback, delay }: { callback: (value: string) => void; delay: number }) =>
-          useDebouncedInput(callback, delay),
+        ({
+          callback,
+          delay,
+        }: {
+          callback: (value: string) => void;
+          delay: number;
+        }) => useDebouncedInput(callback, delay),
         {
           initialProps: { callback: mockCallback1, delay: 200 },
         }
@@ -327,8 +341,13 @@ describe('useDebouncedInput', () => {
     it('should create new debounced function when delay changes', () => {
       const mockCallback = jest.fn();
       const { result, rerender } = renderHook(
-        ({ callback, delay }: { callback: (value: string) => void; delay: number }) =>
-          useDebouncedInput(callback, delay),
+        ({
+          callback,
+          delay,
+        }: {
+          callback: (value: string) => void;
+          delay: number;
+        }) => useDebouncedInput(callback, delay),
         {
           initialProps: { callback: mockCallback, delay: 200 },
         }
@@ -345,7 +364,9 @@ describe('useDebouncedInput', () => {
   describe('Cleanup behavior', () => {
     it('should still execute callback even if component unmounts', () => {
       const mockCallback = jest.fn();
-      const { result, unmount } = renderHook(() => useDebouncedInput(mockCallback));
+      const { result, unmount } = renderHook(() =>
+        useDebouncedInput(mockCallback)
+      );
 
       act(() => {
         result.current('will execute');
@@ -367,7 +388,9 @@ describe('useDebouncedInput', () => {
 
     it('should handle multiple timeouts before unmount', () => {
       const mockCallback = jest.fn();
-      const { result, unmount } = renderHook(() => useDebouncedInput(mockCallback, 100));
+      const { result, unmount } = renderHook(() =>
+        useDebouncedInput(mockCallback, 100)
+      );
 
       act(() => {
         result.current('first');

@@ -30,18 +30,18 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
-          <DeadlineProvider>
-            <Stack>
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="(authenticated)"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen name="deadline" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-          </DeadlineProvider>
-          <Toast config={toastConfig} />
+        <DeadlineProvider>
+          <Stack>
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="(authenticated)"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="deadline" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </DeadlineProvider>
+        <Toast config={toastConfig} />
       </QueryClientProvider>
     </AuthProvider>
   );

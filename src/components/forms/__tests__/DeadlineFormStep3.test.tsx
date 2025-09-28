@@ -496,7 +496,9 @@ describe('DeadlineFormStep3', () => {
       const { rerender } = render(<DeadlineFormStep3 {...defaultProps} />);
 
       let progressInput = screen.getByTestId('input-currentProgress');
-      expect(progressInput.props['data-placeholder']).toBe('How many pages total?');
+      expect(progressInput.props['data-placeholder']).toBe(
+        'How many pages total?'
+      );
 
       rerender(
         <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
