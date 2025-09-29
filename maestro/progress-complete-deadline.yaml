@@ -41,6 +41,11 @@ tags:
 - extendedWaitUntil:
     visible: ".*Fourth Wing.*"
     timeout: 10000
+
+# Take screenshot of book in pending section
+- takeScreenshot:
+    path: maestro/screenshots/13_book_in_pending_section
+
 - tapOn: ".*Fourth Wing.*"
 
 # Scroll to see more details
@@ -51,6 +56,11 @@ tags:
 - extendedWaitUntil:
     visible: "Start Reading"
     timeout: 5000
+
+# Take screenshot before starting reading
+- takeScreenshot:
+    path: maestro/screenshots/14_before_start_reading
+
 - tapOn: "Start Reading"
 
 # Handle potential "Not Now" dialog if it appears
@@ -84,11 +94,19 @@ tags:
     timeout: 3000
 - assertVisible: "46"
 
+# Take screenshot of progress update view
+- takeScreenshot:
+    path: maestro/screenshots/15_progress_update_view
+
 # Tap Update Progress button
 - extendedWaitUntil:
     visible: "Update Progress"
     timeout: 5000
 - tapOn: "Update Progress"
+
+# Take screenshot after progress updated
+- takeScreenshot:
+    path: maestro/screenshots/16_progress_updated
 
 # Verify total pages updated (should show 471)
 - extendedWaitUntil:
@@ -142,6 +160,10 @@ tags:
     timeout: 5000
 - assertVisible: "You finished!"
 
+# Take screenshot of completion success message
+- takeScreenshot:
+    path: maestro/screenshots/17_completion_success_message
+
 # Continue from completion screen
 - extendedWaitUntil:
     visible: "Continue"
@@ -170,6 +192,11 @@ tags:
 - extendedWaitUntil:
     visible: "Fourth Wing.* 🏆 done"
     timeout: 10000
+
+# Take screenshot of book in completed section
+- takeScreenshot:
+    path: maestro/screenshots/18_book_in_completed_section
+
 - tapOn: "Fourth Wing.* 🏆 done"
 
 # Scroll to find Delete Deadline option
@@ -190,4 +217,5 @@ tags:
 - tapOn: "Delete"
 
 # Take screenshot of final state
-- takeScreenshot: "deadline_deleted"
+- takeScreenshot:
+    path: maestro/screenshots/19_deadline_deleted

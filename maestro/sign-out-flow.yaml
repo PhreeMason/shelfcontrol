@@ -51,7 +51,8 @@ tags:
       - scroll
       
       # Take screenshot before sign out
-      - takeScreenshot: "before_sign_out"
+      - takeScreenshot:
+          path: maestro/screenshots/20_before_sign_out
       
       # Tap sign out button
       - extendedWaitUntil:
@@ -86,7 +87,8 @@ tags:
           id: "sign-in-button"
       
       # Take screenshot of successful sign out
-      - takeScreenshot: "successful_sign_out"
+      - takeScreenshot:
+          path: maestro/screenshots/21_successful_sign_out
 
 # If user is already signed out, verify sign-in screen is displayed
 - runFlow:
@@ -98,4 +100,5 @@ tags:
           id: "email-input"
       - assertVisible:
           id: "password-input"
-      - takeScreenshot: "already_signed_out"
+      - takeScreenshot:
+          path: maestro/screenshots/22_already_signed_out

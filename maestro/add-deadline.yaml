@@ -39,6 +39,10 @@ tags:
     timeout: 5000
 - tapOn: "new-deadline, tab, 2 of 3"
 
+# Take screenshot of new deadline tab
+- takeScreenshot:
+    path: maestro/screenshots/06_new_deadline_tab_loaded
+
 # Wait for search input to be visible and tap it
 - extendedWaitUntil:
     visible: "Search by title or author..."
@@ -53,6 +57,11 @@ tags:
     visible:
       id: "book-result-0"
     timeout: 10000
+
+# Take screenshot of search results
+- takeScreenshot:
+    path: maestro/screenshots/07_search_results_displayed
+
 - tapOn:
     id: "book-result-0"
     repeat: 2
@@ -63,6 +72,11 @@ tags:
     visible:
       id: "status-option-pending"
     timeout: 5000
+
+# Take screenshot of book detail view with status options
+- takeScreenshot:
+    path: maestro/screenshots/08_book_detail_view
+
 - tapOn:
     id: "status-option-pending"
 
@@ -81,6 +95,10 @@ tags:
     timeout: 3000
 - tapOn:
     id: "status-option-pending"
+
+# Take screenshot of selected status and source
+- takeScreenshot:
+    path: maestro/screenshots/09_status_and_source_set
 
 # Scroll to reveal continue button
 - scroll
@@ -113,8 +131,16 @@ tags:
     timeout: 3000
 - tapOn: "13"
 
+# Take screenshot of date selected
+- takeScreenshot:
+    path: maestro/screenshots/10_date_selected
+
 - tapOn: How many pages total?
 - inputText: "10"
+
+# Take screenshot of page count entered
+- takeScreenshot:
+    path: maestro/screenshots/11_page_count_entered
 
 # Scroll to reveal Add Book button
 - scroll
@@ -139,4 +165,5 @@ tags:
 - assertVisible: ".*Fourth Wing.*"
 
 # Take screenshot of successful book addition
-- takeScreenshot: "successful_deadline_added"
+- takeScreenshot:
+    path: maestro/screenshots/12_successful_deadline_added

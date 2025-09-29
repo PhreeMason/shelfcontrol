@@ -25,9 +25,7 @@
     "test:coverage": "jest --runInBand --coverage",
     "test:coverage:watch": "jest --runInBand --coverage --watch",
     "test:debug": "jest --runInBand --detectOpenHandles --forceExit --no-cache --logHeapUsage",
-    "test:e2e": "maestro test @.env.maestro maestro/e2e-main-flow.yaml",
-    "test:e2e:ios": "maestro test @.env.maestro --platform ios maestro/e2e-main-flow.yaml",
-    "test:e2e:android": "maestro test @.env.maestro --platform android maestro/e2e-main-flow.yaml"
+    "test:e2e": "maestro test @.env.maestro maestro/e2e-main-flow.yaml"
   },
   "dependencies": {
     "@expo/metro-runtime": "^5.0.4",

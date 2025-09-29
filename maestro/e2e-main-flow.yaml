@@ -25,4 +25,5 @@ tags:
 - runFlow: sign-out-flow.yaml
 
 # Take final screenshot to confirm test completion
-- takeScreenshot: "e2e_flow_completed"
+- takeScreenshot:
+    path: maestro/screenshots/23_e2e_flow_completed
