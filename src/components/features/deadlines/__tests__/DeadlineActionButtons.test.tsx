@@ -107,7 +107,7 @@ describe('DeadlineActionButtons', () => {
     mockUseDeadlines.mockReturnValue({
       deleteDeadline: mockDeleteDeadline,
       completeDeadline: mockCompleteDeadline,
-      setAsideDeadline: mockSetAsideDeadline,
+      pauseDeadline: mockSetAsideDeadline,
       reactivateDeadline: mockReactivateDeadline,
       startReadingDeadline: mockStartReadingDeadline,
     } as any);
@@ -161,7 +161,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-3',
             deadline_id: 'deadline-123',
-            status: 'requested' as const,
+            status: 'pending' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
@@ -195,19 +195,19 @@ describe('DeadlineActionButtons', () => {
     });
 
     it('should show Resume and Complete buttons for set aside status', () => {
-      const setAsideDeadline = {
+      const pauseDeadline = {
         ...baseDeadline,
         status: [
           {
             id: 'status-5',
             deadline_id: 'deadline-123',
-            status: 'set_aside' as const,
+            status: 'paused' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
         ],
       };
-      render(<DeadlineActionButtons deadline={setAsideDeadline} />);
+      render(<DeadlineActionButtons deadline={pauseDeadline} />);
 
       expect(screen.getByTestId('button-resume-reading')).toBeTruthy();
       expect(screen.getByTestId('button-mark-as-complete')).toBeTruthy();
@@ -252,7 +252,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-6',
             deadline_id: 'deadline-123',
-            status: 'requested' as const,
+            status: 'pending' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
@@ -266,7 +266,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-8',
             deadline_id: 'deadline-123',
-            status: 'set_aside' as const,
+            status: 'paused' as const,
             created_at: '2024-01-03T00:00:00Z',
             updated_at: '2024-01-03T00:00:00Z',
           },
@@ -408,7 +408,7 @@ describe('DeadlineActionButtons', () => {
   });
 
   describe('Button Interactions - Set Aside', () => {
-    it('should call setAsideDeadline when pause button is pressed', () => {
+    it('should call pauseDeadline when pause button is pressed', () => {
       render(<DeadlineActionButtons deadline={baseDeadline} />);
 
       fireEvent.press(screen.getByTestId('button-pause'));
@@ -441,19 +441,19 @@ describe('DeadlineActionButtons', () => {
 
   describe('Button Interactions - Reactivate', () => {
     it('should call reactivateDeadline when resume button is pressed', () => {
-      const setAsideDeadline = {
+      const pauseDeadline = {
         ...baseDeadline,
         status: [
           {
             id: 'status-5',
             deadline_id: 'deadline-123',
-            status: 'set_aside' as const,
+            status: 'paused' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
         ],
       };
-      render(<DeadlineActionButtons deadline={setAsideDeadline} />);
+      render(<DeadlineActionButtons deadline={pauseDeadline} />);
 
       fireEvent.press(screen.getByTestId('button-resume-reading'));
 
@@ -465,19 +465,19 @@ describe('DeadlineActionButtons', () => {
     });
 
     it('should show update deadline prompt after reactivating set aside deadline', async () => {
-      const setAsideDeadline = {
+      const pauseDeadline = {
         ...baseDeadline,
         status: [
           {
             id: 'status-5',
             deadline_id: 'deadline-123',
-            status: 'set_aside' as const,
+            status: 'paused' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
         ],
       };
-      render(<DeadlineActionButtons deadline={setAsideDeadline} />);
+      render(<DeadlineActionButtons deadline={pauseDeadline} />);
 
       fireEvent.press(screen.getByTestId('button-resume-reading'));
       const successCallback = mockReactivateDeadline.mock.calls[0][1];
@@ -498,19 +498,19 @@ describe('DeadlineActionButtons', () => {
     });
 
     it('should navigate to edit page when update deadline is accepted', async () => {
-      const setAsideDeadline = {
+      const pauseDeadline = {
         ...baseDeadline,
         status: [
           {
             id: 'status-5',
             deadline_id: 'deadline-123',
-            status: 'set_aside' as const,
+            status: 'paused' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
         ],
       };
-      render(<DeadlineActionButtons deadline={setAsideDeadline} />);
+      render(<DeadlineActionButtons deadline={pauseDeadline} />);
 
       fireEvent.press(screen.getByTestId('button-resume-reading'));
       const successCallback = mockReactivateDeadline.mock.calls[0][1];
@@ -537,7 +537,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-3',
             deadline_id: 'deadline-123',
-            status: 'requested' as const,
+            status: 'pending' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
@@ -561,7 +561,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-3',
             deadline_id: 'deadline-123',
-            status: 'requested' as const,
+            status: 'pending' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
@@ -724,19 +724,19 @@ describe('DeadlineActionButtons', () => {
     });
 
     it('should show loading text and disable resume button during reactivate operation', () => {
-      const setAsideDeadline = {
+      const pauseDeadline = {
         ...baseDeadline,
         status: [
           {
             id: 'status-5',
             deadline_id: 'deadline-123',
-            status: 'set_aside' as const,
+            status: 'paused' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
         ],
       };
-      render(<DeadlineActionButtons deadline={setAsideDeadline} />);
+      render(<DeadlineActionButtons deadline={pauseDeadline} />);
 
       fireEvent.press(screen.getByTestId('button-resume-reading'));
 
@@ -752,7 +752,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-3',
             deadline_id: 'deadline-123',
-            status: 'requested' as const,
+            status: 'pending' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
@@ -809,19 +809,19 @@ describe('DeadlineActionButtons', () => {
     });
 
     it('should handle reactivate error', () => {
-      const setAsideDeadline = {
+      const pauseDeadline = {
         ...baseDeadline,
         status: [
           {
             id: 'status-5',
             deadline_id: 'deadline-123',
-            status: 'set_aside' as const,
+            status: 'paused' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
         ],
       };
-      render(<DeadlineActionButtons deadline={setAsideDeadline} />);
+      render(<DeadlineActionButtons deadline={pauseDeadline} />);
 
       fireEvent.press(screen.getByTestId('button-resume-reading'));
       const errorCallback = mockReactivateDeadline.mock.calls[0][2];
@@ -845,7 +845,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-3',
             deadline_id: 'deadline-123',
-            status: 'requested' as const,
+            status: 'pending' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },

@@ -3,8 +3,8 @@ import {
   useCompleteDeadline,
   useDeleteDeadline,
   useGetDeadlines,
+  usePauseDeadline,
   useReactivateDeadline,
-  useSetAsideDeadline,
   useStartReadingDeadline,
   useUpdateDeadline,
 } from '@/hooks/useDeadlines';
@@ -52,7 +52,7 @@ interface DeadlineContextType {
   activeDeadlines: ReadingDeadlineWithProgress[];
   overdueDeadlines: ReadingDeadlineWithProgress[];
   completedDeadlines: ReadingDeadlineWithProgress[];
-  setAsideDeadlines: ReadingDeadlineWithProgress[];
+  pausedDeadlines: ReadingDeadlineWithProgress[];
   pendingDeadlines: ReadingDeadlineWithProgress[];
   isLoading: boolean;
   error: Error | null;
@@ -90,7 +90,7 @@ interface DeadlineContextType {
     onSuccess?: () => void,
     onError?: (error: Error) => void
   ) => void;
-  setAsideDeadline: (
+  pauseDeadline: (
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
@@ -155,7 +155,7 @@ interface DeadlineContextType {
 
   activeCount: number;
   overdueCount: number;
-  setAsideCount: number;
+  pausedCount: number;
   calculateProgressAsOfStartOfDay: (
     deadline: ReadingDeadlineWithProgress
   ) => number;
@@ -184,7 +184,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
   const { mutate: updateDeadlineMutation } = useUpdateDeadline();
   const { mutate: deleteDeadlineMutation } = useDeleteDeadline();
   const { mutate: completeDeadlineMutation } = useCompleteDeadline();
-  const { mutate: setAsideDeadlineMutation } = useSetAsideDeadline();
+  const { mutate: pauseDeadlineMutation } = usePauseDeadline();
   const { mutate: reactivateDeadlineMutation } = useReactivateDeadline();
   const { mutate: startReadingDeadlineMutation } = useStartReadingDeadline();
 
@@ -192,7 +192,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     active: activeDeadlines,
     overdue: overdueDeadlines,
     completed: completedDeadlines,
-    setAside: setAsideDeadlines,
+    setAside: pausedDeadlines,
     pending: pendingDeadlines,
   } = separateDeadlines(deadlines);
 
@@ -381,17 +381,17 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     });
   };
 
-  const setAsideDeadline = (
+  const pauseDeadline = (
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
   ) => {
-    setAsideDeadlineMutation(deadlineId, {
+    pauseDeadlineMutation(deadlineId, {
       onSuccess: () => {
         onSuccess?.();
       },
       onError: (error: Error) => {
-        console.error('Error setting aside deadline:', error);
+        console.error('Error pausing deadline:', error);
         onError?.(error);
       },
     });
@@ -435,7 +435,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     activeDeadlines,
     overdueDeadlines,
     completedDeadlines,
-    setAsideDeadlines,
+    pausedDeadlines,
     pendingDeadlines,
     isLoading,
     error,
@@ -448,7 +448,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     updateDeadline,
     deleteDeadline,
     completeDeadline,
-    setAsideDeadline,
+    pauseDeadline,
     reactivateDeadline,
     startReadingDeadline,
 
@@ -466,7 +466,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
 
     activeCount: activeDeadlines.length,
     overdueCount: overdueDeadlines.length,
-    setAsideCount: setAsideDeadlines.length,
+    pausedCount: pausedDeadlines.length,
     calculateProgressAsOfStartOfDay,
     calculateProgressForToday,
   };

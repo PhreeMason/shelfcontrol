@@ -96,7 +96,7 @@ class DeadlinesService {
       .from('deadline_status')
       .insert({
         deadline_id: finalDeadlineId,
-        status: (status || 'reading') as 'reading' | 'requested',
+        status: (status || 'reading') as 'reading' | 'pending',
         updated_at: new Date().toISOString(),
       })
       .select()
@@ -168,7 +168,7 @@ class DeadlinesService {
       const { error: statusError } = await supabase
         .from('deadline_status')
         .update({
-          status: status as 'reading' | 'requested',
+          status: status as 'reading' | 'pending',
           updated_at: new Date().toISOString(),
         })
         .eq('deadline_id', deadlineDetails.id!)
@@ -296,11 +296,11 @@ class DeadlinesService {
   }
 
   /**
-   * Update deadline status (complete, set_aside, reading)
+   * Update deadline status (complete, paused, reading, did_not_finish)
    */
   async updateDeadlineStatus(
     deadlineId: string,
-    status: 'complete' | 'set_aside' | 'reading'
+    status: 'complete' | 'paused' | 'reading' | 'did_not_finish'
   ) {
     const { data, error } = await supabase
       .from('deadline_status')

@@ -8,7 +8,7 @@ import {
   useUpdateDeadlineProgress,
   useGetDeadlines,
   useCompleteDeadline,
-  useSetAsideDeadline,
+  usePauseDeadline,
   useReactivateDeadline,
   useGetDeadlineById,
   useDeleteFutureProgress,
@@ -421,13 +421,13 @@ describe('useDeadlines hooks', () => {
     });
   });
 
-  describe('useSetAsideDeadline', () => {
+  describe('usePauseDeadline', () => {
     it('should configure mutation with set_aside status', () => {
-      useSetAsideDeadline();
+      usePauseDeadline();
 
       expect(mockUseMutation).toHaveBeenCalledWith(
         expect.objectContaining({
-          mutationKey: ['setAsideDeadline'],
+          mutationKey: ['pauseDeadline'],
           mutationFn: expect.any(Function),
           onSuccess: expect.any(Function),
           onError: expect.any(Function),
@@ -436,25 +436,25 @@ describe('useDeadlines hooks', () => {
     });
 
     it('should call deadlinesService.updateDeadlineStatus with set_aside', async () => {
-      useSetAsideDeadline();
+      usePauseDeadline();
 
       const mutationConfig = mockUseMutation.mock.calls[0][0];
       await mutationConfig.mutationFn('deadline-123');
 
       expect(mockDeadlinesService.updateDeadlineStatus).toHaveBeenCalledWith(
         'deadline-123',
-        'set_aside'
+        'paused'
       );
     });
 
     it('should invalidate queries with correct userId on success - FAILING TEST', () => {
-      useSetAsideDeadline();
+      usePauseDeadline();
 
       const mutationConfig = mockUseMutation.mock.calls[0][0];
       mutationConfig.onSuccess();
 
       // This test should FAIL initially due to the query invalidation bug
-      // useSetAsideDeadline uses useUpdateDeadlineStatus which invalidates ['deadlines'] only
+      // usePauseDeadline uses useUpdateDeadlineStatus which invalidates ['deadlines'] only
       // instead of ['deadlines', userId] like other hooks
       expect(mockInvalidateQueries).toHaveBeenCalledWith({
         queryKey: ['deadlines', 'session-user-123'],

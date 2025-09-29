@@ -56,12 +56,12 @@ describe('deadlineActionUtils', () => {
     it('should return the latest status from status array', () => {
       const deadline = {
         status: [
-          { status: 'requested' },
+          { status: 'pending' },
           { status: 'reading' },
-          { status: 'set_aside' },
+          { status: 'paused' },
         ],
       } as any;
-      expect(getDeadlineStatus(deadline)).toBe('set_aside');
+      expect(getDeadlineStatus(deadline)).toBe('paused');
     });
 
     it('should return single status from array', () => {
@@ -84,7 +84,7 @@ describe('deadlineActionUtils', () => {
     });
 
     it('should return correct flags for set_aside status', () => {
-      const flags = getStatusFlags('set_aside');
+      const flags = getStatusFlags('paused');
       expect(flags).toEqual({
         isCompleted: false,
         isSetAside: true,
@@ -103,8 +103,8 @@ describe('deadlineActionUtils', () => {
       });
     });
 
-    it('should return correct flags for requested status', () => {
-      const flags = getStatusFlags('requested');
+    it('should return correct flags for pending status', () => {
+      const flags = getStatusFlags('pending');
       expect(flags).toEqual({
         isCompleted: false,
         isSetAside: false,

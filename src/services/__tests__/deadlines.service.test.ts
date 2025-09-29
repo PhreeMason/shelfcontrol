@@ -768,7 +768,7 @@ describe('DeadlinesService', () => {
     it('should update deadline status to set_aside', async () => {
       const mockStatusData = {
         deadline_id: 'rd-123',
-        status: 'set_aside',
+        status: 'paused',
       };
 
       const mockInsert = jest.fn().mockReturnThis();
@@ -785,12 +785,12 @@ describe('DeadlinesService', () => {
 
       const result = await deadlinesService.updateDeadlineStatus(
         deadlineId,
-        'set_aside'
+        'paused'
       );
 
       expect(mockInsert).toHaveBeenCalledWith(
         expect.objectContaining({
-          status: 'set_aside',
+          status: 'paused',
         })
       );
       expect(result).toEqual(mockStatusData);

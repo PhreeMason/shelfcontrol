@@ -54,11 +54,11 @@ export function getDeadlineStatus(
 ): DeadlineStatus {
   const latestStatus =
     deadline.status && deadline.status.length > 0
-      ? deadline.status[deadline.status.length - 1].status
+      ? deadline.status[deadline.status.length - 1].status ?? 'reading'
       : 'reading';
 
   const isCompleted = latestStatus === 'complete';
-  const isSetAside = latestStatus === 'set_aside';
+  const isSetAside = latestStatus === 'paused';
   const isArchived = isCompleted || isSetAside;
 
   return {

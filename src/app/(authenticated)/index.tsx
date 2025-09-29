@@ -22,7 +22,7 @@ type FilterType =
   | 'overdue'
   | 'pending'
   | 'completed'
-  | 'set_aside'
+  | 'paused'
   | 'all';
 
 export default function HomeScreen() {
@@ -34,7 +34,7 @@ export default function HomeScreen() {
     overdueDeadlines,
     pendingDeadlines,
     completedDeadlines,
-    setAsideDeadlines,
+    pausedDeadlines,
     refetch,
     isRefreshing,
   } = useDeadlines();
@@ -90,7 +90,7 @@ export default function HomeScreen() {
     if (overdueDeadlines.length > 0) available.push('overdue');
     if (pendingDeadlines.length > 0) available.push('pending');
     if (completedDeadlines.length > 0) available.push('completed');
-    if (setAsideDeadlines.length > 0) available.push('set_aside');
+    if (pausedDeadlines.length > 0) available.push('paused');
     if (deadlines.length > 0) available.push('all');
 
     return available;

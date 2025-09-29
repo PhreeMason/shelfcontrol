@@ -198,7 +198,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       existingDeadline
     );
 
-    const statusValue = selectedStatus === 'pending' ? 'requested' : 'reading';
+    const statusValue = selectedStatus === 'pending' ? 'pending' : 'reading';
 
     const successCallback = () => {
       setIsSubmitting(false);

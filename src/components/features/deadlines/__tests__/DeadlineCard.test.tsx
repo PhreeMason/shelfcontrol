@@ -294,12 +294,12 @@ describe('DeadlineCard', () => {
     });
 
     it('should show paused icon for set_aside status', () => {
-      const setAsideDeadline = {
+      const pauseDeadline = {
         ...mockDeadline,
         status: [
           {
             id: 'status-1',
-            status: 'set_aside' as const,
+            status: 'paused' as const,
             created_at: '2024-01-15T00:00:00Z',
             updated_at: '2024-01-15T00:00:00Z',
             deadline_id: '1',
@@ -307,7 +307,7 @@ describe('DeadlineCard', () => {
         ],
       };
 
-      render(<DeadlineCard deadline={setAsideDeadline} />);
+      render(<DeadlineCard deadline={pauseDeadline} />);
 
       expect(screen.getByText('⏸️')).toBeTruthy();
       expect(screen.getByText('paused')).toBeTruthy();
@@ -334,13 +334,13 @@ describe('DeadlineCard', () => {
       expect(screen.getByText('Jan 15, 2024')).toBeTruthy();
     });
 
-    it('should show date for requested status', () => {
-      const requestedDeadline = {
+    it('should show date for pending status', () => {
+      const pendingDeadline = {
         ...mockDeadline,
         status: [
           {
             id: 'status-1',
-            status: 'requested' as const,
+            status: 'pending' as const,
             created_at: '2024-01-15T00:00:00Z',
             updated_at: '2024-01-15T00:00:00Z',
             deadline_id: '1',
@@ -348,7 +348,7 @@ describe('DeadlineCard', () => {
         ],
       };
 
-      render(<DeadlineCard deadline={requestedDeadline} />);
+      render(<DeadlineCard deadline={pendingDeadline} />);
 
       expect(screen.getByText('Jan 15, 2024')).toBeTruthy();
     });

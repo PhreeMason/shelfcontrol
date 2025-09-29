@@ -8,7 +8,7 @@ type FilterType =
   | 'overdue'
   | 'pending'
   | 'completed'
-  | 'set_aside'
+  | 'paused'
   | 'all';
 
 interface FilteredDeadlinesProps {
@@ -23,7 +23,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     activeDeadlines,
     overdueDeadlines,
     completedDeadlines,
-    setAsideDeadlines,
+    pausedDeadlines,
     pendingDeadlines,
     isLoading,
     error,
@@ -39,8 +39,8 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
         return pendingDeadlines;
       case 'completed':
         return completedDeadlines;
-      case 'set_aside':
-        return setAsideDeadlines;
+      case 'paused':
+        return pausedDeadlines;
       case 'all':
         return deadlines;
       default:
@@ -58,7 +58,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
         return 'No pending deadlines';
       case 'completed':
         return 'No completed deadlines';
-      case 'set_aside':
+      case 'paused':
         return 'No deadlines paused';
       case 'all':
         return 'No deadlines found';

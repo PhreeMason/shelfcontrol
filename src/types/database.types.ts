@@ -195,12 +195,12 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          created_at: string;
+          created_at?: string;
           current_progress?: number;
           deadline_id: string;
           id?: string;
           time_spent_reading?: number | null;
-          updated_at: string;
+          updated_at?: string;
         };
         Update: {
           created_at?: string;
@@ -225,21 +225,21 @@ export type Database = {
           created_at: string;
           deadline_id: string | null;
           id: string;
-          status: Database['public']['Enums']['deadline_status_enum'];
+          status: Database['public']['Enums']['deadline_status_enum'] | null;
           updated_at: string;
         };
         Insert: {
           created_at?: string;
           deadline_id?: string | null;
           id?: string;
-          status: Database['public']['Enums']['deadline_status_enum'];
+          status?: Database['public']['Enums']['deadline_status_enum'] | null;
           updated_at?: string;
         };
         Update: {
           created_at?: string;
           deadline_id?: string | null;
           id?: string;
-          status?: Database['public']['Enums']['deadline_status_enum'];
+          status?: Database['public']['Enums']['deadline_status_enum'] | null;
           updated_at?: string;
         };
         Relationships: [
@@ -404,13 +404,11 @@ export type Database = {
       book_format_enum: 'physical' | 'eBook' | 'audio';
       deadline_flexibility: 'flexible' | 'strict';
       deadline_status_enum:
-        | 'requested'
-        | 'approved'
+        | 'pending'
         | 'reading'
-        | 'rejected'
-        | 'withdrew'
+        | 'paused'
         | 'complete'
-        | 'set_aside';
+        | 'did_not_finish';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -544,13 +542,11 @@ export const Constants = {
       book_format_enum: ['physical', 'eBook', 'audio'],
       deadline_flexibility: ['flexible', 'strict'],
       deadline_status_enum: [
-        'requested',
-        'approved',
+        'pending',
         'reading',
-        'rejected',
-        'withdrew',
+        'paused',
         'complete',
-        'set_aside',
+        'did_not_finish',
       ],
     },
   },

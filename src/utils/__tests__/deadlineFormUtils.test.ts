@@ -429,12 +429,12 @@ describe('deadlineFormUtils', () => {
       expect(mockSetValue).toHaveBeenCalledWith('currentMinutes', 45);
     });
 
-    it('should handle requested status', () => {
+    it('should handle pending status', () => {
       const deadline: Partial<ReadingDeadlineWithProgress> = {
         book_title: 'Test Book',
         status: [
           {
-            status: 'requested',
+            status: 'pending',
             id: 'status-3',
             deadline_id: 'deadline-3',
             created_at: '2024-01-01T00:00:00.000Z',

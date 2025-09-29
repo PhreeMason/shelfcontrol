@@ -28,24 +28,18 @@ export function DeadlineCard({
     useDeadlines();
   const router = useRouter();
   const { colors } = useTheme();
-  const {
-    good,
-    approaching,
-    urgent,
-    overdue,
-    impossible,
-    complete,
-    set_aside,
-  } = colors;
+  const { good, approaching, urgent, overdue, impossible, complete, paused } =
+    colors;
   const urgencyTextColorMap = {
     complete,
-    set_aside,
+    paused,
+    did_not_finish: paused,
     overdue,
     urgent,
     good,
     approaching,
     impossible,
-    requested: set_aside, // Treat requested as set aside for colors
+    pending: paused,
   };
   // Fetch book data if deadline has a book_id
   const { data: bookData } = useFetchBookById(deadline.book_id);
@@ -78,15 +72,17 @@ export function DeadlineCard({
       : null;
 
   const isArchived =
-    latestStatus === 'complete' || latestStatus === 'set_aside';
+    latestStatus === 'complete' ||
+    latestStatus === 'paused' ||
+    latestStatus === 'did_not_finish';
 
   if (isArchived) {
     borderColor = urgencyTextColorMap[latestStatus];
     countdownColor = urgencyTextColorMap[latestStatus];
   }
 
-  const isRequested = latestStatus === 'requested';
-  if (isRequested) {
+  const isPending = latestStatus === 'pending';
+  if (isPending) {
     borderColor = urgencyTextColorMap[latestStatus];
     countdownColor = urgencyTextColorMap[latestStatus];
   }
@@ -186,7 +182,7 @@ export function DeadlineCard({
               {deadline.book_title}
             </ThemedText>
             <ThemedText style={styles.bookDeadline}>
-              {(isArchived || isRequested) && latestStatusDate
+              {(isArchived || isPending) && latestStatusDate
                 ? dayjs(latestStatusDate).format('MMM D, YYYY')
                 : urgencyLevel === 'overdue'
                   ? formatRemainingDisplay(remaining, deadline.format)

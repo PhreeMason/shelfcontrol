@@ -9,7 +9,7 @@ type FilterType =
   | 'overdue'
   | 'pending'
   | 'completed'
-  | 'set_aside'
+  | 'paused'
   | 'all';
 
 interface FilterOption {
@@ -30,7 +30,7 @@ const filterOptions: FilterOption[] = [
   { key: 'overdue', label: 'Overdue' },
   { key: 'pending', label: 'Pending' },
   { key: 'completed', label: 'Completed' },
-  { key: 'set_aside', label: 'Paused' },
+  { key: 'paused', label: 'Paused' },
   { key: 'all', label: 'All' },
 ];
 

@@ -201,10 +201,7 @@ describe('FormatSelector', () => {
 
       it('should highlight eBook format when selected', () => {
         render(
-          <FormatSelector
-            selectedFormat="eBook"
-            onSelectFormat={jest.fn()}
-          />
+          <FormatSelector selectedFormat="eBook" onSelectFormat={jest.fn()} />
         );
 
         const eBookChip = screen.getByTestId('format-chip-eBook');
@@ -218,10 +215,7 @@ describe('FormatSelector', () => {
 
       it('should highlight audio format when selected', () => {
         render(
-          <FormatSelector
-            selectedFormat="audio"
-            onSelectFormat={jest.fn()}
-          />
+          <FormatSelector selectedFormat="audio" onSelectFormat={jest.fn()} />
         );
 
         const audioChip = screen.getByTestId('format-chip-audio');
@@ -238,10 +232,7 @@ describe('FormatSelector', () => {
   describe('Visual States', () => {
     it('should apply unselected styling to non-selected formats', () => {
       render(
-        <FormatSelector
-          selectedFormat="physical"
-          onSelectFormat={jest.fn()}
-        />
+        <FormatSelector selectedFormat="physical" onSelectFormat={jest.fn()} />
       );
 
       const eBookChip = screen.getByTestId('format-chip-eBook');
@@ -264,10 +255,7 @@ describe('FormatSelector', () => {
 
     it('should apply border width to all format chips', () => {
       render(
-        <FormatSelector
-          selectedFormat="physical"
-          onSelectFormat={jest.fn()}
-        />
+        <FormatSelector selectedFormat="physical" onSelectFormat={jest.fn()} />
       );
 
       const physicalChip = screen.getByTestId('format-chip-physical');
@@ -283,10 +271,7 @@ describe('FormatSelector', () => {
 
     it('should update visual state when selectedFormat changes', () => {
       const { rerender } = render(
-        <FormatSelector
-          selectedFormat="physical"
-          onSelectFormat={jest.fn()}
-        />
+        <FormatSelector selectedFormat="physical" onSelectFormat={jest.fn()} />
       );
 
       let physicalChip = screen.getByTestId('format-chip-physical');
@@ -298,10 +283,7 @@ describe('FormatSelector', () => {
       );
 
       rerender(
-        <FormatSelector
-          selectedFormat="eBook"
-          onSelectFormat={jest.fn()}
-        />
+        <FormatSelector selectedFormat="eBook" onSelectFormat={jest.fn()} />
       );
 
       physicalChip = screen.getByTestId('format-chip-physical');

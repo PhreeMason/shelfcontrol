@@ -10,7 +10,7 @@ export const getDeadlineStatus = (
   if (!deadline.status || deadline.status.length === 0) {
     return 'reading';
   }
-  return deadline.status[deadline.status.length - 1].status;
+  return deadline.status[deadline.status.length - 1].status ?? 'reading';
 };
 
 export interface StatusFlags {
@@ -23,9 +23,9 @@ export interface StatusFlags {
 export const getStatusFlags = (status: string): StatusFlags => {
   return {
     isCompleted: status === 'complete',
-    isSetAside: status === 'set_aside',
+    isSetAside: status === 'paused',
     isActive: status === 'reading',
-    isPending: status === 'requested',
+    isPending: status === 'pending',
   };
 };
 

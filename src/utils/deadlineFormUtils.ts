@@ -314,8 +314,7 @@ export const populateFormFromDeadline = (
 
     let selectedStatus: 'pending' | 'active' = 'active';
     if (latestStatus) {
-      selectedStatus =
-        latestStatus.status === 'requested' ? 'pending' : 'active';
+      selectedStatus = latestStatus.status === 'pending' ? 'pending' : 'active';
       setValue('status', selectedStatus);
     }
 

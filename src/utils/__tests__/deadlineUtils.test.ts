@@ -24,7 +24,7 @@ const createMockDeadline = (
     updated_at?: string;
   }[] = [],
   status: {
-    status: 'reading' | 'complete' | 'set_aside' | 'requested';
+    status: 'reading' | 'complete' | 'paused' | 'pending';
     created_at: string;
   }[] = []
 ): ReadingDeadlineWithProgress => ({
@@ -142,13 +142,13 @@ describe('deadlineUtils', () => {
         [],
         [{ status: 'complete', created_at: '2024-01-15T00:00:00Z' }]
       );
-      const setAsideDeadline = createMockDeadline(
+      const pauseDeadline = createMockDeadline(
         '4',
         '2024-12-31',
         '2024-01-01T00:00:00Z',
         undefined,
         [],
-        [{ status: 'set_aside', created_at: '2024-01-15T00:00:00Z' }]
+        [{ status: 'paused', created_at: '2024-01-15T00:00:00Z' }]
       );
       const pendingDeadline = createMockDeadline(
         '5',
@@ -156,14 +156,14 @@ describe('deadlineUtils', () => {
         '2024-01-01T00:00:00Z',
         undefined,
         [],
-        [{ status: 'requested', created_at: '2024-01-15T00:00:00Z' }]
+        [{ status: 'pending', created_at: '2024-01-15T00:00:00Z' }]
       );
 
       const result = separateDeadlines([
         activeDeadline,
         overdueDeadline,
         completedDeadline,
-        setAsideDeadline,
+        pauseDeadline,
         pendingDeadline,
       ]);
 
@@ -242,7 +242,7 @@ describe('deadlineUtils', () => {
         '2024-01-01T00:00:00Z',
         '2024-01-10T00:00:00Z',
         [],
-        [{ status: 'set_aside', created_at: '2024-01-15T00:00:00Z' }]
+        [{ status: 'paused', created_at: '2024-01-15T00:00:00Z' }]
       );
       const deadline2 = createMockDeadline(
         '2',
@@ -250,7 +250,7 @@ describe('deadlineUtils', () => {
         '2024-01-01T00:00:00Z',
         '2024-01-20T00:00:00Z',
         [],
-        [{ status: 'set_aside', created_at: '2024-01-18T00:00:00Z' }]
+        [{ status: 'paused', created_at: '2024-01-18T00:00:00Z' }]
       );
 
       const result = separateDeadlines([deadline1, deadline2]);

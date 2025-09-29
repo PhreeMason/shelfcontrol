@@ -17,13 +17,13 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   const {
     deleteDeadline,
     completeDeadline,
-    setAsideDeadline,
+    pauseDeadline,
     reactivateDeadline,
     startReadingDeadline,
   } = useDeadlines();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
-  const [isSettingAside, setIsSettingAside] = useState(false);
+  const [isPausing, setIsPausing] = useState(false);
   const [isReactivating, setIsReactivating] = useState(false);
   const [isStartingReading, setIsStartingReading] = useState(false);
 
@@ -69,12 +69,12 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
     );
   };
 
-  const handleSetAside = () => {
-    setIsSettingAside(true);
-    setAsideDeadline(
+  const handlePause = () => {
+    setIsPausing(true);
+    pauseDeadline(
       deadline.id,
       () => {
-        setIsSettingAside(false);
+        setIsPausing(false);
         Toast.show({
           swipeable: true,
           type: 'success',
@@ -86,7 +86,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         });
       },
       error => {
-        setIsSettingAside(false);
+        setIsPausing(false);
         Toast.show({
           swipeable: true,
           type: 'error',
@@ -305,11 +305,11 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
             disabled={isCompleting}
           />
           <ThemedButton
-            title={isSettingAside ? 'Pausing...' : 'Pause'}
+            title={isPausing ? 'Pausing...' : 'Pause'}
             variant="secondary"
             style={styles.actionButton}
-            onPress={handleSetAside}
-            disabled={isSettingAside}
+            onPress={handlePause}
+            disabled={isPausing}
             backgroundColor="warning"
             textColor="textInverse"
           />

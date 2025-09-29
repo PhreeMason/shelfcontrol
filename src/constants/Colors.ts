@@ -88,7 +88,7 @@ export const Colors = {
 
     // Urgency levels
     complete: '#7251b5',
-    set_aside: '#9CA3AF',
+    paused: '#9CA3AF',
     overdue: '#c8696eff',
     urgent: '#c8696eff',
     good: '#7a5a8cff',
@@ -179,7 +179,7 @@ export const Colors = {
 
     // Urgency levels
     complete: '#7251b5',
-    set_aside: '#9CA3AF',
+    paused: '#9CA3AF',
     overdue: '#c8696eff',
     urgent: '#c8696eff',
     good: '#7a5a8cff',

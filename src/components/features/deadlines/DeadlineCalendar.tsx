@@ -54,11 +54,11 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
           deadline.status && deadline.status.length > 0
             ? deadline.status[deadline.status.length - 1]?.status
             : null;
-        const isPending = latestStatus === 'requested';
+        const isPending = latestStatus === 'pending';
 
         let color;
         if (isPending) {
-          color = colors.set_aside;
+          color = colors.paused;
         } else {
           const { urgencyLevel } = getDeadlineCalculations(deadline);
           color = urgencyColorMap[urgencyLevel] || urgencyColorMap.good;
@@ -98,7 +98,7 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
     getDeadlineCalculations,
     selectedDate,
     urgencyColorMap,
-    colors.set_aside,
+    colors.paused,
   ]);
 
   const selectedDateDeadlines =
@@ -191,10 +191,10 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
                     deadline.status && deadline.status.length > 0
                       ? deadline.status[deadline.status.length - 1]?.status
                       : null;
-                  const isPending = latestStatus === 'requested';
+                  const isPending = latestStatus === 'pending';
 
                   const urgencyColor = isPending
-                    ? colors.set_aside
+                    ? colors.paused
                     : urgencyColorMap[urgencyLevel];
 
                   return (

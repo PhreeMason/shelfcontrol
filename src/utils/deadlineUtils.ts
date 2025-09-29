@@ -113,9 +113,9 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
 
     if (latestStatus === 'complete') {
       completed.push(deadline);
-    } else if (latestStatus === 'set_aside') {
+    } else if (latestStatus === 'paused' || latestStatus === 'did_not_finish') {
       setAside.push(deadline);
-    } else if (latestStatus === 'requested') {
+    } else if (latestStatus === 'pending') {
       pending.push(deadline);
     } else if (deadlineDate.isBefore(today)) {
       overdue.push(deadline);

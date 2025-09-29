@@ -119,7 +119,7 @@ export const useGetDeadlines = () => {
 };
 
 const useUpdateDeadlineStatus = (
-  status: 'complete' | 'set_aside' | 'reading'
+  status: 'complete' | 'paused' | 'reading' | 'did_not_finish'
 ) => {
   const { session } = useAuth();
   const userId = session?.user?.id;
@@ -129,8 +129,10 @@ const useUpdateDeadlineStatus = (
     switch (status) {
       case 'complete':
         return 'completing';
-      case 'set_aside':
-        return 'setting aside';
+      case 'paused':
+        return 'pausing';
+      case 'did_not_finish':
+        return 'marking as did not finish';
       case 'reading':
         return 'reactivating';
       default:
@@ -142,8 +144,10 @@ const useUpdateDeadlineStatus = (
     switch (status) {
       case 'complete':
         return 'completeDeadline';
-      case 'set_aside':
-        return 'setAsideDeadline';
+      case 'paused':
+        return 'pauseDeadline';
+      case 'did_not_finish':
+        return 'didNotFinishDeadline';
       case 'reading':
         return 'reactivateDeadline';
       default:
@@ -199,7 +203,7 @@ export const useCompleteDeadline = () => {
   });
 };
 
-export const useSetAsideDeadline = () => useUpdateDeadlineStatus('set_aside');
+export const usePauseDeadline = () => useUpdateDeadlineStatus('paused');
 
 export const useReactivateDeadline = () => useUpdateDeadlineStatus('reading');
 
