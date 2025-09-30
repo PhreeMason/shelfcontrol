@@ -1,7 +1,8 @@
 import { CalendarLegend } from '@/components/features/deadlines/CalendarLegend';
 import { DeadlineCalendar } from '@/components/features/deadlines/DeadlineCalendar';
+import { CompletedBooksCarousel } from '@/components/features/profile/CompletedBooksCarousel';
+import ProfileHeaderInfo from '@/components/features/profile/ProfileHeaderInfo';
 import AppHeader from '@/components/shared/AppHeader';
-import Avatar from '@/components/shared/Avatar';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useGetDeadlines } from '@/hooks/useDeadlines';
@@ -10,6 +11,7 @@ import { useTheme, useThemedStyles } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   getCompletedThisMonth,
+  getCompletedThisYear,
   getOnTrackDeadlines,
 } from '@/utils/deadlineUtils';
 import {
@@ -41,6 +43,7 @@ export default function Profile() {
 
   const completedCount = getCompletedThisMonth(deadlines);
   const onTrackCount = getOnTrackDeadlines(deadlines);
+  const completedThisYear = getCompletedThisYear(deadlines);
 
   // Calculate pace data
   const readingPaceData = calculateUserPace(deadlines);
@@ -141,11 +144,18 @@ export default function Profile() {
       edges={['right', 'left']}
     >
       <AppHeader
-        title="Profile"
-        onBack={() => {}} // Not used since showBackButton is false
-        rightElement={editButton}
+        title=""
+        onBack={() => {}}
         showBackButton={false}
-      />
+        rightElement={editButton}
+        // headerStyle={{paddingTop: 30}}
+      >
+        <ProfileHeaderInfo
+          avatarUrl={profile?.avatar_url}
+          username={profile?.username || 'Unknown'}
+          displayName={getDisplayName() || undefined}
+        />
+      </AppHeader>
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -156,27 +166,6 @@ export default function Profile() {
             Platform.OS === 'ios' && styles.iosContainer,
           ]}
         >
-          <ThemedView style={styles.profileCard}>
-            <View style={styles.avatarSection}>
-              <Avatar
-                avatarUrl={profile?.avatar_url}
-                size={120}
-                username={profile?.username}
-                showIcon={true}
-              />
-              <View style={styles.nameSection}>
-                <ThemedText style={styles.username}>
-                  @{profile?.username || 'Unknown'}
-                </ThemedText>
-                {getDisplayName() && (
-                  <ThemedText style={styles.displayName}>
-                    {getDisplayName()}
-                  </ThemedText>
-                )}
-              </View>
-            </View>
-          </ThemedView>
-
           <ThemedView style={styles.statsCard}>
             <ThemedText variant="title" style={styles.sectionTitle}>
               This Month's Reading Progress
@@ -202,6 +191,8 @@ export default function Profile() {
               </View>
             </View>
           </ThemedView>
+
+          <CompletedBooksCarousel completedDeadlines={completedThisYear} />
 
           <ThemedView style={styles.calendarSection}>
             <ThemedText variant="title" style={styles.sectionTitle}>
@@ -380,31 +371,6 @@ const styles = StyleSheet.create({
   },
   iosContainer: {
     marginBottom: 80,
-  },
-  profileCard: {
-    backgroundColor: '#f8f9fa',
-    borderRadius: 16,
-    padding: 24,
-    marginBottom: 24,
-    alignItems: 'center',
-  },
-  avatarSection: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  nameSection: {
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  username: {
-    fontSize: 20,
-    lineHeight: 26,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  displayName: {
-    fontSize: 16,
-    color: '#666',
   },
   infoSection: {
     backgroundColor: '#f8f9fa',

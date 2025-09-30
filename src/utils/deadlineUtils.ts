@@ -287,6 +287,25 @@ export const getCompletedThisMonth = (
 };
 
 /**
+ * Get deadlines completed this year
+ */
+export const getCompletedThisYear = (
+  deadlines: ReadingDeadlineWithProgress[]
+): ReadingDeadlineWithProgress[] => {
+  const now = dayjs();
+  const year = now.year();
+  return deadlines.filter(deadline => {
+    const latestStatus =
+      deadline.status && deadline.status.length > 0
+        ? deadline.status[deadline.status.length - 1]
+        : null;
+    if (latestStatus?.status !== 'complete') return false;
+    const completion = normalizeServerDate(latestStatus.created_at || '');
+    return completion.isValid() && completion.year() === year;
+  });
+};
+
+/**
  * Get count of deadlines that are on track
  * A deadline is "on track" if its progress percentage is >= expected percentage based on time elapsed
  */
