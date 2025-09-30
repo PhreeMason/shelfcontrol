@@ -5,6 +5,7 @@ import Avatar from '@/components/shared/Avatar';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useGetDeadlines } from '@/hooks/useDeadlines';
+import { useExportReadingProgress } from '@/hooks/useExport';
 import { useTheme, useThemedStyles } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
 import {
@@ -29,12 +30,14 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 export default function Profile() {
   const { profile, signOut, refreshProfile } = useAuth();
   const router = useRouter();
   const { colors } = useTheme();
   const { data: deadlines = [] } = useGetDeadlines();
+  const exportMutation = useExportReadingProgress();
 
   const completedCount = getCompletedThisMonth(deadlines);
   const onTrackCount = getOnTrackDeadlines(deadlines);
@@ -59,6 +62,28 @@ export default function Profile() {
 
   const handleEditProfile = () => {
     router.push('/profile/edit');
+  };
+
+  const handleExportData = async () => {
+    try {
+      await exportMutation.mutateAsync();
+      Toast.show({
+        type: 'success',
+        text1: 'Export Successful',
+        text2: 'CSV has been sent to your email',
+      });
+    } catch (error: any) {
+      const errorMessage = error?.message || 'Failed to export data';
+      const isRateLimit = errorMessage.includes('Rate limit') || errorMessage.includes('429');
+
+      Toast.show({
+        type: 'error',
+        text1: isRateLimit ? 'Rate Limit Exceeded' : 'Export Failed',
+        text2: isRateLimit
+          ? 'You can only export once per 24 hours'
+          : errorMessage,
+      });
+    }
   };
 
   const getDisplayName = () => {
@@ -308,6 +333,29 @@ export default function Profile() {
           </ThemedView>
 
           <TouchableOpacity
+            style={[styles.exportButton, { borderColor: colors.primary }]}
+            onPress={handleExportData}
+            disabled={exportMutation.isPending}
+            testID="export-data-button"
+          >
+            <IconSymbol
+              name="arrow.down.doc"
+              size={20}
+              color={exportMutation.isPending ? '#999' : colors.primary}
+            />
+            <ThemedText
+              style={[
+                styles.exportButtonText,
+                {
+                  color: exportMutation.isPending ? '#999' : colors.primary,
+                },
+              ]}
+            >
+              {exportMutation.isPending ? 'Exporting...' : 'Export Data'}
+            </ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={styles.signOutButton}
             onPress={handleSignOut}
             testID="sign-out-button"
@@ -376,6 +424,20 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: '#007AFF',
+  },
+  exportButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+    gap: 8,
+    marginBottom: 12,
+  },
+  exportButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   signOutButton: {
     flexDirection: 'row',

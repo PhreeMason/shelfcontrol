@@ -4,6 +4,7 @@ export { profileService } from './profile.service';
 export { booksService } from './books.service';
 export { deadlinesService } from './deadlines.service';
 export { storageService } from './storage.service';
+export { exportService } from './export.service';
 
 // Export types
 export type {
@@ -20,3 +21,4 @@ export type {
   UpdateProgressParams,
   DeadlineHistoryParams,
 } from './deadlines.service';
+export type { ExportResponse, ExportError } from './export.service';
