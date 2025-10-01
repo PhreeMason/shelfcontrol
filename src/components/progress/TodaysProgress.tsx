@@ -10,6 +10,7 @@ import {
   getEncouragementMessage,
   getProgressBackgroundColor,
 } from '@/utils/todaysProgressUtils';
+import { PROGRESS_TYPE } from '@/constants/status';
 
 type TodaysProgressProps = {
   total: number;
@@ -23,7 +24,7 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
   type = 'reading',
 }) => {
   const progressPercentage = Math.round((current / total) * 100);
-  const isListening = type === 'listening';
+  const isListening = type === PROGRESS_TYPE.LISTENING;
   const icon = isListening ? '🎧' : '📖';
   const label = isListening ? 'Listening' : 'Reading';
   const { colors } = useTheme();

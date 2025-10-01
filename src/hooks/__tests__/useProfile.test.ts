@@ -192,7 +192,7 @@ describe('useProfile hooks', () => {
       useAvatarSignedUrl(null);
 
       expect(mockUseQuery).toHaveBeenCalledWith({
-        queryKey: ['avatar', 'signedUrl', null],
+        queryKey: ['avatar', 'signedUrl', undefined],
         queryFn: expect.any(Function),
         staleTime: 1000 * 60 * 60 * 24 * 30,
         enabled: false,

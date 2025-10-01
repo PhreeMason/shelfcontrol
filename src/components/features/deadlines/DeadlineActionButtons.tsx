@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { getDeadlineStatus, getStatusFlags } from '@/utils/deadlineActionUtils';
+import { ROUTES } from '@/constants/routes';
 
 interface DeadlineActionButtonsProps {
   deadline: ReadingDeadlineWithProgress;
@@ -118,7 +119,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
               deadline.id,
               () => {
                 setIsDeleting(false);
-                router.replace('/');
+                router.replace(ROUTES.HOME);
                 Toast.show({
                   swipeable: true,
                   type: 'success',

@@ -1,8 +1,8 @@
+import { QUERY_KEYS } from '@/constants/queryKeys';
 import { useAuth } from '@/providers/AuthProvider';
 import { deadlinesService } from '@/services';
 import { useQuery } from '@tanstack/react-query';
 
-// Default source options to always include
 const DEFAULT_SOURCES = ['ARC', 'Library', 'Personal', 'Book Club'];
 
 export const useDeadlineSources = () => {
@@ -10,7 +10,7 @@ export const useDeadlineSources = () => {
   const userId = profile?.id || session?.user?.id;
 
   const result = useQuery({
-    queryKey: ['deadline', 'sources', userId],
+    queryKey: userId ? QUERY_KEYS.DEADLINES.SOURCES(userId) : ['deadline', 'sources', undefined],
     queryFn: async () => {
       try {
         if (!userId) {

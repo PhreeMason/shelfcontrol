@@ -3,14 +3,16 @@ import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { convertMinutesToHoursAndMinutes } from './audiobookTimeUtils';
+import { DEADLINE_STATUS } from '@/constants/status';
+import { ROUTES } from '@/constants/routes';
 
 export const getDeadlineStatus = (
   deadline: ReadingDeadlineWithProgress
 ): string => {
   if (!deadline.status || deadline.status.length === 0) {
-    return 'reading';
+    return DEADLINE_STATUS.READING;
   }
-  return deadline.status[deadline.status.length - 1].status ?? 'reading';
+  return deadline.status[deadline.status.length - 1].status ?? DEADLINE_STATUS.READING;
 };
 
 export interface StatusFlags {
@@ -22,10 +24,10 @@ export interface StatusFlags {
 
 export const getStatusFlags = (status: string): StatusFlags => {
   return {
-    isCompleted: status === 'complete',
-    isSetAside: status === 'paused',
-    isActive: status === 'reading',
-    isPending: status === 'pending',
+    isCompleted: status === DEADLINE_STATUS.COMPLETE,
+    isSetAside: status === DEADLINE_STATUS.PAUSED,
+    isActive: status === DEADLINE_STATUS.READING,
+    isPending: status === DEADLINE_STATUS.PENDING,
   };
 };
 
@@ -224,7 +226,7 @@ export const createReadAgainParams = (
       : { totalQuantity: String(deadline.total_quantity) };
 
   return {
-    pathname: '/deadline/new',
+    pathname: `${ROUTES.HOME}deadline/new`,
     params: {
       ...baseParams,
       ...formatSpecificParams,

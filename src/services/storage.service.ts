@@ -1,9 +1,7 @@
+import { AVATAR_CONFIG, STORAGE_BUCKETS } from '@/constants/database';
 import { supabase } from '@/lib/supabase';
 
 class StorageService {
-  /**
-   * Setup the avatars bucket if it doesn't exist
-   */
   async setupAvatarsBucket() {
     try {
       const { data: buckets, error: listError } =
@@ -15,20 +13,15 @@ class StorageService {
       }
 
       const avatarsBucketExists = buckets?.some(
-        bucket => bucket.id === 'avatars'
+        bucket => bucket.id === STORAGE_BUCKETS.AVATARS
       );
 
       if (!avatarsBucketExists) {
         const { data, error: createError } =
-          await supabase.storage.createBucket('avatars', {
+          await supabase.storage.createBucket(STORAGE_BUCKETS.AVATARS, {
             public: true,
-            allowedMimeTypes: [
-              'image/jpeg',
-              'image/png',
-              'image/gif',
-              'image/webp',
-            ],
-            fileSizeLimit: 5242880, // 5MB
+            allowedMimeTypes: AVATAR_CONFIG.ALLOWED_MIME_TYPES,
+            fileSizeLimit: AVATAR_CONFIG.MAX_FILE_SIZE,
           });
 
         if (createError) {
@@ -39,15 +32,10 @@ class StorageService {
         return { success: true, data };
       } else {
         const { data, error: updateError } =
-          await supabase.storage.updateBucket('avatars', {
+          await supabase.storage.updateBucket(STORAGE_BUCKETS.AVATARS, {
             public: true,
-            allowedMimeTypes: [
-              'image/jpeg',
-              'image/png',
-              'image/gif',
-              'image/webp',
-            ],
-            fileSizeLimit: 5242880, // 5MB
+            allowedMimeTypes: AVATAR_CONFIG.ALLOWED_MIME_TYPES,
+            fileSizeLimit: AVATAR_CONFIG.MAX_FILE_SIZE,
           });
 
         if (updateError) {
@@ -63,12 +51,9 @@ class StorageService {
     }
   }
 
-  /**
-   * Test if the avatars bucket is accessible
-   */
   async testAvatarsBucket() {
     try {
-      const { error } = await supabase.storage.from('avatars').list();
+      const { error } = await supabase.storage.from(STORAGE_BUCKETS.AVATARS).list();
 
       if (error) {
         console.error('Avatars bucket test failed:', error);

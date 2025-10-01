@@ -80,7 +80,7 @@ describe('useDeadlineSources', () => {
       expect(result.data).toEqual(DEFAULT_SOURCES);
       expect(mockUseQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          queryKey: ['deadline', 'sources', null],
+          queryKey: ['deadline', 'sources', undefined],
           enabled: false,
         })
       );

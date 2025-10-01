@@ -1,5 +1,6 @@
 import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { BOOK_FORMAT } from '@/constants/status';
 
 export interface ReadingDay {
   date: string;
@@ -335,7 +336,7 @@ export const formatPaceDisplay = (
   pace: number,
   format: 'physical' | 'eBook' | 'audio'
 ): string => {
-  if (format === 'audio') {
+  if (format === BOOK_FORMAT.AUDIO) {
     // Audio pace is already in minutes, no conversion needed
     const minutes = Math.round(pace);
     const hours = Math.floor(minutes / 60);
@@ -360,7 +361,7 @@ export const getRecentListeningDays = (
   const dailyProgress: { [date: string]: number } = {};
 
   // Filter to only audio deadlines
-  const audioDeadlines = deadlines.filter(d => d.format === 'audio');
+  const audioDeadlines = deadlines.filter(d => d.format === BOOK_FORMAT.AUDIO);
 
   const cutoffTime = calculateCutoffTime(audioDeadlines);
   if (cutoffTime === null) {

@@ -8,6 +8,7 @@ import {
   calculateTotalQuantityFromForm,
 } from './deadlineCalculations';
 import { DeadlineFormData } from './deadlineFormSchema';
+import { ROUTES } from '@/constants/routes';
 
 export type FormMode = 'new' | 'edit';
 
@@ -82,7 +83,7 @@ export const createFormNavigation = (
       if (router.canGoBack()) {
         router.back();
       } else {
-        router.replace('/');
+        router.replace(ROUTES.HOME);
       }
     }
   };
@@ -493,12 +494,12 @@ export const createSuccessToast = (mode: FormMode) => {
 
   return () => {
     if (mode === 'new') {
-      router.replace('/');
+      router.replace(ROUTES.HOME);
     } else {
       if (router.canGoBack()) {
         router.back();
       } else {
-        router.replace('/');
+        router.replace(ROUTES.HOME);
       }
     }
     Toast.show({

@@ -1,3 +1,5 @@
+import { BOOK_FORMAT, DEADLINE_STATUS } from '@/constants/status';
+import { MUTATION_KEYS, QUERY_KEYS } from '@/constants/queryKeys';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   AddDeadlineParams,
@@ -13,7 +15,7 @@ export const useAddDeadline = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ['addDeadline'],
+    mutationKey: [MUTATION_KEYS.DEADLINES.ADD],
     mutationFn: async (params: AddDeadlineParams) => {
       if (!userId) {
         throw new Error('User not authenticated');
@@ -21,8 +23,9 @@ export const useAddDeadline = () => {
       return deadlinesService.addDeadline(userId, params);
     },
     onSuccess: () => {
-      // Invalidate and refetch deadlines after successful addition
-      queryClient.invalidateQueries({ queryKey: ['deadlines', userId] });
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+      }
     },
     onError: error => {
       console.error('Error adding deadline:', error);
@@ -36,7 +39,7 @@ export const useUpdateDeadline = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ['updateDeadline'],
+    mutationKey: [MUTATION_KEYS.DEADLINES.UPDATE],
     mutationFn: async (params: UpdateDeadlineParams) => {
       if (!userId) {
         throw new Error('User not authenticated');
@@ -44,8 +47,9 @@ export const useUpdateDeadline = () => {
       return deadlinesService.updateDeadline(userId, params);
     },
     onSuccess: () => {
-      // Invalidate and refetch deadlines after successful update
-      queryClient.invalidateQueries({ queryKey: ['deadlines', userId] });
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+      }
     },
     onError: error => {
       console.error('Error updating deadline:', error);
@@ -59,7 +63,7 @@ export const useDeleteDeadline = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ['deleteDeadline'],
+    mutationKey: [MUTATION_KEYS.DEADLINES.DELETE],
     mutationFn: async (deadlineId: string) => {
       if (!userId) {
         throw new Error('User not authenticated');
@@ -67,8 +71,9 @@ export const useDeleteDeadline = () => {
       return deadlinesService.deleteDeadline(userId, deadlineId);
     },
     onSuccess: () => {
-      // Invalidate and refetch deadlines after successful deletion
-      queryClient.invalidateQueries({ queryKey: ['deadlines', userId] });
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+      }
     },
     onError: error => {
       console.error('Error deleting deadline:', error);
@@ -82,7 +87,7 @@ export const useUpdateDeadlineProgress = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ['updateDeadlineProgress'],
+    mutationKey: [MUTATION_KEYS.DEADLINES.UPDATE_PROGRESS],
     mutationFn: async (progressDetails: {
       deadlineId: string;
       currentProgress: number;
@@ -94,8 +99,9 @@ export const useUpdateDeadlineProgress = () => {
       return deadlinesService.updateDeadlineProgress(progressDetails);
     },
     onSuccess: () => {
-      // Invalidate and refetch deadlines after successful update
-      queryClient.invalidateQueries({ queryKey: ['deadlines', userId] });
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+      }
     },
     onError: error => {
       console.error('Error updating deadline progress:', error);
@@ -108,13 +114,12 @@ export const useGetDeadlines = () => {
   const userId = session?.user?.id;
 
   return useQuery<ReadingDeadlineWithProgress[]>({
-    queryKey: ['deadlines', userId],
+    queryKey: userId ? QUERY_KEYS.DEADLINES.ALL(userId) : ['deadlines', undefined],
     queryFn: async () => {
       if (!userId) throw new Error('User not authenticated');
       return deadlinesService.getDeadlines(userId);
     },
     enabled: !!userId,
-    // staleTime: 1000 * 60 * 60 * 5, // 5 hours
   });
 };
 
@@ -127,13 +132,13 @@ const useUpdateDeadlineStatus = (
 
   const getActionName = (status: string) => {
     switch (status) {
-      case 'complete':
+      case DEADLINE_STATUS.COMPLETE:
         return 'completing';
-      case 'paused':
+      case DEADLINE_STATUS.PAUSED:
         return 'pausing';
-      case 'did_not_finish':
+      case DEADLINE_STATUS.DID_NOT_FINISH:
         return 'marking as did not finish';
-      case 'reading':
+      case DEADLINE_STATUS.READING:
         return 'reactivating';
       default:
         return 'updating';
@@ -142,16 +147,16 @@ const useUpdateDeadlineStatus = (
 
   const getMutationKey = (status: string) => {
     switch (status) {
-      case 'complete':
-        return 'completeDeadline';
-      case 'paused':
-        return 'pauseDeadline';
-      case 'did_not_finish':
-        return 'didNotFinishDeadline';
-      case 'reading':
-        return 'reactivateDeadline';
+      case DEADLINE_STATUS.COMPLETE:
+        return MUTATION_KEYS.DEADLINES.COMPLETE;
+      case DEADLINE_STATUS.PAUSED:
+        return MUTATION_KEYS.DEADLINES.PAUSE;
+      case DEADLINE_STATUS.DID_NOT_FINISH:
+        return MUTATION_KEYS.DEADLINES.DID_NOT_FINISH;
+      case DEADLINE_STATUS.READING:
+        return MUTATION_KEYS.DEADLINES.REACTIVATE;
       default:
-        return 'updateDeadlineStatus';
+        return MUTATION_KEYS.DEADLINES.UPDATE_STATUS;
     }
   };
 
@@ -173,7 +178,9 @@ const useUpdateDeadlineStatus = (
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deadlines', userId] });
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+      }
     },
     onError: error => {
       console.error(`Error ${actionName} deadline:`, error);
@@ -187,7 +194,7 @@ export const useCompleteDeadline = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ['completeDeadline'],
+    mutationKey: [MUTATION_KEYS.DEADLINES.COMPLETE],
     mutationFn: async (deadlineId: string) => {
       if (!userId) {
         throw new Error('User not authenticated');
@@ -195,7 +202,9 @@ export const useCompleteDeadline = () => {
       return deadlinesService.completeDeadline(userId, deadlineId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deadlines', userId] });
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+      }
     },
     onError: error => {
       console.error('Error completing deadline:', error);
@@ -203,24 +212,24 @@ export const useCompleteDeadline = () => {
   });
 };
 
-export const usePauseDeadline = () => useUpdateDeadlineStatus('paused');
+export const usePauseDeadline = () => useUpdateDeadlineStatus(DEADLINE_STATUS.PAUSED);
 
-export const useReactivateDeadline = () => useUpdateDeadlineStatus('reading');
+export const useReactivateDeadline = () => useUpdateDeadlineStatus(DEADLINE_STATUS.READING);
 
-export const useStartReadingDeadline = () => useUpdateDeadlineStatus('reading');
+export const useStartReadingDeadline = () => useUpdateDeadlineStatus(DEADLINE_STATUS.READING);
 
 export const useGetDeadlineById = (deadlineId: string | undefined) => {
   const { session } = useAuth();
   const userId = session?.user?.id;
 
   return useQuery<ReadingDeadlineWithProgress | null>({
-    queryKey: ['deadline', userId, deadlineId],
+    queryKey: userId && deadlineId ? QUERY_KEYS.DEADLINES.DETAIL(userId, deadlineId) : ['deadline', undefined, undefined],
     queryFn: async () => {
       if (!userId || !deadlineId) return null;
       return deadlinesService.getDeadlineById(userId, deadlineId);
     },
     enabled: !!userId && !!deadlineId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
   });
 };
@@ -231,7 +240,7 @@ export const useDeleteFutureProgress = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ['deleteFutureProgress'],
+    mutationKey: [MUTATION_KEYS.DEADLINES.DELETE_FUTURE_PROGRESS],
     mutationFn: async ({
       deadlineId,
       newProgress,
@@ -245,7 +254,9 @@ export const useDeleteFutureProgress = () => {
       return deadlinesService.deleteFutureProgress(deadlineId, newProgress);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deadlines', userId] });
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+      }
     },
     onError: error => {
       console.error('Error deleting future progress:', error);
@@ -258,7 +269,7 @@ export const useGetUserProgressForToday = () => {
   const userId = session?.user?.id;
 
   return useQuery({
-    queryKey: ['deadline_progress', userId],
+    queryKey: userId ? QUERY_KEYS.DEADLINES.PROGRESS(userId) : ['deadline_progress', undefined],
     queryFn: async () => {
       if (!userId) throw new Error('User not authenticated');
       return deadlinesService.getUserProgressForToday(userId);
@@ -272,7 +283,7 @@ export const useGetAudioProgressForToday = () => {
   return {
     ...progressRecords,
     data: progressRecords.data?.filter(
-      record => record.deadline.format === 'audio'
+      record => record.deadline.format === BOOK_FORMAT.AUDIO
     ),
   };
 };
@@ -282,7 +293,7 @@ export const useGetReadingProgressForToday = () => {
   return {
     ...progressRecords,
     data: progressRecords.data?.filter(
-      record => record.deadline.format !== 'audio'
+      record => record.deadline.format !== BOOK_FORMAT.AUDIO
     ),
   };
 };

@@ -17,6 +17,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { z } from 'zod';
+import { ROUTES } from '@/constants/routes';
 
 const resetPasswordRequestSchema = z.object({
   email: z.string({ message: 'Email is required' }).email('Invalid email'),
@@ -60,7 +61,7 @@ export default function ResetPasswordRequestScreen() {
         });
       } else {
         alert('Password reset email sent! Please check your email.');
-        router.replace('/sign-in');
+        router.replace(ROUTES.AUTH.SIGN_IN);
       }
     } catch (err) {
       console.error('Reset password request error:', err);
@@ -74,7 +75,7 @@ export default function ResetPasswordRequestScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ThemedView style={styles.innerContainer}>
-        <Link href="/sign-in" style={styles.header}>
+        <Link href={ROUTES.AUTH.SIGN_IN} style={styles.header}>
           <ThemedText>Back to Sign In</ThemedText>
         </Link>
 
@@ -138,7 +139,7 @@ export default function ResetPasswordRequestScreen() {
 
         <ThemedView style={styles.footer}>
           <ThemedText>Remember your password? </ThemedText>
-          <Link href="/sign-in">
+          <Link href={ROUTES.AUTH.SIGN_IN}>
             <ThemedText style={styles.linkText}>Sign In</ThemedText>
           </Link>
         </ThemedView>

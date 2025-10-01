@@ -1,3 +1,4 @@
+import { APPLE_AUTH, AVATAR_CONFIG, DB_TABLES, STORAGE_BUCKETS } from '@/constants/database';
 import { supabase } from '@/lib/supabase';
 import { Database } from '@/types/database.types';
 
@@ -19,7 +20,7 @@ class ProfileService {
    */
   async getProfile(userId: string): Promise<Profile | null> {
     const { data, error } = await supabase
-      .from('profiles')
+      .from(DB_TABLES.PROFILES)
       .select('*')
       .eq('id', userId)
       .single();
@@ -32,12 +33,9 @@ class ProfileService {
     return data;
   }
 
-  /**
-   * Update user profile
-   */
   async updateProfile(profileId: string, updates: UpdateProfileParams) {
     const { data, error } = await supabase
-      .from('profiles')
+      .from(DB_TABLES.PROFILES)
       .update({
         ...updates,
         updated_at: new Date().toISOString(),
@@ -56,15 +54,13 @@ class ProfileService {
   async updateProfileFromApple(userId: string, appleData: AppleProfileData) {
     const updates: Partial<Profile> = {};
 
-    // Handle email - only update if it's a real email (not private relay)
     if (
       appleData.email &&
-      !appleData.email.includes('@privaterelay.appleid.com')
+      !appleData.email.includes(APPLE_AUTH.PRIVATE_RELAY_DOMAIN)
     ) {
       updates.email = appleData.email;
     }
 
-    // Handle name - extract first and last name if provided
     if (appleData.fullName) {
       if (appleData.fullName.givenName) {
         updates.first_name = appleData.fullName.givenName;
@@ -74,13 +70,12 @@ class ProfileService {
       }
     }
 
-    // Only proceed if we have something to update
     if (Object.keys(updates).length === 0) {
       return this.getProfile(userId);
     }
 
     const { data, error } = await supabase
-      .from('profiles')
+      .from(DB_TABLES.PROFILES)
       .update({
         ...updates,
         updated_at: new Date().toISOString(),
@@ -98,28 +93,25 @@ class ProfileService {
    */
   async uploadAvatar(userId: string, uri: string) {
     try {
-      // First, remove any existing avatars for this user
       const { data: existingFiles } = await supabase.storage
-        .from('avatars')
+        .from(STORAGE_BUCKETS.AVATARS)
         .list(userId);
 
       if (existingFiles && existingFiles.length > 0) {
         const filesToRemove = existingFiles.map(
           file => `${userId}/${file.name}`
         );
-        await supabase.storage.from('avatars').remove(filesToRemove);
+        await supabase.storage.from(STORAGE_BUCKETS.AVATARS).remove(filesToRemove);
       }
 
-      // Fetch the image and convert to arraybuffer
       const arraybuffer = await fetch(uri).then(res => res.arrayBuffer());
 
       const fileExt = uri.split('.').pop()?.toLowerCase() ?? 'jpeg';
-      const fileName = `avatar-${Date.now()}.${fileExt}`;
+      const fileName = `${AVATAR_CONFIG.FILE_PREFIX}${Date.now()}.${fileExt}`;
       const path = `${userId}/${fileName}`;
 
-      // Upload to Supabase Storage
       const { data, error } = await supabase.storage
-        .from('avatars')
+        .from(STORAGE_BUCKETS.AVATARS)
         .upload(path, arraybuffer, {
           contentType: `image/${fileExt}`,
           upsert: true,
@@ -139,7 +131,7 @@ class ProfileService {
   async getAvatarUrl(userId: string): Promise<string | null> {
     try {
       const { data: files, error } = await supabase.storage
-        .from('avatars')
+        .from(STORAGE_BUCKETS.AVATARS)
         .list(userId);
 
       if (error) throw error;
@@ -149,7 +141,7 @@ class ProfileService {
       }
 
       const sortedFiles = files
-        .filter(file => file.name.startsWith('avatar-'))
+        .filter(file => file.name.startsWith(AVATAR_CONFIG.FILE_PREFIX))
         .sort((a, b) => b.created_at?.localeCompare(a.created_at || '') || 0);
 
       if (sortedFiles.length === 0) {
@@ -164,17 +156,13 @@ class ProfileService {
     }
   }
 
-  /**
-   * Get a signed URL for an avatar
-   */
   async getAvatarSignedUrl(avatarPath: string): Promise<string | null> {
     try {
       if (!avatarPath) return null;
 
-      const THREE_MONTHS_IN_SECONDS = 90 * 24 * 60 * 60;
       const { data, error } = await supabase.storage
-        .from('avatars')
-        .createSignedUrl(avatarPath, THREE_MONTHS_IN_SECONDS);
+        .from(STORAGE_BUCKETS.AVATARS)
+        .createSignedUrl(avatarPath, AVATAR_CONFIG.SIGNED_URL_EXPIRY);
 
       if (error) {
         console.error('Error creating signed URL:', error);

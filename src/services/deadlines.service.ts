@@ -6,6 +6,8 @@ import {
   ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
 import { booksService } from './books.service';
+import { DB_TABLES } from '@/constants/database';
+import { DEADLINE_STATUS } from '@/constants/status';
 
 export interface AddDeadlineParams {
   deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
@@ -73,7 +75,7 @@ class DeadlinesService {
     }
 
     const { data: deadlineData, error: deadlineError } = await supabase
-      .from('deadlines')
+      .from(DB_TABLES.DEADLINES)
       .insert({
         ...deadlineDetails,
         book_id: finalBookId || null,
@@ -85,7 +87,7 @@ class DeadlinesService {
     if (deadlineError) throw deadlineError;
 
     const { data: progressData, error: progressError } = await supabase
-      .from('deadline_progress')
+      .from(DB_TABLES.DEADLINE_PROGRESS)
       .insert(progressDetails)
       .select()
       .single();
@@ -93,10 +95,10 @@ class DeadlinesService {
     if (progressError) throw progressError;
 
     const { data: statusData, error: statusError } = await supabase
-      .from('deadline_status')
+      .from(DB_TABLES.DEADLINE_STATUS)
       .insert({
         deadline_id: finalDeadlineId,
-        status: (status || 'reading') as 'reading' | 'pending',
+        status: (status || DEADLINE_STATUS.READING) as 'reading' | 'pending',
         updated_at: new Date().toISOString(),
       })
       .select()
@@ -120,7 +122,7 @@ class DeadlinesService {
     const { deadlineDetails, progressDetails, status } = params;
 
     const { data: deadlineData, error: deadlineError } = await supabase
-      .from('deadlines')
+      .from(DB_TABLES.DEADLINES)
       .update({
         ...deadlineDetails,
         updated_at: new Date().toISOString(),
@@ -135,7 +137,7 @@ class DeadlinesService {
     let progressData;
     if (progressDetails.id) {
       const { data, error } = await supabase
-        .from('deadline_progress')
+        .from(DB_TABLES.DEADLINE_PROGRESS)
         .update({
           current_progress: progressDetails.current_progress!,
           updated_at: new Date().toISOString(),
@@ -149,7 +151,7 @@ class DeadlinesService {
     } else {
       const finalProgressId = generateId('rdp');
       const { data, error } = await supabase
-        .from('deadline_progress')
+        .from(DB_TABLES.DEADLINE_PROGRESS)
         .insert({
           id: finalProgressId,
           deadline_id: deadlineDetails.id!,
@@ -166,7 +168,7 @@ class DeadlinesService {
 
     if (status) {
       const { error: statusError } = await supabase
-        .from('deadline_status')
+        .from(DB_TABLES.DEADLINE_STATUS)
         .update({
           status: status as 'reading' | 'pending',
           updated_at: new Date().toISOString(),
@@ -188,14 +190,14 @@ class DeadlinesService {
    */
   async deleteDeadline(userId: string, deadlineId: string) {
     const { error: progressError } = await supabase
-      .from('deadline_progress')
+      .from(DB_TABLES.DEADLINE_PROGRESS)
       .delete()
       .eq('deadline_id', deadlineId);
 
     if (progressError) throw progressError;
 
     const { error: deadlineError } = await supabase
-      .from('deadlines')
+      .from(DB_TABLES.DEADLINES)
       .delete()
       .eq('id', deadlineId)
       .eq('user_id', userId);
@@ -212,7 +214,7 @@ class DeadlinesService {
     const finalProgressId = generateId('rdp');
 
     const { data, error } = await supabase
-      .from('deadline_progress')
+      .from(DB_TABLES.DEADLINE_PROGRESS)
       .insert({
         id: finalProgressId,
         deadline_id: params.deadlineId,
@@ -233,7 +235,7 @@ class DeadlinesService {
    */
   async getDeadlines(userId: string): Promise<ReadingDeadlineWithProgress[]> {
     const { data, error } = await supabase
-      .from('deadlines')
+      .from(DB_TABLES.DEADLINES)
       .select(
         `
         *,
@@ -253,7 +255,7 @@ class DeadlinesService {
    */
   async getUniqueSources(userId: string): Promise<string[]> {
     const { data, error } = await supabase
-      .from('deadlines')
+      .from(DB_TABLES.DEADLINES)
       .select('source')
       .eq('user_id', userId)
       .order('source', { ascending: true });
@@ -273,7 +275,7 @@ class DeadlinesService {
     deadlineId: string
   ): Promise<ReadingDeadlineWithProgress | null> {
     const { data, error } = await supabase
-      .from('deadlines')
+      .from(DB_TABLES.DEADLINES)
       .select(
         `
         *,
@@ -303,7 +305,7 @@ class DeadlinesService {
     status: 'complete' | 'paused' | 'reading' | 'did_not_finish'
   ) {
     const { data, error } = await supabase
-      .from('deadline_status')
+      .from(DB_TABLES.DEADLINE_STATUS)
       .insert({
         deadline_id: deadlineId,
         status,
@@ -322,7 +324,7 @@ class DeadlinesService {
    */
   async completeDeadline(userId: string, deadlineId: string) {
     const { data: deadline, error: deadlineError } = await supabase
-      .from('deadlines')
+      .from(DB_TABLES.DEADLINES)
       .select(
         `
         *,
@@ -343,7 +345,7 @@ class DeadlinesService {
     if (latestProgress < deadline.total_quantity) {
       const finalProgressId = generateId('rdp');
       const { error: progressError } = await supabase
-        .from('deadline_progress')
+        .from(DB_TABLES.DEADLINE_PROGRESS)
         .insert({
           id: finalProgressId,
           deadline_id: deadlineId,
@@ -356,7 +358,7 @@ class DeadlinesService {
     }
 
     // Now mark as complete
-    return this.updateDeadlineStatus(deadlineId, 'complete');
+    return this.updateDeadlineStatus(deadlineId, DEADLINE_STATUS.COMPLETE);
   }
 
   /**
@@ -364,7 +366,7 @@ class DeadlinesService {
    */
   async deleteFutureProgress(deadlineId: string, newProgress: number) {
     const { error } = await supabase
-      .from('deadline_progress')
+      .from(DB_TABLES.DEADLINE_PROGRESS)
       .delete()
       .eq('deadline_id', deadlineId)
       .gt('current_progress', newProgress);
@@ -380,7 +382,7 @@ class DeadlinesService {
     const { userId, formats } = params;
 
     let query = supabase
-      .from('deadlines')
+      .from(DB_TABLES.DEADLINES)
       .select(
         `
         id,
@@ -421,7 +423,7 @@ class DeadlinesService {
   async getUserProgressForToday(userId: string) {
     const today = dayjs().startOf('day').toISOString();
     const { data, error } = await supabase
-      .from('deadline_progress')
+      .from(DB_TABLES.DEADLINE_PROGRESS)
       .select('*, deadline:deadlines(format, total_quantity)')
       .eq('user_id', userId)
       .eq('created_at', today);

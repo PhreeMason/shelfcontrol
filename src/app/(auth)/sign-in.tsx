@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 
 import { z } from 'zod';
+import { ROUTES } from '@/constants/routes';
 
 const signInSchema = z.object({
   email: z.string({ message: 'Email is required' }).email('Invalid email'),
@@ -72,7 +73,7 @@ export default function SignInScreen() {
         }
       } else {
         // Success - AuthProvider will handle navigation
-        router.replace('/');
+        router.replace(ROUTES.HOME);
       }
     } catch (err) {
       console.error('Sign in error:', err);
@@ -86,7 +87,7 @@ export default function SignInScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ThemedView style={styles.innerContainer}>
-        <Link href="/sign-up" style={styles.header}>
+        <Link href={ROUTES.AUTH.SIGN_UP} style={styles.header}>
           <ThemedText>Sign up</ThemedText>
         </Link>
 
@@ -182,7 +183,7 @@ export default function SignInScreen() {
           {/* Add Forgot Password Link - iOS only */}
           {Platform.OS === 'ios' && (
             <Link
-              href="/reset-password-request"
+              href={ROUTES.AUTH.RESET_PASSWORD_REQUEST}
               style={styles.forgotPasswordLink}
             >
               <ThemedText style={styles.forgotPasswordText}>
@@ -196,7 +197,7 @@ export default function SignInScreen() {
 
         <ThemedView style={styles.socialButtons}>
           <AppleSSO
-            onSuccess={() => router.replace('/')}
+            onSuccess={() => router.replace(ROUTES.HOME)}
             onError={error =>
               setError('root', {
                 message: error.message || 'Apple sign-in failed',

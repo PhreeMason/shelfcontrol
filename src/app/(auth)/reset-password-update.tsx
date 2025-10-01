@@ -18,6 +18,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { z } from 'zod';
+import { ROUTES } from '@/constants/routes';
 
 const updatePasswordSchema = z
   .object({
@@ -120,7 +121,7 @@ export default function ResetPasswordUpdateScreen() {
         });
       } else {
         alert('Password updated successfully!');
-        router.replace('/');
+        router.replace(ROUTES.HOME);
       }
     } catch (err) {
       console.error('Update password error:', err);
@@ -142,7 +143,7 @@ export default function ResetPasswordUpdateScreen() {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.replace('/reset-password-request')}
+            onPress={() => router.replace(ROUTES.AUTH.RESET_PASSWORD_REQUEST)}
           >
             <ThemedText style={styles.buttonText}>
               Request New Reset Link

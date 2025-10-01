@@ -5,6 +5,7 @@ import ProfileHeaderInfo from '@/components/features/profile/ProfileHeaderInfo';
 import AppHeader from '@/components/shared/AppHeader';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { ROUTES } from '@/constants/routes';
 import { useGetDeadlines } from '@/hooks/useDeadlines';
 import { useExportReadingProgress } from '@/hooks/useExport';
 import { useTheme, useThemedStyles } from '@/hooks/useThemeColor';
@@ -20,8 +21,8 @@ import {
   formatListeningPaceDisplay,
   formatPaceDisplay,
 } from '@/utils/paceCalculations';
-import { useFocusEffect, useRouter } from 'expo-router';
-import React, { useCallback } from 'react';
+import { useRouter } from 'expo-router';
+import React from 'react';
 import {
   Alert,
   Platform,
@@ -35,7 +36,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 export default function Profile() {
-  const { profile, signOut, refreshProfile } = useAuth();
+  const { profile, signOut } = useAuth();
   const router = useRouter();
   const { colors } = useTheme();
   const { data: deadlines = [] } = useGetDeadlines();
@@ -49,13 +50,6 @@ export default function Profile() {
   const readingPaceData = calculateUserPace(deadlines);
   const listeningPaceData = calculateUserListeningPace(deadlines);
 
-  // Refresh profile when the screen comes into focus
-  useFocusEffect(
-    useCallback(() => {
-      refreshProfile();
-    }, [refreshProfile])
-  );
-
   const handleSignOut = async () => {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
@@ -64,7 +58,7 @@ export default function Profile() {
   };
 
   const handleEditProfile = () => {
-    router.push('/profile/edit');
+    router.push(ROUTES.PROFILE.EDIT);
   };
 
   const handleExportData = async () => {

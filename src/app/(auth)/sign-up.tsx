@@ -18,6 +18,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { z } from 'zod';
+import { ROUTES } from '@/constants/routes';
 
 const signUpSchema = z
   .object({
@@ -83,7 +84,7 @@ export default function SignUpScreen() {
           setError('root', { message: error.message || 'Sign up failed' });
         }
       } else {
-        router.replace('/');
+        router.replace(ROUTES.HOME);
       }
     } catch (err) {
       console.error('Sign up error:', err);
@@ -227,7 +228,7 @@ export default function SignUpScreen() {
 
         <ThemedView style={styles.socialButtons}>
           <AppleSSO
-            onSuccess={() => router.replace('/')}
+            onSuccess={() => router.replace(ROUTES.HOME)}
             onError={error =>
               setError('root', {
                 message: error.message || 'Apple sign-in failed',

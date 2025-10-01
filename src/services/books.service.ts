@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { FullBookData, SearchBooksResponse } from '@/types/bookSearch';
+import { DB_TABLES } from '@/constants/database';
 
 class BooksService {
   /**
@@ -33,7 +34,7 @@ class BooksService {
    */
   async fetchBookById(bookId: string) {
     const { data, error } = await supabase
-      .from('books')
+      .from(DB_TABLES.BOOKS)
       .select('*')
       .eq('id', bookId)
       .single();
@@ -50,7 +51,7 @@ class BooksService {
    */
   async getBookByApiId(apiId: string) {
     const { data, error } = await supabase
-      .from('books')
+      .from(DB_TABLES.BOOKS)
       .select('id')
       .eq('api_id', apiId)
       .single();
@@ -69,7 +70,7 @@ class BooksService {
     const { format, metadata, edition, ...bookDataRest } = bookData;
 
     const { data, error } = await supabase
-      .from('books')
+      .from(DB_TABLES.BOOKS)
       .insert({
         ...bookDataRest,
         id: bookId,

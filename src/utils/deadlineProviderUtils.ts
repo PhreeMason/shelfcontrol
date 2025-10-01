@@ -21,6 +21,7 @@ import {
   getPaceBasedStatus,
   getPaceStatusMessage,
 } from '@/utils/paceCalculations';
+import { BOOK_FORMAT } from '@/constants/status';
 
 // Types for function returns
 export interface DeadlineStatus {
@@ -276,7 +277,7 @@ export function formatUnitsPerDayForDisplay(
   // Calculate the actual decimal value for precise formatting
   const actualUnitsPerDay = daysLeft > 0 ? remaining / daysLeft : units;
 
-  if (format === 'audio') {
+  if (format === BOOK_FORMAT.AUDIO) {
     return formatAudioUnitsPerDay(units, actualUnitsPerDay, daysLeft);
   }
 
@@ -290,7 +291,7 @@ export function determineUserPace(
   userListeningPaceData: UserListeningPaceData
 ): number {
   const relevantUserPaceData =
-    format === 'audio' ? userListeningPaceData : userPaceData;
+    format === BOOK_FORMAT.AUDIO ? userListeningPaceData : userPaceData;
   return relevantUserPaceData.averagePace;
 }
 
@@ -382,7 +383,7 @@ export function calculateDeadlinePaceStatus(
 
   // Generate detailed status message
   const relevantUserPaceData =
-    deadline.format === 'audio' ? userListeningPaceData : userPaceData;
+    deadline.format === BOOK_FORMAT.AUDIO ? userListeningPaceData : userPaceData;
   const statusMessage = getPaceStatusMessage(
     relevantUserPaceData,
     requiredPace,

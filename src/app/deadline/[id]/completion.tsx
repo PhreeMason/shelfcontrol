@@ -2,6 +2,7 @@ import DeadlineCompletionScreen from '@/components/features/deadlines/DeadlineCo
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
+import { ROUTES } from '@/constants/routes';
 
 export default function DeadlineCompletionPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -10,7 +11,7 @@ export default function DeadlineCompletionPage() {
   const deadline = deadlines.find(d => d.id === id);
 
   if (!deadline) {
-    router.replace('/');
+    router.replace(ROUTES.HOME);
     return null;
   }
 
