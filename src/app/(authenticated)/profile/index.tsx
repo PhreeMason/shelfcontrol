@@ -6,7 +6,7 @@ import AppHeader from '@/components/shared/AppHeader';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ROUTES } from '@/constants/routes';
-import { useGetDeadlines } from '@/hooks/useDeadlines';
+import { useDeadlines } from '@/providers/DeadlineProvider';
 import { useExportReadingProgress } from '@/hooks/useExport';
 import { useTheme, useThemedStyles } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
@@ -16,8 +16,6 @@ import {
   getOnTrackDeadlines,
 } from '@/utils/deadlineUtils';
 import {
-  calculateUserListeningPace,
-  calculateUserPace,
   formatListeningPaceDisplay,
   formatPaceDisplay,
 } from '@/utils/paceCalculations';
@@ -39,16 +37,12 @@ export default function Profile() {
   const { profile, signOut } = useAuth();
   const router = useRouter();
   const { colors } = useTheme();
-  const { data: deadlines = [] } = useGetDeadlines();
+  const { deadlines, userPaceData: readingPaceData, userListeningPaceData: listeningPaceData } = useDeadlines();
   const exportMutation = useExportReadingProgress();
 
   const completedCount = getCompletedThisMonth(deadlines);
   const onTrackCount = getOnTrackDeadlines(deadlines);
   const completedThisYear = getCompletedThisYear(deadlines);
-
-  // Calculate pace data
-  const readingPaceData = calculateUserPace(deadlines);
-  const listeningPaceData = calculateUserListeningPace(deadlines);
 
   const handleSignOut = async () => {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
