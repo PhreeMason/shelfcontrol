@@ -5,6 +5,7 @@ export { booksService } from './books.service';
 export { deadlinesService } from './deadlines.service';
 export { storageService } from './storage.service';
 export { exportService } from './export.service';
+export { notesService } from './notes.service';
 
 // Export types
 export type {

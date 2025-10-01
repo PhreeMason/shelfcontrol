@@ -4,6 +4,7 @@ export const DB_TABLES = {
   DEADLINES: 'deadlines',
   DEADLINE_PROGRESS: 'deadline_progress',
   DEADLINE_STATUS: 'deadline_status',
+  DEADLINE_NOTES: 'deadline_notes',
 } as const;
 
 export const STORAGE_BUCKETS = {

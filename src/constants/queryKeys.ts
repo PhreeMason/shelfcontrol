@@ -6,6 +6,10 @@ export const QUERY_KEYS = {
     SOURCES: (userId: string) => ['deadline', 'sources', userId] as const,
     PROGRESS: (userId: string) => ['deadline_progress', userId] as const,
   },
+  NOTES: {
+    BY_DEADLINE: (userId: string, deadlineId: string) =>
+      ['notes', userId, deadlineId] as const,
+  },
   BOOKS: {
     SEARCH: (query: string) => ['books', 'search', query] as const,
     BY_API_ID: (apiId: string) => ['book', apiId] as const,
@@ -35,6 +39,10 @@ export const MUTATION_KEYS = {
     REACTIVATE: 'reactivateDeadline',
     UPDATE_STATUS: 'updateDeadlineStatus',
     DELETE_FUTURE_PROGRESS: 'deleteFutureProgress',
+  },
+  NOTES: {
+    ADD: 'addNote',
+    DELETE: 'deleteNote',
   },
   PROFILE: {
     UPDATE: 'updateProfile',
