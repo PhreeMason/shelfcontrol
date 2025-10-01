@@ -1,20 +1,20 @@
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   calculateCutoffTime,
-  processBookProgress,
-  getRecentReadingDays,
-  calculateUserPace,
   calculateRequiredPace,
+  calculateUserListeningPace,
+  calculateUserPace,
+  formatListeningPaceDisplay,
+  formatPaceDisplay,
   getPaceBasedStatus,
   getPaceStatusMessage,
-  formatPaceDisplay,
   getRecentListeningDays,
-  calculateUserListeningPace,
-  formatListeningPaceDisplay,
+  getRecentReadingDays,
   minimumUnitsPerDayFromDeadline,
-  UserPaceData,
   PaceBasedStatus,
+  processBookProgress,
+  UserPaceData,
 } from '../paceCalculations';
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 
 const createMockDeadline = (
   id: string,
@@ -277,6 +277,92 @@ describe('paceCalculations', () => {
       // Algorithm calculates total pages (80) / days between first and last (3 days) = 26.67, but rounds to 40
       // And the reading days count is based on unique dates with progress
       expect(result.averagePace).toBe(40);
+      expect(result.readingDaysCount).toBe(1);
+      expect(result.isReliable).toBe(true);
+    });
+
+    it('should calculate pace when activity days are one day apart', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          [
+            { current_progress: 50, created_at: '2024-01-05T00:00:00Z' },
+            { current_progress: 100, created_at: '2024-01-06T00:00:00Z' },
+          ],
+          '2024-01-01T00:00:00Z'
+        ),
+      ];
+
+      const result = calculateUserPace(deadlines);
+
+      expect(result.averagePace).toBe(50);
+      expect(result.readingDaysCount).toBe(2);
+      expect(result.isReliable).toBe(true);
+    });
+
+    it('should calculate pace when all activity is on the same day', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          [{ current_progress: 75, created_at: '2024-01-05T12:00:00Z' }],
+          '2024-01-01T00:00:00Z'
+        ),
+      ];
+
+      const result = calculateUserPace(deadlines);
+
+      expect(result.averagePace).toBe(75);
+      expect(result.readingDaysCount).toBe(1);
+      expect(result.isReliable).toBe(true);
+    });
+
+    it('should calculate pace with 2 progress entries on the same day', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          [
+            { current_progress: 30, created_at: '2024-01-05T10:00:00Z' },
+            { current_progress: 80, created_at: '2024-01-05T18:00:00Z' },
+          ],
+          '2024-01-01T00:00:00Z'
+        ),
+        createMockDeadline(
+          '3',
+          'physical',
+          [
+            { current_progress: 40, created_at: '2024-01-05T10:00:00Z' },
+          ],
+          '2024-01-01T00:00:00Z'
+        ),
+      ];
+
+      const result = calculateUserPace(deadlines);
+
+      expect(result.averagePace).toBe(120);
+      expect(result.readingDaysCount).toBe(1);
+      expect(result.isReliable).toBe(true);
+    });
+
+    it('should calculate pace with 3 progress entries on the same day', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          [
+            { current_progress: 20, created_at: '2024-01-05T09:00:00Z' },
+            { current_progress: 50, created_at: '2024-01-05T14:00:00Z' },
+            { current_progress: 90, created_at: '2024-01-05T20:00:00Z' },
+          ],
+          '2024-01-01T00:00:00Z'
+        ),
+      ];
+
+      const result = calculateUserPace(deadlines);
+
+      expect(result.averagePace).toBe(90);
       expect(result.readingDaysCount).toBe(1);
       expect(result.isReliable).toBe(true);
     });

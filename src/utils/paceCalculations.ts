@@ -1,6 +1,6 @@
+import { BOOK_FORMAT } from '@/constants/status';
 import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { BOOK_FORMAT } from '@/constants/status';
 
 export interface ReadingDay {
   date: string;
@@ -57,9 +57,8 @@ const calculatePaceFromActivityDays = (activityDays: ActivityDay[]): number => {
   const lastDay = new Date(activityDays[activityDaysCount - 1].date);
   const daysBetween = Math.max(
     1,
-    Math.ceil((lastDay.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24))
+    Math.ceil((lastDay.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24)) + 1 // +1 to include both first and last day
   );
-
   return totalAmount / daysBetween;
 };
 
@@ -73,6 +72,8 @@ export const calculateCutoffTime = (
   if (allProgressUpdates.length === 0) {
     return null;
   }
+  allProgressUpdates.filter(p => p.current_progress);
+
   const allProgressUpdatesSorted = allProgressUpdates.sort(
     (a, b) =>
       new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
@@ -113,7 +114,9 @@ export const processBookProgress = (
 
   if (progress.length === 0) return;
 
-  // Handle the first remaining progress entry
+  // Handle the first remaining progress entry separately because it has no previous entry
+  // to compare to (baseline was removed). The loop below calculates differences between
+  // consecutive entries, so we need this to capture the first entry's progress vs baseline.
   const firstProgress = progress[0];
   const firstDate = new Date(firstProgress.created_at);
 
@@ -184,7 +187,6 @@ export const calculateUserPace = (
 ): UserPaceData => {
   // Only include physical and eBook reading, not audio
   const recentReadingDays = getRecentReadingDays(deadlines);
-
   const readingDaysCount = recentReadingDays.length;
   if (readingDaysCount === 0) {
     return {

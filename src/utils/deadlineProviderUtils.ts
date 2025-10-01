@@ -1,3 +1,4 @@
+import { BOOK_FORMAT } from '@/constants/status';
 import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
@@ -21,7 +22,6 @@ import {
   getPaceBasedStatus,
   getPaceStatusMessage,
 } from '@/utils/paceCalculations';
-import { BOOK_FORMAT } from '@/constants/status';
 
 // Types for function returns
 export interface DeadlineStatus {

@@ -195,14 +195,14 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     setAside: pausedDeadlines,
     pending: pendingDeadlines,
   } = separateDeadlines(deadlines);
-
+  
   const userPaceData = useMemo(() => {
-    return calculateUserPace(activeDeadlines);
-  }, [activeDeadlines]);
+    return calculateUserPace(deadlines);
+  }, [deadlines]);
 
   const userListeningPaceData = useMemo(() => {
-    return calculateUserListeningPace(activeDeadlines);
-  }, [activeDeadlines]);
+    return calculateUserListeningPace(deadlines);
+  }, [deadlines]);
 
   const getDeadlinePaceStatus = (deadline: ReadingDeadlineWithProgress) => {
     return calculateDeadlinePaceStatus(
