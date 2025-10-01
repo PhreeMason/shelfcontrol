@@ -24,7 +24,9 @@ export const useAddDeadline = () => {
     },
     onSuccess: () => {
       if (userId) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
       }
     },
     onError: error => {
@@ -48,7 +50,9 @@ export const useUpdateDeadline = () => {
     },
     onSuccess: () => {
       if (userId) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
       }
     },
     onError: error => {
@@ -72,7 +76,9 @@ export const useDeleteDeadline = () => {
     },
     onSuccess: () => {
       if (userId) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
       }
     },
     onError: error => {
@@ -100,7 +106,9 @@ export const useUpdateDeadlineProgress = () => {
     },
     onSuccess: () => {
       if (userId) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
       }
     },
     onError: error => {
@@ -114,7 +122,9 @@ export const useGetDeadlines = () => {
   const userId = session?.user?.id;
 
   return useQuery<ReadingDeadlineWithProgress[]>({
-    queryKey: userId ? QUERY_KEYS.DEADLINES.ALL(userId) : ['deadlines', undefined],
+    queryKey: userId
+      ? QUERY_KEYS.DEADLINES.ALL(userId)
+      : ['deadlines', undefined],
     queryFn: async () => {
       if (!userId) throw new Error('User not authenticated');
       return deadlinesService.getDeadlines(userId);
@@ -179,7 +189,9 @@ const useUpdateDeadlineStatus = (
     },
     onSuccess: () => {
       if (userId) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
       }
     },
     onError: error => {
@@ -203,7 +215,9 @@ export const useCompleteDeadline = () => {
     },
     onSuccess: () => {
       if (userId) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
       }
     },
     onError: error => {
@@ -212,18 +226,24 @@ export const useCompleteDeadline = () => {
   });
 };
 
-export const usePauseDeadline = () => useUpdateDeadlineStatus(DEADLINE_STATUS.PAUSED);
+export const usePauseDeadline = () =>
+  useUpdateDeadlineStatus(DEADLINE_STATUS.PAUSED);
 
-export const useReactivateDeadline = () => useUpdateDeadlineStatus(DEADLINE_STATUS.READING);
+export const useReactivateDeadline = () =>
+  useUpdateDeadlineStatus(DEADLINE_STATUS.READING);
 
-export const useStartReadingDeadline = () => useUpdateDeadlineStatus(DEADLINE_STATUS.READING);
+export const useStartReadingDeadline = () =>
+  useUpdateDeadlineStatus(DEADLINE_STATUS.READING);
 
 export const useGetDeadlineById = (deadlineId: string | undefined) => {
   const { session } = useAuth();
   const userId = session?.user?.id;
 
   return useQuery<ReadingDeadlineWithProgress | null>({
-    queryKey: userId && deadlineId ? QUERY_KEYS.DEADLINES.DETAIL(userId, deadlineId) : ['deadline', undefined, undefined],
+    queryKey:
+      userId && deadlineId
+        ? QUERY_KEYS.DEADLINES.DETAIL(userId, deadlineId)
+        : ['deadline', undefined, undefined],
     queryFn: async () => {
       if (!userId || !deadlineId) return null;
       return deadlinesService.getDeadlineById(userId, deadlineId);
@@ -255,7 +275,9 @@ export const useDeleteFutureProgress = () => {
     },
     onSuccess: () => {
       if (userId) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DEADLINES.ALL(userId) });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
       }
     },
     onError: error => {
@@ -269,7 +291,9 @@ export const useGetUserProgressForToday = () => {
   const userId = session?.user?.id;
 
   return useQuery({
-    queryKey: userId ? QUERY_KEYS.DEADLINES.PROGRESS(userId) : ['deadline_progress', undefined],
+    queryKey: userId
+      ? QUERY_KEYS.DEADLINES.PROGRESS(userId)
+      : ['deadline_progress', undefined],
     queryFn: async () => {
       if (!userId) throw new Error('User not authenticated');
       return deadlinesService.getUserProgressForToday(userId);

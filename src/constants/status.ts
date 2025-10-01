@@ -19,7 +19,9 @@ export const PROGRESS_TYPE = {
   LISTENING: 'listening',
 } as const;
 
-export type DeadlineStatus = typeof DEADLINE_STATUS[keyof typeof DEADLINE_STATUS];
-export type ActivityState = typeof ACTIVITY_STATE[keyof typeof ACTIVITY_STATE];
-export type BookFormat = typeof BOOK_FORMAT[keyof typeof BOOK_FORMAT];
-export type ProgressType = typeof PROGRESS_TYPE[keyof typeof PROGRESS_TYPE];
+export type DeadlineStatus =
+  (typeof DEADLINE_STATUS)[keyof typeof DEADLINE_STATUS];
+export type ActivityState =
+  (typeof ACTIVITY_STATE)[keyof typeof ACTIVITY_STATE];
+export type BookFormat = (typeof BOOK_FORMAT)[keyof typeof BOOK_FORMAT];
+export type ProgressType = (typeof PROGRESS_TYPE)[keyof typeof PROGRESS_TYPE];

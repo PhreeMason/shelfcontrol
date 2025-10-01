@@ -53,7 +53,9 @@ class StorageService {
 
   async testAvatarsBucket() {
     try {
-      const { error } = await supabase.storage.from(STORAGE_BUCKETS.AVATARS).list();
+      const { error } = await supabase.storage
+        .from(STORAGE_BUCKETS.AVATARS)
+        .list();
 
       if (error) {
         console.error('Avatars bucket test failed:', error);

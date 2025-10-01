@@ -37,7 +37,11 @@ export default function Profile() {
   const { profile, signOut } = useAuth();
   const router = useRouter();
   const { colors } = useTheme();
-  const { deadlines, userPaceData: readingPaceData, userListeningPaceData: listeningPaceData } = useDeadlines();
+  const {
+    deadlines,
+    userPaceData: readingPaceData,
+    userListeningPaceData: listeningPaceData,
+  } = useDeadlines();
   const exportMutation = useExportReadingProgress();
 
   const completedCount = getCompletedThisMonth(deadlines);
@@ -65,7 +69,8 @@ export default function Profile() {
       });
     } catch (error: any) {
       const errorMessage = error?.message || 'Failed to export data';
-      const isRateLimit = errorMessage.includes('Rate limit') || errorMessage.includes('429');
+      const isRateLimit =
+        errorMessage.includes('Rate limit') || errorMessage.includes('429');
 
       Toast.show({
         type: 'error',

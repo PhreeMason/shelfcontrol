@@ -55,7 +55,7 @@ export function getDeadlineStatus(
 ): DeadlineStatus {
   const latestStatus =
     deadline.status && deadline.status.length > 0
-      ? deadline.status[deadline.status.length - 1].status ?? 'reading'
+      ? (deadline.status[deadline.status.length - 1].status ?? 'reading')
       : 'reading';
 
   const isCompleted = latestStatus === 'complete';
@@ -383,7 +383,9 @@ export function calculateDeadlinePaceStatus(
 
   // Generate detailed status message
   const relevantUserPaceData =
-    deadline.format === BOOK_FORMAT.AUDIO ? userListeningPaceData : userPaceData;
+    deadline.format === BOOK_FORMAT.AUDIO
+      ? userListeningPaceData
+      : userPaceData;
   const statusMessage = getPaceStatusMessage(
     relevantUserPaceData,
     requiredPace,

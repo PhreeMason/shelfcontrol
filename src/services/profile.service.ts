@@ -1,4 +1,9 @@
-import { APPLE_AUTH, AVATAR_CONFIG, DB_TABLES, STORAGE_BUCKETS } from '@/constants/database';
+import {
+  APPLE_AUTH,
+  AVATAR_CONFIG,
+  DB_TABLES,
+  STORAGE_BUCKETS,
+} from '@/constants/database';
 import { supabase } from '@/lib/supabase';
 import { Database } from '@/types/database.types';
 
@@ -101,7 +106,9 @@ class ProfileService {
         const filesToRemove = existingFiles.map(
           file => `${userId}/${file.name}`
         );
-        await supabase.storage.from(STORAGE_BUCKETS.AVATARS).remove(filesToRemove);
+        await supabase.storage
+          .from(STORAGE_BUCKETS.AVATARS)
+          .remove(filesToRemove);
       }
 
       const arraybuffer = await fetch(uri).then(res => res.arrayBuffer());

@@ -57,7 +57,9 @@ const calculatePaceFromActivityDays = (activityDays: ActivityDay[]): number => {
   const lastDay = new Date(activityDays[activityDaysCount - 1].date);
   const daysBetween = Math.max(
     1,
-    Math.ceil((lastDay.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24)) + 1 // +1 to include both first and last day
+    Math.ceil(
+      (lastDay.getTime() - firstDay.getTime()) / (1000 * 60 * 60 * 24)
+    ) + 1 // +1 to include both first and last day
   );
   return totalAmount / daysBetween;
 };

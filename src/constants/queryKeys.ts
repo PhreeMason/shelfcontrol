@@ -1,7 +1,8 @@
 export const QUERY_KEYS = {
   DEADLINES: {
     ALL: (userId: string) => ['deadlines', userId] as const,
-    DETAIL: (userId: string, deadlineId: string) => ['deadline', userId, deadlineId] as const,
+    DETAIL: (userId: string, deadlineId: string) =>
+      ['deadline', userId, deadlineId] as const,
     SOURCES: (userId: string) => ['deadline', 'sources', userId] as const,
     PROGRESS: (userId: string) => ['deadline_progress', userId] as const,
   },
@@ -15,7 +16,8 @@ export const QUERY_KEYS = {
   },
   AVATAR: {
     URL: (userId: string) => ['avatar', 'url', userId] as const,
-    SIGNED_URL: (avatarPath: string) => ['avatar', 'signedUrl', avatarPath] as const,
+    SIGNED_URL: (avatarPath: string) =>
+      ['avatar', 'signedUrl', avatarPath] as const,
     BASE: () => ['avatar'] as const,
     SIGNED_BASE: () => ['avatar', 'signedUrl'] as const,
   },

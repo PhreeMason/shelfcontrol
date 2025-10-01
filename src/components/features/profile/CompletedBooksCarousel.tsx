@@ -8,7 +8,14 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 interface CompletedBooksCarouselProps {
   completedDeadlines: ReadingDeadlineWithProgress[];
@@ -27,7 +34,10 @@ const BookCover: React.FC<{
 
   if (bookData?.cover_image_url) {
     return (
-      <Pressable onPress={handlePress} style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}>
+      <Pressable
+        onPress={handlePress}
+        style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
+      >
         <Image
           source={{ uri: bookData.cover_image_url }}
           style={styles.bookCover}
@@ -38,7 +48,10 @@ const BookCover: React.FC<{
   }
 
   return (
-    <Pressable onPress={handlePress} style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}>
+    <Pressable
+      onPress={handlePress}
+      style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
+    >
       <LinearGradient
         colors={getGradientBackground(deadline, 0)}
         style={styles.bookCover}
@@ -60,7 +73,9 @@ export const CompletedBooksCarousel: React.FC<CompletedBooksCarouselProps> = ({
   if (isLoading) {
     return (
       <ThemedView style={styles.container}>
-        <ThemedText style={styles.sectionTitle}>Books finished this year</ThemedText>
+        <ThemedText style={styles.sectionTitle}>
+          Books finished this year
+        </ThemedText>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#6366f1" />
         </View>
@@ -71,9 +86,12 @@ export const CompletedBooksCarousel: React.FC<CompletedBooksCarouselProps> = ({
   if (completedDeadlines.length === 0) {
     return (
       <ThemedView style={styles.container}>
-        <ThemedText style={styles.sectionTitle}>Books finished this year</ThemedText>
+        <ThemedText style={styles.sectionTitle}>
+          Books finished this year
+        </ThemedText>
         <ThemedText style={styles.emptyStateText}>
-          No completed books yet. Finish your first reading deadline to see it here!
+          No completed books yet. Finish your first reading deadline to see it
+          here!
         </ThemedText>
       </ThemedView>
     );
@@ -81,7 +99,9 @@ export const CompletedBooksCarousel: React.FC<CompletedBooksCarouselProps> = ({
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText style={styles.sectionTitle}>{completedDeadlines.length} books finished this year!</ThemedText>
+      <ThemedText style={styles.sectionTitle}>
+        {completedDeadlines.length} books finished this year!
+      </ThemedText>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

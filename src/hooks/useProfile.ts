@@ -5,7 +5,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useAvatarUrl = (userId: string | undefined) => {
   return useQuery({
-    queryKey: userId ? QUERY_KEYS.AVATAR.URL(userId) : ['avatar', 'url', undefined],
+    queryKey: userId
+      ? QUERY_KEYS.AVATAR.URL(userId)
+      : ['avatar', 'url', undefined],
     queryFn: async () => {
       if (!userId) return null;
       return profileService.getAvatarUrl(userId);
@@ -17,7 +19,9 @@ export const useAvatarUrl = (userId: string | undefined) => {
 
 export const useAvatarSignedUrl = (avatarPath: string | null | undefined) => {
   return useQuery({
-    queryKey: avatarPath ? QUERY_KEYS.AVATAR.SIGNED_URL(avatarPath) : ['avatar', 'signedUrl', undefined],
+    queryKey: avatarPath
+      ? QUERY_KEYS.AVATAR.SIGNED_URL(avatarPath)
+      : ['avatar', 'signedUrl', undefined],
     queryFn: async () => {
       if (!avatarPath) return null;
       return profileService.getAvatarSignedUrl(avatarPath);
@@ -29,7 +33,9 @@ export const useAvatarSignedUrl = (avatarPath: string | null | undefined) => {
 
 export const useProfile = (userId: string | undefined) => {
   return useQuery({
-    queryKey: userId ? QUERY_KEYS.PROFILE.DETAIL(userId) : ['profile', undefined],
+    queryKey: userId
+      ? QUERY_KEYS.PROFILE.DETAIL(userId)
+      : ['profile', undefined],
     queryFn: async () => {
       if (!userId) return null;
       return profileService.getProfile(userId);
@@ -54,7 +60,9 @@ export const useUpdateProfile = () => {
       return profileService.updateProfile(profileId, updates);
     },
     onSuccess: (_, { profileId }) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROFILE.DETAIL(profileId) });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.PROFILE.DETAIL(profileId),
+      });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AVATAR.BASE() });
     },
     onError: error => {
@@ -78,7 +86,9 @@ export const useUpdateProfileFromApple = () => {
       return profileService.updateProfileFromApple(userId, appleData);
     },
     onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROFILE.DETAIL(userId) });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.PROFILE.DETAIL(userId),
+      });
     },
     onError: error => {
       console.error('Error updating profile from Apple:', error);
@@ -95,9 +105,15 @@ export const useUploadAvatar = () => {
       return profileService.uploadAvatar(userId, uri);
     },
     onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AVATAR.URL(userId) });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AVATAR.SIGNED_BASE() });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PROFILE.DETAIL(userId) });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.AVATAR.URL(userId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.AVATAR.SIGNED_BASE(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.PROFILE.DETAIL(userId),
+      });
     },
     onError: error => {
       console.error('Error uploading avatar:', error);

@@ -195,7 +195,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     setAside: pausedDeadlines,
     pending: pendingDeadlines,
   } = separateDeadlines(deadlines);
-  
+
   const userPaceData = useMemo(() => {
     return calculateUserPace(deadlines);
   }, [deadlines]);

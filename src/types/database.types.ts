@@ -143,10 +143,43 @@ export type Database = {
         };
         Relationships: [];
       };
+      csv_export_logs: {
+        Row: {
+          created_at: string | null;
+          exported_at: string;
+          id: string;
+          record_count: number | null;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          exported_at?: string;
+          id?: string;
+          record_count?: number | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          exported_at?: string;
+          id?: string;
+          record_count?: number | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'csv_export_logs_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       deadline_notes: {
         Row: {
           created_at: string | null;
           deadline_id: string;
+          deadline_progress: number;
           id: string;
           note_text: string;
           updated_at: string | null;
@@ -155,6 +188,7 @@ export type Database = {
         Insert: {
           created_at?: string | null;
           deadline_id: string;
+          deadline_progress: number;
           id?: string;
           note_text: string;
           updated_at?: string | null;
@@ -163,6 +197,7 @@ export type Database = {
         Update: {
           created_at?: string | null;
           deadline_id?: string;
+          deadline_progress?: number;
           id?: string;
           note_text?: string;
           updated_at?: string | null;
@@ -394,6 +429,26 @@ export type Database = {
       generate_prefixed_id: {
         Args: { prefix: string };
         Returns: string;
+      };
+      get_reading_progress_csv: {
+        Args: { p_user_id: string };
+        Returns: {
+          author: string;
+          book_title: string;
+          completed_date: string;
+          created_date: string;
+          current_progress: number;
+          days_remaining: number;
+          deadline_date: string;
+          flexibility: string;
+          format: string;
+          last_progress_update: string;
+          pages_per_day_needed: number;
+          source: string;
+          status: string;
+          total_quantity: number;
+          unit: string;
+        }[];
       };
       store_book_with_authors: {
         Args: { book_data: Json };

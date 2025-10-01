@@ -1,12 +1,12 @@
 import { ThemedButton, ThemedView } from '@/components/themed';
+import { ROUTES } from '@/constants/routes';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { getDeadlineStatus, getStatusFlags } from '@/utils/deadlineActionUtils';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { getDeadlineStatus, getStatusFlags } from '@/utils/deadlineActionUtils';
-import { ROUTES } from '@/constants/routes';
 
 interface DeadlineActionButtonsProps {
   deadline: ReadingDeadlineWithProgress;
@@ -284,6 +284,12 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
 
   return (
     <ThemedView style={styles.actionButtons}>
+      <ThemedButton
+        title="Notes"
+        variant="outline"
+        style={styles.actionButton}
+        onPress={() => router.push(`/deadline/${deadline.id}/notes`)}
+      />
       {isPending && (
         <>
           <ThemedButton

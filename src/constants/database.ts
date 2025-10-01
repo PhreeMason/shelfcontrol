@@ -12,7 +12,12 @@ export const STORAGE_BUCKETS = {
 
 export const AVATAR_CONFIG = {
   FILE_PREFIX: 'avatar-',
-  ALLOWED_MIME_TYPES: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] as string[],
+  ALLOWED_MIME_TYPES: [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+  ] as string[],
   MAX_FILE_SIZE: 5242880,
   SIGNED_URL_EXPIRY: 90 * 24 * 60 * 60,
 } as const;

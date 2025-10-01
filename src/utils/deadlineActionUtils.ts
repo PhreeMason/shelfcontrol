@@ -12,7 +12,10 @@ export const getDeadlineStatus = (
   if (!deadline.status || deadline.status.length === 0) {
     return DEADLINE_STATUS.READING;
   }
-  return deadline.status[deadline.status.length - 1].status ?? DEADLINE_STATUS.READING;
+  return (
+    deadline.status[deadline.status.length - 1].status ??
+    DEADLINE_STATUS.READING
+  );
 };
 
 export interface StatusFlags {

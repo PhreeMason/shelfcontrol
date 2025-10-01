@@ -332,9 +332,7 @@ describe('paceCalculations', () => {
         createMockDeadline(
           '3',
           'physical',
-          [
-            { current_progress: 40, created_at: '2024-01-05T10:00:00Z' },
-          ],
+          [{ current_progress: 40, created_at: '2024-01-05T10:00:00Z' }],
           '2024-01-01T00:00:00Z'
         ),
       ];

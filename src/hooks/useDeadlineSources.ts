@@ -10,7 +10,9 @@ export const useDeadlineSources = () => {
   const userId = profile?.id || session?.user?.id;
 
   const result = useQuery({
-    queryKey: userId ? QUERY_KEYS.DEADLINES.SOURCES(userId) : ['deadline', 'sources', undefined],
+    queryKey: userId
+      ? QUERY_KEYS.DEADLINES.SOURCES(userId)
+      : ['deadline', 'sources', undefined],
     queryFn: async () => {
       try {
         if (!userId) {
