@@ -401,7 +401,7 @@ describe('DeadlineActionButtons', () => {
       const successCallback = mockCompleteDeadline.mock.calls[0][1];
       successCallback();
 
-      expect(mockRouter.push).toHaveBeenCalledWith(
+      expect(mockRouter.replace).toHaveBeenCalledWith(
         '/deadline/deadline-123/completion'
       );
     });
@@ -644,6 +644,7 @@ describe('DeadlineActionButtons', () => {
           bookTitle: 'Test Book',
           bookAuthor: 'Test Author',
           format: 'physical',
+          source: 'manual',
           flexibility: 'strict',
           totalQuantity: '300',
           book_id: 'book-123',
@@ -676,7 +677,8 @@ describe('DeadlineActionButtons', () => {
         pathname: '/deadline/new',
         params: expect.objectContaining({
           format: 'audio',
-          totalMinutes: '1200',
+          totalQuantity: '20',
+          totalMinutes: '0',
         }),
       });
     });

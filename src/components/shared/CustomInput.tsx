@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     fontSize: 16,
+    lineHeight: 20,
   },
   error: {
     minHeight: 18,

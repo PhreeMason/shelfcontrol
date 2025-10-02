@@ -39,10 +39,12 @@ export interface FormStateConfig {
  */
 export const createFormNavigation = (
   config: FormNavigationConfig,
-  triggerValidation: (fields: (keyof DeadlineFormData)[]) => Promise<boolean>,
+  triggerValidation: (fields?: (keyof DeadlineFormData)[]) => Promise<boolean>,
   handleSubmit: () => void,
   selectedFormat: 'physical' | 'eBook' | 'audio',
-  setCurrentStep: (step: number) => void
+  setCurrentStep: (step: number) => void,
+  mode: FormMode,
+  getFormErrors: () => Record<string, any>
 ): FormNavigationHandlers => {
   const nextStep = async () => {
     if (config.currentStep < config.totalSteps) {
@@ -72,6 +74,18 @@ export const createFormNavigation = (
         }
       }
     } else {
+      const isValid = await triggerValidation();
+
+      if (!isValid) {
+        const errors = getFormErrors();
+        const earliestErrorStep = findEarliestErrorStep(errors, mode);
+
+        if (earliestErrorStep !== null && earliestErrorStep !== config.currentStep) {
+          setCurrentStep(earliestErrorStep);
+        }
+        return;
+      }
+
       handleSubmit();
     }
   };
@@ -531,4 +545,78 @@ export const createErrorToast = (mode: FormMode) => {
       position: 'top',
     });
   };
+};
+
+/**
+ * Maps form fields to their corresponding step number based on form mode
+ */
+export const getFieldStep = (
+  field: keyof DeadlineFormData,
+  mode: FormMode
+): number => {
+  if (mode === 'new') {
+    switch (field) {
+      case 'api_id':
+      case 'book_id':
+        return 1;
+      case 'bookTitle':
+      case 'bookAuthor':
+      case 'format':
+      case 'source':
+      case 'totalQuantity':
+      case 'totalMinutes':
+      case 'status':
+        return 2;
+      case 'deadline':
+      case 'flexibility':
+      case 'currentProgress':
+      case 'currentMinutes':
+        return 3;
+      default:
+        return 1;
+    }
+  } else {
+    switch (field) {
+      case 'bookTitle':
+      case 'bookAuthor':
+      case 'format':
+      case 'source':
+      case 'totalQuantity':
+      case 'totalMinutes':
+      case 'status':
+        return 1;
+      case 'deadline':
+      case 'flexibility':
+      case 'currentProgress':
+      case 'currentMinutes':
+      case 'api_id':
+      case 'book_id':
+        return 2;
+      default:
+        return 1;
+    }
+  }
+};
+
+/**
+ * Finds the earliest step number that contains validation errors
+ */
+export const findEarliestErrorStep = (
+  errors: Record<string, any>,
+  mode: FormMode
+): number | null => {
+  if (!errors || Object.keys(errors).length === 0) {
+    return null;
+  }
+
+  let earliestStep: number | null = null;
+
+  for (const field of Object.keys(errors)) {
+    const step = getFieldStep(field as keyof DeadlineFormData, mode);
+    if (earliestStep === null || step < earliestStep) {
+      earliestStep = step;
+    }
+  }
+
+  return earliestStep;
 };

@@ -5,6 +5,8 @@ import {
   createFormNavigation,
   createPriorityChangeHandler,
   createSuccessToast,
+  findEarliestErrorStep,
+  getFieldStep,
   getFormDefaultValues,
   handleBookSelection,
   initializeFormState,
@@ -654,7 +656,9 @@ describe('deadlineFormUtils', () => {
         mockTrigger,
         mockHandleSubmit,
         'eBook',
-        mockSetCurrentStep
+        mockSetCurrentStep,
+        'new',
+        () => ({})
       );
 
       await navigation.nextStep();
@@ -670,7 +674,9 @@ describe('deadlineFormUtils', () => {
         mockTrigger,
         mockHandleSubmit,
         'eBook',
-        mockSetCurrentStep
+        mockSetCurrentStep,
+        'new',
+        () => ({})
       );
 
       await navigation.nextStep();
@@ -691,7 +697,9 @@ describe('deadlineFormUtils', () => {
         mockTrigger,
         mockHandleSubmit,
         'audio',
-        mockSetCurrentStep
+        mockSetCurrentStep,
+        'new',
+        () => ({})
       );
 
       await navigation.nextStep();
@@ -713,7 +721,9 @@ describe('deadlineFormUtils', () => {
         mockTrigger,
         mockHandleSubmit,
         'eBook',
-        mockSetCurrentStep
+        mockSetCurrentStep,
+        'new',
+        () => ({})
       );
 
       await navigation.nextStep();
@@ -728,7 +738,9 @@ describe('deadlineFormUtils', () => {
         mockTrigger,
         mockHandleSubmit,
         'eBook',
-        mockSetCurrentStep
+        mockSetCurrentStep,
+        'new',
+        () => ({})
       );
 
       await navigation.nextStep();
@@ -744,7 +756,9 @@ describe('deadlineFormUtils', () => {
         mockTrigger,
         mockHandleSubmit,
         'eBook',
-        mockSetCurrentStep
+        mockSetCurrentStep,
+        'new',
+        () => ({})
       );
 
       navigation.goBack();
@@ -935,6 +949,281 @@ describe('deadlineFormUtils', () => {
         visibilityTime: 1500,
         position: 'top',
       });
+    });
+  });
+
+  describe('getFieldStep', () => {
+    describe('new mode', () => {
+      it('should return step 1 for api_id', () => {
+        expect(getFieldStep('api_id', 'new')).toBe(1);
+      });
+
+      it('should return step 1 for book_id', () => {
+        expect(getFieldStep('book_id', 'new')).toBe(1);
+      });
+
+      it('should return step 2 for bookTitle', () => {
+        expect(getFieldStep('bookTitle', 'new')).toBe(2);
+      });
+
+      it('should return step 2 for bookAuthor', () => {
+        expect(getFieldStep('bookAuthor', 'new')).toBe(2);
+      });
+
+      it('should return step 2 for format', () => {
+        expect(getFieldStep('format', 'new')).toBe(2);
+      });
+
+      it('should return step 2 for source', () => {
+        expect(getFieldStep('source', 'new')).toBe(2);
+      });
+
+      it('should return step 2 for totalQuantity', () => {
+        expect(getFieldStep('totalQuantity', 'new')).toBe(2);
+      });
+
+      it('should return step 2 for totalMinutes', () => {
+        expect(getFieldStep('totalMinutes', 'new')).toBe(2);
+      });
+
+      it('should return step 2 for status', () => {
+        expect(getFieldStep('status', 'new')).toBe(2);
+      });
+
+      it('should return step 3 for deadline', () => {
+        expect(getFieldStep('deadline', 'new')).toBe(3);
+      });
+
+      it('should return step 3 for flexibility', () => {
+        expect(getFieldStep('flexibility', 'new')).toBe(3);
+      });
+
+      it('should return step 3 for currentProgress', () => {
+        expect(getFieldStep('currentProgress', 'new')).toBe(3);
+      });
+
+      it('should return step 3 for currentMinutes', () => {
+        expect(getFieldStep('currentMinutes', 'new')).toBe(3);
+      });
+    });
+
+    describe('edit mode', () => {
+      it('should return step 1 for bookTitle', () => {
+        expect(getFieldStep('bookTitle', 'edit')).toBe(1);
+      });
+
+      it('should return step 1 for format', () => {
+        expect(getFieldStep('format', 'edit')).toBe(1);
+      });
+
+      it('should return step 1 for source', () => {
+        expect(getFieldStep('source', 'edit')).toBe(1);
+      });
+
+      it('should return step 1 for totalQuantity', () => {
+        expect(getFieldStep('totalQuantity', 'edit')).toBe(1);
+      });
+
+      it('should return step 2 for deadline', () => {
+        expect(getFieldStep('deadline', 'edit')).toBe(2);
+      });
+
+      it('should return step 2 for flexibility', () => {
+        expect(getFieldStep('flexibility', 'edit')).toBe(2);
+      });
+
+      it('should return step 2 for api_id', () => {
+        expect(getFieldStep('api_id', 'edit')).toBe(2);
+      });
+
+      it('should return step 2 for book_id', () => {
+        expect(getFieldStep('book_id', 'edit')).toBe(2);
+      });
+    });
+  });
+
+  describe('findEarliestErrorStep', () => {
+    it('should return null for empty errors object', () => {
+      expect(findEarliestErrorStep({}, 'new')).toBeNull();
+    });
+
+    it('should return null for undefined errors', () => {
+      expect(findEarliestErrorStep(undefined as any, 'new')).toBeNull();
+    });
+
+    it('should find step 2 for source error in new mode', () => {
+      const errors = { source: { message: 'Required' } };
+      expect(findEarliestErrorStep(errors, 'new')).toBe(2);
+    });
+
+    it('should find step 3 for deadline error in new mode', () => {
+      const errors = { deadline: { message: 'Required' } };
+      expect(findEarliestErrorStep(errors, 'new')).toBe(3);
+    });
+
+    it('should find earliest step with multiple errors in new mode', () => {
+      const errors = {
+        source: { message: 'Required' },
+        deadline: { message: 'Required' },
+        flexibility: { message: 'Required' },
+      };
+      expect(findEarliestErrorStep(errors, 'new')).toBe(2);
+    });
+
+    it('should find step 1 for source error in edit mode', () => {
+      const errors = { source: { message: 'Required' } };
+      expect(findEarliestErrorStep(errors, 'edit')).toBe(1);
+    });
+
+    it('should find step 2 for deadline error in edit mode', () => {
+      const errors = { deadline: { message: 'Required' } };
+      expect(findEarliestErrorStep(errors, 'edit')).toBe(2);
+    });
+
+    it('should find earliest step with multiple errors in edit mode', () => {
+      const errors = {
+        bookTitle: { message: 'Required' },
+        deadline: { message: 'Required' },
+      };
+      expect(findEarliestErrorStep(errors, 'edit')).toBe(1);
+    });
+
+    it('should handle multiple errors on same step', () => {
+      const errors = {
+        bookTitle: { message: 'Required' },
+        source: { message: 'Required' },
+        totalQuantity: { message: 'Required' },
+      };
+      expect(findEarliestErrorStep(errors, 'new')).toBe(2);
+    });
+  });
+
+  describe('createFormNavigation - error navigation', () => {
+    const mockTrigger = jest.fn();
+    const mockHandleSubmit = jest.fn();
+    const mockSetCurrentStep = jest.fn();
+    const mockGetFormErrors = jest.fn();
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      mockTrigger.mockResolvedValue(true);
+      mockGetFormErrors.mockReturnValue({});
+    });
+
+    it('should navigate to step 2 when on step 3 with step 2 errors in new mode', async () => {
+      const config = { currentStep: 3, totalSteps: 3, canGoBack: true };
+      mockTrigger.mockResolvedValue(false);
+      mockGetFormErrors.mockReturnValue({
+        source: { message: 'Required' },
+      });
+
+      const navigation = createFormNavigation(
+        config,
+        mockTrigger,
+        mockHandleSubmit,
+        'eBook',
+        mockSetCurrentStep,
+        'new',
+        mockGetFormErrors
+      );
+
+      await navigation.nextStep();
+
+      expect(mockTrigger).toHaveBeenCalledWith();
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
+      expect(mockHandleSubmit).not.toHaveBeenCalled();
+    });
+
+    it('should stay on current step if already on earliest error step', async () => {
+      const config = { currentStep: 2, totalSteps: 3, canGoBack: true };
+      mockTrigger.mockResolvedValue(false);
+      mockGetFormErrors.mockReturnValue({
+        source: { message: 'Required' },
+      });
+
+      const navigation = createFormNavigation(
+        config,
+        mockTrigger,
+        mockHandleSubmit,
+        'eBook',
+        mockSetCurrentStep,
+        'new',
+        mockGetFormErrors
+      );
+
+      await navigation.nextStep();
+
+      expect(mockSetCurrentStep).not.toHaveBeenCalled();
+      expect(mockHandleSubmit).not.toHaveBeenCalled();
+    });
+
+    it('should submit when validation passes on final step', async () => {
+      const config = { currentStep: 3, totalSteps: 3, canGoBack: true };
+      mockTrigger.mockResolvedValue(true);
+
+      const navigation = createFormNavigation(
+        config,
+        mockTrigger,
+        mockHandleSubmit,
+        'eBook',
+        mockSetCurrentStep,
+        'new',
+        mockGetFormErrors
+      );
+
+      await navigation.nextStep();
+
+      expect(mockTrigger).toHaveBeenCalledWith();
+      expect(mockHandleSubmit).toHaveBeenCalled();
+      expect(mockSetCurrentStep).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to step 1 when on step 2 with step 1 errors in edit mode', async () => {
+      const config = { currentStep: 2, totalSteps: 2, canGoBack: true };
+      mockTrigger.mockResolvedValue(false);
+      mockGetFormErrors.mockReturnValue({
+        source: { message: 'Required' },
+      });
+
+      const navigation = createFormNavigation(
+        config,
+        mockTrigger,
+        mockHandleSubmit,
+        'eBook',
+        mockSetCurrentStep,
+        'edit',
+        mockGetFormErrors
+      );
+
+      await navigation.nextStep();
+
+      expect(mockTrigger).toHaveBeenCalledWith();
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(1);
+      expect(mockHandleSubmit).not.toHaveBeenCalled();
+    });
+
+    it('should handle multiple errors and navigate to earliest', async () => {
+      const config = { currentStep: 3, totalSteps: 3, canGoBack: true };
+      mockTrigger.mockResolvedValue(false);
+      mockGetFormErrors.mockReturnValue({
+        source: { message: 'Required' },
+        deadline: { message: 'Required' },
+        flexibility: { message: 'Required' },
+      });
+
+      const navigation = createFormNavigation(
+        config,
+        mockTrigger,
+        mockHandleSubmit,
+        'eBook',
+        mockSetCurrentStep,
+        'new',
+        mockGetFormErrors
+      );
+
+      await navigation.nextStep();
+
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
     });
   });
 });

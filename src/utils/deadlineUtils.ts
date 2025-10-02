@@ -6,87 +6,12 @@ import {
   normalizeServerDateStartOfDay,
 } from './dateNormalization';
 import { calculateTotalQuantity } from './deadlineCalculations';
-
-/**
- * Deadline Sorting Strategy (UTC -> Local Normalization)
- * -----------------------------------------------------
- * All server timestamp fields (created_at / updated_at) are ISO UTC strings.
- * We normalize them to LOCAL time via normalizeServerDate() before comparisons.
- * Date-only fields (deadline_date) remain local calendar dates with no timezone shift.
- * Priority order:
- * 1. Earliest deadline_date first
- * 2. Most recent updated_at
- * 3. Most recent created_at
- */
-export const sortDeadlines = (
-  a: ReadingDeadlineWithProgress,
-  b: ReadingDeadlineWithProgress
-) => {
-  const aDue = normalizeServerDateStartOfDay(a.deadline_date);
-  const bDue = normalizeServerDateStartOfDay(b.deadline_date);
-  if (aDue.valueOf() !== bDue.valueOf()) return aDue.valueOf() - bDue.valueOf();
-
-  const safeTs = (val?: string) => {
-    const d = normalizeServerDate(val || '');
-    return d.isValid() ? d.valueOf() : 0; // treat missing/invalid as epoch (oldest)
-  };
-
-  const aUpd = safeTs(a.updated_at);
-  const bUpd = safeTs(b.updated_at);
-  if (aUpd !== bUpd) return bUpd - aUpd;
-
-  const aCreated = safeTs(a.created_at);
-  const bCreated = safeTs(b.created_at);
-  return bCreated - aCreated;
-};
-
-/**
- * Sorts deadlines by their latest status creation date (most recent first)
- */
-const sortByStatusDate = (
-  a: ReadingDeadlineWithProgress,
-  b: ReadingDeadlineWithProgress
-) => {
-  const aStatus =
-    a.status && a.status.length > 0 ? a.status[a.status.length - 1] : null;
-  const bStatus =
-    b.status && b.status.length > 0 ? b.status[b.status.length - 1] : null;
-  const aDate = aStatus
-    ? normalizeServerDate(aStatus.created_at || '')
-    : dayjs(0);
-  const bDate = bStatus
-    ? normalizeServerDate(bStatus.created_at || '')
-    : dayjs(0);
-  return bDate.valueOf() - aDate.valueOf();
-};
-
-/**
- * Sorts overdue deadlines by the amount of pages/minutes remaining (ascending order - least remaining first)
- */
-const sortByPagesRemaining = (
-  a: ReadingDeadlineWithProgress,
-  b: ReadingDeadlineWithProgress
-) => {
-  const aProgress = calculateProgress(a);
-  const aTotal = calculateTotalQuantity(
-    a.format,
-    a.total_quantity,
-    (a as any).total_minutes
-  );
-  const aRemaining = aTotal - aProgress;
-
-  const bProgress = calculateProgress(b);
-  const bTotal = calculateTotalQuantity(
-    b.format,
-    b.total_quantity,
-    (b as any).total_minutes
-  );
-  const bRemaining = bTotal - bProgress;
-
-  if (aRemaining !== bRemaining) return aRemaining - bRemaining;
-
-  return sortDeadlines(a, b);
-};
+import {
+  sortByDateField,
+  sortDeadlines,
+  sortByStatusDate,
+  sortByPagesRemaining,
+} from './sortUtils';
 
 /**
  * Separation Strategy
@@ -104,13 +29,13 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   const today = dayjs().startOf('day');
 
   deadlines.forEach(deadline => {
+    sortByDateField(deadline.status || [], 'created_at', 'asc');
     const latestStatus =
       deadline.status && deadline.status.length > 0
         ? deadline.status[deadline.status.length - 1].status
         : 'reading';
 
     const deadlineDate = normalizeServerDateStartOfDay(deadline.deadline_date);
-
     if (latestStatus === 'complete') {
       completed.push(deadline);
     } else if (latestStatus === 'paused' || latestStatus === 'did_not_finish') {
@@ -125,7 +50,7 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   });
 
   active.sort(sortDeadlines);
-  overdue.sort(sortByPagesRemaining);
+  overdue.sort((a, b) => sortByPagesRemaining(a, b, calculateProgress));
   completed.sort(sortByStatusDate);
   setAside.sort(sortByStatusDate);
   pending.sort(sortDeadlines);

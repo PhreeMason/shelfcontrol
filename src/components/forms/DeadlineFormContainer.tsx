@@ -103,7 +103,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
   // Ref for the scroll view to control scrolling
   const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
 
-  const { control, handleSubmit, watch, setValue, trigger } =
+  const { control, handleSubmit, watch, setValue, trigger, formState: reactHookFormState } =
     useForm<DeadlineFormData>({
       resolver: zodResolver(deadlineFormSchema),
       defaultValues: getFormDefaultValues(mode),
@@ -245,7 +245,9 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     trigger,
     () => handleSubmit(onSubmit)(),
     selectedFormat,
-    setCurrentStep
+    setCurrentStep,
+    mode,
+    () => reactHookFormState.errors
   );
 
   // Event handlers

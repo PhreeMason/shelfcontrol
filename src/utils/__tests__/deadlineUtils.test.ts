@@ -10,8 +10,8 @@ import {
   getOnTrackDeadlines,
   getUnitForFormat,
   separateDeadlines,
-  sortDeadlines,
 } from '../deadlineUtils';
+import { sortDeadlines } from '../sortUtils';
 
 const createMockDeadline = (
   id: string,
