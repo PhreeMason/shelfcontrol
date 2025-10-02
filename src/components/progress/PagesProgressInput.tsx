@@ -12,7 +12,6 @@ interface PagesProgressInputProps {
   onChange: (value: number) => void;
   onBlur?: () => void;
   totalQuantity: number;
-  placeholder?: string;
   testID?: string;
 }
 
@@ -21,7 +20,6 @@ const PagesProgressInput: React.FC<PagesProgressInputProps> = ({
   onChange,
   onBlur,
   totalQuantity,
-  placeholder = 'Enter current progress',
   testID,
 }) => {
   const { colors } = useTheme();
@@ -46,7 +44,6 @@ const PagesProgressInput: React.FC<PagesProgressInputProps> = ({
           value={transformProgressValueToText(value)}
           onChangeText={text => onChange(transformProgressInputText(text))}
           onBlur={onBlur}
-          placeholder={placeholder}
           placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
           style={[

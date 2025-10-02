@@ -74,27 +74,36 @@ describe('AudiobookProgressInput', () => {
   });
 
   describe('Input Props and Styling', () => {
-    it('should have correct default placeholder', () => {
-      render(<AudiobookProgressInput {...defaultProps} />);
-      expect(screen.getByPlaceholderText('e.g., 3h 2m or 3:02')).toBeTruthy();
+    it('should show tooltip when focused on blank field', () => {
+      render(<AudiobookProgressInput {...defaultProps} value={90} testID="audiobook-progress-input" />);
+      const input = screen.getByTestId('audiobook-progress-input');
+
+      fireEvent(input, 'focus');
+      fireEvent.changeText(input, '');
+
+      expect(screen.getByText('Use formats like: 3h 2m, 3:02, or 45m')).toBeTruthy();
     });
 
-    it('should use custom placeholder when provided', () => {
-      render(
-        <AudiobookProgressInput
-          {...defaultProps}
-          placeholder="Custom placeholder"
-        />
-      );
-      expect(screen.getByPlaceholderText('Custom placeholder')).toBeTruthy();
+    it('should hide tooltip when user starts typing', () => {
+      render(<AudiobookProgressInput {...defaultProps} value={90} testID="audiobook-progress-input" />);
+      const input = screen.getByTestId('audiobook-progress-input');
+
+      fireEvent(input, 'focus');
+      fireEvent.changeText(input, '');
+      fireEvent.changeText(input, '1');
+
+      expect(screen.queryByText('Use formats like: 3h 2m, 3:02, or 45m')).toBeNull();
     });
 
-    it('should have correct placeholder text color', () => {
-      const { getByPlaceholderText } = render(
-        <AudiobookProgressInput {...defaultProps} />
-      );
-      const input = getByPlaceholderText('e.g., 3h 2m or 3:02');
-      expect(input.props.placeholderTextColor).toBe('#666666');
+    it('should hide tooltip on blur', () => {
+      render(<AudiobookProgressInput {...defaultProps} value={90} testID="audiobook-progress-input" />);
+      const input = screen.getByTestId('audiobook-progress-input');
+
+      fireEvent(input, 'focus');
+      fireEvent.changeText(input, '');
+      fireEvent(input, 'blur');
+
+      expect(screen.queryByText('Use formats like: 3h 2m, 3:02, or 45m')).toBeNull();
     });
 
     it('should apply correct styling to input', () => {

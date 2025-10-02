@@ -8,7 +8,6 @@ interface AudiobookProgressInputProps {
   onChange: (minutes: number) => void;
   onBlur?: () => void;
   totalQuantity?: number;
-  placeholder?: string;
   testID?: string;
 }
 
@@ -97,7 +96,6 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
   onChange,
   onBlur,
   totalQuantity,
-  placeholder = 'e.g., 3h 2m or 3:02',
   testID,
 }) => {
   const { colors } = useTheme();
@@ -105,6 +103,7 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
   const [displayValue, setDisplayValue] = useState('');
   const [isValid, setIsValid] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
   const displayValueRef = useRef(displayValue);
 
   // Keep ref in sync with state
@@ -131,6 +130,7 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
 
   const handleChangeText = (text: string) => {
     setDisplayValue(text);
+    setShowTooltip(isFocused && !text.trim());
 
     const parsed = parseAudiobookTime(text);
     setIsValid(parsed !== null);
@@ -142,10 +142,14 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
 
   const handleFocus = () => {
     setIsFocused(true);
+    if (!displayValue.trim()) {
+      setShowTooltip(true);
+    }
   };
 
   const handleBlur = () => {
     setIsFocused(false);
+    setShowTooltip(false);
 
     const parsed = parseAudiobookTime(displayValue);
 
@@ -185,7 +189,7 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
           onChangeText={handleChangeText}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          placeholder={placeholder}
+          placeholder=""
           placeholderTextColor={colors.textMuted}
           style={[
             styles.input,
@@ -205,10 +209,10 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
           </ThemedText>
         )}
       </ThemedView>
-      {!isValid && isFocused && (
+      {(showTooltip || (!isValid && isFocused)) && (
         <ThemedText
           variant="muted"
-          style={[styles.helpText, { color: colors.danger }]}
+          style={[styles.helpText, { color: !isValid ? colors.danger : colors.textMuted }]}
         >
           Use formats like: 3h 2m, 3:02, or 45m
         </ThemedText>
@@ -253,7 +257,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   helpText: {
-    fontSize: 12,
+    fontSize: 14,
+    fontWeight: '600',
     marginTop: 4,
     paddingHorizontal: 8,
   },

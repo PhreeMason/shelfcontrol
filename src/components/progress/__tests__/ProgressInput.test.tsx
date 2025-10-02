@@ -142,7 +142,7 @@ describe('ProgressInput', () => {
       expect(transformProgressValueToText).toHaveBeenCalledWith(50);
     });
 
-    it('should have correct placeholder text', () => {
+    it('should render text input', () => {
       render(
         <ProgressInput
           format="physical"
@@ -151,9 +151,7 @@ describe('ProgressInput', () => {
         />
       );
 
-      expect(
-        screen.getByPlaceholderText('Enter current progress')
-      ).toBeTruthy();
+      expect(screen.getByTestId('pages-progress-input')).toBeTruthy();
     });
 
     it('should have numeric keyboard type', () => {
@@ -214,14 +212,14 @@ describe('ProgressInput', () => {
     });
 
     it('should have correct placeholder text color', () => {
-      const { getByPlaceholderText } = render(
+      const { getByTestId } = render(
         <ProgressInput
           format="physical"
           control={mockControl}
           totalQuantity={258}
         />
       );
-      const textInput = getByPlaceholderText('Enter current progress');
+      const textInput = getByTestId('pages-progress-input');
 
       expect(textInput.props.placeholderTextColor).toBe('#666666');
     });
