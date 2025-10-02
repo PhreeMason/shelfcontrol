@@ -2,7 +2,7 @@ import { ThemedButton, ThemedView } from '@/components/themed';
 import { ROUTES } from '@/constants/routes';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { getDeadlineStatus, getStatusFlags } from '@/utils/deadlineActionUtils';
+import { createReadAgainParams, getDeadlineStatus, getStatusFlags } from '@/utils/deadlineActionUtils';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
@@ -49,7 +49,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
               deadline.id,
               () => {
                 setIsCompleting(false);
-                router.push(`/deadline/${deadline.id}/completion`);
+                router.replace(`/deadline/${deadline.id}/completion`);
               },
               error => {
                 setIsCompleting(false);
@@ -211,20 +211,13 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         {
           text: 'Yes',
           onPress: () => {
+            const readAgainParams = createReadAgainParams(deadline);
             router.push({
-              pathname: '/deadline/new',
+              pathname: readAgainParams.pathname,
               params: {
-                page: '3',
-                bookTitle: deadline.book_title,
-                bookAuthor: deadline.author || '',
-                format: deadline.format,
-                flexibility: (deadline as any).flexibility || 'flexible',
-                ...(deadline.format === 'audio'
-                  ? { totalMinutes: String(deadline.total_quantity) }
-                  : { totalQuantity: String(deadline.total_quantity) }),
-                book_id: (deadline as any).book_id || '',
+                ...readAgainParams.params
               },
-            });
+            } as any);
           },
         },
       ]

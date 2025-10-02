@@ -1,10 +1,10 @@
+import { ROUTES } from '@/constants/routes';
+import { DEADLINE_STATUS } from '@/constants/status';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { convertMinutesToHoursAndMinutes } from './audiobookTimeUtils';
-import { DEADLINE_STATUS } from '@/constants/status';
-import { ROUTES } from '@/constants/routes';
 
 export const getDeadlineStatus = (
   deadline: ReadingDeadlineWithProgress
@@ -196,6 +196,7 @@ export interface ReadAgainParams {
     bookTitle: string;
     bookAuthor: string;
     format: string;
+    source: string;
     flexibility: string;
     totalMinutes?: string;
     totalQuantity?: string;
@@ -211,6 +212,7 @@ export const createReadAgainParams = (
     bookTitle: deadline.book_title,
     bookAuthor: deadline.author || '',
     format: deadline.format,
+    source: deadline.source || '',
     flexibility: (deadline as any).flexibility || 'flexible',
     book_id: (deadline as any).book_id || '',
   };
