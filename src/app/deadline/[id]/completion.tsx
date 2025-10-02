@@ -1,13 +1,14 @@
 import DeadlineCompletionScreen from '@/components/features/deadlines/DeadlineCompletionScreen';
+import { ROUTES } from '@/constants/routes';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { ROUTES } from '@/constants/routes';
 
 export default function DeadlineCompletionPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { deadlines } = useDeadlines();
-
+  const { deadlines, activeDeadlines } = useDeadlines();
+  const nextDeadline = activeDeadlines[0];
+  
   const deadline = deadlines.find(d => d.id === id);
 
   if (!deadline) {
@@ -20,6 +21,10 @@ export default function DeadlineCompletionPage() {
   };
 
   return (
-    <DeadlineCompletionScreen deadline={deadline} onContinue={handleContinue} />
+    <DeadlineCompletionScreen 
+    deadline={deadline} 
+    onContinue={handleContinue} 
+    nextDeadline={nextDeadline}
+    />
   );
 }

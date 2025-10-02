@@ -64,6 +64,8 @@ export const Colors = {
     peach: '#E8C2B9',
     darkPink: '#C8698A',
     orange: '#F5C2A1',
+    darkPurple: '#815ac0',
+    randoPurple: '#8B5A8C',
 
     // Info colors (using peach-orange theme)
     info: '#E8C2B9',
@@ -155,6 +157,8 @@ export const Colors = {
     peach: '#E8C2B9',
     darkPink: '#C8698A',
     orange: '#F5C2A1',
+    darkPurple: '#815ac0',
+    randoPurple: '#8B5A8C',
 
     // Info colors (using peach-orange theme)
     info: '#E8C2B9',
@@ -173,9 +177,9 @@ export const Colors = {
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: '#0a7ea4',
-    danger: '#E8B4B8',
+    danger: '#e85d75',
     inputFocusBackground: '#FFFFFF',
-    inputBlurBackground: '#FAF8F599',
+    inputBlurBackground: '#e8c2b926',
 
     // Urgency levels
     complete: '#7251b5',

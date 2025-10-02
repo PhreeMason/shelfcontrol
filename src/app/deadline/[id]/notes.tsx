@@ -4,7 +4,7 @@ import { useAddNote, useGetNotes } from '@/hooks/useNotes';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
 import { DeadlineNote } from '@/types/notes.types';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import {
   FlatList,
@@ -19,7 +19,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Notes = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const router = useRouter();
   const { colors } = useTheme();
   const [noteText, setNoteText] = useState('');
 
