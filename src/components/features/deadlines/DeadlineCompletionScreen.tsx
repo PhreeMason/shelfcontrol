@@ -77,11 +77,16 @@ const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
         }, styles.lightShadow]}>
           <View style={styles.lightShadow}>
             {bookData?.cover_image_url ? (
-              <Image
-                source={{ uri: bookData.cover_image_url }}
-                style={styles.bookCover}
-                contentFit="cover"
-              />
+              <View style={styles.bookCoverContainer}>
+                <Image
+                  source={{ uri: bookData.cover_image_url }}
+                  style={styles.bookCover}
+                  contentFit="cover"
+                />
+                <View style={styles.checkmarkBadge}>
+                  <ThemedText style={styles.checkmarkIcon}>✓</ThemedText>
+                </View>
+              </View>
             ) : (
               <View
                 style={[styles.fallbackIcon, { backgroundColor: colors.accent }]}
@@ -181,11 +186,33 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 8,
   },
+  bookCoverContainer: {
+    position: 'relative',
+  },
   bookCover: {
     width: 114,
     height: 190,
     borderRadius: 8,
     padding: 1
+  },
+  checkmarkBadge: {
+    position: 'absolute',
+    top: -20,
+    right: -20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#4CAF50',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+  },
+  checkmarkIcon: {
+    fontSize: 24,
+    lineHeight: 24,
+    fontWeight: '900',
+    color: '#FFFFFF',
   },
   fallbackIcon: {
     width: 160,
