@@ -12,6 +12,7 @@ import {
   type ColorToken,
 } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
+import * as Haptics from 'expo-haptics';
 import { ThemedText } from './ThemedText';
 
 export type ThemedButtonProps = TouchableOpacityProps & {
@@ -21,6 +22,7 @@ export type ThemedButtonProps = TouchableOpacityProps & {
   backgroundColor?: ColorToken;
   textColor?: ColorToken;
   textStyle?: TextStyle;
+  hapticsOnPress?: boolean;
 };
 
 export function ThemedButton({
@@ -31,6 +33,7 @@ export function ThemedButton({
   backgroundColor,
   textColor,
   disabled,
+  hapticsOnPress = false,
   textStyle = {},
   ...rest
 }: ThemedButtonProps) {
@@ -65,6 +68,11 @@ export function ThemedButton({
 
   return (
     <TouchableOpacity
+      onPressIn={() => {
+        if (hapticsOnPress) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        }
+      }}
       style={[
         buttonStyle,
         {

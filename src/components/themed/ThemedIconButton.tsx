@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, type TouchableOpacityProps } from 'react-native';
 
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import {
   ComponentVariants,
   createThemedStyle,
@@ -8,7 +9,6 @@ import {
   type ColorToken,
 } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 
 export type ThemedIconButtonProps = TouchableOpacityProps & {
   icon: Parameters<typeof IconSymbol>[0]['name'];

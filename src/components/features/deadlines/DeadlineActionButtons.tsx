@@ -285,6 +285,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   return (
     <ThemedView style={styles.actionButtons}>
       <ThemedButton
+        hapticsOnPress
         title="Notes"
         variant="outline"
         style={styles.actionButton}
@@ -293,6 +294,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       {isPending && (
         <>
           <ThemedButton
+            hapticsOnPress
             title={isStartingReading ? 'Starting...' : 'Start Reading'}
             variant="primary"
             style={styles.actionButton}
@@ -305,6 +307,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       {isActive && (
         <>
           <ThemedButton
+            hapticsOnPress
             title={isCompleting ? 'Completing...' : 'Mark as Complete'}
             variant="success"
             style={styles.actionButton}
@@ -312,6 +315,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
             disabled={isCompleting}
           />
           <ThemedButton
+            hapticsOnPress
             title={isPausing ? 'Pausing...' : 'Pause'}
             variant="secondary"
             style={styles.actionButton}
@@ -326,6 +330,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       {isSetAside && (
         <>
           <ThemedButton
+            hapticsOnPress
             title={isReactivating ? 'Reactivating...' : 'Resume Reading'}
             variant="secondary"
             style={styles.actionButton}
@@ -335,6 +340,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
             disabled={isReactivating}
           />
           <ThemedButton
+            hapticsOnPress
             title={isCompleting ? 'Completing...' : 'Mark as Complete'}
             variant="success"
             style={styles.actionButton}
@@ -346,6 +352,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
 
       {isCompleted && (
         <ThemedButton
+          hapticsOnPress
           title={'Read Again?'}
           variant="primary"
           style={styles.actionButton}
@@ -355,6 +362,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
       )}
 
       <ThemedButton
+        hapticsOnPress
         title={isDeleting ? 'Deleting...' : 'Delete Deadline'}
         variant="dangerOutline"
         style={styles.actionButton}
