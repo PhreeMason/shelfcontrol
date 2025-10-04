@@ -481,11 +481,16 @@ export const handleBookSelection = (
   setDeadlineFromPublicationDate: (value: boolean) => void
 ) => {
   if (book?.publication_date) {
-    const publicationDate = new Date(book.publication_date);
+    let dateString = book.publication_date;
+
+    if (dateString.match(/\+\d{2}$/)) {
+      dateString = dateString.replace(/\+(\d{2})$/, '+$1:00');
+    }
+
+    const publicationDate = new Date(dateString);
     const now = new Date();
 
-    // Check if publication date is in the future
-    if (publicationDate > now) {
+    if (!isNaN(publicationDate.getTime()) && publicationDate > now) {
       setValue('deadline', publicationDate);
       setDeadlineFromPublicationDate(true);
     } else {

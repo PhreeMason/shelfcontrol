@@ -797,6 +797,48 @@ describe('deadlineFormUtils', () => {
       expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
     });
 
+    it('should normalize and set publication date with non-standard timezone format', () => {
+      const book: SelectedBook = {
+        id: 'book-1',
+        api_id: 'api-1',
+        title: 'Future Book',
+        publication_date: '2025-10-28 07:00:00+00',
+      };
+
+      handleBookSelection(
+        book,
+        mockSetValue,
+        mockSetCurrentStep,
+        mockSetDeadlineFromPublicationDate
+      );
+
+      const expectedDate = new Date('2025-10-28 07:00:00+00:00');
+      expect(mockSetValue).toHaveBeenCalledWith('deadline', expectedDate);
+      expect(mockSetDeadlineFromPublicationDate).toHaveBeenCalledWith(true);
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
+    });
+
+    it('should handle publication date with standard timezone format', () => {
+      const book: SelectedBook = {
+        id: 'book-1',
+        api_id: 'api-1',
+        title: 'Future Book',
+        publication_date: '2025-10-28T07:00:00+00:00',
+      };
+
+      handleBookSelection(
+        book,
+        mockSetValue,
+        mockSetCurrentStep,
+        mockSetDeadlineFromPublicationDate
+      );
+
+      const expectedDate = new Date('2025-10-28T07:00:00+00:00');
+      expect(mockSetValue).toHaveBeenCalledWith('deadline', expectedDate);
+      expect(mockSetDeadlineFromPublicationDate).toHaveBeenCalledWith(true);
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
+    });
+
     it('should not set publication date if in past', () => {
       const pastDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const book: SelectedBook = {
@@ -835,6 +877,45 @@ describe('deadlineFormUtils', () => {
         mockSetDeadlineFromPublicationDate
       );
 
+      expect(mockSetDeadlineFromPublicationDate).toHaveBeenCalledWith(false);
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
+    });
+
+    it('should handle invalid publication date gracefully', () => {
+      const book: SelectedBook = {
+        id: 'book-1',
+        api_id: 'api-4',
+        title: 'Book With Invalid Date',
+        publication_date: 'invalid-date',
+      };
+
+      handleBookSelection(
+        book,
+        mockSetValue,
+        mockSetCurrentStep,
+        mockSetDeadlineFromPublicationDate
+      );
+
+      expect(mockSetValue).not.toHaveBeenCalledWith(
+        'deadline',
+        expect.anything()
+      );
+      expect(mockSetDeadlineFromPublicationDate).toHaveBeenCalledWith(false);
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
+    });
+
+    it('should handle null book', () => {
+      handleBookSelection(
+        null,
+        mockSetValue,
+        mockSetCurrentStep,
+        mockSetDeadlineFromPublicationDate
+      );
+
+      expect(mockSetValue).not.toHaveBeenCalledWith(
+        'deadline',
+        expect.anything()
+      );
       expect(mockSetDeadlineFromPublicationDate).toHaveBeenCalledWith(false);
       expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
     });

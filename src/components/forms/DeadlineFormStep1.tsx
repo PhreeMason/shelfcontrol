@@ -48,7 +48,6 @@ export const DeadlineFormStep1 = ({
   } = useSearchBooksList(debouncedQuery);
 
   const { data: fullBookData } = useFetchBookData(selectedApiId || '');
-
   const handleBookSelection = useCallback(async (book: BookSearchResult) => {
     if (!book.api_id) return;
 
