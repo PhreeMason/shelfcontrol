@@ -10,7 +10,7 @@ interface CalendarLegendProps {
 export function CalendarLegend({ style }: CalendarLegendProps) {
   const { colors } = useTheme();
   const legendItems = [
-    { color: colors.good, label: 'Good pace' },
+    { color: colors.good, label: 'On track' },
     { color: colors.approaching, label: 'Approaching' },
     { color: colors.urgent, label: 'Urgent' },
     { color: colors.paused, label: 'Pending' },
@@ -18,7 +18,7 @@ export function CalendarLegend({ style }: CalendarLegendProps) {
   return (
     <View style={[styles.container, style]}>
       <ThemedText variant="label" style={styles.title}>
-        Deadline Status
+        Status
       </ThemedText>
       <View style={styles.legendItems}>
         {legendItems.map((item, index) => (

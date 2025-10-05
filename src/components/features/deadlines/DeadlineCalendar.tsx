@@ -248,7 +248,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#f8f9fa',
     borderRadius: 16,
-    padding: 16,
   },
   modalOverlay: {
     flex: 1,

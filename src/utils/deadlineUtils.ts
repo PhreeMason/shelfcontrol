@@ -12,6 +12,13 @@ import {
   sortByStatusDate,
   sortByPagesRemaining,
 } from './sortUtils';
+import {
+  calculateRequiredPace,
+  getPaceBasedStatus,
+  UserListeningPaceData,
+  UserPaceData,
+} from './paceCalculations';
+import { BOOK_FORMAT } from '@/constants/status';
 
 /**
  * Separation Strategy
@@ -232,10 +239,12 @@ export const getCompletedThisYear = (
 
 /**
  * Get count of deadlines that are on track
- * A deadline is "on track" if its progress percentage is >= expected percentage based on time elapsed
+ * A deadline is "on track" if user's pace meets or exceeds required pace
  */
 export const getOnTrackDeadlines = (
-  deadlines: ReadingDeadlineWithProgress[]
+  deadlines: ReadingDeadlineWithProgress[],
+  userPaceData: UserPaceData,
+  userListeningPaceData: UserListeningPaceData
 ): number => {
   const today = dayjs().startOf('day');
 
@@ -250,18 +259,28 @@ export const getOnTrackDeadlines = (
 
   return active.filter(d => {
     const progressPercentage = calculateProgressPercentage(d);
-    const deadlineDate = normalizeServerDateStartOfDay(d.deadline_date);
-    const createdDate = normalizeServerDateStartOfDay(d.created_at);
-    if (
-      !createdDate.isValid() ||
-      !deadlineDate.isValid() ||
-      !deadlineDate.isAfter(createdDate)
-    ) {
-      return false;
-    }
-    const totalDays = Math.max(1, deadlineDate.diff(createdDate, 'day'));
-    const daysPassed = totalDays - calculateDaysLeft(d.deadline_date);
-    const timePassedPercentage = (daysPassed / totalDays) * 100;
-    return progressPercentage >= timePassedPercentage;
+    const currentProgress = calculateProgress(d);
+    const totalQuantity = calculateTotalQuantity(d.format, d.total_quantity);
+    const daysLeft = calculateDaysLeft(d.deadline_date);
+
+    const requiredPace = calculateRequiredPace(
+      totalQuantity,
+      currentProgress,
+      daysLeft,
+      d.format
+    );
+
+    const relevantPaceData =
+      d.format === BOOK_FORMAT.AUDIO ? userListeningPaceData : userPaceData;
+    const userPace = relevantPaceData.averagePace;
+
+    const status = getPaceBasedStatus(
+      userPace,
+      requiredPace,
+      daysLeft,
+      progressPercentage
+    );
+
+    return status.level === 'good';
   }).length;
 };

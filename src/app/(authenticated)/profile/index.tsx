@@ -4,30 +4,26 @@ import { CompletedBooksCarousel } from '@/components/features/profile/CompletedB
 import ProfileHeaderInfo from '@/components/features/profile/ProfileHeaderInfo';
 import AppHeader from '@/components/shared/AppHeader';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { ThemedButton } from '@/components/themed/ThemedButton';
+import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ROUTES } from '@/constants/routes';
-import { useDeadlines } from '@/providers/DeadlineProvider';
 import { useExportReadingProgress } from '@/hooks/useExport';
 import { useTheme, useThemedStyles } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
+import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
   getCompletedThisMonth,
   getCompletedThisYear,
   getOnTrackDeadlines,
 } from '@/utils/deadlineUtils';
-import {
-  formatListeningPaceDisplay,
-  formatPaceDisplay,
-} from '@/utils/paceCalculations';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
   Alert,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -39,14 +35,20 @@ export default function Profile() {
   const { colors } = useTheme();
   const {
     deadlines,
+    completedDeadlines,
     userPaceData: readingPaceData,
     userListeningPaceData: listeningPaceData,
+    formatPaceForFormat,
   } = useDeadlines();
   const exportMutation = useExportReadingProgress();
 
-  const completedCount = getCompletedThisMonth(deadlines);
-  const onTrackCount = getOnTrackDeadlines(deadlines);
-  const completedThisYear = getCompletedThisYear(deadlines);
+  const completedCount = getCompletedThisMonth(completedDeadlines);
+  const onTrackCount = getOnTrackDeadlines(
+    deadlines,
+    readingPaceData,
+    listeningPaceData
+  );
+  const completedThisYear = getCompletedThisYear(completedDeadlines);
 
   const handleSignOut = async () => {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
@@ -90,9 +92,13 @@ export default function Profile() {
   };
 
   const editButton = (
-    <Pressable onPress={handleEditProfile}>
-      <IconSymbol name="pencil" size={24} color="white" />
-    </Pressable>
+    <ThemedIconButton
+      icon="pencil"
+      size="md"
+      onPress={handleEditProfile}
+      variant="ghost"
+      iconColor="onPrimary"
+    />
   );
 
   const paceStyles = useThemedStyles(theme => ({
@@ -141,7 +147,6 @@ export default function Profile() {
         onBack={() => {}}
         showBackButton={false}
         rightElement={editButton}
-        // headerStyle={{paddingTop: 30}}
       >
         <ProfileHeaderInfo
           avatarUrl={profile?.avatar_url}
@@ -159,7 +164,7 @@ export default function Profile() {
             Platform.OS === 'ios' && styles.iosContainer,
           ]}
         >
-          <ThemedView style={styles.statsCard}>
+          <ThemedView style={styles.section}>
             <ThemedText variant="title" style={styles.sectionTitle}>
               This Month's Reading Progress
             </ThemedText>
@@ -187,7 +192,7 @@ export default function Profile() {
 
           <CompletedBooksCarousel completedDeadlines={completedThisYear} />
 
-          <ThemedView style={styles.calendarSection}>
+          <ThemedView style={styles.section}>
             <ThemedText variant="title" style={styles.sectionTitle}>
               Your Deadlines
             </ThemedText>
@@ -223,7 +228,7 @@ export default function Profile() {
                 </View>
                 <ThemedText style={styles.paceValue}>
                   {readingPaceData.averagePace > 0
-                    ? formatPaceDisplay(readingPaceData.averagePace, 'physical')
+                    ? formatPaceForFormat(readingPaceData.averagePace, 'physical')
                     : '0 pages/day'}
                 </ThemedText>
                 <ThemedText style={paceStyles.paceDescription}>
@@ -250,7 +255,7 @@ export default function Profile() {
                 </View>
                 <ThemedText style={styles.paceValue}>
                   {listeningPaceData.averagePace > 0
-                    ? formatListeningPaceDisplay(listeningPaceData.averagePace)
+                    ? formatPaceForFormat(listeningPaceData.averagePace, 'audio')
                     : '0m/day'}
                 </ThemedText>
                 <ThemedText style={paceStyles.paceDescription}>
@@ -297,16 +302,16 @@ export default function Profile() {
             </View>
           </ThemedView>
 
-          <ThemedView style={styles.infoSection}>
+          <ThemedView style={[styles.section, styles.infoSection]}>
             <View style={styles.infoItem}>
-              <IconSymbol name="envelope" size={20} color="#666" />
+              <IconSymbol name="envelope" size={20} color={colors.icon} />
               <ThemedText style={styles.infoText}>
                 {profile?.email || 'No email provided'}
               </ThemedText>
             </View>
 
             <View style={styles.infoItem}>
-              <IconSymbol name="calendar" size={20} color="#666" />
+              <IconSymbol name="calendar" size={20} color={colors.icon} />
               <ThemedText style={styles.infoText}>
                 Joined{' '}
                 {profile?.created_at
@@ -316,36 +321,22 @@ export default function Profile() {
             </View>
           </ThemedView>
 
-          <TouchableOpacity
-            style={[styles.exportButton, { borderColor: colors.primary }]}
+          <ThemedButton
+            title={exportMutation.isPending ? 'Exporting...' : 'Export Data'}
+            variant="outline"
             onPress={handleExportData}
             disabled={exportMutation.isPending}
             testID="export-data-button"
-          >
-            <IconSymbol
-              name="arrow.down.doc"
-              size={20}
-              color={exportMutation.isPending ? '#999' : colors.primary}
-            />
-            <ThemedText
-              style={[
-                styles.exportButtonText,
-                {
-                  color: exportMutation.isPending ? '#999' : colors.primary,
-                },
-              ]}
-            >
-              {exportMutation.isPending ? 'Exporting...' : 'Export Data'}
-            </ThemedText>
-          </TouchableOpacity>
+            style={styles.exportButton}
+          />
 
-          <TouchableOpacity
-            style={styles.signOutButton}
+          <ThemedButton
+            title="Sign Out"
+            variant="dangerOutline"
             onPress={handleSignOut}
             testID="sign-out-button"
-          >
-            <ThemedText style={styles.signOutButtonText}>Sign Out</ThemedText>
-          </TouchableOpacity>
+            style={styles.signOutButton}
+          />
         </ThemedView>
       </ScrollView>
     </SafeAreaView>
@@ -365,11 +356,12 @@ const styles = StyleSheet.create({
   iosContainer: {
     marginBottom: 80,
   },
-  infoSection: {
-    backgroundColor: '#f8f9fa',
+  section: {
     borderRadius: 16,
-    padding: 20,
+    paddingVertical: 20,
     marginBottom: 24,
+  },
+  infoSection: {
     gap: 16,
   },
   infoItem: {
@@ -381,53 +373,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 18,
   },
-  linkText: {
-    color: '#007AFF',
-  },
   exportButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
-    gap: 8,
     marginBottom: 12,
   },
-  exportButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
   signOutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#ff4444',
-    borderRadius: 12,
-    padding: 16,
-    gap: 8,
-  },
-  signOutButtonText: {
-    color: '#ff4444',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  calendarSection: {
-    backgroundColor: '#f8f9fa',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
+    marginBottom: 12,
   },
   sectionTitle: {
     marginBottom: 16,
     fontWeight: '600',
-  },
-  statsCard: {
-    backgroundColor: '#f8f9fa',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
   },
   statsContainer: {
     flexDirection: 'row',

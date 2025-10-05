@@ -680,8 +680,26 @@ describe('deadlineUtils', () => {
   });
 
   describe('getOnTrackDeadlines', () => {
+    const mockUserPaceData = {
+      averagePace: 20,
+      readingDaysCount: 5,
+      isReliable: true,
+      calculationMethod: 'recent_data' as const,
+    };
+
+    const mockListeningPaceData = {
+      averagePace: 30,
+      listeningDaysCount: 5,
+      isReliable: true,
+      calculationMethod: 'recent_data' as const,
+    };
+
     it('should return 0 for no deadlines', () => {
-      const result = getOnTrackDeadlines([]);
+      const result = getOnTrackDeadlines(
+        [],
+        mockUserPaceData,
+        mockListeningPaceData
+      );
       expect(result).toBe(0);
     });
 
@@ -700,7 +718,11 @@ describe('deadlineUtils', () => {
         [{ current_progress: 150, created_at: '2024-01-05T00:00:00Z' }]
       );
 
-      const result = getOnTrackDeadlines([onTrackDeadline]);
+      const result = getOnTrackDeadlines(
+        [onTrackDeadline],
+        mockUserPaceData,
+        mockListeningPaceData
+      );
       expect(result).toBe(1);
     });
 
@@ -713,7 +735,11 @@ describe('deadlineUtils', () => {
         pastDate.toISOString().split('T')[0]
       );
 
-      const result = getOnTrackDeadlines([overdueDeadline]);
+      const result = getOnTrackDeadlines(
+        [overdueDeadline],
+        mockUserPaceData,
+        mockListeningPaceData
+      );
       expect(result).toBe(0);
     });
 
@@ -730,7 +756,11 @@ describe('deadlineUtils', () => {
         [{ status: 'complete', created_at: '2024-01-15T00:00:00Z' }]
       );
 
-      const result = getOnTrackDeadlines([completedDeadline]);
+      const result = getOnTrackDeadlines(
+        [completedDeadline],
+        mockUserPaceData,
+        mockListeningPaceData
+      );
       expect(result).toBe(0);
     });
 
@@ -749,7 +779,11 @@ describe('deadlineUtils', () => {
         [{ current_progress: 150, created_at: '2024-01-05T00:00:00Z' }]
       );
 
-      const result = getOnTrackDeadlines([deadline]);
+      const result = getOnTrackDeadlines(
+        [deadline],
+        mockUserPaceData,
+        mockListeningPaceData
+      );
       expect(result).toBe(1);
     });
 
@@ -768,7 +802,11 @@ describe('deadlineUtils', () => {
         [{ current_progress: 10, created_at: '2024-01-05T00:00:00Z' }]
       );
 
-      const result = getOnTrackDeadlines([behindDeadline]);
+      const result = getOnTrackDeadlines(
+        [behindDeadline],
+        mockUserPaceData,
+        mockListeningPaceData
+      );
       expect(result).toBe(0);
     });
   });
