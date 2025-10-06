@@ -128,6 +128,7 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
   return (
     <View style={[styles.container, style]}>
       <Calendar
+        enableSwipeMonths
         markedDates={markedDates}
         markingType="multi-dot"
         onDayPress={handleDayPress}
@@ -155,12 +156,11 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
           textMonthFontSize: 18,
           textDayHeaderFontSize: 14,
         }}
-        firstDay={1}
+        firstDay={7}
         hideExtraDays={true}
         disableMonthChange={false}
         hideDayNames={false}
         showWeekNumbers={false}
-        enableSwipeMonths={true}
       />
 
       <Modal
