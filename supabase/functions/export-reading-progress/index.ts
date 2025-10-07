@@ -110,6 +110,24 @@ serve(async (req)=>{
         }
       });
     }
+
+    // Execute the reading notes CSV query
+    const { data: notesData, error: notesError } = await supabaseClient.rpc('get_reading_notes_csv', {
+      p_user_id: user.id
+    });
+    if (notesError) {
+      console.error('Notes database error:', notesError);
+      return new Response(JSON.stringify({
+        error: 'Failed to fetch reading notes data'
+      }), {
+        status: 500,
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+
     // Handle case where user has no data
     if (!data || data.length === 0) {
       return new Response(JSON.stringify({
@@ -123,13 +141,25 @@ serve(async (req)=>{
         }
       });
     }
-    // Generate CSV content
+    // Generate CSV content for progress
     const csvContent = convertToCSV(data);
-    // Generate filename with timestamp
     const timestamp = new Date().toISOString().split('T')[0];
     const filename = `reading-progress-${timestamp}.csv`;
-    // Send email with CSV attachment
-    const emailResult = await sendEmailWithCSV(user.email, csvContent, filename, data.length);
+
+    // Generate CSV content for notes (if any)
+    const notesFilename = `reading-notes-${timestamp}.csv`;
+    const notesCsvContent = notesData && notesData.length > 0 ? convertToCSV(notesData) : null;
+
+    // Send email with CSV attachments
+    const emailResult = await sendEmailWithCSV(
+      user.email,
+      csvContent,
+      filename,
+      data.length,
+      notesCsvContent,
+      notesFilename,
+      notesData?.length || 0
+    );
     if (!emailResult.success) {
       console.error('Email sending failed:', emailResult.error);
       return new Response(JSON.stringify({
@@ -209,12 +239,15 @@ serve(async (req)=>{
   return `${headers}\n${rows}`;
 }
 /**
- * Send email with CSV attachment using Resend API
+ * Send email with CSV attachments using Resend API
  */ async function sendEmailWithCSV(
   userEmail: string,
   csvContent: string,
   filename: string,
-  recordCount: number
+  recordCount: number,
+  notesCsvContent: string | null,
+  notesFilename: string,
+  notesCount: number
 ): Promise<EmailResult> {
   const resendApiKey = Deno.env.get('RESEND_API_KEY');
   if (!resendApiKey) {
@@ -225,6 +258,20 @@ serve(async (req)=>{
   }
   const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') || 'noreply@shelfcontrolapp.com';
   try {
+    const attachments = [
+      {
+        filename: filename,
+        content: btoa(unescape(encodeURIComponent(csvContent)))
+      }
+    ];
+
+    if (notesCsvContent) {
+      attachments.push({
+        filename: notesFilename,
+        content: btoa(unescape(encodeURIComponent(notesCsvContent)))
+      });
+    }
+
     const emailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -237,13 +284,8 @@ serve(async (req)=>{
           userEmail
         ],
         subject: 'Your Reading Progress Export',
-        html: generateEmailHTML(filename, recordCount),
-        attachments: [
-          {
-            filename: filename,
-            content: btoa(unescape(encodeURIComponent(csvContent)))
-          }
-        ]
+        html: generateEmailHTML(filename, recordCount, notesFilename, notesCount),
+        attachments: attachments
       })
     });
     if (!emailResponse.ok) {
@@ -270,7 +312,7 @@ serve(async (req)=>{
 }
 /**
  * Generate HTML email content
- */ function generateEmailHTML(filename: string, recordCount: number): string {
+ */ function generateEmailHTML(filename: string, recordCount: number, notesFilename: string, notesCount: number): string {
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -303,13 +345,16 @@ serve(async (req)=>{
         <h3>Export Details</h3>
         <ul>
           <li><strong>Generated:</strong> ${currentDate}</li>
-          <li><strong>Filename:</strong> ${filename}</li>
-          <li><strong>Total Records:</strong> ${recordCount} ${recordCount === 1 ? 'deadline' : 'deadlines'}</li>
+          <li><strong>Progress File:</strong> ${filename} (${recordCount} ${recordCount === 1 ? 'deadline' : 'deadlines'})</li>
+          ${notesCount > 0 ? `<li><strong>Notes File:</strong> ${notesFilename} (${notesCount} ${notesCount === 1 ? 'note' : 'notes'})</li>` : ''}
         </ul>
       </div>
 
       <h3>Attachment Information</h3>
-      <p>Your CSV file is attached to this email and contains the following information:</p>
+      <p>Your export includes ${notesCount > 0 ? 'two CSV files' : 'one CSV file'}:</p>
+
+      <h4>${filename}</h4>
+      <p>Contains your reading progress data:</p>
       <ul>
         <li>Book titles and authors</li>
         <li>Reading format (physical, eBook, audio)</li>
@@ -319,14 +364,26 @@ serve(async (req)=>{
         <li>Creation and completion dates</li>
       </ul>
 
+      ${notesCount > 0 ? `
+      <h4>${notesFilename}</h4>
+      <p>Contains your deadline notes (${notesCount} total):</p>
+      <ul>
+        <li>Book title for easy reference</li>
+        <li>Deadline ID to match with progress file</li>
+        <li>Note text and timestamps</li>
+        <li>One row per note for easy filtering and searching</li>
+      </ul>
+      ` : ''}
+
       <h3>How to Use Your Export</h3>
-      <p>You can open the CSV file in:</p>
+      <p>You can open ${notesCount > 0 ? 'these CSV files' : 'the CSV file'} in:</p>
       <ul>
         <li><strong>Excel:</strong> Double-click the file or import it</li>
         <li><strong>Google Sheets:</strong> Upload via File &rarr; Import</li>
         <li><strong>Numbers (Mac):</strong> Drag and drop the file</li>
         <li><strong>Any spreadsheet app:</strong> Import as CSV</li>
       </ul>
+      ${notesCount > 0 ? `<p><strong>Tip:</strong> Use the deadline_id column to match notes with their corresponding deadlines in the progress file.</p>` : ''}
 
       <div class="footer">
         <p>This export was generated automatically from your reading progress data.</p>
