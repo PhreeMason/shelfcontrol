@@ -30,7 +30,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 export default function Profile() {
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, refreshProfile } = useAuth();
   const router = useRouter();
   const { colors } = useTheme();
   const {
@@ -41,6 +41,11 @@ export default function Profile() {
     formatPaceForFormat,
   } = useDeadlines();
   const exportMutation = useExportReadingProgress();
+
+  React.useEffect(() => {
+    refreshProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const completedCount = getCompletedThisMonth(completedDeadlines);
   const onTrackCount = getOnTrackDeadlines(
@@ -325,7 +330,7 @@ export default function Profile() {
             title={exportMutation.isPending ? 'Exporting...' : 'Export Data'}
             variant="outline"
             onPress={handleExportData}
-            disabled={exportMutation.isPending}
+            loading={exportMutation.isPending}
             testID="export-data-button"
             style={styles.exportButton}
           />

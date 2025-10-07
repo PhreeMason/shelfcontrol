@@ -1,8 +1,10 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   TextStyle,
   TouchableOpacity,
   type TouchableOpacityProps,
+  View,
 } from 'react-native';
 
 import {
@@ -23,6 +25,7 @@ export type ThemedButtonProps = TouchableOpacityProps & {
   textColor?: ColorToken;
   textStyle?: TextStyle;
   hapticsOnPress?: boolean;
+  loading?: boolean;
 };
 
 export function ThemedButton({
@@ -35,6 +38,7 @@ export function ThemedButton({
   disabled,
   hapticsOnPress = false,
   textStyle = {},
+  loading = false,
   ...rest
 }: ThemedButtonProps) {
   const { colors } = useTheme();
@@ -86,19 +90,27 @@ export function ThemedButton({
         },
         style,
       ]}
-      disabled={disabled}
+      disabled={disabled || loading}
       {...rest}
     >
-      <ThemedText
-        variant="default"
-        style={{
-          color: disabled ? disabledTextColor : themeTextColor,
-          textAlign: 'center',
-          ...textStyle,
-        }}
-      >
-        {title}
-      </ThemedText>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        {loading && (
+          <ActivityIndicator
+            size="small"
+            color={disabled ? disabledTextColor : themeTextColor}
+          />
+        )}
+        <ThemedText
+          variant="default"
+          style={{
+            color: disabled ? disabledTextColor : themeTextColor,
+            textAlign: 'center',
+            ...textStyle,
+          }}
+        >
+          {title}
+        </ThemedText>
+      </View>
     </TouchableOpacity>
   );
 }
