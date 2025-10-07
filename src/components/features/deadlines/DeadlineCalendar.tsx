@@ -247,6 +247,7 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#f8f9fa',
+    padding: 10,
     borderRadius: 16,
   },
   modalOverlay: {
