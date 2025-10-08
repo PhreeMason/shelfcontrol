@@ -3,14 +3,14 @@ import { profileService, UpdateProfileParams } from '@/services';
 import { AppleProfileData } from '@/services/profile.service';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-export const useAvatarUrl = (userId: string | undefined) => {
+export const useAvatarPath = (userId: string | undefined) => {
   return useQuery({
     queryKey: userId
       ? QUERY_KEYS.AVATAR.URL(userId)
       : ['avatar', 'url', undefined],
     queryFn: async () => {
       if (!userId) return null;
-      return profileService.getAvatarUrl(userId);
+      return profileService.getAvatarPath(userId);
     },
     staleTime: 1000 * 60 * 60 * 24,
     enabled: !!userId,

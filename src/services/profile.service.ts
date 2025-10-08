@@ -133,9 +133,9 @@ class ProfileService {
   }
 
   /**
-   * Get avatar URL for a user
+   * Get avatar path for a user (returns storage path, not URL)
    */
-  async getAvatarUrl(userId: string): Promise<string | null> {
+  async getAvatarPath(userId: string): Promise<string | null> {
     try {
       const { data: files, error } = await supabase.storage
         .from(STORAGE_BUCKETS.AVATARS)
@@ -156,9 +156,9 @@ class ProfileService {
       }
 
       const avatarPath = `${userId}/${sortedFiles[0].name}`;
-      return this.getAvatarSignedUrl(avatarPath);
+      return avatarPath;
     } catch (error) {
-      console.error('Error getting avatar URL:', error);
+      console.error('Error getting avatar path:', error);
       return null;
     }
   }

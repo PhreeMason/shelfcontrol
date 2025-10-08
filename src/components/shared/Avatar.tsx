@@ -1,10 +1,15 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useAvatarSignedUrl, useAvatarUrl } from '@/hooks/useProfile';
+import { useAvatarPath, useAvatarSignedUrl } from '@/hooks/useProfile';
 import { useAuth } from '@/providers/AuthProvider';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useMemo } from 'react';
 import { Alert, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+
+const isExternalUrl = (url: string | null | undefined): boolean => {
+  if (!url) return false;
+  return url.startsWith('http://') || url.startsWith('https://');
+};
 
 interface AvatarProps {
   avatarUrl?: string | null | undefined;
@@ -27,22 +32,25 @@ const Avatar: React.FC<AvatarProps> = ({
 }) => {
   const { session } = useAuth();
 
+  const isAvatarUrlExternal = isExternalUrl(avatarUrl);
+
   const shouldFetchUserAvatar =
     !newImageUri && !avatarUrl && !!session?.user?.id;
-  const { data: userAvatarUrl } = useAvatarUrl(
+  const { data: userAvatarPath } = useAvatarPath(
     shouldFetchUserAvatar ? session?.user?.id : undefined
   );
 
-  const avatarPathToFetch = avatarUrl || userAvatarUrl;
+  const avatarPathToConvert = isAvatarUrlExternal ? null : (avatarUrl || userAvatarPath);
   const { data: signedUrl } = useAvatarSignedUrl(
-    !newImageUri ? avatarPathToFetch : null
+    !newImageUri ? avatarPathToConvert : null
   );
 
   const displayUrl = useMemo(() => {
     if (newImageUri) return newImageUri;
+    if (isAvatarUrlExternal) return avatarUrl;
     if (signedUrl) return signedUrl;
     return null;
-  }, [newImageUri, signedUrl]);
+  }, [newImageUri, isAvatarUrlExternal, avatarUrl, signedUrl]);
   const pickImage = async () => {
     if (!editable || !onImageChange) return;
 

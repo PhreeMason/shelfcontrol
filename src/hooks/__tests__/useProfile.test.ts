@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   useProfile,
-  useAvatarUrl,
+  useAvatarPath,
   useAvatarSignedUrl,
   useUpdateProfile,
   useUpdateProfileFromApple,
@@ -12,7 +12,7 @@ import { profileService } from '@/services';
 jest.mock('@/services', () => ({
   profileService: {
     getProfile: jest.fn(),
-    getAvatarUrl: jest.fn(),
+    getAvatarPath: jest.fn(),
     getAvatarSignedUrl: jest.fn(),
     updateProfile: jest.fn(),
     updateProfileFromApple: jest.fn(),
@@ -115,10 +115,10 @@ describe('useProfile hooks', () => {
     });
   });
 
-  describe('useAvatarUrl', () => {
+  describe('useAvatarPath', () => {
     it('should call useQuery with correct parameters for valid userId', () => {
       const userId = 'user-123';
-      useAvatarUrl(userId);
+      useAvatarPath(userId);
 
       expect(mockUseQuery).toHaveBeenCalledWith({
         queryKey: ['avatar', 'url', userId],
@@ -129,7 +129,7 @@ describe('useProfile hooks', () => {
     });
 
     it('should call useQuery with enabled false for undefined userId', () => {
-      useAvatarUrl(undefined);
+      useAvatarPath(undefined);
 
       expect(mockUseQuery).toHaveBeenCalledWith({
         queryKey: ['avatar', 'url', undefined],
@@ -139,34 +139,34 @@ describe('useProfile hooks', () => {
       });
     });
 
-    it('should call profileService.getAvatarUrl when queryFn is executed', async () => {
+    it('should call profileService.getAvatarPath when queryFn is executed', async () => {
       const userId = 'user-123';
-      const avatarUrl = 'https://example.com/avatar.jpg';
-      mockProfileService.getAvatarUrl.mockResolvedValue(avatarUrl);
+      const avatarPath = 'user-123/avatar-123456.jpg';
+      mockProfileService.getAvatarPath.mockResolvedValue(avatarPath);
 
-      useAvatarUrl(userId);
+      useAvatarPath(userId);
       const queryCall = mockUseQuery.mock.calls[0][0];
       const result = await (queryCall.queryFn as any)();
 
-      expect(mockProfileService.getAvatarUrl).toHaveBeenCalledWith(userId);
-      expect(result).toBe(avatarUrl);
+      expect(mockProfileService.getAvatarPath).toHaveBeenCalledWith(userId);
+      expect(result).toBe(avatarPath);
     });
 
     it('should return null when userId is undefined in queryFn', async () => {
-      useAvatarUrl(undefined);
+      useAvatarPath(undefined);
       const queryCall = mockUseQuery.mock.calls[0][0];
       const result = await (queryCall.queryFn as any)();
 
       expect(result).toBeNull();
-      expect(mockProfileService.getAvatarUrl).not.toHaveBeenCalled();
+      expect(mockProfileService.getAvatarPath).not.toHaveBeenCalled();
     });
 
     it('should handle service errors in queryFn', async () => {
       const userId = 'user-123';
       const error = new Error('Avatar not found');
-      mockProfileService.getAvatarUrl.mockRejectedValue(error);
+      mockProfileService.getAvatarPath.mockRejectedValue(error);
 
-      useAvatarUrl(userId);
+      useAvatarPath(userId);
       const queryCall = mockUseQuery.mock.calls[0][0];
 
       await expect((queryCall.queryFn as any)()).rejects.toThrow(
@@ -555,7 +555,7 @@ describe('useProfile hooks', () => {
   describe('Integration Scenarios', () => {
     it('should enable queries correctly based on parameter presence', () => {
       useProfile('user-123');
-      useAvatarUrl('user-123');
+      useAvatarPath('user-123');
       useAvatarSignedUrl('avatar-path');
 
       const profileCall = mockUseQuery.mock.calls[0][0];
@@ -569,7 +569,7 @@ describe('useProfile hooks', () => {
 
     it('should disable queries correctly for falsy parameters', () => {
       useProfile(undefined);
-      useAvatarUrl(undefined);
+      useAvatarPath(undefined);
       useAvatarSignedUrl('');
 
       const profileCall = mockUseQuery.mock.calls[0][0];
@@ -583,7 +583,7 @@ describe('useProfile hooks', () => {
 
     it('should configure stale times correctly for different data types', () => {
       useProfile('user-123');
-      useAvatarUrl('user-123');
+      useAvatarPath('user-123');
       useAvatarSignedUrl('avatar-path');
 
       const profileCall = mockUseQuery.mock.calls[0][0];

@@ -631,10 +631,10 @@ describe('ProfileService', () => {
     });
   });
 
-  describe('getAvatarUrl', () => {
+  describe('getAvatarPath', () => {
     const userId = 'user-123';
 
-    it('should return signed URL for most recent avatar', async () => {
+    it('should return path for most recent avatar', async () => {
       const files = [
         {
           name: 'avatar-1640995200000.jpg',
@@ -645,31 +645,23 @@ describe('ProfileService', () => {
           created_at: '2022-01-02T00:00:00Z',
         },
       ];
-      const signedUrl = 'https://signed-url.com/avatar.png';
 
       const mockList = jest
         .fn()
         .mockResolvedValue({ data: files, error: null });
-      const mockCreateSignedUrl = jest
-        .fn()
-        .mockResolvedValue({ data: { signedUrl }, error: null });
 
       mockSupabaseStorage.from.mockReturnValue({
         list: mockList,
         remove: jest.fn(),
         upload: jest.fn(),
-        createSignedUrl: mockCreateSignedUrl,
+        createSignedUrl: jest.fn(),
         getPublicUrl: jest.fn(),
       });
 
-      const result = await profileService.getAvatarUrl(userId);
+      const result = await profileService.getAvatarPath(userId);
 
       expect(mockList).toHaveBeenCalledWith(userId);
-      expect(mockCreateSignedUrl).toHaveBeenCalledWith(
-        `${userId}/avatar-1641081600000.png`,
-        90 * 24 * 60 * 60
-      );
-      expect(result).toBe(signedUrl);
+      expect(result).toBe(`${userId}/avatar-1641081600000.png`);
     });
 
     it('should return null when no avatar files exist', async () => {
@@ -683,7 +675,7 @@ describe('ProfileService', () => {
         getPublicUrl: jest.fn(),
       });
 
-      const result = await profileService.getAvatarUrl(userId);
+      const result = await profileService.getAvatarPath(userId);
 
       expect(result).toBeNull();
     });
@@ -706,7 +698,7 @@ describe('ProfileService', () => {
         getPublicUrl: jest.fn(),
       });
 
-      const result = await profileService.getAvatarUrl(userId);
+      const result = await profileService.getAvatarPath(userId);
 
       expect(result).toBeNull();
     });
@@ -725,7 +717,7 @@ describe('ProfileService', () => {
         getPublicUrl: jest.fn(),
       });
 
-      const result = await profileService.getAvatarUrl(userId);
+      const result = await profileService.getAvatarPath(userId);
 
       expect(result).toBeNull();
     });
@@ -738,30 +730,22 @@ describe('ProfileService', () => {
         },
         { name: 'avatar-1641081600000.png', created_at: null },
       ];
-      const signedUrl = 'https://signed-url.com/avatar.jpg';
 
       const mockList = jest
         .fn()
         .mockResolvedValue({ data: files, error: null });
-      const mockCreateSignedUrl = jest
-        .fn()
-        .mockResolvedValue({ data: { signedUrl }, error: null });
 
       mockSupabaseStorage.from.mockReturnValue({
         list: mockList,
         remove: jest.fn(),
         upload: jest.fn(),
-        createSignedUrl: mockCreateSignedUrl,
+        createSignedUrl: jest.fn(),
         getPublicUrl: jest.fn(),
       });
 
-      const result = await profileService.getAvatarUrl(userId);
+      const result = await profileService.getAvatarPath(userId);
 
-      expect(mockCreateSignedUrl).toHaveBeenCalledWith(
-        `${userId}/avatar-1640995200000.jpg`,
-        90 * 24 * 60 * 60
-      );
-      expect(result).toBe(signedUrl);
+      expect(result).toBe(`${userId}/avatar-1640995200000.jpg`);
     });
   });
 
