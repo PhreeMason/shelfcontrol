@@ -2,7 +2,11 @@ import { ThemedButton, ThemedView } from '@/components/themed';
 import { ROUTES } from '@/constants/routes';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { createReadAgainParams, getDeadlineStatus, getStatusFlags } from '@/utils/deadlineActionUtils';
+import {
+  createReadAgainParams,
+  getDeadlineStatus,
+  getStatusFlags,
+} from '@/utils/deadlineActionUtils';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, StyleSheet } from 'react-native';
@@ -215,7 +219,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
             router.push({
               pathname: readAgainParams.pathname,
               params: {
-                ...readAgainParams.params
+                ...readAgainParams.params,
               },
             } as any);
           },

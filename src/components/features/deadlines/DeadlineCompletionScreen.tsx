@@ -19,12 +19,12 @@ interface DeadlineCompletionScreenProps {
 }
 
 const congratsQuotes = [
-  "finished with 2 days to spare - look at you being ahead of schedule",
-  "finished early enough to actually write a thoughtful review",
+  'finished with 2 days to spare - look at you being ahead of schedule',
+  'finished early enough to actually write a thoughtful review',
   "from 'too far gone' to 'finished on time' - that's the glow up",
-  "no last-minute speed reading required - you planned this perfectly",
+  'no last-minute speed reading required - you planned this perfectly',
   "finished without that guilty 'barely made it' feeling",
-  "you actually had time to enjoy the ending - imagine that",
+  'you actually had time to enjoy the ending - imagine that',
 ];
 
 const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
@@ -72,9 +72,15 @@ const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
     >
       <View style={styles.captureWrapper}>
         {/* <View style={styles.overlay} /> */}
-        <View style={[styles.content, {
-          backgroundColor: colors.surfaceContainer,
-        }, styles.lightShadow]}>
+        <View
+          style={[
+            styles.content,
+            {
+              backgroundColor: colors.surfaceContainer,
+            },
+            styles.lightShadow,
+          ]}
+        >
           <View style={styles.lightShadow}>
             {bookData?.cover_image_url ? (
               <View style={styles.bookCoverContainer}>
@@ -89,7 +95,10 @@ const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
               </View>
             ) : (
               <View
-                style={[styles.fallbackIcon, { backgroundColor: colors.accent }]}
+                style={[
+                  styles.fallbackIcon,
+                  { backgroundColor: colors.accent },
+                ]}
               >
                 <ThemedText style={styles.celebrationEmoji}>🎉</ThemedText>
               </View>
@@ -107,9 +116,11 @@ const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
             style={styles.subtitleContainer}
           >
             <ThemedText color="darkPurple" style={styles.subtitle}>
-              {congratsQuotes[
-                Math.floor(Math.random() * congratsQuotes.length)
-              ]}
+              {
+                congratsQuotes[
+                  Math.floor(Math.random() * congratsQuotes.length)
+                ]
+              }
             </ThemedText>
           </LinearGradient>
 
@@ -122,9 +133,25 @@ const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
                 colors={[colors.randoPurple, colors.success]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderRadius: 10, }}
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                }}
               >
-                <ThemedText variant='default' color="textOnPrimary" style={{ fontWeight: '700', fontSize: 18, lineHeight: 20, alignItems: 'center', justifyContent: 'center', marginTop: 5 }}>
+                <ThemedText
+                  variant="default"
+                  color="textOnPrimary"
+                  style={{
+                    fontWeight: '700',
+                    fontSize: 18,
+                    lineHeight: 20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginTop: 5,
+                  }}
+                >
                   Continue
                 </ThemedText>
               </LinearGradient>
@@ -132,13 +159,11 @@ const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({
             {/* share button */}
             <ThemedIconButton
               icon="square.and.arrow.up"
-              variant='outline'
-              iconColor='darkPurple'
+              variant="outline"
+              iconColor="darkPurple"
               onPress={handleShare}
             />
           </View>
-
-
         </View>
       </View>
       {/* {nextDeadline ?
@@ -164,7 +189,7 @@ const styles = StyleSheet.create({
   captureWrapper: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   content: {
     alignItems: 'center',
@@ -193,7 +218,7 @@ const styles = StyleSheet.create({
     width: 114,
     height: 190,
     borderRadius: 8,
-    padding: 1
+    padding: 1,
   },
   checkmarkBadge: {
     position: 'absolute',

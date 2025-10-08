@@ -75,35 +75,59 @@ describe('AudiobookProgressInput', () => {
 
   describe('Input Props and Styling', () => {
     it('should show tooltip when focused on blank field', () => {
-      render(<AudiobookProgressInput {...defaultProps} value={90} testID="audiobook-progress-input" />);
+      render(
+        <AudiobookProgressInput
+          {...defaultProps}
+          value={90}
+          testID="audiobook-progress-input"
+        />
+      );
       const input = screen.getByTestId('audiobook-progress-input');
 
       fireEvent(input, 'focus');
       fireEvent.changeText(input, '');
 
-      expect(screen.getByText('Use formats like: 3h 2m, 3:02, or 45m')).toBeTruthy();
+      expect(
+        screen.getByText('Use formats like: 3h 2m, 3:02, or 45m')
+      ).toBeTruthy();
     });
 
     it('should hide tooltip when user starts typing', () => {
-      render(<AudiobookProgressInput {...defaultProps} value={90} testID="audiobook-progress-input" />);
+      render(
+        <AudiobookProgressInput
+          {...defaultProps}
+          value={90}
+          testID="audiobook-progress-input"
+        />
+      );
       const input = screen.getByTestId('audiobook-progress-input');
 
       fireEvent(input, 'focus');
       fireEvent.changeText(input, '');
       fireEvent.changeText(input, '1');
 
-      expect(screen.queryByText('Use formats like: 3h 2m, 3:02, or 45m')).toBeNull();
+      expect(
+        screen.queryByText('Use formats like: 3h 2m, 3:02, or 45m')
+      ).toBeNull();
     });
 
     it('should hide tooltip on blur', () => {
-      render(<AudiobookProgressInput {...defaultProps} value={90} testID="audiobook-progress-input" />);
+      render(
+        <AudiobookProgressInput
+          {...defaultProps}
+          value={90}
+          testID="audiobook-progress-input"
+        />
+      );
       const input = screen.getByTestId('audiobook-progress-input');
 
       fireEvent(input, 'focus');
       fireEvent.changeText(input, '');
       fireEvent(input, 'blur');
 
-      expect(screen.queryByText('Use formats like: 3h 2m, 3:02, or 45m')).toBeNull();
+      expect(
+        screen.queryByText('Use formats like: 3h 2m, 3:02, or 45m')
+      ).toBeNull();
     });
 
     it('should apply correct styling to input', () => {

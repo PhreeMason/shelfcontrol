@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
-    gap: 4
+    gap: 4,
   },
   headerTitle: {
     fontSize: 20,

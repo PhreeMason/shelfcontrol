@@ -80,7 +80,10 @@ export const createFormNavigation = (
         const errors = getFormErrors();
         const earliestErrorStep = findEarliestErrorStep(errors, mode);
 
-        if (earliestErrorStep !== null && earliestErrorStep !== config.currentStep) {
+        if (
+          earliestErrorStep !== null &&
+          earliestErrorStep !== config.currentStep
+        ) {
           setCurrentStep(earliestErrorStep);
         }
         return;

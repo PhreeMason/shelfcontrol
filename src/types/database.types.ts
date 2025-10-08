@@ -226,6 +226,7 @@ export type Database = {
           current_progress: number;
           deadline_id: string;
           id: string;
+          ignore_in_calcs: boolean;
           time_spent_reading: number | null;
           updated_at: string;
         };
@@ -234,6 +235,7 @@ export type Database = {
           current_progress?: number;
           deadline_id: string;
           id?: string;
+          ignore_in_calcs?: boolean;
           time_spent_reading?: number | null;
           updated_at?: string;
         };
@@ -242,6 +244,7 @@ export type Database = {
           current_progress?: number;
           deadline_id?: string;
           id?: string;
+          ignore_in_calcs?: boolean;
           time_spent_reading?: number | null;
           updated_at?: string;
         };
@@ -429,6 +432,16 @@ export type Database = {
       generate_prefixed_id: {
         Args: { prefix: string };
         Returns: string;
+      };
+      get_reading_notes_csv: {
+        Args: { p_user_id: string };
+        Returns: {
+          book_title: string;
+          created_at: string;
+          deadline_id: string;
+          note_text: string;
+          updated_at: string;
+        }[];
       };
       get_reading_progress_csv: {
         Args: { p_user_id: string };

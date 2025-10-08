@@ -19,13 +19,7 @@ import {
 } from '@/utils/deadlineUtils';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import {
-  Alert,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
@@ -233,7 +227,10 @@ export default function Profile() {
                 </View>
                 <ThemedText style={styles.paceValue}>
                   {readingPaceData.averagePace > 0
-                    ? formatPaceForFormat(readingPaceData.averagePace, 'physical')
+                    ? formatPaceForFormat(
+                        readingPaceData.averagePace,
+                        'physical'
+                      )
                     : '0 pages/day'}
                 </ThemedText>
                 <ThemedText style={paceStyles.paceDescription}>
@@ -260,7 +257,10 @@ export default function Profile() {
                 </View>
                 <ThemedText style={styles.paceValue}>
                   {listeningPaceData.averagePace > 0
-                    ? formatPaceForFormat(listeningPaceData.averagePace, 'audio')
+                    ? formatPaceForFormat(
+                        listeningPaceData.averagePace,
+                        'audio'
+                      )
                     : '0m/day'}
                 </ThemedText>
                 <ThemedText style={paceStyles.paceDescription}>

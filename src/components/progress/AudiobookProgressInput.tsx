@@ -212,7 +212,10 @@ const AudiobookProgressInput: React.FC<AudiobookProgressInputProps> = ({
       {(showTooltip || (!isValid && isFocused)) && (
         <ThemedText
           variant="muted"
-          style={[styles.helpText, { color: !isValid ? colors.danger : colors.textMuted }]}
+          style={[
+            styles.helpText,
+            { color: !isValid ? colors.danger : colors.textMuted },
+          ]}
         >
           Use formats like: 3h 2m, 3:02, or 45m
         </ThemedText>
