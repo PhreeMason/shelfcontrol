@@ -6,7 +6,7 @@ import { ThemedText, ThemedView } from '../themed';
 const ProgressHeader: React.FC = () => {
   const { colors, typography } = useTheme();
   return (
-    <ThemedView style={styles.sectionTitle}>
+    <ThemedView testID='progress-header' style={styles.sectionTitle}>
       <ThemedText
         style={[
           typography.bodyLarge,

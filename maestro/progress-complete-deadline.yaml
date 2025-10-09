@@ -70,6 +70,13 @@ tags:
     commands:
       - tapOn: "Not Now"
 
+
+- scrollUntilVisible:
+    element:
+      text: "Reading Progress"
+    direction: UP # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
+    timeout: 5000 # (optional, default: 20000) ms
+
 # Update progress using increment buttons
 - extendedWaitUntil:
     visible: "+10"
@@ -169,12 +176,6 @@ tags:
     visible: "Continue"
     timeout: 3000
 - tapOn: "Continue"
-
-# Navigate back twice
-- extendedWaitUntil:
-    visible: "Back"
-    timeout: 3000
-- tapOn: "Back"
 
 - extendedWaitUntil:
     visible: "Back"
