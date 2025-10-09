@@ -864,6 +864,80 @@ describe('deadlineFormSchema', () => {
     });
   });
 
+  describe('ignoreInCalcs validation', () => {
+    it('should accept true value', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        source: 'Library',
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+        ignoreInCalcs: true,
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.ignoreInCalcs).toBe(true);
+      }
+    });
+
+    it('should accept false value', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        source: 'Library',
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+        ignoreInCalcs: false,
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.ignoreInCalcs).toBe(false);
+      }
+    });
+
+    it('should be undefined when not provided', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        source: 'Library',
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.ignoreInCalcs).toBeUndefined();
+      }
+    });
+
+    it('should reject non-boolean values', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        source: 'Library',
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+        ignoreInCalcs: 'not-a-boolean',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(false);
+    });
+  });
+
   describe('complete form validation', () => {
     it('should validate complete form with all fields', () => {
       const completeData: DeadlineFormData = {
@@ -880,6 +954,7 @@ describe('deadlineFormSchema', () => {
         status: 'active',
         book_id: 'book-123',
         api_id: 'api-456',
+        ignoreInCalcs: false,
       };
 
       const result = deadlineFormSchema.safeParse(completeData);
@@ -902,6 +977,7 @@ describe('deadlineFormSchema', () => {
         currentMinutes: 15,
         flexibility: 'flexible',
         status: 'pending',
+        ignoreInCalcs: false,
       };
 
       const result = deadlineFormSchema.safeParse(audioData);

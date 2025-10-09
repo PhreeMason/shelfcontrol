@@ -163,6 +163,7 @@ describe('deadlineProviderUtils', () => {
             updated_at: '2025-09-15T10:00:00Z',
             deadline_id: mockDeadlines[0].id,
             time_spent_reading: null,
+            ignore_in_calcs: false,
           },
           {
             id: 'progress-2',
@@ -171,6 +172,7 @@ describe('deadlineProviderUtils', () => {
             updated_at: '2025-09-15T15:00:00Z',
             deadline_id: mockDeadlines[0].id,
             time_spent_reading: null,
+            ignore_in_calcs: false,
           },
         ],
       };
@@ -186,7 +188,21 @@ describe('deadlineProviderUtils', () => {
   });
 
   describe('calculateProgressForToday', () => {
+    const mockCalculateProgress = jest.requireMock('@/utils/deadlineUtils')
+      .calculateProgress;
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2024-01-20T12:00:00Z'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+      jest.clearAllMocks();
+    });
+
     it('should calculate progress made today', () => {
+      mockCalculateProgress.mockReturnValue(100);
       const deadline = mockDeadlines[0];
       const result = calculateProgressForToday(deadline);
 
@@ -195,10 +211,191 @@ describe('deadlineProviderUtils', () => {
     });
 
     it('should not return negative progress', () => {
+      mockCalculateProgress.mockReturnValue(100);
       const deadline = mockDeadlines[0];
       const result = calculateProgressForToday(deadline);
 
       expect(result).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should return 0 when progress was made before today', () => {
+      mockCalculateProgress.mockReturnValue(50);
+      const yesterday = new Date('2024-01-19T12:00:00Z');
+      const deadline: ReadingDeadlineWithProgress = {
+        id: 'test-1',
+        user_id: 'user-1',
+        book_id: null,
+        book_title: 'Test Book',
+        author: 'Test Author',
+        deadline_date: '2024-12-31',
+        total_quantity: 300,
+        format: 'physical',
+        flexibility: 'flexible',
+        source: 'test',
+        created_at: yesterday.toISOString(),
+        updated_at: yesterday.toISOString(),
+        progress: [
+          {
+            id: 'p1',
+            deadline_id: 'test-1',
+            current_progress: 50,
+            created_at: yesterday.toISOString(),
+            updated_at: yesterday.toISOString(),
+            time_spent_reading: null,
+            ignore_in_calcs: false,
+          },
+        ],
+        status: [],
+      };
+
+      const result = calculateProgressForToday(deadline);
+      expect(result).toBe(0);
+    });
+
+    it('should count progress made today when created today', () => {
+      mockCalculateProgress.mockReturnValue(50);
+      const today = new Date('2024-01-20T10:00:00Z');
+      const deadline: ReadingDeadlineWithProgress = {
+        id: 'test-1',
+        user_id: 'user-1',
+        book_id: null,
+        book_title: 'Test Book',
+        author: 'Test Author',
+        deadline_date: '2024-12-31',
+        total_quantity: 300,
+        format: 'physical',
+        flexibility: 'flexible',
+        source: 'test',
+        created_at: today.toISOString(),
+        updated_at: today.toISOString(),
+        progress: [
+          {
+            id: 'p1',
+            deadline_id: 'test-1',
+            current_progress: 50,
+            created_at: today.toISOString(),
+            updated_at: today.toISOString(),
+            time_spent_reading: null,
+            ignore_in_calcs: false,
+          },
+        ],
+        status: [],
+      };
+
+      const result = calculateProgressForToday(deadline);
+      expect(result).toBe(50);
+    });
+
+    it('should handle ignore_in_calcs=true with timestamp set to yesterday', () => {
+      mockCalculateProgress.mockReturnValue(50);
+      const yesterday = new Date('2024-01-19T12:00:00Z');
+      const deadline: ReadingDeadlineWithProgress = {
+        id: 'test-1',
+        user_id: 'user-1',
+        book_id: null,
+        book_title: 'Test Book',
+        author: 'Test Author',
+        deadline_date: '2024-12-31',
+        total_quantity: 300,
+        format: 'physical',
+        flexibility: 'flexible',
+        source: 'test',
+        created_at: new Date('2024-01-20T08:00:00Z').toISOString(),
+        updated_at: new Date('2024-01-20T08:00:00Z').toISOString(),
+        progress: [
+          {
+            id: 'p1',
+            deadline_id: 'test-1',
+            current_progress: 50,
+            created_at: yesterday.toISOString(),
+            updated_at: yesterday.toISOString(),
+            time_spent_reading: null,
+            ignore_in_calcs: true,
+          },
+        ],
+        status: [],
+      };
+
+      const result = calculateProgressForToday(deadline);
+      expect(result).toBe(0);
+    });
+
+    it('should handle toggling ignore_in_calcs from true to false - progress should count today', () => {
+      mockCalculateProgress.mockReturnValue(50);
+      const now = new Date('2024-01-20T10:00:00Z');
+      const deadline: ReadingDeadlineWithProgress = {
+        id: 'test-1',
+        user_id: 'user-1',
+        book_id: null,
+        book_title: 'Test Book',
+        author: 'Test Author',
+        deadline_date: '2024-12-31',
+        total_quantity: 300,
+        format: 'physical',
+        flexibility: 'flexible',
+        source: 'test',
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+        progress: [
+          {
+            id: 'p1',
+            deadline_id: 'test-1',
+            current_progress: 50,
+            created_at: now.toISOString(),
+            updated_at: now.toISOString(),
+            time_spent_reading: null,
+            ignore_in_calcs: false,
+          },
+        ],
+        status: [],
+      };
+
+      const result = calculateProgressForToday(deadline);
+      expect(result).toBe(50);
+    });
+
+    it('should correctly calculate when multiple progress entries exist with mixed ignore_in_calcs', () => {
+      mockCalculateProgress.mockReturnValue(80);
+      const yesterday = new Date('2024-01-19T12:00:00Z');
+      const today = new Date('2024-01-20T10:00:00Z');
+      const deadline: ReadingDeadlineWithProgress = {
+        id: 'test-1',
+        user_id: 'user-1',
+        book_id: null,
+        book_title: 'Test Book',
+        author: 'Test Author',
+        deadline_date: '2024-12-31',
+        total_quantity: 300,
+        format: 'physical',
+        flexibility: 'flexible',
+        source: 'test',
+        created_at: yesterday.toISOString(),
+        updated_at: today.toISOString(),
+        progress: [
+          {
+            id: 'p1',
+            deadline_id: 'test-1',
+            current_progress: 30,
+            created_at: yesterday.toISOString(),
+            updated_at: yesterday.toISOString(),
+            time_spent_reading: null,
+            ignore_in_calcs: true,
+          },
+          {
+            id: 'p2',
+            deadline_id: 'test-1',
+            current_progress: 80,
+            created_at: today.toISOString(),
+            updated_at: today.toISOString(),
+            time_spent_reading: null,
+            ignore_in_calcs: false,
+          },
+        ],
+        status: [],
+      };
+
+      const result = calculateProgressForToday(deadline);
+      expect(result).toBe(50);
     });
   });
 

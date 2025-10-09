@@ -121,6 +121,7 @@ describe('deadlineFormUtils', () => {
       totalQuantity: 300,
       flexibility: 'flexible',
       status: 'active',
+      ignoreInCalcs: false,
     };
 
     it('should prepare details for new deadline', () => {
@@ -204,6 +205,7 @@ describe('deadlineFormUtils', () => {
       currentProgress: 150,
       flexibility: 'flexible',
       status: 'active',
+      ignoreInCalcs: false,
     };
 
     it('should prepare progress details for new deadline', () => {
@@ -225,6 +227,7 @@ describe('deadlineFormUtils', () => {
             created_at: '2024-01-01T00:00:00.000Z',
             updated_at: '2024-01-01T00:00:00.000Z',
             time_spent_reading: null,
+            ignore_in_calcs: false,
           },
         ],
       };
@@ -266,6 +269,148 @@ describe('deadlineFormUtils', () => {
 
       expect(result.id).toBe('');
       expect(result.deadline_id).toBe('deadline-123');
+    });
+
+    it('should include ignore_in_calcs as true when ignoreInCalcs is true', () => {
+      const formDataWithIgnore = {
+        ...mockFormData,
+        ignoreInCalcs: true,
+      };
+
+      const result = prepareProgressDetailsFromForm(formDataWithIgnore, 'eBook');
+
+      expect(result.ignore_in_calcs).toBe(true);
+    });
+
+    it('should include ignore_in_calcs as false when ignoreInCalcs is false', () => {
+      const formDataWithIgnore = {
+        ...mockFormData,
+        ignoreInCalcs: false,
+      };
+
+      const result = prepareProgressDetailsFromForm(formDataWithIgnore, 'eBook');
+
+      expect(result.ignore_in_calcs).toBe(false);
+    });
+
+    it('should include ignore_in_calcs as false when ignoreInCalcs is undefined', () => {
+      const result = prepareProgressDetailsFromForm(mockFormData, 'eBook');
+
+      expect(result.ignore_in_calcs).toBe(false);
+    });
+
+    it('should include ignore_in_calcs in existing deadline update', () => {
+      const formDataWithIgnore = {
+        ...mockFormData,
+        ignoreInCalcs: true,
+      };
+
+      const existingDeadline: Partial<ReadingDeadlineWithProgress> = {
+        id: 'deadline-123',
+        progress: [
+          {
+            id: 'progress-456',
+            current_progress: 100,
+            deadline_id: 'deadline-123',
+            created_at: '2024-01-01T00:00:00.000Z',
+            updated_at: '2024-01-01T00:00:00.000Z',
+            time_spent_reading: null,
+            ignore_in_calcs: false,
+          },
+        ],
+      };
+
+      const result = prepareProgressDetailsFromForm(
+        formDataWithIgnore,
+        'eBook',
+        existingDeadline as ReadingDeadlineWithProgress
+      );
+
+      expect(result.ignore_in_calcs).toBe(true);
+    });
+
+    it('should use FIRST progress record when multiple exist', () => {
+      const existingDeadline: Partial<ReadingDeadlineWithProgress> = {
+        id: 'deadline-123',
+        progress: [
+          {
+            id: 'progress-first',
+            current_progress: 50,
+            deadline_id: 'deadline-123',
+            created_at: '2024-01-01T00:00:00.000Z',
+            updated_at: '2024-01-01T00:00:00.000Z',
+            time_spent_reading: null,
+            ignore_in_calcs: true,
+          },
+          {
+            id: 'progress-second',
+            current_progress: 100,
+            deadline_id: 'deadline-123',
+            created_at: '2024-01-05T00:00:00.000Z',
+            updated_at: '2024-01-05T00:00:00.000Z',
+            time_spent_reading: null,
+            ignore_in_calcs: false,
+          },
+          {
+            id: 'progress-latest',
+            current_progress: 150,
+            deadline_id: 'deadline-123',
+            created_at: '2024-01-10T00:00:00.000Z',
+            updated_at: '2024-01-10T00:00:00.000Z',
+            time_spent_reading: null,
+            ignore_in_calcs: false,
+          },
+        ],
+      };
+
+      const result = prepareProgressDetailsFromForm(
+        mockFormData,
+        'eBook',
+        existingDeadline as ReadingDeadlineWithProgress
+      );
+
+      expect(result.id).toBe('progress-first');
+      expect(result.ignore_in_calcs).toBe(false);
+    });
+
+    it('should update first progress record ignore_in_calcs when editing', () => {
+      const formDataWithIgnore = {
+        ...mockFormData,
+        ignoreInCalcs: true,
+      };
+
+      const existingDeadline: Partial<ReadingDeadlineWithProgress> = {
+        id: 'deadline-123',
+        progress: [
+          {
+            id: 'progress-first',
+            current_progress: 50,
+            deadline_id: 'deadline-123',
+            created_at: '2024-01-01T00:00:00.000Z',
+            updated_at: '2024-01-01T00:00:00.000Z',
+            time_spent_reading: null,
+            ignore_in_calcs: false,
+          },
+          {
+            id: 'progress-latest',
+            current_progress: 150,
+            deadline_id: 'deadline-123',
+            created_at: '2024-01-10T00:00:00.000Z',
+            updated_at: '2024-01-10T00:00:00.000Z',
+            time_spent_reading: null,
+            ignore_in_calcs: false,
+          },
+        ],
+      };
+
+      const result = prepareProgressDetailsFromForm(
+        formDataWithIgnore,
+        'eBook',
+        existingDeadline as ReadingDeadlineWithProgress
+      );
+
+      expect(result.id).toBe('progress-first');
+      expect(result.ignore_in_calcs).toBe(true);
     });
   });
 
@@ -384,6 +529,7 @@ describe('deadlineFormUtils', () => {
             created_at: '2024-01-01T00:00:00.000Z',
             updated_at: '2024-01-01T00:00:00.000Z',
             time_spent_reading: null,
+            ignore_in_calcs: false,
           },
         ],
       };
@@ -415,6 +561,7 @@ describe('deadlineFormUtils', () => {
             created_at: '2024-01-01T00:00:00.000Z',
             updated_at: '2024-01-01T00:00:00.000Z',
             time_spent_reading: null,
+            ignore_in_calcs: false,
           },
         ],
       };

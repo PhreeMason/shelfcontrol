@@ -5,7 +5,7 @@ import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React from 'react';
 import { Control, Controller } from 'react-hook-form';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Switch, TouchableOpacity, View } from 'react-native';
 import { PaceEstimateBox } from './PaceEstimateBox';
 import { PrioritySelector } from './PrioritySelector';
 
@@ -92,6 +92,7 @@ export const DeadlineFormStep3 = ({
                 </ThemedText>
                 {showDatePicker && (
                   <DateTimePicker
+                    themeVariant="light"
                     value={deadline}
                     mode="date"
                     display="inline"
@@ -139,12 +140,40 @@ export const DeadlineFormStep3 = ({
             </View>
           ) : null}
         </View>
-        <ThemedText
-          color="textMuted"
-          style={{ marginTop: -18, lineHeight: 18 }}
-        >
-          Count towards today's reading progress
-        </ThemedText>
+        {(watchedValues.currentProgress > 0 ||
+        watchedValues.currentMinutes > 0) && (
+          <View>
+            <Controller
+              control={control}
+              name="ignoreInCalcs"
+              render={({ field: { value, onChange } }) => (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 12,
+                    marginTop: -12, 
+                    marginBottom: 6,
+                  }}
+                >
+                  <Switch
+                    testID="checkbox-ignoreInCalcs"
+                    value={value ?? true}
+                    onValueChange={onChange}
+                    trackColor={{
+                      false: colors.border,
+                      true: colors.primary,
+                    }}
+                    thumbColor={colors.surface}
+                  />
+                  <ThemedText style={{ flex: 1 }}>
+                    Exclude from today's reading progress
+                  </ThemedText>
+                </View>
+              )}
+            />
+          </View>
+        )}
       </View>
 
       <View>

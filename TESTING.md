@@ -303,7 +303,7 @@ jest.mock('@/components/shared/LinearProgressBar', () => {
 ```typescript
 // services/profile.service.ts (35.8% coverage) - Partial
 - uploadAvatar() - file upload with cleanup
-- getAvatarUrl() - file listing and URL generation
+- getAvatarPath() - file listing and path generation
 - getAvatarSignedUrl() - signed URL creation
 
 // hooks/useBooks.ts (0% coverage) - Still needed

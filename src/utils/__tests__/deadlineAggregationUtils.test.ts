@@ -387,6 +387,7 @@ describe('deadlineAggregationUtils', () => {
           deadline_id: id,
           current_progress: 50,
           time_spent_reading: null,
+            ignore_in_calcs: false,
           created_at: '2024-01-01T08:00:00Z',
           updated_at: '2024-01-01T08:00:00Z',
         },
@@ -426,6 +427,15 @@ describe('deadlineAggregationUtils', () => {
     });
 
     describe('calculateTodaysGoalTotals', () => {
+      beforeEach(() => {
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date('2024-01-20T12:00:00Z'));
+      });
+
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
       it('should maintain stable daily goals while tracking current progress', () => {
         const mockDeadlines = [
           createDeadlineWithStatus('1', 'physical', false),
@@ -445,6 +455,126 @@ describe('deadlineAggregationUtils', () => {
         // Total should include both deadlines (ignoring completion status)
         expect(result.total).toBeGreaterThan(0);
         // Current should sum the actual progress from both
+        expect(result.current).toBe(50);
+      });
+
+      it('should count progress in current when ignore_in_calcs is toggled from true to false', () => {
+        const now = new Date('2024-01-20T10:00:00Z');
+        const deadline: ReadingDeadlineWithProgress = {
+          id: 'test-1',
+          user_id: 'user-1',
+          book_id: null,
+          book_title: 'Test Book',
+          author: 'Test Author',
+          deadline_date: '2024-12-31',
+          total_quantity: 300,
+          format: 'physical',
+          flexibility: 'flexible',
+          source: 'test',
+          created_at: now.toISOString(),
+          updated_at: now.toISOString(),
+          progress: [
+            {
+              id: 'p1',
+              deadline_id: 'test-1',
+              current_progress: 50,
+              created_at: now.toISOString(),
+              updated_at: now.toISOString(),
+              time_spent_reading: null,
+              ignore_in_calcs: false,
+            },
+          ],
+          status: [],
+        };
+
+        const mockGetProgress = jest.fn().mockReturnValue(50);
+
+        const result = calculateTodaysGoalTotals([deadline], mockGetProgress);
+
+        expect(result.current).toBe(50);
+        expect(mockGetProgress).toHaveBeenCalledWith(deadline);
+      });
+
+      it('should not count progress in current when ignore_in_calcs=true and timestamp is yesterday', () => {
+        const yesterday = new Date('2024-01-19T12:00:00Z');
+        const deadline: ReadingDeadlineWithProgress = {
+          id: 'test-1',
+          user_id: 'user-1',
+          book_id: null,
+          book_title: 'Test Book',
+          author: 'Test Author',
+          deadline_date: '2024-12-31',
+          total_quantity: 300,
+          format: 'physical',
+          flexibility: 'flexible',
+          source: 'test',
+          created_at: new Date('2024-01-20T08:00:00Z').toISOString(),
+          updated_at: new Date('2024-01-20T08:00:00Z').toISOString(),
+          progress: [
+            {
+              id: 'p1',
+              deadline_id: 'test-1',
+              current_progress: 50,
+              created_at: yesterday.toISOString(),
+              updated_at: yesterday.toISOString(),
+              time_spent_reading: null,
+              ignore_in_calcs: true,
+            },
+          ],
+          status: [],
+        };
+
+        const mockGetProgress = jest.fn().mockReturnValue(0);
+
+        const result = calculateTodaysGoalTotals([deadline], mockGetProgress);
+
+        expect(result.current).toBe(0);
+        expect(mockGetProgress).toHaveBeenCalledWith(deadline);
+      });
+
+      it('should handle realistic scenario: initial baseline then additional progress today', () => {
+        const yesterday = new Date('2024-01-19T12:00:00Z');
+        const today = new Date('2024-01-20T10:00:00Z');
+        const deadline: ReadingDeadlineWithProgress = {
+          id: 'test-1',
+          user_id: 'user-1',
+          book_id: null,
+          book_title: 'Test Book',
+          author: 'Test Author',
+          deadline_date: '2024-12-31',
+          total_quantity: 300,
+          format: 'physical',
+          flexibility: 'flexible',
+          source: 'test',
+          created_at: yesterday.toISOString(),
+          updated_at: today.toISOString(),
+          progress: [
+            {
+              id: 'p1',
+              deadline_id: 'test-1',
+              current_progress: 30,
+              created_at: yesterday.toISOString(),
+              updated_at: yesterday.toISOString(),
+              time_spent_reading: null,
+              ignore_in_calcs: true,
+            },
+            {
+              id: 'p2',
+              deadline_id: 'test-1',
+              current_progress: 80,
+              created_at: today.toISOString(),
+              updated_at: today.toISOString(),
+              time_spent_reading: null,
+              ignore_in_calcs: false,
+            },
+          ],
+          status: [],
+        };
+
+        const mockGetProgress = jest.fn().mockReturnValue(50);
+
+        const result = calculateTodaysGoalTotals([deadline], mockGetProgress);
+
         expect(result.current).toBe(50);
       });
     });

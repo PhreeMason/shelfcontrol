@@ -3,7 +3,6 @@ import Avatar from '@/components/shared/Avatar';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
 import { Redirect, Tabs } from 'expo-router';
@@ -11,7 +10,6 @@ import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
   const { session, profile } = useAuth();
   const { colors } = useTheme();
   if (!session) {
@@ -29,7 +27,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Colors['light'].tint,
         headerShown: false,
         ...(TabBarBackground ? { tabBarBackground: TabBarBackground } : {}),
         tabBarStyle: Platform.select({
@@ -75,7 +73,7 @@ export default function TabLayout() {
                 styles.profileIconContainer,
                 focused && {
                   borderWidth: 2,
-                  borderColor: Colors[colorScheme ?? 'light'].tint,
+                  borderColor: Colors['light'].tint,
                 },
               ]}
             >

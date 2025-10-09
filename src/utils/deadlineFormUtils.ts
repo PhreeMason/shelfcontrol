@@ -1,3 +1,4 @@
+import { ROUTES } from '@/constants/routes';
 import { SelectedBook } from '@/types/bookSearch';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { router } from 'expo-router';
@@ -8,7 +9,6 @@ import {
   calculateTotalQuantityFromForm,
 } from './deadlineCalculations';
 import { DeadlineFormData } from './deadlineFormSchema';
-import { ROUTES } from '@/constants/routes';
 
 export type FormMode = 'new' | 'edit';
 
@@ -122,6 +122,7 @@ export const getFormDefaultValues = (
     status: 'active' as const,
     deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
     flexibility: 'flexible' as const,
+    ignoreInCalcs: true,
   };
 
   if (mode === 'new') {
@@ -219,15 +220,22 @@ export const prepareProgressDetailsFromForm = (
   );
 
   if (existingDeadline) {
-    const latestProgress =
+    const firstProgress =
       existingDeadline.progress && existingDeadline.progress.length > 0
-        ? existingDeadline.progress[existingDeadline.progress.length - 1]
+        ? existingDeadline.progress
+            .slice()
+            .sort(
+              (a, b) =>
+                new Date(a.created_at).getTime() -
+                new Date(b.created_at).getTime()
+            )[0]
         : null;
 
     return {
-      id: latestProgress?.id || '',
+      id: firstProgress?.id || '',
       current_progress: finalCurrentProgress,
       deadline_id: existingDeadline.id,
+      ignore_in_calcs: data.ignoreInCalcs ?? true,
     };
   }
 
@@ -235,6 +243,7 @@ export const prepareProgressDetailsFromForm = (
     id: '',
     current_progress: finalCurrentProgress,
     deadline_id: '',
+    ignore_in_calcs: data.ignoreInCalcs ?? true,
   };
 };
 
@@ -336,9 +345,15 @@ export const populateFormFromDeadline = (
       setValue('status', selectedStatus);
     }
 
-    const latestProgress =
+    const firstProgress =
       deadline.progress && deadline.progress.length > 0
-        ? deadline.progress[deadline.progress.length - 1]
+        ? deadline.progress
+            .slice()
+            .sort(
+              (a, b) =>
+                new Date(a.created_at).getTime() -
+                new Date(b.created_at).getTime()
+            )[0]
         : null;
 
     if (deadline.format === 'audio') {
@@ -350,15 +365,17 @@ export const populateFormFromDeadline = (
       setValue('totalMinutes', minutes);
 
       // Convert current progress minutes to hours and minutes for form display
-      const currentProgressMinutes = latestProgress?.current_progress || 0;
+      const currentProgressMinutes = firstProgress?.current_progress || 0;
       const { hours: currentHours, minutes: currentMins } =
         convertMinutesToHoursAndMinutes(currentProgressMinutes);
       setValue('currentProgress', currentHours);
       setValue('currentMinutes', currentMins);
     } else {
       setValue('totalQuantity', deadline.total_quantity || 0);
-      setValue('currentProgress', latestProgress?.current_progress || 0);
+      setValue('currentProgress', firstProgress?.current_progress || 0);
     }
+
+    setValue('ignoreInCalcs', firstProgress?.ignore_in_calcs ?? false);
 
     return { selectedFormat, selectedPriority, selectedStatus };
   } catch (error) {

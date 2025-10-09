@@ -190,11 +190,15 @@ describe('DeadlineFormStep3', () => {
       ).toBeTruthy();
     });
 
-    it('should render helper text for progress input', () => {
-      render(<DeadlineFormStep3 {...defaultProps} />);
+    it('should render helper text for progress input when progress exists', () => {
+      const watchedValues = {
+        ...defaultProps.watchedValues,
+        currentProgress: 50,
+      };
+      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
 
       expect(
-        screen.getByText("Count towards today's reading progress")
+        screen.getByText("Exclude from today's reading progress")
       ).toBeTruthy();
     });
 
@@ -665,6 +669,79 @@ describe('DeadlineFormStep3', () => {
       expect(screen.queryByText(/Initial Book/)).toBeNull();
       expect(screen.getByText(/Updated Book/)).toBeTruthy();
       expect(screen.getByText(/Aug 31/)).toBeTruthy();
+    });
+  });
+
+  describe('IgnoreInCalcs Checkbox', () => {
+    it('should show checkbox when currentProgress > 0', () => {
+      const watchedValues = {
+        ...defaultProps.watchedValues,
+        currentProgress: 50,
+      };
+      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
+
+      expect(screen.getByTestId('checkbox-ignoreInCalcs')).toBeTruthy();
+    });
+
+    it('should show checkbox when currentMinutes > 0 for audio format', () => {
+      const watchedValues = {
+        ...defaultProps.watchedValues,
+        currentMinutes: 30,
+      };
+      render(
+        <DeadlineFormStep3
+          {...{ ...defaultProps, selectedFormat: 'audio', watchedValues }}
+        />
+      );
+
+      expect(screen.getByTestId('checkbox-ignoreInCalcs')).toBeTruthy();
+    });
+
+    it('should not show checkbox when currentProgress is 0', () => {
+      const watchedValues = {
+        ...defaultProps.watchedValues,
+        currentProgress: 0,
+      };
+      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
+
+      expect(screen.queryByTestId('checkbox-ignoreInCalcs')).toBeNull();
+    });
+
+    it('should not show checkbox when currentProgress is undefined', () => {
+      const watchedValues = {
+        ...defaultProps.watchedValues,
+        currentProgress: undefined,
+      };
+      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
+
+      expect(screen.queryByTestId('checkbox-ignoreInCalcs')).toBeNull();
+    });
+
+    it('should not show checkbox when both currentProgress and currentMinutes are 0', () => {
+      const watchedValues = {
+        ...defaultProps.watchedValues,
+        currentProgress: 0,
+        currentMinutes: 0,
+      };
+      render(
+        <DeadlineFormStep3
+          {...{ ...defaultProps, selectedFormat: 'audio', watchedValues }}
+        />
+      );
+
+      expect(screen.queryByTestId('checkbox-ignoreInCalcs')).toBeNull();
+    });
+
+    it('should show helper text explaining the checkbox purpose', () => {
+      const watchedValues = {
+        ...defaultProps.watchedValues,
+        currentProgress: 50,
+      };
+      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
+
+      expect(
+        screen.getByText(/exclude from today's reading progress/i)
+      ).toBeTruthy();
     });
   });
 

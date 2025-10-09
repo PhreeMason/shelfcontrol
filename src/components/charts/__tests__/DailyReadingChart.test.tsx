@@ -96,6 +96,7 @@ describe('DailyReadingChart', () => {
         created_at: '2024-01-15T10:00:00Z',
         updated_at: '2024-01-15T10:00:00Z',
         time_spent_reading: null,
+            ignore_in_calcs: false,
       },
       {
         id: '2',
@@ -104,6 +105,7 @@ describe('DailyReadingChart', () => {
         created_at: '2024-01-16T10:00:00Z',
         updated_at: '2024-01-16T10:00:00Z',
         time_spent_reading: null,
+            ignore_in_calcs: false,
       },
     ],
     user_id: 'user-1',

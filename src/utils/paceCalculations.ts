@@ -70,7 +70,9 @@ const calculatePaceFromActivityDays = (activityDays: ActivityDay[]): number => {
 export const calculateCutoffTime = (
   deadlines: ReadingDeadlineWithProgress[]
 ): number | null => {
-  const allProgressUpdates = deadlines.flatMap(d => d.progress || []);
+  const allProgressUpdates = deadlines
+    .flatMap(d => d.progress || [])
+    .filter(p => !p.ignore_in_calcs);
   if (allProgressUpdates.length === 0) {
     return null;
   }
@@ -97,22 +99,21 @@ export const processBookProgress = (
 ): void => {
   if (!book.progress || !Array.isArray(book.progress)) return;
 
-  const progress = book.progress
+  const sortedProgress = book.progress
     .slice()
     .sort(
       (a, b) =>
         new Date(a.created_at!).getTime() - new Date(b.created_at!).getTime()
     );
 
-  if (progress.length === 0) return;
+  if (sortedProgress.length === 0) return;
 
-  // Check if first progress was created at same time as deadline (initial progress)
-  let baselineProgress = 0;
-  const originalFirstDate = new Date(progress[0].created_at);
-  if (originalFirstDate.getTime() === new Date(book.created_at).getTime()) {
-    baselineProgress = progress[0].current_progress;
-    progress.shift();
+  const baselineProgress = 0;
+  if (sortedProgress[0].ignore_in_calcs) {
+    sortedProgress.shift();
   }
+
+  const progress = sortedProgress.filter(p => !p.ignore_in_calcs);
 
   if (progress.length === 0) return;
 
@@ -448,11 +449,13 @@ export const minimumUnitsPerDayFromDeadline = (
   const deadlineDate = new Date(deadline.deadline_date).getTime();
   const total = deadline.total_quantity;
 
-  // Sort progress entries by date
-  const sortedProgress = [...deadline.progress].sort(
-    (a, b) =>
-      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  );
+  // Sort progress entries by date and filter out ignored entries
+  const sortedProgress = [...deadline.progress]
+    .filter(p => !p.ignore_in_calcs)
+    .sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    );
 
   // Filter progress entries to only include those before today
   const today = new Date().getTime();

@@ -331,6 +331,87 @@ describe('DeadlinesService', () => {
         })
       );
     });
+
+    it('should set yesterday timestamps when ignore_in_calcs is true', async () => {
+      const mockCurrentDate = new Date('2024-01-15T12:00:00.000Z');
+      const mockYesterday = new Date('2024-01-14T12:00:00.000Z');
+
+      jest.spyOn(global, 'Date').mockImplementation(((...args: any[]) => {
+        if (args.length === 0) {
+          return mockCurrentDate;
+        }
+        return new (Date as any)(...args);
+      }) as any);
+
+      const mockInsert = jest.fn().mockReturnThis();
+      const mockSelect = jest.fn().mockReturnThis();
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
+        .mockResolvedValueOnce({ data: { id: 'rdp-123' }, error: null })
+        .mockResolvedValueOnce({ data: { id: 'status-123' }, error: null });
+
+      mockSupabaseFrom.mockReturnValue({
+        insert: mockInsert,
+        select: mockSelect,
+        single: mockSingle,
+      });
+
+      const paramsWithIgnoreFlag = {
+        ...mockParams,
+        progressDetails: {
+          ...mockParams.progressDetails,
+          ignore_in_calcs: true,
+        },
+      };
+
+      await deadlinesService.addDeadline(userId, paramsWithIgnoreFlag);
+
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          created_at: mockYesterday.toISOString(),
+          updated_at: mockYesterday.toISOString(),
+        })
+      );
+
+      jest.restoreAllMocks();
+    });
+
+    it('should not modify timestamps when ignore_in_calcs is false', async () => {
+      const mockInsert = jest.fn().mockReturnThis();
+      const mockSelect = jest.fn().mockReturnThis();
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
+        .mockResolvedValueOnce({ data: { id: 'rdp-123' }, error: null })
+        .mockResolvedValueOnce({ data: { id: 'status-123' }, error: null });
+
+      mockSupabaseFrom.mockReturnValue({
+        insert: mockInsert,
+        select: mockSelect,
+        single: mockSingle,
+      });
+
+      const currentTimestamp = new Date().toISOString();
+      const paramsWithoutIgnoreFlag = {
+        ...mockParams,
+        progressDetails: {
+          ...mockParams.progressDetails,
+          ignore_in_calcs: false,
+          created_at: currentTimestamp,
+          updated_at: currentTimestamp,
+        },
+      };
+
+      await deadlinesService.addDeadline(userId, paramsWithoutIgnoreFlag);
+
+      const progressInsertCall = mockInsert.mock.calls.find(
+        (call) => call[0].current_progress !== undefined
+      );
+      expect(progressInsertCall).toBeDefined();
+      expect(progressInsertCall[0].created_at).toBe(currentTimestamp);
+      expect(progressInsertCall[0].updated_at).toBe(currentTimestamp);
+    });
   });
 
   describe('updateDeadline', () => {
@@ -399,6 +480,11 @@ describe('DeadlinesService', () => {
 
     it('should update deadline and update existing progress entry', async () => {
       const mockDeadlineData = { id: 'rd-123', ...mockParams.deadlineDetails };
+      const existingProgressData = {
+        id: 'rdp-existing',
+        current_progress: 50,
+        ignore_in_calcs: false,
+      };
       const mockProgressData = { id: 'rdp-existing', current_progress: 100 };
 
       const mockUpdate = jest.fn().mockReturnThis();
@@ -407,6 +493,7 @@ describe('DeadlinesService', () => {
       const mockSingle = jest
         .fn()
         .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
+        .mockResolvedValueOnce({ data: existingProgressData, error: null })
         .mockResolvedValueOnce({ data: mockProgressData, error: null });
 
       mockSupabaseFrom.mockReturnValue({
@@ -485,6 +572,230 @@ describe('DeadlinesService', () => {
       await expect(
         deadlinesService.updateDeadline(userId, mockParams)
       ).rejects.toThrow('Progress update failed');
+    });
+
+    it('should set timestamp to day before deadline creation when creating new progress with ignore_in_calcs true', async () => {
+      const deadlineCreatedAt = '2024-01-15T12:00:00.000Z';
+      const dayBeforeDeadline = new Date(deadlineCreatedAt);
+      dayBeforeDeadline.setDate(dayBeforeDeadline.getDate() - 1);
+
+      const mockDeadlineData = {
+        id: 'rd-123',
+        ...mockParams.deadlineDetails,
+        created_at: deadlineCreatedAt,
+      };
+      const mockProgressData = { id: 'rdp-456', current_progress: 100 };
+
+      const mockUpdate = jest.fn().mockReturnThis();
+      const mockInsert = jest.fn().mockReturnThis();
+      const mockSelect = jest.fn().mockReturnThis();
+      const mockEq = jest.fn().mockReturnThis();
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
+        .mockResolvedValueOnce({ data: mockProgressData, error: null });
+
+      mockSupabaseFrom.mockReturnValue({
+        update: mockUpdate,
+        insert: mockInsert,
+        select: mockSelect,
+        eq: mockEq,
+        single: mockSingle,
+      });
+
+      const paramsWithIgnoreFlag = {
+        ...mockParams,
+        progressDetails: {
+          current_progress: 100,
+          deadline_id: 'rd-123',
+          ignore_in_calcs: true,
+        },
+      };
+
+      await deadlinesService.updateDeadline(userId, paramsWithIgnoreFlag);
+
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'rdp-123',
+          deadline_id: 'rd-123',
+          current_progress: 100,
+          ignore_in_calcs: true,
+          created_at: dayBeforeDeadline.toISOString(),
+          updated_at: dayBeforeDeadline.toISOString(),
+        })
+      );
+    });
+
+    it('should set timestamp same as deadline creation when creating new progress with ignore_in_calcs false', async () => {
+      const deadlineCreatedAt = '2024-01-15T12:00:00.000Z';
+
+      const mockDeadlineData = {
+        id: 'rd-123',
+        ...mockParams.deadlineDetails,
+        created_at: deadlineCreatedAt,
+      };
+      const mockProgressData = { id: 'rdp-456', current_progress: 100 };
+
+      const mockUpdate = jest.fn().mockReturnThis();
+      const mockInsert = jest.fn().mockReturnThis();
+      const mockSelect = jest.fn().mockReturnThis();
+      const mockEq = jest.fn().mockReturnThis();
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
+        .mockResolvedValueOnce({ data: mockProgressData, error: null });
+
+      mockSupabaseFrom.mockReturnValue({
+        update: mockUpdate,
+        insert: mockInsert,
+        select: mockSelect,
+        eq: mockEq,
+        single: mockSingle,
+      });
+
+      const paramsWithoutIgnoreFlag = {
+        ...mockParams,
+        progressDetails: {
+          current_progress: 100,
+          deadline_id: 'rd-123',
+          ignore_in_calcs: false,
+        },
+      };
+
+      await deadlinesService.updateDeadline(userId, paramsWithoutIgnoreFlag);
+
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'rdp-123',
+          deadline_id: 'rd-123',
+          current_progress: 100,
+          ignore_in_calcs: false,
+          created_at: deadlineCreatedAt,
+          updated_at: deadlineCreatedAt,
+        })
+      );
+    });
+
+    it('should update created_at when changing ignore_in_calcs from true to false', async () => {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      const mockDeadlineData = {
+        id: 'rd-123',
+        ...mockParams.deadlineDetails,
+      };
+
+      const existingProgressData = {
+        id: 'rdp-existing',
+        deadline_id: 'rd-123',
+        current_progress: 50,
+        ignore_in_calcs: true,
+        created_at: yesterday.toISOString(),
+        updated_at: yesterday.toISOString(),
+      };
+
+      const updatedProgressData = {
+        ...existingProgressData,
+        ignore_in_calcs: false,
+        updated_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+      };
+
+      const mockUpdate = jest.fn().mockReturnThis();
+      const mockSelect = jest.fn().mockReturnThis();
+      const mockEq = jest.fn().mockReturnThis();
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
+        .mockResolvedValueOnce({ data: existingProgressData, error: null })
+        .mockResolvedValueOnce({ data: updatedProgressData, error: null });
+
+      mockSupabaseFrom.mockReturnValue({
+        update: mockUpdate,
+        select: mockSelect,
+        eq: mockEq,
+        single: mockSingle,
+      });
+
+      const paramsWithToggle = {
+        ...mockParams,
+        progressDetails: {
+          id: 'rdp-existing',
+          current_progress: 50,
+          deadline_id: 'rd-123',
+          ignore_in_calcs: false,
+        },
+      };
+
+      await deadlinesService.updateDeadline(userId, paramsWithToggle);
+
+      expect(mockUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          current_progress: 50,
+          ignore_in_calcs: false,
+          updated_at: expect.any(String),
+          created_at: expect.any(String),
+        })
+      );
+    });
+
+    it('should not update created_at when ignore_in_calcs remains false', async () => {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      const mockDeadlineData = {
+        id: 'rd-123',
+        ...mockParams.deadlineDetails,
+      };
+
+      const existingProgressData = {
+        id: 'rdp-existing',
+        deadline_id: 'rd-123',
+        current_progress: 50,
+        ignore_in_calcs: false,
+        created_at: yesterday.toISOString(),
+        updated_at: yesterday.toISOString(),
+      };
+
+      const updatedProgressData = {
+        ...existingProgressData,
+        current_progress: 75,
+        updated_at: new Date().toISOString(),
+      };
+
+      const mockUpdate = jest.fn().mockReturnThis();
+      const mockSelect = jest.fn().mockReturnThis();
+      const mockEq = jest.fn().mockReturnThis();
+      const mockSingle = jest
+        .fn()
+        .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
+        .mockResolvedValueOnce({ data: existingProgressData, error: null })
+        .mockResolvedValueOnce({ data: updatedProgressData, error: null });
+
+      mockSupabaseFrom.mockReturnValue({
+        update: mockUpdate,
+        select: mockSelect,
+        eq: mockEq,
+        single: mockSingle,
+      });
+
+      const paramsNoToggle = {
+        ...mockParams,
+        progressDetails: {
+          id: 'rdp-existing',
+          current_progress: 75,
+          deadline_id: 'rd-123',
+          ignore_in_calcs: false,
+        },
+      };
+
+      await deadlinesService.updateDeadline(userId, paramsNoToggle);
+
+      const updateCall = mockUpdate.mock.calls.find((call: any) =>
+        call[0].hasOwnProperty('current_progress')
+      );
+
+      expect(updateCall[0]).not.toHaveProperty('created_at');
     });
   });
 

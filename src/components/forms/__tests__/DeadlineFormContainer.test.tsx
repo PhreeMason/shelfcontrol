@@ -599,6 +599,7 @@ describe('DeadlineFormContainer', () => {
             updated_at: '2024-01-01T00:00:00Z',
             current_progress: i * 10,
             time_spent_reading: null,
+            ignore_in_calcs: false,
           })),
       };
 

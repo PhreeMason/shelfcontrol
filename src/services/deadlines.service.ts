@@ -1,3 +1,5 @@
+import { DB_TABLES } from '@/constants/database';
+import { DEADLINE_STATUS } from '@/constants/status';
 import { dayjs } from '@/lib/dayjs';
 import { generateId, supabase } from '@/lib/supabase';
 import {
@@ -6,8 +8,6 @@ import {
   ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
 import { booksService } from './books.service';
-import { DB_TABLES } from '@/constants/database';
-import { DEADLINE_STATUS } from '@/constants/status';
 
 export interface AddDeadlineParams {
   deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
@@ -86,6 +86,14 @@ class DeadlinesService {
 
     if (deadlineError) throw deadlineError;
 
+    // Set to yesterday to exclude from today's reading goal calculations
+    if (progressDetails.ignore_in_calcs) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      progressDetails.created_at = yesterday.toISOString();
+      progressDetails.updated_at = yesterday.toISOString();
+    }
+
     const { data: progressData, error: progressError } = await supabase
       .from(DB_TABLES.DEADLINE_PROGRESS)
       .insert(progressDetails)
@@ -136,12 +144,29 @@ class DeadlinesService {
 
     let progressData;
     if (progressDetails.id) {
+      const { data: existingProgress } = await supabase
+        .from(DB_TABLES.DEADLINE_PROGRESS)
+        .select('*')
+        .eq('id', progressDetails.id)
+        .single();
+
+      const updatePayload: any = {
+        current_progress: progressDetails.current_progress!,
+        ignore_in_calcs: progressDetails.ignore_in_calcs ?? true,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (
+        existingProgress &&
+        existingProgress.ignore_in_calcs === true &&
+        progressDetails.ignore_in_calcs === false
+      ) {
+        updatePayload.created_at = new Date().toISOString();
+      }
+
       const { data, error } = await supabase
         .from(DB_TABLES.DEADLINE_PROGRESS)
-        .update({
-          current_progress: progressDetails.current_progress!,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updatePayload)
         .eq('id', progressDetails.id)
         .select()
         .single();
@@ -150,14 +175,25 @@ class DeadlinesService {
       progressData = data;
     } else {
       const finalProgressId = generateId('rdp');
+
+      let timestamp: string;
+      if (progressDetails.ignore_in_calcs) {
+        const deadlineCreatedAt = new Date(deadlineData.created_at);
+        deadlineCreatedAt.setDate(deadlineCreatedAt.getDate() - 1);
+        timestamp = deadlineCreatedAt.toISOString();
+      } else {
+        timestamp = deadlineData.created_at;
+      }
+
       const { data, error } = await supabase
         .from(DB_TABLES.DEADLINE_PROGRESS)
         .insert({
           id: finalProgressId,
           deadline_id: deadlineDetails.id!,
           current_progress: progressDetails.current_progress!,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          ignore_in_calcs: progressDetails.ignore_in_calcs ?? false,
+          created_at: timestamp,
+          updated_at: timestamp,
         })
         .select()
         .single();

@@ -1,7 +1,7 @@
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react-native';
-import { DeadlineFormStep2 } from '../DeadlineFormStep2';
 import { useWatch } from 'react-hook-form';
+import { DeadlineFormStep2 } from '../DeadlineFormStep2';
 
 // Mock react-hook-form
 jest.mock('react-hook-form', () => ({
@@ -152,11 +152,11 @@ describe('DeadlineFormStep2', () => {
       expect(screen.getByTestId('format-selector')).toBeTruthy();
     });
 
-    it('should render Book type label and typeahead input', () => {
+    it('should render Book Type label and typeahead input', () => {
       render(<DeadlineFormStep2 {...defaultProps} />);
 
       // Check that book type label exists (split across multiple text components)
-      expect(screen.getByText('Book type', { exact: false })).toBeTruthy();
+      expect(screen.getByText('Book Type', { exact: false })).toBeTruthy();
       expect(screen.getByTestId('input-source')).toBeTruthy();
     });
 
@@ -487,13 +487,13 @@ describe('DeadlineFormStep2', () => {
       const authorLabel = screen.getByText('Author');
       const statusLabel = screen.getByText('Status');
       const formatLabel = screen.getByText('Format');
-      const bookTypeLabel = screen.getByText('Book type', { exact: false });
+      const bookTypeLabel = screen.getByText('Book Type', { exact: false });
 
       // These should not contain asterisks
       expect(authorLabel.props.children).toBe('Author');
       expect(statusLabel.props.children).toBe('Status');
       expect(formatLabel.props.children).toBe('Format');
-      // Book type now has nested components, so we just check it exists
+      // Book Type now has nested components, so we just check it exists
       expect(bookTypeLabel).toBeTruthy();
     });
   });

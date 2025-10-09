@@ -23,6 +23,7 @@ const createMockDeadline = (
     current_progress: number;
     created_at: string;
     updated_at?: string;
+    ignore_in_calcs?: boolean;
   }[] = [],
   createdAt = '2024-01-01T00:00:00Z'
 ): ReadingDeadlineWithProgress => ({
@@ -45,6 +46,7 @@ const createMockDeadline = (
     created_at: p.created_at,
     updated_at: p.updated_at || p.created_at,
     time_spent_reading: null,
+    ignore_in_calcs: p.ignore_in_calcs ?? false,
   })),
   status: [],
 });
@@ -182,6 +184,72 @@ describe('paceCalculations', () => {
 
       expect(dailyProgress['2024-01-05']).toBe(50);
     });
+
+    it('should ignore progress entries with ignore_in_calcs set to true', () => {
+      const createdAt = '2024-01-01T00:00:00Z';
+      const book = createMockDeadline(
+        '1',
+        'physical',
+        [
+          { current_progress: 50, created_at: createdAt, ignore_in_calcs: true },
+          { current_progress: 100, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 150, created_at: '2024-01-10T00:00:00Z' },
+        ],
+        createdAt
+      );
+      const dailyProgress: { [date: string]: number } = {};
+      const cutoffTime = new Date('2024-01-01').getTime();
+
+      processBookProgress(book, cutoffTime, dailyProgress);
+
+      expect(dailyProgress['2024-01-05']).toBe(100);
+      expect(dailyProgress['2024-01-10']).toBe(50);
+      expect(Object.keys(dailyProgress)).toHaveLength(2);
+    });
+
+    it('should exclude baseline progress when it has ignore_in_calcs true', () => {
+      const createdAt = '2024-01-01T00:00:00Z';
+      const book = createMockDeadline(
+        '1',
+        'physical',
+        [
+          { current_progress: 50, created_at: createdAt, ignore_in_calcs: true },
+          { current_progress: 100, created_at: '2024-01-05T00:00:00Z' },
+        ],
+        createdAt
+      );
+      const dailyProgress: { [date: string]: number } = {};
+      const cutoffTime = new Date('2024-01-01').getTime();
+
+      processBookProgress(book, cutoffTime, dailyProgress);
+
+      expect(dailyProgress['2024-01-05']).toBe(100);
+    });
+
+    it('should handle mixed ignored and non-ignored progress entries', () => {
+      const book = createMockDeadline(
+        '1',
+        'physical',
+        [
+          { current_progress: 25, created_at: '2024-01-03T00:00:00Z' },
+          { current_progress: 50, created_at: '2024-01-05T00:00:00Z', ignore_in_calcs: true },
+          { current_progress: 100, created_at: '2024-01-08T00:00:00Z' },
+          { current_progress: 125, created_at: '2024-01-10T00:00:00Z', ignore_in_calcs: true },
+          { current_progress: 150, created_at: '2024-01-12T00:00:00Z' },
+        ],
+        '2024-01-01T00:00:00Z'
+      );
+      const dailyProgress: { [date: string]: number } = {};
+      const cutoffTime = new Date('2024-01-01').getTime();
+
+      processBookProgress(book, cutoffTime, dailyProgress);
+
+      expect(dailyProgress['2024-01-03']).toBe(25);
+      expect(dailyProgress['2024-01-05']).toBeUndefined();
+      expect(dailyProgress['2024-01-08']).toBe(75);
+      expect(dailyProgress['2024-01-10']).toBeUndefined();
+      expect(dailyProgress['2024-01-12']).toBe(50);
+    });
   });
 
   describe('getRecentReadingDays', () => {
@@ -274,10 +342,10 @@ describe('paceCalculations', () => {
 
       const result = calculateUserPace(deadlines);
 
-      // Algorithm calculates total pages (80) / days between first and last (3 days) = 26.67, but rounds to 40
-      // And the reading days count is based on unique dates with progress
-      expect(result.averagePace).toBe(40);
-      expect(result.readingDaysCount).toBe(1);
+      // Algorithm calculates total pages (80) / days between first and last (3 days) = 26.67
+      // Reading days count is based on unique dates with progress
+      expect(result.averagePace).toBeCloseTo(26.67, 1);
+      expect(result.readingDaysCount).toBe(2);
       expect(result.isReliable).toBe(true);
     });
 

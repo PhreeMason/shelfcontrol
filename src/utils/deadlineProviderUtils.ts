@@ -147,7 +147,7 @@ export function calculateProgressAsOfStartOfDay(
   // Filter progress entries to only include those from before or at the start of today
   const progressBeforeToday = deadline.progress.filter(progress => {
     const progressDate = new Date(
-      progress.updated_at || progress.created_at || ''
+      progress.created_at || progress.updated_at || ''
     );
     return progressDate <= startOfToday;
   });
@@ -157,9 +157,9 @@ export function calculateProgressAsOfStartOfDay(
   // Find the most recent progress entry before or at the start of today
   const latestProgress = progressBeforeToday.reduce((latest, current) => {
     const currentDate = new Date(
-      current.updated_at || current.created_at || ''
+      current.created_at || current.updated_at || ''
     );
-    const latestDate = new Date(latest.updated_at || latest.created_at || '');
+    const latestDate = new Date(latest.created_at || latest.updated_at || '');
     return currentDate > latestDate ? current : latest;
   });
 
@@ -172,7 +172,14 @@ export function calculateProgressForToday(
 ): number {
   const currentProgress = calculateProgress(deadline);
   const progressAtStartOfDay = calculateProgressAsOfStartOfDay(deadline);
-
+  if (deadline.book_title.includes("Jordan")) {
+    console.log({
+      title: deadline.book_title,
+      currentProgress,
+      progressAtStartOfDay,
+      progressToday: Math.max(0, currentProgress - progressAtStartOfDay),
+    })
+  }
   // Return the difference (progress made today)
   return Math.max(0, currentProgress - progressAtStartOfDay);
 }

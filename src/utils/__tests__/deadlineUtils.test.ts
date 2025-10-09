@@ -47,6 +47,7 @@ const createMockDeadline = (
     created_at: p.created_at,
     updated_at: p.updated_at || p.created_at,
     time_spent_reading: null,
+            ignore_in_calcs: false,
   })),
   status: status?.map((s, index) => ({
     id: `status-${index}`,

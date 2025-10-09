@@ -130,7 +130,7 @@ export const DeadlineFormStep2 = ({
 
       <View>
         <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
-          Book type <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
+          Book Type <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
         <SourceTypeaheadInput
           control={control}
