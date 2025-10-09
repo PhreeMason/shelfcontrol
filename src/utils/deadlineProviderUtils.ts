@@ -172,14 +172,6 @@ export function calculateProgressForToday(
 ): number {
   const currentProgress = calculateProgress(deadline);
   const progressAtStartOfDay = calculateProgressAsOfStartOfDay(deadline);
-  if (deadline.book_title.includes("Jordan")) {
-    console.log({
-      title: deadline.book_title,
-      currentProgress,
-      progressAtStartOfDay,
-      progressToday: Math.max(0, currentProgress - progressAtStartOfDay),
-    })
-  }
   // Return the difference (progress made today)
   return Math.max(0, currentProgress - progressAtStartOfDay);
 }
