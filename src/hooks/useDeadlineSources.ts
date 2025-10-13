@@ -38,7 +38,7 @@ export const useDeadlineSources = () => {
           .filter(s => !DEFAULT_SOURCES.includes(s))
           .sort((a, b) => a.localeCompare(b));
 
-        return [...sortedDefaults, ...sortedUserSources];
+        return [...sortedUserSources, ...sortedDefaults];
       } catch (error) {
         console.error('Error fetching deadline sources:', error);
         return DEFAULT_SOURCES;
