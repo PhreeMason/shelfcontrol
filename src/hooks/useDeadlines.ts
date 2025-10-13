@@ -27,6 +27,9 @@ export const useAddDeadline = () => {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
         });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.SOURCES(userId),
+        });
       }
     },
     onError: error => {
@@ -53,6 +56,9 @@ export const useUpdateDeadline = () => {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
         });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.SOURCES(userId),
+        });
       }
     },
     onError: error => {
@@ -78,6 +84,9 @@ export const useDeleteDeadline = () => {
       if (userId) {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.SOURCES(userId),
         });
       }
     },

@@ -147,7 +147,7 @@ export function calculateProgressAsOfStartOfDay(
   // Filter progress entries to only include those from before or at the start of today
   const progressBeforeToday = deadline.progress.filter(progress => {
     const progressDate = new Date(
-      progress.created_at || progress.updated_at || ''
+      progress.created_at || ''
     );
     return progressDate <= startOfToday;
   });
@@ -157,9 +157,9 @@ export function calculateProgressAsOfStartOfDay(
   // Find the most recent progress entry before or at the start of today
   const latestProgress = progressBeforeToday.reduce((latest, current) => {
     const currentDate = new Date(
-      current.created_at || current.updated_at || ''
+      current.created_at || ''
     );
-    const latestDate = new Date(latest.created_at || latest.updated_at || '');
+    const latestDate = new Date(latest.created_at || '');
     return currentDate > latestDate ? current : latest;
   });
 

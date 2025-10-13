@@ -55,3 +55,34 @@ export const calculateDaysLeft = (
 export const formatDeadlineDate = (dateString: string): string => {
   return formatDisplayDate(dateString, 'MMMM D');
 };
+
+/**
+ * Check if a date falls within the current week
+ * Week starts on Sunday
+ * @param dateString - Date string to check
+ * @returns True if date is in current week
+ */
+export const isDateThisWeek = (dateString: string): boolean => {
+  const date = dayjs(dateString);
+  const startOfWeek = dayjs().startOf('week');
+  const endOfWeek = dayjs().endOf('week');
+  return (
+    (date.isAfter(startOfWeek) || date.isSame(startOfWeek, 'day')) &&
+    (date.isBefore(endOfWeek) || date.isSame(endOfWeek, 'day'))
+  );
+};
+
+/**
+ * Check if a date falls within the current month
+ * @param dateString - Date string to check
+ * @returns True if date is in current month
+ */
+export const isDateThisMonth = (dateString: string): boolean => {
+  const date = dayjs(dateString);
+  const startOfMonth = dayjs().startOf('month');
+  const endOfMonth = dayjs().endOf('month');
+  return (
+    (date.isAfter(startOfMonth) || date.isSame(startOfMonth, 'day')) &&
+    (date.isBefore(endOfMonth) || date.isSame(endOfMonth, 'day'))
+  );
+};

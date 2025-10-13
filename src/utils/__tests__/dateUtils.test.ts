@@ -4,6 +4,8 @@ import {
   isDateBefore,
   calculateDaysLeft,
   formatDeadlineDate,
+  isDateThisWeek,
+  isDateThisMonth,
 } from '../dateUtils';
 
 describe('dateUtils', () => {
@@ -136,6 +138,88 @@ describe('dateUtils', () => {
     it('should handle single digit days', () => {
       const result = formatDeadlineDate('2024-03-05');
       expect(result).toBe('March 5');
+    });
+  });
+
+  describe('isDateThisWeek', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2024-01-15T12:00:00Z'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should return true for dates in current week', () => {
+      const result = isDateThisWeek('2024-01-15');
+      expect(result).toBe(true);
+    });
+
+    it('should return true for start of week', () => {
+      const result = isDateThisWeek('2024-01-14');
+      expect(result).toBe(true);
+    });
+
+    it('should return true for end of week', () => {
+      const result = isDateThisWeek('2024-01-20');
+      expect(result).toBe(true);
+    });
+
+    it('should return false for dates in previous week', () => {
+      const result = isDateThisWeek('2024-01-07');
+      expect(result).toBe(false);
+    });
+
+    it('should return false for dates in next week', () => {
+      const result = isDateThisWeek('2024-01-22');
+      expect(result).toBe(false);
+    });
+
+    it('should handle dates with time components', () => {
+      const result = isDateThisWeek('2024-01-15T23:59:59Z');
+      expect(result).toBe(true);
+    });
+  });
+
+  describe('isDateThisMonth', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2024-01-15T12:00:00Z'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should return true for dates in current month', () => {
+      const result = isDateThisMonth('2024-01-15');
+      expect(result).toBe(true);
+    });
+
+    it('should return true for start of month', () => {
+      const result = isDateThisMonth('2024-01-01');
+      expect(result).toBe(true);
+    });
+
+    it('should return true for end of month', () => {
+      const result = isDateThisMonth('2024-01-31');
+      expect(result).toBe(true);
+    });
+
+    it('should return false for dates in previous month', () => {
+      const result = isDateThisMonth('2023-12-31');
+      expect(result).toBe(false);
+    });
+
+    it('should return false for dates in next month', () => {
+      const result = isDateThisMonth('2024-02-01');
+      expect(result).toBe(false);
+    });
+
+    it('should handle dates with time components', () => {
+      const result = isDateThisMonth('2024-01-15T23:59:59Z');
+      expect(result).toBe(true);
     });
   });
 });

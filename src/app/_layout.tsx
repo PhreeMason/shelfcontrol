@@ -1,6 +1,7 @@
 import { toastConfig } from '@/components/ui/ToastConfig';
 import AuthProvider from '@/providers/AuthProvider';
 import { DeadlineProvider } from '@/providers/DeadlineProvider';
+import PreferencesProvider from '@/providers/PreferencesProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -30,17 +31,19 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
-        <DeadlineProvider>
-          <Stack>
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="(authenticated)"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="deadline" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </DeadlineProvider>
+        <PreferencesProvider>
+          <DeadlineProvider>
+            <Stack>
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="(authenticated)"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="deadline" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </DeadlineProvider>
+        </PreferencesProvider>
         <Toast config={toastConfig} />
       </QueryClientProvider>
     </AuthProvider>

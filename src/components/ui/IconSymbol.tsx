@@ -46,6 +46,7 @@ const MAPPING = {
   'moon.fill': 'dark-mode',
   'slider.horizontal.3': 'tune',
   'book.fill': 'menu-book',
+  'line.3.horizontal.decrease': 'filter-list',
   headphones: 'headphones',
   pencil: 'edit',
   // Calendar icons

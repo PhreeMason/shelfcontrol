@@ -1,13 +1,15 @@
-// index.tsx
 import FilterSection from '@/components/features/deadlines/FilterSection';
 import FilteredDeadlines from '@/components/features/deadlines/FilteredDeadlines';
 import { Header } from '@/components/navigation';
 import { ThemedView } from '@/components/themed';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
+import { useDeadlineSources } from '@/hooks/useDeadlineSources';
 import { useDeadlines } from '@/providers/DeadlineProvider';
+import { usePreferences } from '@/providers/PreferencesProvider';
+import { FilterType } from '@/types/deadline.types';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
-import React, { useState } from 'react';
+import React from 'react';
 import { Platform, RefreshControl, StyleSheet } from 'react-native';
 import Animated, {
   useAnimatedScrollHandler,
@@ -17,17 +19,18 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-type FilterType =
-  | 'active'
-  | 'overdue'
-  | 'pending'
-  | 'completed'
-  | 'paused'
-  | 'all';
-
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const [selectedFilter, setSelectedFilter] = useState<FilterType>('active');
+  const {
+    selectedFilter,
+    setSelectedFilter,
+    timeRangeFilter,
+    setTimeRangeFilter,
+    selectedFormats,
+    setSelectedFormats,
+    selectedSources,
+    setSelectedSources,
+  } = usePreferences();
   const {
     deadlines,
     activeDeadlines,
@@ -38,16 +41,15 @@ export default function HomeScreen() {
     refetch,
     isRefreshing,
   } = useDeadlines();
+  const { data: availableSources = [] } = useDeadlineSources();
+  const prevSelectedFilterRef = React.useRef<FilterType | null>(null);
 
-  // Calculate gradient height once
   const gradientHeight = Math.max(insets.top, 10);
 
-  // Animation values
   const scrollY = useSharedValue(0);
   const filterHeight = useSharedValue(0);
   const filterTop = useSharedValue(0);
 
-  // Scroll handler
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
       scrollY.value = event.contentOffset.y;
@@ -82,8 +84,7 @@ export default function HomeScreen() {
     filterTop.value = event.nativeEvent.layout.y;
   };
 
-  // Determine which filters have deadlines
-  const getAvailableFilters = (): FilterType[] => {
+  const availableFilters = React.useMemo(() => {
     const available: FilterType[] = [];
 
     if (activeDeadlines.length > 0) available.push('active');
@@ -94,11 +95,15 @@ export default function HomeScreen() {
     if (deadlines.length > 0) available.push('all');
 
     return available;
-  };
+  }, [
+    activeDeadlines.length,
+    overdueDeadlines.length,
+    pendingDeadlines.length,
+    completedDeadlines.length,
+    pausedDeadlines.length,
+    deadlines.length,
+  ]);
 
-  const availableFilters = getAvailableFilters();
-
-  // Switch to first available filter if current is not available
   React.useEffect(() => {
     if (
       availableFilters.length > 0 &&
@@ -106,7 +111,16 @@ export default function HomeScreen() {
     ) {
       setSelectedFilter(availableFilters[0]);
     }
-  }, [availableFilters, selectedFilter]);
+  }, [availableFilters, selectedFilter, setSelectedFilter]);
+
+  React.useEffect(() => {
+    if (prevSelectedFilterRef.current !== null && prevSelectedFilterRef.current !== selectedFilter) {
+      setTimeRangeFilter('all');
+      setSelectedFormats(['physical', 'eBook', 'audio']);
+      setSelectedSources([]);
+    }
+    prevSelectedFilterRef.current = selectedFilter;
+  }, [selectedFilter, setTimeRangeFilter, setSelectedFormats, setSelectedSources]);
 
   return (
     <ThemedView style={[styles.container]}>
@@ -121,6 +135,13 @@ export default function HomeScreen() {
       <FilterSection
         selectedFilter={selectedFilter}
         onFilterChange={setSelectedFilter}
+        timeRangeFilter={timeRangeFilter}
+        onTimeRangeChange={setTimeRangeFilter}
+        selectedFormats={selectedFormats}
+        onFormatsChange={setSelectedFormats}
+        selectedSources={selectedSources}
+        onSourcesChange={setSelectedSources}
+        availableSources={availableSources}
         animatedStyle={stickyFilterStyle}
         availableFilters={availableFilters}
       />
@@ -141,12 +162,24 @@ export default function HomeScreen() {
         <FilterSection
           selectedFilter={selectedFilter}
           onFilterChange={setSelectedFilter}
+          timeRangeFilter={timeRangeFilter}
+          onTimeRangeChange={setTimeRangeFilter}
+          selectedFormats={selectedFormats}
+          onFormatsChange={setSelectedFormats}
+          selectedSources={selectedSources}
+          onSourcesChange={setSelectedSources}
+          availableSources={availableSources}
           animatedStyle={scrollableFilterStyle}
           onLayout={handleFilterLayout}
           availableFilters={availableFilters}
         />
 
-        <FilteredDeadlines selectedFilter={selectedFilter} />
+        <FilteredDeadlines
+          selectedFilter={selectedFilter}
+          timeRangeFilter={timeRangeFilter}
+          selectedFormats={selectedFormats}
+          selectedSources={selectedSources}
+        />
       </Animated.ScrollView>
 
       {/* Floating action button */}

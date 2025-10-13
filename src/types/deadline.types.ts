@@ -19,3 +19,15 @@ export type ReadingDeadlineWithProgress = ReadingDeadline & {
 export type ReadingDeadlineInsertWithProgress = ReadingDeadlineInsert & {
   progress?: ReadingDeadlineProgressInsert[];
 };
+
+export type FilterType =
+  | 'active'
+  | 'overdue'
+  | 'pending'
+  | 'completed'
+  | 'paused'
+  | 'all';
+
+export type TimeRangeFilter = 'all' | 'thisWeek' | 'thisMonth';
+
+export type BookFormat = 'physical' | 'eBook' | 'audio';

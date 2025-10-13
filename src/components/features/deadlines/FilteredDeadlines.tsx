@@ -1,22 +1,26 @@
 import { useDeadlines } from '@/providers/DeadlineProvider';
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import {
+  BookFormat,
+  FilterType,
+  ReadingDeadlineWithProgress,
+  TimeRangeFilter,
+} from '@/types/deadline.types';
+import { isDateThisMonth, isDateThisWeek } from '@/utils/dateUtils';
 import React from 'react';
 import DeadlinesList from './DeadlinesList';
 
-type FilterType =
-  | 'active'
-  | 'overdue'
-  | 'pending'
-  | 'completed'
-  | 'paused'
-  | 'all';
-
 interface FilteredDeadlinesProps {
   selectedFilter: FilterType;
+  timeRangeFilter: TimeRangeFilter;
+  selectedFormats: BookFormat[];
+  selectedSources: string[];
 }
 
 const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   selectedFilter,
+  timeRangeFilter,
+  selectedFormats,
+  selectedSources,
 }) => {
   const {
     deadlines,
@@ -29,46 +33,80 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     error,
   } = useDeadlines();
 
-  const getFilteredDeadlines = (): ReadingDeadlineWithProgress[] => {
-    switch (selectedFilter) {
-      case 'active':
-        return activeDeadlines;
-      case 'overdue':
-        return overdueDeadlines;
-      case 'pending':
-        return pendingDeadlines;
-      case 'completed':
-        return completedDeadlines;
-      case 'paused':
-        return pausedDeadlines;
-      case 'all':
-        return deadlines;
-      default:
-        return activeDeadlines;
+  const applyAllFilters = (
+    deadlines: ReadingDeadlineWithProgress[]
+  ): ReadingDeadlineWithProgress[] => {
+    let filtered = deadlines;
+
+    if (timeRangeFilter !== 'all') {
+      filtered = filtered.filter(deadline => {
+        if (!deadline.deadline_date) return false;
+
+        if (timeRangeFilter === 'thisWeek') {
+          return isDateThisWeek(deadline.deadline_date);
+        }
+
+        if (timeRangeFilter === 'thisMonth') {
+          return isDateThisMonth(deadline.deadline_date);
+        }
+
+        return true;
+      });
     }
+
+    if (selectedFormats.length > 0 && selectedFormats.length < 3) {
+      filtered = filtered.filter(deadline =>
+        selectedFormats.includes(deadline.format as BookFormat)
+      );
+    }
+
+    if (selectedSources.length > 0) {
+      filtered = filtered.filter(deadline =>
+        selectedSources.includes(deadline.source)
+      );
+    }
+
+    return filtered;
+  };
+
+  const getFilteredDeadlines = (): ReadingDeadlineWithProgress[] => {
+    let filtered: ReadingDeadlineWithProgress[];
+
+    const deadlineMap = new Map<FilterType, ReadingDeadlineWithProgress[]>();
+    deadlineMap.set('active', activeDeadlines);
+    deadlineMap.set('overdue', overdueDeadlines);
+    deadlineMap.set('pending', pendingDeadlines);
+    deadlineMap.set('completed', completedDeadlines);
+    deadlineMap.set('paused', pausedDeadlines);
+    deadlineMap.set('all', deadlines);
+
+    if (deadlineMap.has(selectedFilter)) {
+      filtered = deadlineMap.get(selectedFilter)!;
+    } else {
+      filtered = activeDeadlines;
+    }
+    return applyAllFilters(filtered);
   };
 
   const getEmptyMessage = (): string => {
-    switch (selectedFilter) {
-      case 'active':
-        return 'No active deadlines';
-      case 'overdue':
-        return 'No overdue deadlines';
-      case 'pending':
-        return 'No pending deadlines';
-      case 'completed':
-        return 'No completed deadlines';
-      case 'paused':
-        return 'No deadlines paused';
-      case 'all':
-        return 'No deadlines found';
-      default:
-        return 'No deadlines found';
+
+    const emptyMessages = {
+      active: 'No active deadlines',
+      overdue: 'No overdue deadlines',
+      pending: 'No pending deadlines',
+      completed: 'No completed deadlines',
+      paused: 'No deadlines paused',
+      all: 'No deadlines found',
+    };
+
+    if (emptyMessages[selectedFilter as keyof typeof emptyMessages]) {
+      return emptyMessages[selectedFilter as keyof typeof emptyMessages];
     }
+    return 'No deadlines found';
   };
 
   const filteredDeadlines = getFilteredDeadlines();
-
+  console.log('Filtered Deadlines:', JSON.stringify(filteredDeadlines, null, 2));
   return (
     <DeadlinesList
       deadlines={filteredDeadlines}

@@ -1,16 +1,16 @@
-// components/FilterSection.tsx
 import { ThemedButton } from '@/components/themed/ThemedButton';
-import React from 'react';
+import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
+import { useDeadlines } from '@/providers/DeadlineProvider';
+import {
+  BookFormat,
+  FilterType,
+  ReadingDeadlineWithProgress,
+  TimeRangeFilter,
+} from '@/types/deadline.types';
+import React, { useState } from 'react';
 import { LayoutChangeEvent, ScrollView, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
-
-type FilterType =
-  | 'active'
-  | 'overdue'
-  | 'pending'
-  | 'completed'
-  | 'paused'
-  | 'all';
+import { FilterSheet } from './FilterSheet';
 
 interface FilterOption {
   key: FilterType;
@@ -20,6 +20,13 @@ interface FilterOption {
 interface FilterSectionProps {
   selectedFilter: FilterType;
   onFilterChange: (filter: FilterType) => void;
+  timeRangeFilter: TimeRangeFilter;
+  onTimeRangeChange: (filter: TimeRangeFilter) => void;
+  selectedFormats: BookFormat[];
+  onFormatsChange: (formats: BookFormat[]) => void;
+  selectedSources: string[];
+  onSourcesChange: (sources: string[]) => void;
+  availableSources: string[];
   animatedStyle?: any;
   onLayout?: (event: LayoutChangeEvent) => void;
   availableFilters?: FilterType[];
@@ -37,13 +44,53 @@ const filterOptions: FilterOption[] = [
 const FilterSection: React.FC<FilterSectionProps> = ({
   selectedFilter,
   onFilterChange,
+  timeRangeFilter,
+  onTimeRangeChange,
+  selectedFormats,
+  onFormatsChange,
+  selectedSources,
+  onSourcesChange,
+  availableSources,
   animatedStyle,
   onLayout,
   availableFilters,
 }) => {
+  const [showFilterSheet, setShowFilterSheet] = useState(false);
+  const {
+    deadlines,
+    activeDeadlines,
+    overdueDeadlines,
+    pendingDeadlines,
+    completedDeadlines,
+    pausedDeadlines,
+  } = useDeadlines();
+
+  const getBaseDeadlines = (): ReadingDeadlineWithProgress[] => {
+    const deadlineMap = new Map<string, ReadingDeadlineWithProgress[]>();
+    deadlineMap.set('active', activeDeadlines);
+    deadlineMap.set('overdue', overdueDeadlines);
+    deadlineMap.set('pending', pendingDeadlines);
+    deadlineMap.set('completed', completedDeadlines);
+    deadlineMap.set('paused', pausedDeadlines);
+    deadlineMap.set('all', deadlines);
+
+    if (deadlineMap.has(selectedFilter)) {
+      return deadlineMap.get(selectedFilter)!;
+    }
+    return activeDeadlines;
+  };
+
+  const baseDeadlines = getBaseDeadlines();
+
   const visibleOptions = availableFilters
     ? filterOptions.filter(option => availableFilters.includes(option.key))
     : filterOptions;
+
+  const hasActiveFilters =
+    timeRangeFilter !== 'all' ||
+    selectedFormats.length < 3 ||
+    selectedSources.length > 0;
+
   return (
     <Animated.View
       style={[styles.container, animatedStyle]}
@@ -56,6 +103,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           contentContainerStyle={styles.filterContentContainer}
           style={styles.filterScrollView}
         >
+          <ThemedIconButton
+            icon="line.3.horizontal.decrease"
+            style={styles.iconFilterButton}
+            variant={hasActiveFilters ? 'primary' : 'outline'}
+            onPress={() => setShowFilterSheet(true)}
+            size="sm"
+          />
+
           {visibleOptions.map(option => (
             <ThemedButton
               key={option.key}
@@ -67,6 +122,19 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           ))}
         </ScrollView>
       </View>
+
+      <FilterSheet
+        visible={showFilterSheet}
+        onClose={() => setShowFilterSheet(false)}
+        deadlines={baseDeadlines}
+        timeRangeFilter={timeRangeFilter}
+        onTimeRangeChange={onTimeRangeChange}
+        selectedFormats={selectedFormats}
+        onFormatsChange={onFormatsChange}
+        selectedSources={selectedSources}
+        onSourcesChange={onSourcesChange}
+        availableSources={availableSources}
+      />
     </Animated.View>
   );
 };
@@ -92,6 +160,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     minWidth: 80,
+  },
+  iconFilterButton: {
+    width: 40,
+    height: 40,
   },
 });
 
