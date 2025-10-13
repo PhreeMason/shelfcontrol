@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
   statusOptions: {
     flexDirection: 'row',
     gap: 12,
-    marginTop: 8,
   },
   statusOption: {
     flex: 1,

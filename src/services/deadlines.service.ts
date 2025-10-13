@@ -7,6 +7,7 @@ import {
   ReadingDeadlineProgressInsert,
   ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
+import { activityService } from './activity.service';
 import { booksService } from './books.service';
 
 export interface AddDeadlineParams {
@@ -114,6 +115,13 @@ class DeadlinesService {
 
     if (statusError) throw statusError;
 
+    activityService.trackUserActivity('deadline_created', {
+      id: finalDeadlineId,
+      book_title: deadlineDetails.book_title,
+      dueDate: deadlineDetails.deadline_date,
+      startingProgress: progressDetails.current_progress,
+    });
+
     return {
       ...deadlineData,
       id: finalDeadlineId,
@@ -218,7 +226,32 @@ class DeadlinesService {
       }
     }
 
+    activityService.trackUserActivity('deadline_updated', {
+      id: deadlineDetails.id,
+    });
+
     return { ...deadlineData, progress: progressData };
+  }
+
+  async updateDeadlineDate(userId: string, deadlineId: string, newDate: string) {
+    const { data, error } = await supabase
+      .from(DB_TABLES.DEADLINES)
+      .update({
+        deadline_date: newDate,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', deadlineId)
+      .eq('user_id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    activityService.trackUserActivity('deadline_date_updated', {
+      id: deadlineId,
+      newDate,
+    });
+    return data;
   }
 
   /**
@@ -239,6 +272,10 @@ class DeadlinesService {
       .eq('user_id', userId);
 
     if (deadlineError) throw deadlineError;
+
+    activityService.trackUserActivity('deadline_deleted', {
+      id: deadlineId,
+    });
 
     return deadlineId;
   }
@@ -263,6 +300,12 @@ class DeadlinesService {
       .single();
 
     if (error) throw error;
+
+    activityService.trackUserActivity('progress_updated', {
+      deadlineId: params.deadlineId,
+      progress: params.currentProgress,
+    });
+
     return data;
   }
 
@@ -352,6 +395,12 @@ class DeadlinesService {
       .single();
 
     if (error) throw error;
+
+    activityService.trackUserActivity('status_updated', {
+      deadlineId,
+      status,
+    });
+
     return data;
   }
 
@@ -408,6 +457,11 @@ class DeadlinesService {
       .gt('current_progress', newProgress);
 
     if (error) throw error;
+
+    activityService.trackUserActivity('future_progress_deleted', {
+      deadlineId,
+    });
+
     return { deadlineId, newProgress };
   }
 

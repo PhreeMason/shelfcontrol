@@ -1,6 +1,7 @@
 import { generateId, supabase } from '@/lib/supabase';
 import { DB_TABLES } from '@/constants/database';
 import { DeadlineNote } from '@/types/notes.types';
+import { activityService } from './activity.service';
 
 class NotesService {
   async getNotes(userId: string, deadlineId: string): Promise<DeadlineNote[]> {
@@ -38,6 +39,12 @@ class NotesService {
       .single();
 
     if (error) throw error;
+
+    activityService.trackUserActivity('note_created', {
+      deadlineId,
+      noteId: finalNoteId,
+    });
+
     return data as DeadlineNote;
   }
 
@@ -49,6 +56,11 @@ class NotesService {
       .eq('user_id', userId);
 
     if (error) throw error;
+
+    activityService.trackUserActivity('note_deleted', {
+      noteId,
+    });
+
     return noteId;
   }
 }

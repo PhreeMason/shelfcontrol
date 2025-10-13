@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { activityService } from './activity.service';
 
 export interface ExportResponse {
   message: string;
@@ -31,6 +32,10 @@ class ExportService {
     if (!data) {
       throw new Error('No data returned from export function');
     }
+
+    activityService.trackUserActivity('data_exported', {
+      recordCount: data.recordCount,
+    });
 
     return data;
   }

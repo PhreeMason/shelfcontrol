@@ -6,6 +6,7 @@ import {
 } from '@/constants/database';
 import { supabase } from '@/lib/supabase';
 import { Database } from '@/types/database.types';
+import { activityService } from './activity.service';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -50,6 +51,11 @@ class ProfileService {
       .single();
 
     if (error) throw error;
+
+    activityService.trackUserActivity('profile_updated', {
+      fields: Object.keys(updates),
+    });
+
     return data;
   }
 
@@ -125,6 +131,9 @@ class ProfileService {
         });
 
       if (error) throw error;
+
+      activityService.trackUserActivity('avatar_uploaded', {});
+
       return data.path;
     } catch (err) {
       console.error('Avatar upload error:', err);

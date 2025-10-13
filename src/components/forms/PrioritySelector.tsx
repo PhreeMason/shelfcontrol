@@ -58,7 +58,6 @@ const styles = StyleSheet.create({
   priorityOptions: {
     flexDirection: 'row',
     gap: 12,
-    marginTop: 8,
   },
   priorityOption: {
     flex: 1,

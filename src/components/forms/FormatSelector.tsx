@@ -70,7 +70,6 @@ const styles = StyleSheet.create({
   formatSelector: {
     flexDirection: 'row',
     gap: 13,
-    marginTop: 8,
     justifyContent: 'flex-start',
   },
   formatChip: {

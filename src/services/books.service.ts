@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { FullBookData, SearchBooksResponse } from '@/types/bookSearch';
 import { DB_TABLES } from '@/constants/database';
+import { activityService } from './activity.service';
 
 class BooksService {
   /**
@@ -14,6 +15,9 @@ class BooksService {
     });
 
     if (error) throw error;
+
+    activityService.trackUserActivity('book_search', { query });
+
     return data;
   }
 
@@ -82,6 +86,12 @@ class BooksService {
       .single();
 
     if (error) throw error;
+
+    activityService.trackUserActivity('book_added', {
+      bookId,
+      title: bookData.title,
+    });
+
     return data;
   }
 }

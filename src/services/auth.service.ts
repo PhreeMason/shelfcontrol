@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { AuthError, AuthResponse, Session } from '@supabase/supabase-js';
 import { AppState } from 'react-native';
+import { activityService } from './activity.service';
 
 AppState.addEventListener('change', state => {
   if (state === 'active') {
@@ -54,6 +55,11 @@ class AuthService {
       });
 
       if (error) throw error;
+
+      if (data.user) {
+        activityService.trackUserActivity('user_signed_in', {});
+      }
+
       return { data: { user: data.user, session: data.session }, error: null };
     } catch (error) {
       return { data: { user: null, session: null }, error: error as AuthError };
@@ -75,6 +81,11 @@ class AuthService {
         },
       });
       if (error) throw error;
+
+      if (data.user) {
+        activityService.trackUserActivity('user_signed_up', {});
+      }
+
       return { data: { user: data.user, session: data.session }, error: null };
     } catch (error) {
       return { data: { user: null, session: null }, error: error as AuthError };
@@ -107,6 +118,11 @@ class AuthService {
     });
 
     if (error) throw error;
+
+    if (data.user) {
+      activityService.trackUserActivity('user_signed_in_apple', {});
+    }
+
     return { user: data.user, session: data.session };
   }
 
