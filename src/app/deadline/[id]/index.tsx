@@ -13,6 +13,7 @@ import {
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
+import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -70,10 +71,8 @@ const DeadlineView = () => {
     );
   }
 
-  const isArchived =
-    deadline.status &&
-    deadline.status.length > 0 &&
-    deadline.status[deadline.status.length - 1].status !== 'reading';
+  const { isCompleted, isArchived } = getDeadlineStatus(deadline);
+
   const handleEdit = () => {
     router.push(`/deadline/${id}/edit`);
   };
@@ -82,12 +81,17 @@ const DeadlineView = () => {
     router.back();
   };
 
+  const headerProps = {
+    onBack: handleBack,
+    ...(isCompleted ? {} : { onEdit: handleEdit }),
+  };
+
   return (
     <SafeAreaView
       edges={['right', 'bottom', 'left']}
       style={[styles.container, { backgroundColor: colors.background }]}
     >
-      <DeadlineViewHeader onBack={handleBack} onEdit={handleEdit} />
+      <DeadlineViewHeader {...headerProps} />
 
       <ThemedScrollView style={[styles.content, { backgroundColor: 'white' }]}>
         <DeadlineHeroSection deadline={deadline} />
