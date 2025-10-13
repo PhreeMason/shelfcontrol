@@ -64,6 +64,7 @@ const mockSession: Session = {
 const mockProfile: Profile = {
   id: 'user-123',
   username: 'testuser',
+  role: 'user',
   first_name: 'Test',
   last_name: 'User',
   email: 'test@example.com',

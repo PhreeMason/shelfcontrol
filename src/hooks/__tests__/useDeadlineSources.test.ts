@@ -1,5 +1,5 @@
-import { deadlinesService } from '@/services';
 import { useAuth } from '@/providers/AuthProvider';
+import { deadlinesService } from '@/services';
 import { useQuery } from '@tanstack/react-query';
 
 import { useDeadlineSources } from '../useDeadlineSources';
@@ -197,13 +197,13 @@ describe('useDeadlineSources', () => {
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
+        'Academic',
+        'Bookstore',
+        'Gift',
         'ARC',
         'Library',
         'Personal',
         'Book Club',
-        'Academic',
-        'Bookstore',
-        'Gift',
       ]);
     });
 
@@ -217,15 +217,15 @@ describe('useDeadlineSources', () => {
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
+        'Bookstore',
         'ARC',
         'Library',
         'Personal',
         'Book Club',
-        'Bookstore',
       ]);
     });
 
-    it('should sort user sources alphabetically after defaults', async () => {
+    it('should sort user sources alphabetically before defaults', async () => {
       useDeadlineSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
@@ -235,13 +235,13 @@ describe('useDeadlineSources', () => {
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
+        'Alpha Source',
+        'Beta Source',
+        'Zebra Source',
         'ARC',
         'Library',
         'Personal',
         'Book Club',
-        'Alpha Source',
-        'Beta Source',
-        'Zebra Source',
       ]);
     });
 
@@ -328,13 +328,13 @@ describe('useDeadlineSources', () => {
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
+        'B&N Store',
+        'Mom & Dad',
+        'Re-read',
         'ARC',
         'Library',
         'Personal',
         'Book Club',
-        'B&N Store',
-        'Mom & Dad',
-        'Re-read',
       ]);
     });
 
@@ -349,11 +349,11 @@ describe('useDeadlineSources', () => {
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
+        longSourceName,
         'ARC',
         'Library',
         'Personal',
         'Book Club',
-        longSourceName,
       ]);
     });
 
@@ -366,11 +366,10 @@ describe('useDeadlineSources', () => {
 
       const result = await queryConfig.queryFn();
 
-      expect(result.slice(0, 4)).toEqual(DEFAULT_SOURCES);
-      const userPortion = result.slice(4);
-      expect(userPortion).toEqual(
+      expect(result.slice(0, 4)).toEqual(
         [...userSources].sort((a, b) => a.localeCompare(b))
       );
+      expect(result.slice(4)).toEqual(DEFAULT_SOURCES);
       expect(result).toHaveLength(8);
     });
 
@@ -387,8 +386,8 @@ describe('useDeadlineSources', () => {
       const result = await queryConfig.queryFn();
 
       expect(result).toHaveLength(54);
-      expect(result.slice(0, 4)).toEqual(DEFAULT_SOURCES);
-      expect(result.slice(4)).toEqual(userSources.sort());
+      expect(result.slice(0, 50)).toEqual(userSources.sort());
+      expect(result.slice(50)).toEqual(DEFAULT_SOURCES);
     });
 
     it('should handle sources with only whitespace', async () => {
@@ -401,14 +400,14 @@ describe('useDeadlineSources', () => {
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
-        'ARC',
-        'Library',
-        'Personal',
-        'Book Club',
         '\t',
         '\n',
         '   ',
         'Valid Source',
+        'ARC',
+        'Library',
+        'Personal',
+        'Book Club',
       ]);
     });
 
@@ -422,13 +421,13 @@ describe('useDeadlineSources', () => {
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
+        'Café ☕',
+        'École 🏫',
+        'Librairie 📚',
         'ARC',
         'Library',
         'Personal',
         'Book Club',
-        'Café ☕',
-        'École 🏫',
-        'Librairie 📚',
       ]);
     });
   });

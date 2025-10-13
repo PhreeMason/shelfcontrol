@@ -1,13 +1,13 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { profileService } from '@/services';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  useProfile,
   useAvatarPath,
   useAvatarSignedUrl,
+  useProfile,
   useUpdateProfile,
   useUpdateProfileFromApple,
   useUploadAvatar,
 } from '../useProfile';
-import { profileService } from '@/services';
 
 jest.mock('@/services', () => ({
   profileService: {
@@ -55,6 +55,7 @@ describe('useProfile hooks', () => {
       username: 'testuser',
       website: null,
       onboarding_complete: true,
+      role: 'user' as const,
     };
 
     it('should call useQuery with correct parameters for valid userId', () => {
@@ -294,6 +295,7 @@ describe('useProfile hooks', () => {
         username: null,
         website: null,
         onboarding_complete: null,
+        role: null,
       };
       mockProfileService.updateProfile.mockResolvedValue(mockResult);
 
@@ -388,6 +390,7 @@ describe('useProfile hooks', () => {
       };
       const mockResult = {
         id: userId,
+        role: 'user' as const,
         email: appleData.email,
         first_name: null,
         last_name: null,

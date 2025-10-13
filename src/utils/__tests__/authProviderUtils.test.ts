@@ -1,9 +1,9 @@
-import { AuthError, AuthResponse, Session } from '@supabase/supabase-js';
 import { Database } from '@/types/database.types';
+import { AuthError, AuthResponse, Session } from '@supabase/supabase-js';
 import {
+  createAsyncAuthOperations,
   createAuthHandlers,
   createNavigationLogic,
-  createAsyncAuthOperations,
   createProfileOperations,
   createSessionManager,
 } from '../authProviderUtils';
@@ -13,6 +13,7 @@ type Profile = Database['public']['Tables']['profiles']['Row'];
 const mockProfile: Profile = {
   id: 'profile-123',
   username: 'testuser',
+  role: 'user',
   email: 'test@example.com',
   first_name: 'Test',
   last_name: 'User',

@@ -24,7 +24,7 @@ const createMockDeadline = (
     updated_at?: string;
   }[] = [],
   status: {
-    status: 'reading' | 'complete' | 'paused' | 'pending';
+    status: 'reading' | 'complete' | 'paused' | 'pending' | 'did_not_finish';
     created_at: string;
   }[] = []
 ): ReadingDeadlineWithProgress => ({
@@ -132,7 +132,7 @@ describe('deadlineUtils', () => {
   });
 
   describe('separateDeadlines', () => {
-    it('should separate deadlines into active, overdue, completed, setAside, and pending', () => {
+    it('should separate deadlines into active, overdue, completed, setAside (paused), didNotFinish, and pending', () => {
       const activeDeadline = createMockDeadline('1', '2025-12-31');
       const overdueDeadline = createMockDeadline('2', '2023-01-01');
       const completedDeadline = createMockDeadline(
@@ -159,6 +159,14 @@ describe('deadlineUtils', () => {
         [],
         [{ status: 'pending', created_at: '2024-01-15T00:00:00Z' }]
       );
+      const didNotFinishDeadline = createMockDeadline(
+        '6',
+        '2024-12-31',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [],
+        [{ status: 'did_not_finish', created_at: '2024-01-15T00:00:00Z' }]
+      );
 
       const result = separateDeadlines([
         activeDeadline,
@@ -166,6 +174,7 @@ describe('deadlineUtils', () => {
         completedDeadline,
         pauseDeadline,
         pendingDeadline,
+        didNotFinishDeadline,
       ]);
 
       expect(result.active).toHaveLength(1);
@@ -178,6 +187,8 @@ describe('deadlineUtils', () => {
       expect(result.setAside[0].id).toBe('4');
       expect(result.pending).toHaveLength(1);
       expect(result.pending[0].id).toBe('5');
+      expect(result.didNotFinish).toHaveLength(1);
+      expect(result.didNotFinish[0].id).toBe('6');
     });
 
     it('should use latest status when multiple status entries exist', () => {
@@ -197,6 +208,7 @@ describe('deadlineUtils', () => {
 
       expect(result.completed).toHaveLength(1);
       expect(result.setAside).toHaveLength(0);
+      expect(result.didNotFinish).toHaveLength(0);
       expect(result.active).toHaveLength(0);
       expect(result.overdue).toHaveLength(0);
     });
@@ -209,6 +221,7 @@ describe('deadlineUtils', () => {
       expect(result.active).toHaveLength(1);
       expect(result.completed).toHaveLength(0);
       expect(result.setAside).toHaveLength(0);
+      expect(result.didNotFinish).toHaveLength(0);
       expect(result.overdue).toHaveLength(0);
     });
 
