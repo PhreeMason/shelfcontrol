@@ -426,7 +426,7 @@ describe('deadlineUtils', () => {
       expect(result).toBe(150);
     });
 
-    it('should use updated_at if available and later than created_at', () => {
+    it('should use created_at only, ignoring updated_at', () => {
       const deadline = createMockDeadline(
         '1',
         '2024-12-31',
@@ -443,7 +443,7 @@ describe('deadlineUtils', () => {
       );
 
       const result = calculateProgress(deadline);
-      expect(result).toBe(100);
+      expect(result).toBe(150);
     });
   });
 

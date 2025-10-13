@@ -85,10 +85,10 @@ export const calculateProgress = (
 
   const latestProgress = deadline.progress.reduce((latest, current) => {
     const latestTs = normalizeServerDate(
-      latest.updated_at || latest.created_at || ''
+      latest.created_at || ''
     ).valueOf();
     const currentTs = normalizeServerDate(
-      current.updated_at || current.created_at || ''
+      current.created_at || ''
     ).valueOf();
     return currentTs > latestTs ? current : latest;
   });
