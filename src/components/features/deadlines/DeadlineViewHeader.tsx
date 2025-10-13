@@ -6,7 +6,7 @@ import { TouchableOpacity } from 'react-native';
 interface DeadlineViewHeaderProps {
   title?: string;
   onBack: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
 }
 
 const DeadlineViewHeader: React.FC<DeadlineViewHeaderProps> = ({
@@ -14,13 +14,13 @@ const DeadlineViewHeader: React.FC<DeadlineViewHeaderProps> = ({
   onBack,
   onEdit,
 }) => {
-  const editButton = (
+  const editButton = onEdit ? (
     <TouchableOpacity onPress={onEdit}>
       <ThemedText variant="default" style={{ color: 'white' }}>
         Edit
       </ThemedText>
     </TouchableOpacity>
-  );
+  ) : null;
 
   return <AppHeader title={title} onBack={onBack} rightElement={editButton} />;
 };
