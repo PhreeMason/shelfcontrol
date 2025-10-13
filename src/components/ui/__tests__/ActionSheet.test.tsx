@@ -277,6 +277,56 @@ describe('ActionSheet', () => {
     });
   });
 
+  describe('Icon Support', () => {
+    it('should render icon when provided', () => {
+      const options: ActionSheetOption[] = [
+        {
+          label: 'Delete',
+          onPress: jest.fn(),
+          icon: 'trash.fill',
+          iconColor: '#FF0000',
+        },
+      ];
+
+      render(
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
+      );
+
+      expect(screen.getByText('trash.fill')).toBeTruthy();
+    });
+
+    it('should not render icon when not provided', () => {
+      const options: ActionSheetOption[] = [
+        { label: 'No Icon', onPress: jest.fn() },
+      ];
+
+      render(
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
+      );
+
+      expect(screen.queryByText('trash.fill')).toBeNull();
+    });
+
+    it('should render multiple options with and without icons', () => {
+      const options: ActionSheetOption[] = [
+        { label: 'No Icon', onPress: jest.fn() },
+        {
+          label: 'With Icon',
+          onPress: jest.fn(),
+          icon: 'calendar.badge.clock',
+        },
+      ];
+
+      render(
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
+      );
+
+      expect(screen.getByText('No Icon')).toBeTruthy();
+      expect(screen.getByText('With Icon')).toBeTruthy();
+      expect(screen.getByText('calendar.badge.clock')).toBeTruthy();
+    });
+  });
+
   describe('Edge Cases', () => {
     it('should handle empty options array', () => {
       render(<ActionSheet visible={true} onClose={jest.fn()} options={[]} />);
@@ -337,6 +387,77 @@ describe('ActionSheet', () => {
       );
 
       expect(screen.getByText('Cancel')).toBeTruthy();
+    });
+  });
+
+  describe('Chevron Feature', () => {
+    it('should render chevron icon when showChevron is true', () => {
+      const options: ActionSheetOption[] = [
+        { label: 'Test', onPress: jest.fn(), showChevron: true },
+      ];
+
+      render(
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
+      );
+
+      expect(screen.getByText('chevron.right')).toBeTruthy();
+    });
+
+    it('should not render chevron when showChevron is false', () => {
+      const options: ActionSheetOption[] = [
+        { label: 'Test', onPress: jest.fn(), showChevron: false },
+      ];
+
+      render(
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
+      );
+
+      expect(screen.queryByText('chevron.right')).toBeNull();
+    });
+
+    it('should not render chevron when showChevron is undefined', () => {
+      const options: ActionSheetOption[] = [
+        { label: 'Test', onPress: jest.fn() },
+      ];
+
+      render(
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
+      );
+
+      expect(screen.queryByText('chevron.right')).toBeNull();
+    });
+
+    it('should render multiple options with mixed chevron states', () => {
+      const options: ActionSheetOption[] = [
+        { label: 'With Chevron', onPress: jest.fn(), showChevron: true },
+        { label: 'Without Chevron', onPress: jest.fn(), showChevron: false },
+        { label: 'Default', onPress: jest.fn() },
+      ];
+
+      render(
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
+      );
+
+      const chevrons = screen.queryAllByText('chevron.right');
+      expect(chevrons).toHaveLength(1);
+    });
+
+    it('should render chevron alongside icon when both are provided', () => {
+      const options: ActionSheetOption[] = [
+        {
+          label: 'Test',
+          onPress: jest.fn(),
+          icon: 'calendar.badge.clock',
+          showChevron: true,
+        },
+      ];
+
+      render(
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
+      );
+
+      expect(screen.getByText('calendar.badge.clock')).toBeTruthy();
+      expect(screen.getByText('chevron.right')).toBeTruthy();
     });
   });
 });

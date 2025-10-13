@@ -28,6 +28,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     overdueDeadlines,
     completedDeadlines,
     pausedDeadlines,
+    didNotFinishDeadlines,
     pendingDeadlines,
     isLoading,
     error,
@@ -78,6 +79,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     deadlineMap.set('pending', pendingDeadlines);
     deadlineMap.set('completed', completedDeadlines);
     deadlineMap.set('paused', pausedDeadlines);
+    deadlineMap.set('didNotFinish', didNotFinishDeadlines);
     deadlineMap.set('all', deadlines);
 
     if (deadlineMap.has(selectedFilter)) {
@@ -95,6 +97,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       pending: 'No pending deadlines',
       completed: 'No completed deadlines',
       paused: 'No deadlines paused',
+      didNotFinish: 'No deadlines marked as did not finish',
       all: 'No deadlines found',
     };
 

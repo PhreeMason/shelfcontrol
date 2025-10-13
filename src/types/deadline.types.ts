@@ -26,6 +26,7 @@ export type FilterType =
   | 'pending'
   | 'completed'
   | 'paused'
+  | 'didNotFinish'
   | 'all';
 
 export type TimeRangeFilter = 'all' | 'thisWeek' | 'thisMonth';

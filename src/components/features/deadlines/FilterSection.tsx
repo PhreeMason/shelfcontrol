@@ -38,6 +38,7 @@ const filterOptions: FilterOption[] = [
   { key: 'pending', label: 'Pending' },
   { key: 'completed', label: 'Completed' },
   { key: 'paused', label: 'Paused' },
+  { key: 'didNotFinish', label: 'Did Not Finish' },
   { key: 'all', label: 'All' },
 ];
 
@@ -63,6 +64,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     pendingDeadlines,
     completedDeadlines,
     pausedDeadlines,
+    didNotFinishDeadlines,
   } = useDeadlines();
 
   const getBaseDeadlines = (): ReadingDeadlineWithProgress[] => {
@@ -72,6 +74,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     deadlineMap.set('pending', pendingDeadlines);
     deadlineMap.set('completed', completedDeadlines);
     deadlineMap.set('paused', pausedDeadlines);
+    deadlineMap.set('didNotFinish', didNotFinishDeadlines);
     deadlineMap.set('all', deadlines);
 
     if (deadlineMap.has(selectedFilter)) {

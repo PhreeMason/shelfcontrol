@@ -38,6 +38,7 @@ export default function HomeScreen() {
     pendingDeadlines,
     completedDeadlines,
     pausedDeadlines,
+    didNotFinishDeadlines,
     refetch,
     isRefreshing,
   } = useDeadlines();
@@ -92,6 +93,7 @@ export default function HomeScreen() {
     if (pendingDeadlines.length > 0) available.push('pending');
     if (completedDeadlines.length > 0) available.push('completed');
     if (pausedDeadlines.length > 0) available.push('paused');
+    if (didNotFinishDeadlines.length > 0) available.push('didNotFinish');
     if (deadlines.length > 0) available.push('all');
 
     return available;
@@ -101,6 +103,7 @@ export default function HomeScreen() {
     pendingDeadlines.length,
     completedDeadlines.length,
     pausedDeadlines.length,
+    didNotFinishDeadlines.length,
     deadlines.length,
   ]);
 

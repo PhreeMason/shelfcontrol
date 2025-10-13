@@ -6,21 +6,26 @@ import { DeadlineProvider, useDeadlines } from '../DeadlineProvider';
 
 // Mock all the hook dependencies
 const mockMutate = jest.fn();
+const mockRefetch = jest.fn();
 const mockGetDeadlines = {
   data: deadlinesMockData as ReadingDeadlineWithProgress[],
   error: null,
   isLoading: false,
+  refetch: mockRefetch,
+  isFetching: false,
 };
 
 jest.mock('@/hooks/useDeadlines', () => ({
   useGetDeadlines: () => mockGetDeadlines,
   useAddDeadline: () => ({ mutate: mockMutate }),
   useUpdateDeadline: () => ({ mutate: mockMutate }),
+  useUpdateDeadlineDate: () => ({ mutate: mockMutate }),
   useDeleteDeadline: () => ({ mutate: mockMutate }),
   useCompleteDeadline: () => ({ mutate: mockMutate }),
   usePauseDeadline: () => ({ mutate: mockMutate }),
   useReactivateDeadline: () => ({ mutate: mockMutate }),
   useStartReadingDeadline: () => ({ mutate: mockMutate }),
+  useDidNotFinishDeadline: () => ({ mutate: mockMutate }),
 }));
 
 // Mock utility functions
@@ -33,6 +38,8 @@ jest.mock('@/utils/deadlineUtils', () => ({
     overdue: deadlines.slice(2, 3),
     completed: deadlines.slice(3, 4),
     setAside: deadlines.slice(4, 5),
+    didNotFinish: deadlines.slice(5, 6),
+    pending: deadlines.slice(6, 7),
   })),
 }));
 
@@ -137,8 +144,12 @@ describe('DeadlineProvider', () => {
       expect(result.current.overdueDeadlines).toBeDefined();
       expect(result.current.completedDeadlines).toBeDefined();
       expect(result.current.pausedDeadlines).toBeDefined();
+      expect(result.current.didNotFinishDeadlines).toBeDefined();
+      expect(result.current.pendingDeadlines).toBeDefined();
       expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBeNull();
+      expect(typeof result.current.refetch).toBe('function');
+      expect(result.current.isRefreshing).toBe(false);
 
       // Pace data
       expect(result.current.userPaceData).toBeDefined();
@@ -147,10 +158,13 @@ describe('DeadlineProvider', () => {
       // Actions
       expect(typeof result.current.addDeadline).toBe('function');
       expect(typeof result.current.updateDeadline).toBe('function');
+      expect(typeof result.current.updateDeadlineDate).toBe('function');
       expect(typeof result.current.deleteDeadline).toBe('function');
       expect(typeof result.current.completeDeadline).toBe('function');
       expect(typeof result.current.pauseDeadline).toBe('function');
       expect(typeof result.current.reactivateDeadline).toBe('function');
+      expect(typeof result.current.startReadingDeadline).toBe('function');
+      expect(typeof result.current.didNotFinishDeadline).toBe('function');
 
       // Calculations
       expect(typeof result.current.getDeadlineCalculations).toBe('function');
@@ -173,6 +187,7 @@ describe('DeadlineProvider', () => {
       expect(typeof result.current.activeCount).toBe('number');
       expect(typeof result.current.overdueCount).toBe('number');
       expect(typeof result.current.pausedCount).toBe('number');
+      expect(typeof result.current.didNotFinishCount).toBe('number');
 
       // Summary calculations
       expect(typeof result.current.calculateProgressAsOfStartOfDay).toBe(
@@ -184,9 +199,10 @@ describe('DeadlineProvider', () => {
     it('should provide correct deadline counts', () => {
       const { result } = renderHook(() => useDeadlines(), { wrapper });
 
-      expect(result.current.activeCount).toBe(2); // mocked separateDeadlines returns 2 active
-      expect(result.current.overdueCount).toBe(1); // mocked separateDeadlines returns 1 overdue
-      expect(result.current.pausedCount).toBe(1); // mocked separateDeadlines returns 1 set aside
+      expect(result.current.activeCount).toBe(2);
+      expect(result.current.overdueCount).toBe(1);
+      expect(result.current.pausedCount).toBe(1);
+      expect(result.current.didNotFinishCount).toBe(1);
     });
 
     it('should provide user pace data', () => {
@@ -310,6 +326,48 @@ describe('DeadlineProvider', () => {
 
       act(() => {
         result.current.reactivateDeadline('test-id');
+      });
+
+      expect(mockMutate).toHaveBeenCalledWith('test-id', {
+        onSuccess: expect.any(Function),
+        onError: expect.any(Function),
+      });
+    });
+
+    it('should call updateDeadlineDate mutation', () => {
+      const { result } = renderHook(() => useDeadlines(), { wrapper });
+
+      act(() => {
+        result.current.updateDeadlineDate('test-id', '2025-12-31');
+      });
+
+      expect(mockMutate).toHaveBeenCalledWith(
+        { deadlineId: 'test-id', newDate: '2025-12-31' },
+        {
+          onSuccess: expect.any(Function),
+          onError: expect.any(Function),
+        }
+      );
+    });
+
+    it('should call startReadingDeadline mutation', () => {
+      const { result } = renderHook(() => useDeadlines(), { wrapper });
+
+      act(() => {
+        result.current.startReadingDeadline('test-id');
+      });
+
+      expect(mockMutate).toHaveBeenCalledWith('test-id', {
+        onSuccess: expect.any(Function),
+        onError: expect.any(Function),
+      });
+    });
+
+    it('should call didNotFinishDeadline mutation', () => {
+      const { result } = renderHook(() => useDeadlines(), { wrapper });
+
+      act(() => {
+        result.current.didNotFinishDeadline('test-id');
       });
 
       expect(mockMutate).toHaveBeenCalledWith('test-id', {

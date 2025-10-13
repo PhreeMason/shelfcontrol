@@ -1,0 +1,649 @@
+import React from 'react';
+import { render } from '@testing-library/react-native';
+import { DeadlineActionSheet } from '../DeadlineActionSheet';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+
+const mockDeadline: ReadingDeadlineWithProgress = {
+  id: '1',
+  user_id: 'user-1',
+  book_id: 'book-1',
+  book_title: 'Test Book',
+  author: 'Test Author',
+  source: 'source-1',
+  deadline_date: '2025-12-31',
+  flexibility: 'flexible',
+  total_quantity: 300,
+  format: 'physical',
+  created_at: '2025-01-01',
+  updated_at: '2025-01-01',
+  progress: [],
+  status: [],
+};
+
+jest.mock('@/components/ui/ActionSheet', () => ({
+  ActionSheet: ({ options }: { options: { label: string }[] }) => {
+    const { Text } = require('react-native');
+    return (
+      <>
+        {options.map((option, index) => (
+          <Text key={index}>{option.label}</Text>
+        ))}
+      </>
+    );
+  },
+}));
+
+jest.mock('../modals/UpdateDeadlineDateModal', () => ({
+  UpdateDeadlineDateModal: () => null,
+}));
+
+jest.mock('../modals/CompleteDeadlineModal', () => ({
+  CompleteDeadlineModal: () => null,
+}));
+
+jest.mock('../modals/DeleteDeadlineModal', () => ({
+  DeleteDeadlineModal: () => null,
+}));
+
+jest.mock('../modals/DidNotFinishDeadlineModal', () => ({
+  DidNotFinishDeadlineModal: () => null,
+}));
+
+jest.mock('@/hooks/useThemeColor', () => ({
+  useTheme: jest.fn(() => ({
+    colors: {
+      primary: '#B8A9D9',
+      secondary: '#A0C4E8',
+      approaching: '#E8B4A0',
+      error: '#E8B4B8',
+      good: '#10B981',
+      text: '#000000',
+    },
+  })),
+}));
+
+const mockStartReadingDeadline = jest.fn();
+const mockPauseDeadline = jest.fn();
+const mockReactivateDeadline = jest.fn();
+
+jest.mock('@/providers/DeadlineProvider', () => ({
+  useDeadlines: jest.fn(() => ({
+    startReadingDeadline: mockStartReadingDeadline,
+    pauseDeadline: mockPauseDeadline,
+    reactivateDeadline: mockReactivateDeadline,
+  })),
+}));
+
+describe('DeadlineActionSheet', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should show update deadline date action for active deadline', () => {
+    const activeDeadline: ReadingDeadlineWithProgress = {
+      ...mockDeadline,
+      status: [
+        {
+          id: '1',
+          deadline_id: '1',
+          status: 'reading',
+          created_at: '2025-01-01',
+          updated_at: '2025-01-01',
+        },
+      ],
+    };
+
+    const { getByText } = render(
+      <DeadlineActionSheet
+        deadline={activeDeadline}
+        visible={true}
+        onClose={jest.fn()}
+      />
+    );
+
+    expect(getByText('Update Deadline Date')).toBeTruthy();
+  });
+
+  it('should not show update deadline date action for completed deadline', () => {
+    const completedDeadline: ReadingDeadlineWithProgress = {
+      ...mockDeadline,
+      status: [
+        {
+          id: '1',
+          deadline_id: '1',
+          status: 'complete',
+          created_at: '2025-01-01',
+          updated_at: '2025-01-01',
+        },
+      ],
+    };
+
+    const { queryByText } = render(
+      <DeadlineActionSheet
+        deadline={completedDeadline}
+        visible={true}
+        onClose={jest.fn()}
+      />
+    );
+
+    expect(queryByText('Update Deadline Date')).toBeNull();
+  });
+
+  it('should not show mark as completed action for completed deadline', () => {
+    const completedDeadline: ReadingDeadlineWithProgress = {
+      ...mockDeadline,
+      status: [
+        {
+          id: '1',
+          deadline_id: '1',
+          status: 'complete',
+          created_at: '2025-01-01',
+          updated_at: '2025-01-01',
+        },
+      ],
+    };
+
+    const { queryByText } = render(
+      <DeadlineActionSheet
+        deadline={completedDeadline}
+        visible={true}
+        onClose={jest.fn()}
+      />
+    );
+
+    expect(queryByText('Mark as Completed')).toBeNull();
+  });
+
+  it('should always show delete action', () => {
+    const completedDeadline: ReadingDeadlineWithProgress = {
+      ...mockDeadline,
+      status: [
+        {
+          id: '1',
+          deadline_id: '1',
+          status: 'complete',
+          created_at: '2025-01-01',
+          updated_at: '2025-01-01',
+        },
+      ],
+    };
+
+    const { getByText } = render(
+      <DeadlineActionSheet
+        deadline={completedDeadline}
+        visible={true}
+        onClose={jest.fn()}
+      />
+    );
+
+    expect(getByText('Delete This Book')).toBeTruthy();
+  });
+
+  it('should show Start Reading action for pending deadline', () => {
+    const pendingDeadline: ReadingDeadlineWithProgress = {
+      ...mockDeadline,
+      status: [
+        {
+          id: '1',
+          deadline_id: '1',
+          status: 'pending',
+          created_at: '2025-01-01',
+          updated_at: '2025-01-01',
+        },
+      ],
+    };
+
+    const { getByTestId } = render(
+      <DeadlineActionSheet
+        deadline={pendingDeadline}
+        visible={true}
+        onClose={jest.fn()}
+      />
+    );
+
+    const primaryButton = getByTestId('primary-action-button');
+    expect(primaryButton).toBeTruthy();
+  });
+
+  it('should show Pause action for reading deadline', () => {
+    const readingDeadline: ReadingDeadlineWithProgress = {
+      ...mockDeadline,
+      status: [
+        {
+          id: '1',
+          deadline_id: '1',
+          status: 'reading',
+          created_at: '2025-01-01',
+          updated_at: '2025-01-01',
+        },
+      ],
+    };
+
+    const { getByTestId } = render(
+      <DeadlineActionSheet
+        deadline={readingDeadline}
+        visible={true}
+        onClose={jest.fn()}
+      />
+    );
+
+    const primaryButton = getByTestId('primary-action-button');
+    expect(primaryButton).toBeTruthy();
+  });
+
+  it('should show Resume Reading action for paused deadline', () => {
+    const pausedDeadline: ReadingDeadlineWithProgress = {
+      ...mockDeadline,
+      status: [
+        {
+          id: '1',
+          deadline_id: '1',
+          status: 'paused',
+          created_at: '2025-01-01',
+          updated_at: '2025-01-01',
+        },
+      ],
+    };
+
+    const { getByTestId } = render(
+      <DeadlineActionSheet
+        deadline={pausedDeadline}
+        visible={true}
+        onClose={jest.fn()}
+      />
+    );
+
+    const primaryButton = getByTestId('primary-action-button');
+    expect(primaryButton).toBeTruthy();
+  });
+
+  it('should not show any status change action for completed deadline', () => {
+    const completedDeadline: ReadingDeadlineWithProgress = {
+      ...mockDeadline,
+      status: [
+        {
+          id: '1',
+          deadline_id: '1',
+          status: 'complete',
+          created_at: '2025-01-01',
+          updated_at: '2025-01-01',
+        },
+      ],
+    };
+
+    const { queryByText } = render(
+      <DeadlineActionSheet
+        deadline={completedDeadline}
+        visible={true}
+        onClose={jest.fn()}
+      />
+    );
+
+    expect(queryByText('Start Reading')).toBeNull();
+    expect(queryByText('Pause')).toBeNull();
+    expect(queryByText('Resume Reading')).toBeNull();
+  });
+
+  describe('Primary Action Button Integration', () => {
+    it('should execute startReadingDeadline for pending status', () => {
+      const pendingDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'pending',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { getByTestId } = render(
+        <DeadlineActionSheet
+          deadline={pendingDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      const primaryButton = getByTestId('primary-action-button');
+      require('@testing-library/react-native').fireEvent.press(primaryButton);
+
+      expect(mockStartReadingDeadline).toHaveBeenCalledWith(
+        '1',
+        expect.any(Function),
+        expect.any(Function)
+      );
+    });
+
+    it('should execute pauseDeadline for reading status', () => {
+      const readingDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'reading',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { getByTestId } = render(
+        <DeadlineActionSheet
+          deadline={readingDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      const primaryButton = getByTestId('primary-action-button');
+      require('@testing-library/react-native').fireEvent.press(primaryButton);
+
+      expect(mockPauseDeadline).toHaveBeenCalledWith(
+        '1',
+        expect.any(Function),
+        expect.any(Function)
+      );
+    });
+
+    it('should execute reactivateDeadline for paused status', () => {
+      const pausedDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'paused',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { getByTestId } = render(
+        <DeadlineActionSheet
+          deadline={pausedDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      const primaryButton = getByTestId('primary-action-button');
+      require('@testing-library/react-native').fireEvent.press(primaryButton);
+
+      expect(mockReactivateDeadline).toHaveBeenCalledWith(
+        '1',
+        expect.any(Function),
+        expect.any(Function)
+      );
+    });
+
+    it('should call onClose on successful mutation', () => {
+      mockStartReadingDeadline.mockImplementation(
+        (_id, onSuccess) => onSuccess && onSuccess()
+      );
+
+      const pendingDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'pending',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const onClose = jest.fn();
+      const { getByTestId } = render(
+        <DeadlineActionSheet
+          deadline={pendingDeadline}
+          visible={true}
+          onClose={onClose}
+        />
+      );
+
+      const primaryButton = getByTestId('primary-action-button');
+      require('@testing-library/react-native').fireEvent.press(primaryButton);
+
+      expect(onClose).toHaveBeenCalled();
+    });
+
+    it('should not show primary action button for archived deadline', () => {
+      const archivedDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'complete',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { queryByTestId } = render(
+        <DeadlineActionSheet
+          deadline={archivedDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      expect(queryByTestId('primary-action-button')).toBeNull();
+    });
+  });
+
+  describe('Status Badge Display', () => {
+    it('should show correct badge for pending status', () => {
+      const pendingDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'pending',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { getByText } = render(
+        <DeadlineActionSheet
+          deadline={pendingDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      expect(getByText('Pending')).toBeTruthy();
+    });
+
+    it('should show correct badge for active status', () => {
+      const activeDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'reading',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { getByText } = render(
+        <DeadlineActionSheet
+          deadline={activeDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      expect(getByText('Active')).toBeTruthy();
+    });
+
+    it('should show correct badge for paused status', () => {
+      const pausedDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'paused',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { getByText } = render(
+        <DeadlineActionSheet
+          deadline={pausedDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      expect(getByText('Paused')).toBeTruthy();
+    });
+
+    it('should show correct badge for completed status', () => {
+      const completedDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'complete',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { getByText } = render(
+        <DeadlineActionSheet
+          deadline={completedDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      expect(getByText('Completed')).toBeTruthy();
+    });
+
+    it('should show correct badge for did_not_finish status', () => {
+      const didNotFinishDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'did_not_finish',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { getByText } = render(
+        <DeadlineActionSheet
+          deadline={didNotFinishDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      expect(getByText('Did Not Finish')).toBeTruthy();
+    });
+  });
+
+  describe('Action List Rendering', () => {
+    it('should show all non-archived actions for active deadline', () => {
+      const activeDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'reading',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { getByText } = render(
+        <DeadlineActionSheet
+          deadline={activeDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      expect(getByText('Update Deadline Date')).toBeTruthy();
+      expect(getByText('Change Reading Status')).toBeTruthy();
+      expect(getByText('Delete This Book')).toBeTruthy();
+    });
+
+    it('should hide Update Deadline Date for archived deadline', () => {
+      const archivedDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'complete',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { queryByText } = render(
+        <DeadlineActionSheet
+          deadline={archivedDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      expect(queryByText('Update Deadline Date')).toBeNull();
+    });
+
+    it('should always show Change Reading Status and Delete actions', () => {
+      const archivedDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'complete',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { getByText } = render(
+        <DeadlineActionSheet
+          deadline={archivedDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      expect(getByText('Change Reading Status')).toBeTruthy();
+      expect(getByText('Delete This Book')).toBeTruthy();
+    });
+  });
+});

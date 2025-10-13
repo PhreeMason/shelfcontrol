@@ -1,9 +1,9 @@
 import { ThemedText } from '@/components/themed';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Typography } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
-// import { useFetchBookById } from '@/hooks/useBooks';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
@@ -13,8 +13,16 @@ import {
 } from '@/utils/deadlineDisplayUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React from 'react';
-import { Image, Platform, Pressable, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import {
+  GestureResponderEvent,
+  Image,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { DeadlineActionSheet } from './DeadlineActionSheet';
 interface DeadlineCardProps {
   deadline: ReadingDeadlineWithProgress;
   disableNavigation?: boolean;
@@ -28,6 +36,7 @@ export function DeadlineCard({
     useDeadlines();
   const router = useRouter();
   const { colors } = useTheme();
+  const [showActionSheet, setShowActionSheet] = useState(false);
   const { good, approaching, urgent, overdue, impossible, complete, paused } =
     colors;
   const urgencyTextColorMap = {
@@ -93,6 +102,11 @@ export function DeadlineCard({
     }
   };
 
+  const handleMorePress = (e: GestureResponderEvent) => {
+    e.stopPropagation();
+    setShowActionSheet(true);
+  };
+
   // Book Cover Component
   const BookCover = () => {
     if (bookData?.cover_image_url) {
@@ -125,23 +139,65 @@ export function DeadlineCard({
       <View style={[styles.countdownSquare, { borderColor }]}>
         {isArchived ? (
           <>
-            <ThemedText
-              style={[
-                styles.archivedIcon,
-                { paddingTop: Platform.select({ ios: 6, android: 3 }) },
-              ]}
-            >
-              {latestStatus === 'complete' ? '🏆' : '⏸️'}
-            </ThemedText>
-            <ThemedText
-              style={[
-                styles.countdownLabel,
-                { color: countdownColor },
-                { marginTop: Platform.select({ ios: -2, android: 1 }) },
-              ]}
-            >
-              {latestStatus === 'complete' ? 'done' : 'paused'}
-            </ThemedText>
+            {latestStatus === 'complete' ? (
+              <>
+                <ThemedText
+                  style={[
+                    styles.archivedIcon,
+                    { paddingTop: Platform.select({ ios: 6, android: 3 }) },
+                  ]}
+                >
+                  🏆
+                </ThemedText>
+                <ThemedText
+                  style={[
+                    styles.countdownLabel,
+                    { color: countdownColor },
+                    { marginTop: Platform.select({ ios: -2, android: 1 }) },
+                  ]}
+                >
+                  done
+                </ThemedText>
+              </>
+            ) : latestStatus === 'did_not_finish' ? (
+              <>
+                <IconSymbol
+                  name="bookmark.slash"
+                  size={28}
+                  color={countdownColor}
+                  style={{ marginTop: 8 }}
+                />
+                <ThemedText
+                  style={[
+                    styles.countdownLabel,
+                    { color: countdownColor },
+                    { marginTop: 4 },
+                  ]}
+                >
+                  dnf
+                </ThemedText>
+              </>
+            ) : (
+              <>
+                <ThemedText
+                  style={[
+                    styles.archivedIcon,
+                    { paddingTop: Platform.select({ ios: 6, android: 3 }) },
+                  ]}
+                >
+                  ⏸️
+                </ThemedText>
+                <ThemedText
+                  style={[
+                    styles.countdownLabel,
+                    { color: countdownColor },
+                    { marginTop: Platform.select({ ios: -2, android: 1 }) },
+                  ]}
+                >
+                  paused
+                </ThemedText>
+              </>
+            )}
           </>
         ) : (
           <>
@@ -162,42 +218,62 @@ export function DeadlineCard({
   );
 
   return (
-    <Pressable
-      onPress={handlePress}
-      style={({ pressed }) => [
-        { opacity: pressed ? 0.8 : 1, backgroundColor: 'transparent' },
-      ]}
-    >
-      <View
-        style={[
-          styles.cardContainer,
-          isArchived && shadowStyle,
-          { borderColor },
+    <>
+      <Pressable
+        onPress={handlePress}
+        style={({ pressed }) => [
+          { opacity: pressed ? 0.8 : 1, backgroundColor: 'transparent' },
         ]}
       >
-        <View style={styles.bookContent}>
-          <BookCover />
-          <View style={styles.bookInfo}>
-            <ThemedText style={styles.bookTitle} numberOfLines={2}>
-              {deadline.book_title}
-            </ThemedText>
-            <ThemedText style={styles.bookDeadline}>
-              {(isArchived || isPending) && latestStatusDate
-                ? dayjs(latestStatusDate).format('MMM D, YYYY')
-                : urgencyLevel === 'overdue'
-                  ? formatRemainingDisplay(remaining, deadline.format)
-                  : formatUnitsPerDayForDisplay(
-                      unitsPerDay,
-                      deadline.format,
-                      remaining,
-                      daysLeft
-                    )}
-            </ThemedText>
+        <View
+          style={[
+            styles.cardContainer,
+            isArchived && shadowStyle,
+            { borderColor },
+          ]}
+        >
+          <View style={styles.bookContent}>
+            <BookCover />
+            <View style={styles.bookInfo}>
+              <ThemedText style={styles.bookTitle} numberOfLines={2}>
+                {deadline.book_title}
+              </ThemedText>
+              <ThemedText style={styles.bookDeadline}>
+                {(isArchived || isPending) && latestStatusDate
+                  ? dayjs(latestStatusDate).format('MMM D, YYYY')
+                  : urgencyLevel === 'overdue'
+                    ? formatRemainingDisplay(remaining, deadline.format)
+                    : formatUnitsPerDayForDisplay(
+                        unitsPerDay,
+                        deadline.format,
+                        remaining,
+                        daysLeft
+                      )}
+              </ThemedText>
+            </View>
           </View>
+          <CountdownDisplay />
+
+          <Pressable
+            onPress={handleMorePress}
+            hitSlop={8}
+            style={styles.moreButton}
+          >
+            <IconSymbol
+              name="ellipsis.circle"
+              size={24}
+              color={colors.textMuted}
+            />
+          </Pressable>
         </View>
-        <CountdownDisplay />
-      </View>
-    </Pressable>
+      </Pressable>
+
+      <DeadlineActionSheet
+        deadline={deadline}
+        visible={showActionSheet}
+        onClose={() => setShowActionSheet(false)}
+      />
+    </>
   );
 }
 
@@ -211,6 +287,14 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     overflow: 'hidden',
     borderColor: 'rgba(232, 194, 185, 0.15)',
+    position: 'relative',
+  },
+  moreButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    zIndex: 10,
+    padding: 4,
   },
   bookContent: {
     flexDirection: 'row',

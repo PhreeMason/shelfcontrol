@@ -62,7 +62,31 @@ jest.mock('expo-router', () => ({
 jest.mock('@/lib/dayjs', () => ({
   dayjs: jest.fn(() => ({
     format: jest.fn(() => 'Jan 15, 2024'),
+    isValid: jest.fn(() => true),
+    startOf: jest.fn(() => ({
+      format: jest.fn(() => 'Jan 15, 2024'),
+      isValid: jest.fn(() => true),
+      diff: jest.fn(() => 5),
+      toDate: jest.fn(() => new Date()),
+    })),
+    diff: jest.fn(() => 5),
+    toDate: jest.fn(() => new Date()),
   })),
+}));
+
+jest.mock('@/components/features/deadlines/DeadlineActionSheet', () => ({
+  DeadlineActionSheet: () => null,
+}));
+
+jest.mock('@/components/ui/IconSymbol', () => ({
+  IconSymbol: ({ children, ...props }: any) => {
+    const React = require('react');
+    return React.createElement(
+      'View',
+      { ...props, testID: 'icon-symbol' },
+      children
+    );
+  },
 }));
 
 describe('DeadlineCard', () => {

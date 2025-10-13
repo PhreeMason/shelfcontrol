@@ -21,6 +21,9 @@ export interface ActionSheetOption {
   onPress: () => void;
   variant?: 'default' | 'destructive';
   selected?: boolean;
+  icon?: string;
+  iconColor?: string;
+  showChevron?: boolean;
 }
 
 export interface ActionSheetProps {
@@ -99,6 +102,14 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
               ]}
               onPress={() => handleOptionPress(option)}
             >
+              {option.icon && (
+                <IconSymbol
+                  name={option.icon as any}
+                  size={24}
+                  color={option.iconColor || colors.text}
+                  style={styles.optionIcon}
+                />
+              )}
               <ThemedText
                 style={[
                   styles.optionText,
@@ -120,11 +131,22 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
                   style={styles.checkmark}
                 />
               )}
+              {option.showChevron && (
+                <IconSymbol
+                  name="chevron.right"
+                  size={20}
+                  color={colors.text}
+                  style={styles.chevron}
+                />
+              )}
             </TouchableOpacity>
           ))}
 
           <TouchableOpacity
-            style={[styles.cancelButton, { marginTop: 8 }]}
+            style={[
+              styles.cancelButton,
+              { marginTop: 8, borderColor: colors.border },
+            ]}
             onPress={onClose}
           >
             <ThemedText style={styles.cancelText}>Cancel</ThemedText>
@@ -152,24 +174,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 14,
+    fontSize: 18,
     opacity: 0.6,
   },
   option: {
     paddingVertical: 16,
+    paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  optionIcon: {
+    marginRight: 12,
   },
   optionText: {
     fontSize: 16,
+    flex: 1,
   },
   checkmark: {
     marginLeft: 8,
   },
+  chevron: {
+    marginLeft: 8,
+    opacity: 0.5,
+  },
   cancelButton: {
     paddingVertical: 16,
     alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 8,
   },
   cancelText: {
     fontSize: 16,

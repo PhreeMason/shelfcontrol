@@ -31,6 +31,7 @@ export const MUTATION_KEYS = {
   DEADLINES: {
     ADD: 'addDeadline',
     UPDATE: 'updateDeadline',
+    UPDATE_DATE: 'updateDeadlineDate',
     DELETE: 'deleteDeadline',
     UPDATE_PROGRESS: 'updateDeadlineProgress',
     COMPLETE: 'completeDeadline',

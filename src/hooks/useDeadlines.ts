@@ -67,6 +67,38 @@ export const useUpdateDeadline = () => {
   });
 };
 
+export const useUpdateDeadlineDate = () => {
+  const { session } = useAuth();
+  const userId = session?.user?.id;
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: [MUTATION_KEYS.DEADLINES.UPDATE_DATE],
+    mutationFn: async ({
+      deadlineId,
+      newDate,
+    }: {
+      deadlineId: string;
+      newDate: string;
+    }) => {
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      return deadlinesService.updateDeadlineDate(userId, deadlineId, newDate);
+    },
+    onSuccess: () => {
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
+      }
+    },
+    onError: error => {
+      console.error('Error updating deadline date:', error);
+    },
+  });
+};
+
 export const useDeleteDeadline = () => {
   const { session } = useAuth();
   const userId = session?.user?.id;
@@ -243,6 +275,9 @@ export const useReactivateDeadline = () =>
 
 export const useStartReadingDeadline = () =>
   useUpdateDeadlineStatus(DEADLINE_STATUS.READING);
+
+export const useDidNotFinishDeadline = () =>
+  useUpdateDeadlineStatus(DEADLINE_STATUS.DID_NOT_FINISH);
 
 export const useGetDeadlineById = (deadlineId: string | undefined) => {
   const { session } = useAuth();
