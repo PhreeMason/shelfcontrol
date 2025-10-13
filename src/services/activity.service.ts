@@ -1,5 +1,5 @@
-import { generateId, supabase } from '@/lib/supabase';
 import { DB_TABLES } from '@/constants/database';
+import { supabase } from '@/lib/supabase';
 
 class ActivityService {
   async trackUserActivity(
@@ -15,11 +15,8 @@ class ActivityService {
         return;
       }
 
-      const activityId = generateId('ua');
-
       const { error } = await supabase.from(DB_TABLES.USER_ACTIVITIES).insert([
         {
-          id: activityId,
           user_id: user.id,
           activity_type: activityType,
           activity_data: data,
