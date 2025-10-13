@@ -24,17 +24,25 @@ describe('PreferencesProvider', () => {
 
       expect(result.current.selectedFilter).toBe('active');
       expect(result.current.timeRangeFilter).toBe('all');
-      expect(result.current.selectedFormats).toEqual(['physical', 'eBook', 'audio']);
+      expect(result.current.selectedFormats).toEqual([
+        'physical',
+        'eBook',
+        'audio',
+      ]);
       expect(result.current.selectedSources).toEqual([]);
       expect(result.current.isLoading).toBe(true);
     });
 
     it('should load preferences from AsyncStorage on mount', async () => {
-      mockAsyncStorage.getItem.mockImplementation((key) => {
-        if (key === '@preferences/selectedFilter') return Promise.resolve('completed');
-        if (key === '@preferences/timeRangeFilter') return Promise.resolve('thisWeek');
-        if (key === '@preferences/selectedFormats') return Promise.resolve('["physical"]');
-        if (key === '@preferences/selectedSources') return Promise.resolve('["Library"]');
+      mockAsyncStorage.getItem.mockImplementation(key => {
+        if (key === '@preferences/selectedFilter')
+          return Promise.resolve('completed');
+        if (key === '@preferences/timeRangeFilter')
+          return Promise.resolve('thisWeek');
+        if (key === '@preferences/selectedFormats')
+          return Promise.resolve('["physical"]');
+        if (key === '@preferences/selectedSources')
+          return Promise.resolve('["Library"]');
         return Promise.resolve(null);
       });
 
@@ -101,7 +109,9 @@ describe('PreferencesProvider', () => {
 
     it('should handle AsyncStorage errors gracefully', async () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      mockAsyncStorage.setItem.mockRejectedValueOnce(new Error('Storage error'));
+      mockAsyncStorage.setItem.mockRejectedValueOnce(
+        new Error('Storage error')
+      );
 
       const { result } = renderHook(() => usePreferences(), {
         wrapper: PreferencesProvider,
@@ -162,7 +172,9 @@ describe('PreferencesProvider', () => {
 
     it('should handle AsyncStorage errors gracefully', async () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      mockAsyncStorage.setItem.mockRejectedValueOnce(new Error('Storage error'));
+      mockAsyncStorage.setItem.mockRejectedValueOnce(
+        new Error('Storage error')
+      );
 
       const { result } = renderHook(() => usePreferences(), {
         wrapper: PreferencesProvider,
@@ -223,7 +235,9 @@ describe('PreferencesProvider', () => {
 
     it('should handle AsyncStorage errors gracefully', async () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      mockAsyncStorage.setItem.mockRejectedValueOnce(new Error('Storage error'));
+      mockAsyncStorage.setItem.mockRejectedValueOnce(
+        new Error('Storage error')
+      );
 
       const { result } = renderHook(() => usePreferences(), {
         wrapper: PreferencesProvider,
@@ -284,7 +298,9 @@ describe('PreferencesProvider', () => {
 
     it('should handle AsyncStorage errors gracefully', async () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      mockAsyncStorage.setItem.mockRejectedValueOnce(new Error('Storage error'));
+      mockAsyncStorage.setItem.mockRejectedValueOnce(
+        new Error('Storage error')
+      );
 
       const { result } = renderHook(() => usePreferences(), {
         wrapper: PreferencesProvider,
@@ -327,7 +343,11 @@ describe('PreferencesProvider', () => {
 
       expect(result.current.selectedFilter).toBe('active');
       expect(result.current.timeRangeFilter).toBe('all');
-      expect(result.current.selectedFormats).toEqual(['physical', 'eBook', 'audio']);
+      expect(result.current.selectedFormats).toEqual([
+        'physical',
+        'eBook',
+        'audio',
+      ]);
 
       consoleSpy.mockRestore();
     });

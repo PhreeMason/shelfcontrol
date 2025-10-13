@@ -47,7 +47,7 @@ jest.mock('react-native-reanimated', () => {
     },
     useSharedValue: jest.fn(() => ({ value: 0 })),
     useAnimatedStyle: jest.fn(() => ({})),
-    withSpring: jest.fn((value) => value),
+    withSpring: jest.fn(value => value),
   };
 });
 
@@ -475,7 +475,11 @@ describe('FilterSheet', () => {
       fireEvent.press(screen.getByText('Clear All'));
 
       expect(onTimeRangeChange).toHaveBeenCalledWith('all');
-      expect(onFormatsChange).toHaveBeenCalledWith(['physical', 'eBook', 'audio']);
+      expect(onFormatsChange).toHaveBeenCalledWith([
+        'physical',
+        'eBook',
+        'audio',
+      ]);
       expect(onSourcesChange).toHaveBeenCalledWith([]);
     });
   });

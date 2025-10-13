@@ -114,13 +114,21 @@ export default function HomeScreen() {
   }, [availableFilters, selectedFilter, setSelectedFilter]);
 
   React.useEffect(() => {
-    if (prevSelectedFilterRef.current !== null && prevSelectedFilterRef.current !== selectedFilter) {
+    if (
+      prevSelectedFilterRef.current !== null &&
+      prevSelectedFilterRef.current !== selectedFilter
+    ) {
       setTimeRangeFilter('all');
       setSelectedFormats(['physical', 'eBook', 'audio']);
       setSelectedSources([]);
     }
     prevSelectedFilterRef.current = selectedFilter;
-  }, [selectedFilter, setTimeRangeFilter, setSelectedFormats, setSelectedSources]);
+  }, [
+    selectedFilter,
+    setTimeRangeFilter,
+    setSelectedFormats,
+    setSelectedSources,
+  ]);
 
   return (
     <ThemedView style={[styles.container]}>

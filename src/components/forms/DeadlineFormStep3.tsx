@@ -141,7 +141,7 @@ export const DeadlineFormStep3 = ({
           ) : null}
         </View>
         {(watchedValues.currentProgress > 0 ||
-        watchedValues.currentMinutes > 0) && (
+          watchedValues.currentMinutes > 0) && (
           <View>
             <Controller
               control={control}
@@ -152,7 +152,7 @@ export const DeadlineFormStep3 = ({
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: 12,
-                    marginTop: -12, 
+                    marginTop: -12,
                     marginBottom: 6,
                   }}
                 >

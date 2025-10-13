@@ -108,7 +108,9 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     }).length;
   };
 
-  const applyFilters = (deadlines: ReadingDeadlineWithProgress[]): ReadingDeadlineWithProgress[] => {
+  const applyFilters = (
+    deadlines: ReadingDeadlineWithProgress[]
+  ): ReadingDeadlineWithProgress[] => {
     let filtered = deadlines;
 
     if (timeRangeFilter !== 'all') {
@@ -192,8 +194,13 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
               <ThemedText style={styles.title}>Filters</ThemedText>
               <View style={styles.headerActions}>
                 {hasActiveFilters && (
-                  <TouchableOpacity onPress={clearAllFilters} style={styles.clearButton}>
-                    <ThemedText style={[styles.closeButton, { color: colors.darkPink }]}>
+                  <TouchableOpacity
+                    onPress={clearAllFilters}
+                    style={styles.clearButton}
+                  >
+                    <ThemedText
+                      style={[styles.closeButton, { color: colors.darkPink }]}
+                    >
                       Clear All
                     </ThemedText>
                   </TouchableOpacity>

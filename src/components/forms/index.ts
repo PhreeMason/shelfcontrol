@@ -5,4 +5,3 @@ export { DeadlineFormStep3 } from './DeadlineFormStep3';
 export { FormatSelector } from './FormatSelector';
 export { PrioritySelector } from './PrioritySelector';
 export { StepIndicators } from './StepIndicators';
-

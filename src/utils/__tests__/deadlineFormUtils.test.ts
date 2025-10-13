@@ -277,7 +277,10 @@ describe('deadlineFormUtils', () => {
         ignoreInCalcs: true,
       };
 
-      const result = prepareProgressDetailsFromForm(formDataWithIgnore, 'eBook');
+      const result = prepareProgressDetailsFromForm(
+        formDataWithIgnore,
+        'eBook'
+      );
 
       expect(result.ignore_in_calcs).toBe(true);
     });
@@ -288,7 +291,10 @@ describe('deadlineFormUtils', () => {
         ignoreInCalcs: false,
       };
 
-      const result = prepareProgressDetailsFromForm(formDataWithIgnore, 'eBook');
+      const result = prepareProgressDetailsFromForm(
+        formDataWithIgnore,
+        'eBook'
+      );
 
       expect(result.ignore_in_calcs).toBe(false);
     });

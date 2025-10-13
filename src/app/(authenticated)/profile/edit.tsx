@@ -184,7 +184,8 @@ export default function EditProfile() {
             <ThemedView style={styles.form}>
               <ThemedView style={styles.inputGroup}>
                 <ThemedText style={styles.label}>
-                  Username <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
+                  Username{' '}
+                  <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
                 </ThemedText>
                 <CustomInput
                   control={control}

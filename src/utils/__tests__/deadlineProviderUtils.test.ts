@@ -188,8 +188,9 @@ describe('deadlineProviderUtils', () => {
   });
 
   describe('calculateProgressForToday', () => {
-    const mockCalculateProgress = jest.requireMock('@/utils/deadlineUtils')
-      .calculateProgress;
+    const mockCalculateProgress = jest.requireMock(
+      '@/utils/deadlineUtils'
+    ).calculateProgress;
 
     beforeEach(() => {
       jest.useFakeTimers();

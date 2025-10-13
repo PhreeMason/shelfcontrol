@@ -89,7 +89,6 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   };
 
   const getEmptyMessage = (): string => {
-
     const emptyMessages = {
       active: 'No active deadlines',
       overdue: 'No overdue deadlines',
@@ -106,7 +105,6 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   };
 
   const filteredDeadlines = getFilteredDeadlines();
-  console.log('Filtered Deadlines:', JSON.stringify(filteredDeadlines, null, 2));
   return (
     <DeadlinesList
       deadlines={filteredDeadlines}

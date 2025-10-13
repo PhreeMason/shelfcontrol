@@ -40,7 +40,9 @@ const Avatar: React.FC<AvatarProps> = ({
     shouldFetchUserAvatar ? session?.user?.id : undefined
   );
 
-  const avatarPathToConvert = isAvatarUrlExternal ? null : (avatarUrl || userAvatarPath);
+  const avatarPathToConvert = isAvatarUrlExternal
+    ? null
+    : avatarUrl || userAvatarPath;
   const { data: signedUrl } = useAvatarSignedUrl(
     !newImageUri ? avatarPathToConvert : null
   );

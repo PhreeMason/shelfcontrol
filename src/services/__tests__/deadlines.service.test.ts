@@ -406,7 +406,7 @@ describe('DeadlinesService', () => {
       await deadlinesService.addDeadline(userId, paramsWithoutIgnoreFlag);
 
       const progressInsertCall = mockInsert.mock.calls.find(
-        (call) => call[0].current_progress !== undefined
+        call => call[0].current_progress !== undefined
       );
       expect(progressInsertCall).toBeDefined();
       expect(progressInsertCall[0].created_at).toBe(currentTimestamp);

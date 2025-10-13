@@ -15,7 +15,7 @@ const ProfileHeaderInfo: React.FC<ProfileHeaderInfoProps> = ({
   displayName,
 }) => {
   return (
-    <View testID='profile-header-info' style={styles.container}>
+    <View testID="profile-header-info" style={styles.container}>
       <Avatar
         avatarUrl={avatarUrl}
         size={80}

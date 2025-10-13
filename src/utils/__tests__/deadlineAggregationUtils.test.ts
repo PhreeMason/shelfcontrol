@@ -387,7 +387,7 @@ describe('deadlineAggregationUtils', () => {
           deadline_id: id,
           current_progress: 50,
           time_spent_reading: null,
-            ignore_in_calcs: false,
+          ignore_in_calcs: false,
           created_at: '2024-01-01T08:00:00Z',
           updated_at: '2024-01-01T08:00:00Z',
         },

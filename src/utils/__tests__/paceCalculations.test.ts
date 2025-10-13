@@ -191,7 +191,11 @@ describe('paceCalculations', () => {
         '1',
         'physical',
         [
-          { current_progress: 50, created_at: createdAt, ignore_in_calcs: true },
+          {
+            current_progress: 50,
+            created_at: createdAt,
+            ignore_in_calcs: true,
+          },
           { current_progress: 100, created_at: '2024-01-05T00:00:00Z' },
           { current_progress: 150, created_at: '2024-01-10T00:00:00Z' },
         ],
@@ -213,7 +217,11 @@ describe('paceCalculations', () => {
         '1',
         'physical',
         [
-          { current_progress: 50, created_at: createdAt, ignore_in_calcs: true },
+          {
+            current_progress: 50,
+            created_at: createdAt,
+            ignore_in_calcs: true,
+          },
           { current_progress: 100, created_at: '2024-01-05T00:00:00Z' },
         ],
         createdAt
@@ -232,9 +240,17 @@ describe('paceCalculations', () => {
         'physical',
         [
           { current_progress: 25, created_at: '2024-01-03T00:00:00Z' },
-          { current_progress: 50, created_at: '2024-01-05T00:00:00Z', ignore_in_calcs: true },
+          {
+            current_progress: 50,
+            created_at: '2024-01-05T00:00:00Z',
+            ignore_in_calcs: true,
+          },
           { current_progress: 100, created_at: '2024-01-08T00:00:00Z' },
-          { current_progress: 125, created_at: '2024-01-10T00:00:00Z', ignore_in_calcs: true },
+          {
+            current_progress: 125,
+            created_at: '2024-01-10T00:00:00Z',
+            ignore_in_calcs: true,
+          },
           { current_progress: 150, created_at: '2024-01-12T00:00:00Z' },
         ],
         '2024-01-01T00:00:00Z'

@@ -38,7 +38,7 @@ jest.mock('react-native-reanimated', () => {
     },
     useSharedValue: jest.fn(() => ({ value: 0 })),
     useAnimatedStyle: jest.fn(() => ({})),
-    withSpring: jest.fn((value) => value),
+    withSpring: jest.fn(value => value),
   };
 });
 
@@ -75,11 +75,7 @@ describe('ActionSheet', () => {
   describe('Component Structure', () => {
     it('should render modal when visible', () => {
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={mockOptions}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={mockOptions} />
       );
 
       expect(screen.getByText('Option 1')).toBeTruthy();
@@ -102,11 +98,7 @@ describe('ActionSheet', () => {
 
     it('should not render title when not provided', () => {
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={mockOptions}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={mockOptions} />
       );
 
       expect(screen.queryByText('Select Option')).toBeNull();
@@ -114,11 +106,7 @@ describe('ActionSheet', () => {
 
     it('should render cancel button', () => {
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={mockOptions}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={mockOptions} />
       );
 
       expect(screen.getByText('Cancel')).toBeTruthy();
@@ -126,11 +114,7 @@ describe('ActionSheet', () => {
 
     it('should render all options', () => {
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={mockOptions}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={mockOptions} />
       );
 
       mockOptions.forEach(option => {
@@ -142,16 +126,10 @@ describe('ActionSheet', () => {
   describe('Option Selection', () => {
     it('should call option onPress when option is pressed', () => {
       const onPress = jest.fn();
-      const options: ActionSheetOption[] = [
-        { label: 'Test Option', onPress },
-      ];
+      const options: ActionSheetOption[] = [{ label: 'Test Option', onPress }];
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={options}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
       );
 
       fireEvent.press(screen.getByText('Test Option'));
@@ -166,11 +144,7 @@ describe('ActionSheet', () => {
       ];
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={onClose}
-          options={options}
-        />
+        <ActionSheet visible={true} onClose={onClose} options={options} />
       );
 
       fireEvent.press(screen.getByText('Test Option'));
@@ -182,16 +156,10 @@ describe('ActionSheet', () => {
       const callOrder: string[] = [];
       const onPress = jest.fn(() => callOrder.push('onPress'));
       const onClose = jest.fn(() => callOrder.push('onClose'));
-      const options: ActionSheetOption[] = [
-        { label: 'Test Option', onPress },
-      ];
+      const options: ActionSheetOption[] = [{ label: 'Test Option', onPress }];
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={onClose}
-          options={options}
-        />
+        <ActionSheet visible={true} onClose={onClose} options={options} />
       );
 
       fireEvent.press(screen.getByText('Test Option'));
@@ -207,11 +175,7 @@ describe('ActionSheet', () => {
       ];
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={options}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
       );
 
       expect(screen.getByText('checkmark')).toBeTruthy();
@@ -223,11 +187,7 @@ describe('ActionSheet', () => {
       ];
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={options}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
       );
 
       expect(screen.queryByText('checkmark')).toBeNull();
@@ -241,11 +201,7 @@ describe('ActionSheet', () => {
       ];
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={options}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
       );
 
       const checkmarks = screen.getAllByText('checkmark');
@@ -260,11 +216,7 @@ describe('ActionSheet', () => {
       ];
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={options}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
       );
 
       expect(screen.getByText('Delete')).toBeTruthy();
@@ -276,11 +228,7 @@ describe('ActionSheet', () => {
       ];
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={options}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
       );
 
       expect(screen.getByText('Edit')).toBeTruthy();
@@ -292,11 +240,7 @@ describe('ActionSheet', () => {
       const onClose = jest.fn();
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={onClose}
-          options={mockOptions}
-        />
+        <ActionSheet visible={true} onClose={onClose} options={mockOptions} />
       );
 
       fireEvent.press(screen.getByText('Cancel'));
@@ -306,16 +250,10 @@ describe('ActionSheet', () => {
 
     it('should not call option onPress when cancel is pressed', () => {
       const onPress = jest.fn();
-      const options: ActionSheetOption[] = [
-        { label: 'Test Option', onPress },
-      ];
+      const options: ActionSheetOption[] = [{ label: 'Test Option', onPress }];
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={options}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
       );
 
       fireEvent.press(screen.getByText('Cancel'));
@@ -329,11 +267,7 @@ describe('ActionSheet', () => {
       const onClose = jest.fn();
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={onClose}
-          options={mockOptions}
-        />
+        <ActionSheet visible={true} onClose={onClose} options={mockOptions} />
       );
 
       const backdrop = screen.getByLabelText('Close action sheet');
@@ -345,13 +279,7 @@ describe('ActionSheet', () => {
 
   describe('Edge Cases', () => {
     it('should handle empty options array', () => {
-      render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={[]}
-        />
-      );
+      render(<ActionSheet visible={true} onClose={jest.fn()} options={[]} />);
 
       expect(screen.getByText('Cancel')).toBeTruthy();
     });
@@ -362,11 +290,7 @@ describe('ActionSheet', () => {
       ];
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={options}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
       );
 
       expect(screen.getByText('Only Option')).toBeTruthy();
@@ -381,11 +305,7 @@ describe('ActionSheet', () => {
       ];
 
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={options}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={options} />
       );
 
       expect(
@@ -397,11 +317,7 @@ describe('ActionSheet', () => {
   describe('Visibility', () => {
     it('should render when visible is true', () => {
       render(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={mockOptions}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={mockOptions} />
       );
 
       expect(screen.getByText('Cancel')).toBeTruthy();
@@ -417,11 +333,7 @@ describe('ActionSheet', () => {
       );
 
       rerender(
-        <ActionSheet
-          visible={true}
-          onClose={jest.fn()}
-          options={mockOptions}
-        />
+        <ActionSheet visible={true} onClose={jest.fn()} options={mockOptions} />
       );
 
       expect(screen.getByText('Cancel')).toBeTruthy();

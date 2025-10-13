@@ -84,12 +84,8 @@ export const calculateProgress = (
   if (!deadline.progress || deadline.progress.length === 0) return 0;
 
   const latestProgress = deadline.progress.reduce((latest, current) => {
-    const latestTs = normalizeServerDate(
-      latest.created_at || ''
-    ).valueOf();
-    const currentTs = normalizeServerDate(
-      current.created_at || ''
-    ).valueOf();
+    const latestTs = normalizeServerDate(latest.created_at || '').valueOf();
+    const currentTs = normalizeServerDate(current.created_at || '').valueOf();
     return currentTs > latestTs ? current : latest;
   });
 

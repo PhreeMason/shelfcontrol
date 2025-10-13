@@ -359,6 +359,7 @@ export type Database = {
           id: string;
           last_name: string | null;
           onboarding_complete: boolean | null;
+          role: Database['public']['Enums']['user_role'] | null;
           updated_at: string | null;
           username: string | null;
           website: string | null;
@@ -371,6 +372,7 @@ export type Database = {
           id: string;
           last_name?: string | null;
           onboarding_complete?: boolean | null;
+          role?: Database['public']['Enums']['user_role'] | null;
           updated_at?: string | null;
           username?: string | null;
           website?: string | null;
@@ -383,11 +385,44 @@ export type Database = {
           id?: string;
           last_name?: string | null;
           onboarding_complete?: boolean | null;
+          role?: Database['public']['Enums']['user_role'] | null;
           updated_at?: string | null;
           username?: string | null;
           website?: string | null;
         };
         Relationships: [];
+      };
+      user_activities: {
+        Row: {
+          activity_data: Json | null;
+          activity_type: string;
+          id: string;
+          timestamp: string | null;
+          user_id: string | null;
+        };
+        Insert: {
+          activity_data?: Json | null;
+          activity_type: string;
+          id?: string;
+          timestamp?: string | null;
+          user_id?: string | null;
+        };
+        Update: {
+          activity_data?: Json | null;
+          activity_type?: string;
+          id?: string;
+          timestamp?: string | null;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_activities_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       user_searches: {
         Row: {
@@ -477,6 +512,7 @@ export type Database = {
         | 'paused'
         | 'complete'
         | 'did_not_finish';
+      user_role: 'user' | 'admin' | 'super-admin';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -616,6 +652,7 @@ export const Constants = {
         'complete',
         'did_not_finish',
       ],
+      user_role: ['user', 'admin', 'super-admin'],
     },
   },
 } as const;
