@@ -5,6 +5,7 @@ import {
   FeasibilityLevel,
   ThemeColors,
   calculateDaysSpent,
+  calculateReadingDaysCount,
   calculateAveragePace,
   calculateEarlyLateCompletion,
   formatTimeAgo,
@@ -22,7 +23,11 @@ jest.mock('../deadlineCalculations', () => ({
   calculateTotalQuantity: jest.fn(),
 }));
 
-const { calculateProgress, calculateDaysLeft, getUnitForFormat } = require('../deadlineUtils');
+const {
+  calculateProgress,
+  calculateDaysLeft,
+  getUnitForFormat,
+} = require('../deadlineUtils');
 const { calculateTotalQuantity } = require('../deadlineCalculations');
 
 describe('deadlineModalUtils', () => {
@@ -348,7 +353,11 @@ describe('deadlineModalUtils', () => {
     });
 
     it('should append alpha value to color for backgroundColor', () => {
-      const levels: FeasibilityLevel[] = ['comfortable', 'tight', 'notFeasible'];
+      const levels: FeasibilityLevel[] = [
+        'comfortable',
+        'tight',
+        'notFeasible',
+      ];
 
       levels.forEach(level => {
         const result = getFeasibilityConfig(level, mockColors);
@@ -358,7 +367,7 @@ describe('deadlineModalUtils', () => {
   });
 
   describe('calculateDaysSpent', () => {
-    it('should return 0 when no status history exists', () => {
+    it('should return 0 when no progress exists', () => {
       const deadline: ReadingDeadlineWithProgress = {
         id: 'test-id',
         user_id: 'user-id',
@@ -379,7 +388,7 @@ describe('deadlineModalUtils', () => {
       expect(calculateDaysSpent(deadline)).toBe(0);
     });
 
-    it('should return 0 when no reading status exists', () => {
+    it('should return 0 when all progress records are ignored', () => {
       const deadline: ReadingDeadlineWithProgress = {
         id: 'test-id',
         user_id: 'user-id',
@@ -393,16 +402,24 @@ describe('deadlineModalUtils', () => {
         source: 'manual',
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
-        progress: [],
-        status: [
-          { id: '1', deadline_id: 'test-id', status: 'pending', created_at: '2024-01-01', updated_at: '2024-01-01' },
+        progress: [
+          {
+            id: '1',
+            deadline_id: 'test-id',
+            current_progress: 50,
+            created_at: '2024-01-05',
+            updated_at: '2024-01-05',
+            ignore_in_calcs: true,
+            time_spent_reading: null,
+          },
         ],
+        status: [],
       };
 
       expect(calculateDaysSpent(deadline)).toBe(0);
     });
 
-    it('should calculate days from first reading status to now for active deadline', () => {
+    it('should return 1 when only one progress record exists', () => {
       const deadline: ReadingDeadlineWithProgress = {
         id: 'test-id',
         user_id: 'user-id',
@@ -416,18 +433,65 @@ describe('deadlineModalUtils', () => {
         source: 'manual',
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
-        progress: [],
-        status: [
-          { id: '1', deadline_id: 'test-id', status: 'pending', created_at: '2024-01-01', updated_at: '2024-01-01' },
-          { id: '2', deadline_id: 'test-id', status: 'reading', created_at: '2024-01-05', updated_at: '2024-01-05' },
+        progress: [
+          {
+            id: '1',
+            deadline_id: 'test-id',
+            current_progress: 50,
+            created_at: '2024-01-05T00:00:00.000Z',
+            updated_at: '2024-01-05T00:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
         ],
+        status: [],
+      };
+
+      expect(calculateDaysSpent(deadline)).toBe(1);
+    });
+
+    it('should calculate span from first to last progress record', () => {
+      const deadline: ReadingDeadlineWithProgress = {
+        id: 'test-id',
+        user_id: 'user-id',
+        book_id: 'book-id',
+        book_title: 'Test Book',
+        author: 'Test Author',
+        deadline_date: '2024-01-20',
+        format: 'physical',
+        total_quantity: 300,
+        flexibility: 'flexible',
+        source: 'manual',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01',
+        progress: [
+          {
+            id: '1',
+            deadline_id: 'test-id',
+            current_progress: 50,
+            created_at: '2024-01-05T00:00:00.000Z',
+            updated_at: '2024-01-05T00:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+          {
+            id: '2',
+            deadline_id: 'test-id',
+            current_progress: 100,
+            created_at: '2024-01-15T00:00:00.000Z',
+            updated_at: '2024-01-15T00:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+        ],
+        status: [],
       };
 
       const result = calculateDaysSpent(deadline);
-      expect(result).toBeGreaterThan(0);
+      expect(result).toBe(11);
     });
 
-    it('should calculate days from first reading status to completion date', () => {
+    it('should filter out ignored progress records', () => {
       const deadline: ReadingDeadlineWithProgress = {
         id: 'test-id',
         user_id: 'user-id',
@@ -441,19 +505,86 @@ describe('deadlineModalUtils', () => {
         source: 'manual',
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
-        progress: [],
-        status: [
-          { id: '1', deadline_id: 'test-id', status: 'reading', created_at: '2024-01-05T00:00:00.000Z', updated_at: '2024-01-05T00:00:00.000Z' },
-          { id: '2', deadline_id: 'test-id', status: 'complete', created_at: '2024-01-15T00:00:00.000Z', updated_at: '2024-01-15T00:00:00.000Z' },
+        progress: [
+          {
+            id: '1',
+            deadline_id: 'test-id',
+            current_progress: 0,
+            created_at: '2024-01-01T00:00:00.000Z',
+            updated_at: '2024-01-01T00:00:00.000Z',
+            ignore_in_calcs: true,
+            time_spent_reading: null,
+          },
+          {
+            id: '2',
+            deadline_id: 'test-id',
+            current_progress: 50,
+            created_at: '2024-01-05T00:00:00.000Z',
+            updated_at: '2024-01-05T00:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+          {
+            id: '3',
+            deadline_id: 'test-id',
+            current_progress: 100,
+            created_at: '2024-01-15T00:00:00.000Z',
+            updated_at: '2024-01-15T00:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
         ],
+        status: [],
       };
 
       const result = calculateDaysSpent(deadline);
-      expect(result).toBe(10);
+      expect(result).toBe(11);
     });
 
-    it('should return minimum of 1 day', () => {
-      const now = new Date().toISOString();
+    it('should handle out-of-order progress records', () => {
+      const deadline: ReadingDeadlineWithProgress = {
+        id: 'test-id',
+        user_id: 'user-id',
+        book_id: 'book-id',
+        book_title: 'Test Book',
+        author: 'Test Author',
+        deadline_date: '2024-01-20',
+        format: 'physical',
+        total_quantity: 300,
+        flexibility: 'flexible',
+        source: 'manual',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01',
+        progress: [
+          {
+            id: '2',
+            deadline_id: 'test-id',
+            current_progress: 100,
+            created_at: '2024-01-15T00:00:00.000Z',
+            updated_at: '2024-01-15T00:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+          {
+            id: '1',
+            deadline_id: 'test-id',
+            current_progress: 50,
+            created_at: '2024-01-05T00:00:00.000Z',
+            updated_at: '2024-01-05T00:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+        ],
+        status: [],
+      };
+
+      const result = calculateDaysSpent(deadline);
+      expect(result).toBe(11);
+    });
+  });
+
+  describe('calculateReadingDaysCount', () => {
+    it('should return 0 when no progress exists', () => {
       const deadline: ReadingDeadlineWithProgress = {
         id: 'test-id',
         user_id: 'user-id',
@@ -468,12 +599,206 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         progress: [],
-        status: [
-          { id: '1', deadline_id: 'test-id', status: 'reading', created_at: now, updated_at: now },
-        ],
+        status: [],
       };
 
-      expect(calculateDaysSpent(deadline)).toBeGreaterThanOrEqual(1);
+      expect(calculateReadingDaysCount(deadline)).toBe(0);
+    });
+
+    it('should return 0 when all progress records are ignored', () => {
+      const deadline: ReadingDeadlineWithProgress = {
+        id: 'test-id',
+        user_id: 'user-id',
+        book_id: 'book-id',
+        book_title: 'Test Book',
+        author: 'Test Author',
+        deadline_date: '2024-01-20',
+        format: 'physical',
+        total_quantity: 300,
+        flexibility: 'flexible',
+        source: 'manual',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01',
+        progress: [
+          {
+            id: '1',
+            deadline_id: 'test-id',
+            current_progress: 50,
+            created_at: '2024-01-05',
+            updated_at: '2024-01-05',
+            ignore_in_calcs: true,
+            time_spent_reading: null,
+          },
+        ],
+        status: [],
+      };
+
+      expect(calculateReadingDaysCount(deadline)).toBe(0);
+    });
+
+    it('should count unique days with progress', () => {
+      const deadline: ReadingDeadlineWithProgress = {
+        id: 'test-id',
+        user_id: 'user-id',
+        book_id: 'book-id',
+        book_title: 'Test Book',
+        author: 'Test Author',
+        deadline_date: '2024-01-20',
+        format: 'physical',
+        total_quantity: 300,
+        flexibility: 'flexible',
+        source: 'manual',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01',
+        progress: [
+          {
+            id: '1',
+            deadline_id: 'test-id',
+            current_progress: 50,
+            created_at: '2024-01-05T10:00:00.000Z',
+            updated_at: '2024-01-05T10:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+          {
+            id: '2',
+            deadline_id: 'test-id',
+            current_progress: 100,
+            created_at: '2024-01-10T14:00:00.000Z',
+            updated_at: '2024-01-10T14:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+          {
+            id: '3',
+            deadline_id: 'test-id',
+            current_progress: 150,
+            created_at: '2024-01-15T20:00:00.000Z',
+            updated_at: '2024-01-15T20:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+        ],
+        status: [],
+      };
+
+      expect(calculateReadingDaysCount(deadline)).toBe(3);
+    });
+
+    it('should count multiple progress records on same day as one day', () => {
+      const deadline: ReadingDeadlineWithProgress = {
+        id: 'test-id',
+        user_id: 'user-id',
+        book_id: 'book-id',
+        book_title: 'Test Book',
+        author: 'Test Author',
+        deadline_date: '2024-01-20',
+        format: 'physical',
+        total_quantity: 300,
+        flexibility: 'flexible',
+        source: 'manual',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01',
+        progress: [
+          {
+            id: '1',
+            deadline_id: 'test-id',
+            current_progress: 50,
+            created_at: '2024-01-05T10:00:00.000Z',
+            updated_at: '2024-01-05T10:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+          {
+            id: '2',
+            deadline_id: 'test-id',
+            current_progress: 75,
+            created_at: '2024-01-05T14:00:00.000Z',
+            updated_at: '2024-01-05T14:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+          {
+            id: '3',
+            deadline_id: 'test-id',
+            current_progress: 100,
+            created_at: '2024-01-05T20:00:00.000Z',
+            updated_at: '2024-01-05T20:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+          {
+            id: '4',
+            deadline_id: 'test-id',
+            current_progress: 150,
+            created_at: '2024-01-10T10:00:00.000Z',
+            updated_at: '2024-01-10T10:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+        ],
+        status: [],
+      };
+
+      expect(calculateReadingDaysCount(deadline)).toBe(2);
+    });
+
+    it('should filter out ignored progress records', () => {
+      const deadline: ReadingDeadlineWithProgress = {
+        id: 'test-id',
+        user_id: 'user-id',
+        book_id: 'book-id',
+        book_title: 'Test Book',
+        author: 'Test Author',
+        deadline_date: '2024-01-20',
+        format: 'physical',
+        total_quantity: 300,
+        flexibility: 'flexible',
+        source: 'manual',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01',
+        progress: [
+          {
+            id: '1',
+            deadline_id: 'test-id',
+            current_progress: 0,
+            created_at: '2024-01-01T00:00:00.000Z',
+            updated_at: '2024-01-01T00:00:00.000Z',
+            ignore_in_calcs: true,
+            time_spent_reading: null,
+          },
+          {
+            id: '2',
+            deadline_id: 'test-id',
+            current_progress: 50,
+            created_at: '2024-01-05T10:00:00.000Z',
+            updated_at: '2024-01-05T10:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+          {
+            id: '3',
+            deadline_id: 'test-id',
+            current_progress: 100,
+            created_at: '2024-01-10T14:00:00.000Z',
+            updated_at: '2024-01-10T14:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+          {
+            id: '4',
+            deadline_id: 'test-id',
+            current_progress: 150,
+            created_at: '2024-01-15T20:00:00.000Z',
+            updated_at: '2024-01-15T20:00:00.000Z',
+            ignore_in_calcs: true,
+            time_spent_reading: null,
+          },
+        ],
+        status: [],
+      };
+
+      expect(calculateReadingDaysCount(deadline)).toBe(2);
     });
   });
 
@@ -519,15 +844,31 @@ describe('deadlineModalUtils', () => {
         source: 'manual',
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
-        progress: [],
-        status: [
-          { id: '1', deadline_id: 'test-id', status: 'reading', created_at: '2024-01-05T00:00:00.000Z', updated_at: '2024-01-05T00:00:00.000Z' },
-          { id: '2', deadline_id: 'test-id', status: 'complete', created_at: '2024-01-15T00:00:00.000Z', updated_at: '2024-01-15T00:00:00.000Z' },
+        progress: [
+          {
+            id: '1',
+            deadline_id: 'test-id',
+            current_progress: 50,
+            created_at: '2024-01-05T00:00:00.000Z',
+            updated_at: '2024-01-05T00:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+          {
+            id: '2',
+            deadline_id: 'test-id',
+            current_progress: 120,
+            created_at: '2024-01-15T00:00:00.000Z',
+            updated_at: '2024-01-15T00:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
         ],
+        status: [],
       };
 
       const result = calculateAveragePace(deadline);
-      expect(result).toBe(12);
+      expect(result).toBe(11);
     });
 
     it('should round to nearest integer', () => {
@@ -546,15 +887,31 @@ describe('deadlineModalUtils', () => {
         source: 'manual',
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
-        progress: [],
-        status: [
-          { id: '1', deadline_id: 'test-id', status: 'reading', created_at: '2024-01-05T00:00:00.000Z', updated_at: '2024-01-05T00:00:00.000Z' },
-          { id: '2', deadline_id: 'test-id', status: 'complete', created_at: '2024-01-15T00:00:00.000Z', updated_at: '2024-01-15T00:00:00.000Z' },
+        progress: [
+          {
+            id: '1',
+            deadline_id: 'test-id',
+            current_progress: 50,
+            created_at: '2024-01-05T00:00:00.000Z',
+            updated_at: '2024-01-05T00:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
+          {
+            id: '2',
+            deadline_id: 'test-id',
+            current_progress: 125,
+            created_at: '2024-01-15T00:00:00.000Z',
+            updated_at: '2024-01-15T00:00:00.000Z',
+            ignore_in_calcs: false,
+            time_spent_reading: null,
+          },
         ],
+        status: [],
       };
 
       const result = calculateAveragePace(deadline);
-      expect(result).toBe(13);
+      expect(result).toBe(11);
     });
   });
 

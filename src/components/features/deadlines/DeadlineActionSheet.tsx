@@ -1,22 +1,28 @@
+import { ThemedText } from '@/components/themed/ThemedText';
 import { ActionSheetOption } from '@/components/ui/ActionSheet';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTheme } from '@/hooks/useThemeColor';
+import { dayjs } from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getDeadlineStatus, getStatusFlags } from '@/utils/deadlineActionUtils';
 import React, { useEffect, useState } from 'react';
-import { Modal, Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ThemedText } from '@/components/themed/ThemedText';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ChangeReadingStatusModal } from './modals/ChangeReadingStatusModal';
 import { DeleteDeadlineModal } from './modals/DeleteDeadlineModal';
 import { UpdateDeadlineDateModal } from './modals/UpdateDeadlineDateModal';
-import { dayjs } from '@/lib/dayjs';
 
 interface DeadlineActionSheetProps {
   deadline: ReadingDeadlineWithProgress;
@@ -32,7 +38,8 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const translateY = useSharedValue(500);
-  const { startReadingDeadline, pauseDeadline, reactivateDeadline } = useDeadlines();
+  const { startReadingDeadline, pauseDeadline, reactivateDeadline } =
+    useDeadlines();
   const [showUpdateDateModal, setShowUpdateDateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showChangeStatusModal, setShowChangeStatusModal] = useState(false);
@@ -60,12 +67,32 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
     if (isActive) return { label: 'Active', color: colors.primary };
     if (isSetAside) return { label: 'Paused', color: colors.approaching };
     if (isCompleted) return { label: 'Completed', color: colors.good };
-    if (latestStatus === 'did_not_finish') return { label: 'Did Not Finish', color: colors.error };
+    if (latestStatus === 'did_not_finish')
+      return { label: 'Did Not Finish', color: colors.error };
     return { label: 'Unknown', color: colors.text };
   };
 
   const statusBadge = getStatusBadge();
-  const dueDate = dayjs(deadline.deadline_date).format('MMM D, YYYY');
+
+  const getDisplayDate = () => {
+    if (isArchived) {
+      const archivedStatus = deadline.status?.find(
+        s => s.status === 'complete' || s.status === 'did_not_finish'
+      );
+      if (archivedStatus) {
+        return {
+          label: 'Archived',
+          date: dayjs(archivedStatus.created_at).format('MMM D, YYYY'),
+        };
+      }
+    }
+    return {
+      label: 'Due',
+      date: dayjs(deadline.deadline_date).format('MMM D, YYYY'),
+    };
+  };
+
+  const displayDate = getDisplayDate();
 
   const getActionButton = () => {
     if (isArchived) return null;
@@ -80,7 +107,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
             () => {
               onClose();
             },
-            (error) => {
+            error => {
               console.error('Failed to start reading:', error);
             }
           );
@@ -96,7 +123,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
             () => {
               onClose();
             },
-            (error) => {
+            error => {
               console.error('Failed to pause deadline:', error);
             }
           );
@@ -112,7 +139,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
             () => {
               onClose();
             },
-            (error) => {
+            error => {
               console.error('Failed to resume reading:', error);
             }
           );
@@ -128,37 +155,37 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const actions: ActionSheetOption[] = [];
 
   if (!isArchived) {
-    actions.push({
-      label: 'Update Deadline Date',
-      icon: 'calendar.badge.clock',
-      iconColor: colors.secondary,
-      showChevron: true,
-      onPress: () => {
-        setShowUpdateDateModal(true);
+    actions.push(
+      {
+        label: 'Update Deadline Date',
+        icon: 'calendar.badge.clock',
+        iconColor: colors.secondary,
+        showChevron: true,
+        onPress: () => {
+          setShowUpdateDateModal(true);
+        },
       },
-    });
+      {
+        label: 'Change Reading Status',
+        icon: 'circle.grid.2x2.fill',
+        iconColor: colors.approaching,
+        showChevron: true,
+        onPress: () => {
+          setShowChangeStatusModal(true);
+        },
+      }
+    );
   }
 
-  actions.push(
-    {
-      label: 'Change Reading Status',
-      icon: 'circle.grid.2x2.fill',
-      iconColor: colors.approaching,
-      showChevron: true,
-      onPress: () => {
-        setShowChangeStatusModal(true);
-      },
+  actions.push({
+    label: 'Delete This Book',
+    icon: 'trash.fill',
+    iconColor: colors.error,
+    showChevron: true,
+    onPress: () => {
+      setShowDeleteModal(true);
     },
-    {
-      label: 'Delete This Book',
-      icon: 'trash.fill',
-      iconColor: colors.error,
-      showChevron: true,
-      onPress: () => {
-        setShowDeleteModal(true);
-      },
-    }
-  );
+  });
 
   return (
     <>
@@ -185,21 +212,35 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
             onStartShouldSetResponder={() => true}
           >
             <View style={styles.header}>
-              <ThemedText style={styles.bookTitle}>{deadline.book_title}</ThemedText>
+              <ThemedText style={styles.bookTitle}>
+                {deadline.book_title}
+              </ThemedText>
               <View style={styles.headerInfo}>
-                <View style={[styles.statusBadge, { backgroundColor: statusBadge.color + '20' }]}>
-                  <ThemedText style={[styles.statusText, { color: statusBadge.color }]}>
+                <View
+                  style={[
+                    styles.statusBadge,
+                    { backgroundColor: statusBadge.color + '20' },
+                  ]}
+                >
+                  <ThemedText
+                    style={[styles.statusText, { color: statusBadge.color }]}
+                  >
                     {statusBadge.label}
                   </ThemedText>
                 </View>
-                <ThemedText style={styles.dueDate}>Due {dueDate}</ThemedText>
+                <ThemedText style={styles.dueDate}>
+                  {displayDate.label} {displayDate.date}
+                </ThemedText>
               </View>
             </View>
 
             {actionButton && (
               <TouchableOpacity
                 testID="primary-action-button"
-                style={[styles.primaryActionButton, { backgroundColor: colors.primary }]}
+                style={[
+                  styles.primaryActionButton,
+                  { backgroundColor: colors.primary },
+                ]}
                 onPress={actionButton.onPress}
               >
                 <IconSymbol
@@ -207,7 +248,9 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
                   size={20}
                   color={colors.surface}
                 />
-                <ThemedText style={[styles.primaryActionText, { color: colors.surface }]}>
+                <ThemedText
+                  style={[styles.primaryActionText, { color: colors.surface }]}
+                >
                   {actionButton.label}
                 </ThemedText>
               </TouchableOpacity>
@@ -223,7 +266,9 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
                     {
                       borderBottomColor: colors.border,
                       borderBottomWidth:
-                        index < actions.length - 1 ? StyleSheet.hairlineWidth : 0,
+                        index < actions.length - 1
+                          ? StyleSheet.hairlineWidth
+                          : 0,
                     },
                   ]}
                   onPress={() => {
@@ -231,14 +276,24 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
                     action.onPress();
                   }}
                 >
-                  <View style={[styles.iconContainer, { backgroundColor: (action.iconColor || colors.text) + '20' }]}>
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      {
+                        backgroundColor:
+                          (action.iconColor || colors.text) + '20',
+                      },
+                    ]}
+                  >
                     <IconSymbol
                       name={action.icon as any}
                       size={24}
                       color={action.iconColor || colors.text}
                     />
                   </View>
-                  <ThemedText style={styles.actionLabel}>{action.label}</ThemedText>
+                  <ThemedText style={styles.actionLabel}>
+                    {action.label}
+                  </ThemedText>
                   <IconSymbol
                     name="chevron.right"
                     size={20}

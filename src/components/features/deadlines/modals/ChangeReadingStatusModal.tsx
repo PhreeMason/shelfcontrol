@@ -13,13 +13,12 @@ interface ChangeReadingStatusModalProps {
   onClose: () => void;
 }
 
-export const ChangeReadingStatusModal: React.FC<ChangeReadingStatusModalProps> = ({
-  deadline,
-  visible,
-  onClose,
-}) => {
+export const ChangeReadingStatusModal: React.FC<
+  ChangeReadingStatusModalProps
+> = ({ deadline, visible, onClose }) => {
   const { colors } = useTheme();
-  const { startReadingDeadline, pauseDeadline, reactivateDeadline } = useDeadlines();
+  const { startReadingDeadline, pauseDeadline, reactivateDeadline } =
+    useDeadlines();
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showDidNotFinishModal, setShowDidNotFinishModal] = useState(false);
 
@@ -41,7 +40,7 @@ export const ChangeReadingStatusModal: React.FC<ChangeReadingStatusModalProps> =
           () => {
             onClose();
           },
-          (error) => {
+          error => {
             console.error('Failed to start reading:', error);
           }
         );
@@ -58,7 +57,7 @@ export const ChangeReadingStatusModal: React.FC<ChangeReadingStatusModalProps> =
           () => {
             onClose();
           },
-          (error) => {
+          error => {
             console.error('Failed to pause deadline:', error);
           }
         );
@@ -75,7 +74,7 @@ export const ChangeReadingStatusModal: React.FC<ChangeReadingStatusModalProps> =
           () => {
             onClose();
           },
-          (error) => {
+          error => {
             console.error('Failed to resume reading:', error);
           }
         );

@@ -1,7 +1,11 @@
 import { BOOK_FORMAT } from '@/constants/status';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { UserListeningPaceData, UserPaceData } from './paceCalculations';
-import { calculateProgress, calculateDaysLeft, getUnitForFormat } from './deadlineUtils';
+import {
+  calculateProgress,
+  calculateDaysLeft,
+  getUnitForFormat,
+} from './deadlineUtils';
 import { calculateTotalQuantity } from './deadlineCalculations';
 import { dayjs } from '@/lib/dayjs';
 import { normalizeServerDate } from './dateNormalization';
@@ -31,7 +35,10 @@ export interface ThemeColors {
   error: string;
 }
 
-export const getQuickSelectDate = (baseDate: Date, type: QuickSelectType): Date => {
+export const getQuickSelectDate = (
+  baseDate: Date,
+  type: QuickSelectType
+): Date => {
   const date = new Date(baseDate);
   switch (type) {
     case 'week':
@@ -128,32 +135,55 @@ export const getFeasibilityConfig = (
 export const calculateDaysSpent = (
   deadline: ReadingDeadlineWithProgress
 ): number => {
-  if (!deadline.status || deadline.status.length === 0) {
+  if (!deadline.progress || deadline.progress.length === 0) {
     return 0;
   }
 
-  const sortedStatuses = [...deadline.status].sort((a, b) => {
-    const dateA = normalizeServerDate(a.created_at || '').valueOf();
-    const dateB = normalizeServerDate(b.created_at || '').valueOf();
-    return dateA - dateB;
-  });
+  const validProgress = deadline.progress
+    .filter(p => !p.ignore_in_calcs)
+    .sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    );
 
-  const firstReadingStatus = sortedStatuses.find(
-    s => s.status === 'reading'
+  if (validProgress.length === 0) {
+    return 0;
+  }
+
+  const firstDate = new Date(validProgress[0].created_at);
+  const lastDate = new Date(validProgress[validProgress.length - 1].created_at);
+
+  const daysBetween = Math.max(
+    1,
+    Math.ceil(
+      (lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)
+    ) + 1
   );
 
-  if (!firstReadingStatus) {
+  return daysBetween;
+};
+
+export const calculateReadingDaysCount = (
+  deadline: ReadingDeadlineWithProgress
+): number => {
+  if (!deadline.progress || deadline.progress.length === 0) {
     return 0;
   }
 
-  const startDate = normalizeServerDate(firstReadingStatus.created_at || '');
-  const latestStatus = sortedStatuses[sortedStatuses.length - 1];
-  const isCompleted = latestStatus.status === 'complete';
-  const endDate = isCompleted
-    ? normalizeServerDate(latestStatus.created_at || '')
-    : dayjs();
+  const validProgress = deadline.progress.filter(p => !p.ignore_in_calcs);
 
-  return Math.max(1, endDate.diff(startDate, 'day'));
+  if (validProgress.length === 0) {
+    return 0;
+  }
+
+  const uniqueDates = new Set(
+    validProgress.map(p => {
+      const date = new Date(p.created_at);
+      return date.toISOString().slice(0, 10);
+    })
+  );
+
+  return uniqueDates.size;
 };
 
 export const calculateAveragePace = (

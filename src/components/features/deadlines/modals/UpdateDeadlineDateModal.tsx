@@ -72,9 +72,10 @@ export const UpdateDeadlineDateModal: React.FC<
 
   const handleQuickSelectDate = useCallback(
     (type: QuickSelectType): Date => {
-      return getQuickSelectDate(currentDeadlineDate, type);
+      const baseDate = currentDeadlineDate < today ? today : currentDeadlineDate;
+      return getQuickSelectDate(baseDate, type);
     },
-    [currentDeadlineDate]
+    [currentDeadlineDate, today]
   );
 
   const getImpactData = useCallback(
@@ -196,9 +197,7 @@ export const UpdateDeadlineDateModal: React.FC<
             animatedStyle,
           ]}
         >
-          <View
-            style={[styles.header, { borderBottomColor: colors.border }]}
-          >
+          <View style={[styles.header, { borderBottomColor: colors.border }]}>
             <ThemedText style={styles.title}>Update Deadline Date</ThemedText>
           </View>
 
@@ -312,9 +311,7 @@ export const UpdateDeadlineDateModal: React.FC<
               </View>
 
               <View style={styles.section}>
-                <ThemedText style={styles.sectionTitle}>
-                  Select Date
-                </ThemedText>
+                <ThemedText style={styles.sectionTitle}>Select Date</ThemedText>
                 <View
                   style={[
                     styles.calendarContainer,

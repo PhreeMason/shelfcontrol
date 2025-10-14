@@ -37,10 +37,10 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   const today = dayjs().startOf('day');
 
   deadlines.forEach(deadline => {
-    sortByDateField(deadline.status || [], 'created_at', 'asc');
+    const sortedStatus = sortByDateField(deadline.status || [], 'created_at', 'asc');
     const latestStatus =
-      deadline.status && deadline.status.length > 0
-        ? deadline.status[deadline.status.length - 1].status
+      sortedStatus.length > 0
+        ? sortedStatus[sortedStatus.length - 1].status
         : 'reading';
 
     const deadlineDate = normalizeServerDateStartOfDay(deadline.deadline_date);
@@ -66,7 +66,14 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   didNotFinish.sort(sortByStatusDate);
   pending.sort(sortDeadlines);
 
-  return { active, overdue, completed, setAside: paused, didNotFinish, pending };
+  return {
+    active,
+    overdue,
+    completed,
+    setAside: paused,
+    didNotFinish,
+    pending,
+  };
 };
 
 /**

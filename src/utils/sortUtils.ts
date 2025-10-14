@@ -19,7 +19,7 @@ export function sortByDateField<T extends WithDateFields>(
   field: DateField,
   order: SortOrder = 'desc'
 ): T[] {
-  return array.sort((a, b) => {
+  return [...array].sort((a, b) => {
     const aDate = a[field];
     const bDate = b[field];
 

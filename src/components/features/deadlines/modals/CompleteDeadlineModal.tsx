@@ -11,7 +11,13 @@ import {
 } from '@/utils/deadlineModalUtils';
 import { getUnitForFormat } from '@/utils/deadlineUtils';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -56,7 +62,7 @@ export const CompleteDeadlineModal: React.FC<CompleteDeadlineModalProps> = ({
         setIsCompleting(false);
         onClose();
       },
-      (error) => {
+      error => {
         setIsCompleting(false);
         console.error('Failed to complete deadline:', error);
       }
@@ -102,11 +108,20 @@ export const CompleteDeadlineModal: React.FC<CompleteDeadlineModalProps> = ({
             <ThemedText style={styles.emoji}>🎉</ThemedText>
             <ThemedText style={styles.title}>Complete Book</ThemedText>
             <ThemedText style={styles.subtitle}>Great job finishing</ThemedText>
-            <ThemedText style={styles.bookTitle}>"{deadline.book_title}"</ThemedText>
+            <ThemedText style={styles.bookTitle}>
+              "{deadline.book_title}"
+            </ThemedText>
 
-            <View style={[styles.achievementSection, { backgroundColor: colors.good + '15' }]}>
+            <View
+              style={[
+                styles.achievementSection,
+                { backgroundColor: colors.good + '15' },
+              ]}
+            >
               <View style={styles.achievementHeader}>
-                <ThemedText style={styles.achievementTitle}>📚 READING ACHIEVEMENT</ThemedText>
+                <ThemedText style={styles.achievementTitle}>
+                  📚 READING ACHIEVEMENT
+                </ThemedText>
               </View>
 
               <View style={styles.statsRow}>
@@ -118,7 +133,9 @@ export const CompleteDeadlineModal: React.FC<CompleteDeadlineModalProps> = ({
 
               <View style={styles.statsRow}>
                 <ThemedText style={styles.statLabel}>Completed in</ThemedText>
-                <ThemedText style={styles.statValue}>{daysSpent} days</ThemedText>
+                <ThemedText style={styles.statValue}>
+                  {daysSpent} days
+                </ThemedText>
               </View>
 
               <View style={styles.statsRow}>
@@ -184,7 +201,7 @@ const styles = StyleSheet.create({
   },
   emoji: {
     fontSize: 48,
-    lineHeight: 52,
+    lineHeight: 56,
     textAlign: 'center',
     marginBottom: 4,
   },

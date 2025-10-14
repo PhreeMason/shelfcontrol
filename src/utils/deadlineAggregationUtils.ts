@@ -1,7 +1,7 @@
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
-  calculateUnitsPerDay,
   calculateProgressAsOfStartOfDay,
+  calculateUnitsPerDay,
 } from '@/utils/deadlineProviderUtils';
 import { calculateDaysLeft } from '@/utils/deadlineUtils';
 
@@ -137,4 +137,29 @@ export const calculateTodaysReadingTotals = (
   getProgress: (deadline: ReadingDeadlineWithProgress) => number | null
 ): DeadlineTotals => {
   return calculateTodaysGoalTotals(readingDeadlines, getProgress);
+};
+
+export interface DailyGoalImpact {
+  currentGoal: number;
+  projectedGoal: number;
+  addition: number;
+}
+
+export const formatDailyGoalDisplay = (
+  unitsPerDay: number,
+  format: 'physical' | 'eBook' | 'audio'
+): string => {
+  if (format === 'audio') {
+    const hours = Math.floor(unitsPerDay / 60);
+    const minutes = Math.round(unitsPerDay % 60);
+
+    if (hours > 0 && minutes > 0) {
+      return `${hours}h ${minutes}m`;
+    } else if (hours > 0) {
+      return `${hours}h`;
+    }
+    return `${minutes}m`;
+  }
+
+  return `${Math.round(unitsPerDay)} pages`;
 };

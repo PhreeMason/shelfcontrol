@@ -15,7 +15,14 @@ import {
   getUnitForFormat,
 } from '@/utils/deadlineUtils';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -29,13 +36,16 @@ interface DidNotFinishDeadlineModalProps {
   onClose: () => void;
 }
 
-type StopReason = 'not_enjoying' | 'too_difficult' | 'no_time' | 'other_priorities' | null;
+type StopReason =
+  | 'not_enjoying'
+  | 'too_difficult'
+  | 'no_time'
+  | 'other_priorities'
+  | null;
 
-export const DidNotFinishDeadlineModal: React.FC<DidNotFinishDeadlineModalProps> = ({
-  deadline,
-  visible,
-  onClose,
-}) => {
+export const DidNotFinishDeadlineModal: React.FC<
+  DidNotFinishDeadlineModalProps
+> = ({ deadline, visible, onClose }) => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const translateY = useSharedValue(500);
@@ -92,7 +102,7 @@ export const DidNotFinishDeadlineModal: React.FC<DidNotFinishDeadlineModalProps>
           setSelectedReason(null);
           onClose();
         },
-        (error) => {
+        error => {
           setIsUpdating(false);
           console.error('Failed to mark deadline as did not finish:', error);
         }
@@ -129,18 +139,35 @@ export const DidNotFinishDeadlineModal: React.FC<DidNotFinishDeadlineModalProps>
           <View style={styles.content}>
             <ThemedText style={styles.emoji}>🤗</ThemedText>
             <ThemedText style={styles.title}>Stop Reading</ThemedText>
-            <ThemedText style={styles.subtitle}>It's okay to not finish</ThemedText>
-            <ThemedText style={styles.bookTitle}>"{deadline.book_title}"</ThemedText>
+            <ThemedText style={styles.subtitle}>
+              It's okay to not finish
+            </ThemedText>
+            <ThemedText style={styles.bookTitle}>
+              "{deadline.book_title}"
+            </ThemedText>
 
-            <View style={[styles.journeySection, { backgroundColor: colors.approaching + '10' }]}>
+            <View
+              style={[
+                styles.journeySection,
+                { backgroundColor: colors.approaching + '10' },
+              ]}
+            >
               <ThemedText style={styles.sectionTitle}>YOUR JOURNEY</ThemedText>
 
               <View style={styles.progressBarContainer}>
-                <View style={[styles.progressBar, { backgroundColor: colors.border }]}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    { backgroundColor: colors.border },
+                  ]}
+                >
                   <View
                     style={[
                       styles.progressBarFill,
-                      { width: `${progressPercentage}%`, backgroundColor: colors.approaching },
+                      {
+                        width: `${progressPercentage}%`,
+                        backgroundColor: colors.approaching,
+                      },
                     ]}
                   />
                 </View>
@@ -149,13 +176,16 @@ export const DidNotFinishDeadlineModal: React.FC<DidNotFinishDeadlineModalProps>
               <View style={styles.statsRow}>
                 <ThemedText style={styles.statLabel}>You read</ThemedText>
                 <ThemedText style={styles.statValue}>
-                  {currentProgress} of {totalQuantity} {unit} ({progressPercentage}%)
+                  {currentProgress} of {totalQuantity} {unit} (
+                  {progressPercentage}%)
                 </ThemedText>
               </View>
 
               <View style={styles.statsRow}>
                 <ThemedText style={styles.statLabel}>Time spent</ThemedText>
-                <ThemedText style={styles.statValue}>{daysSpent} days</ThemedText>
+                <ThemedText style={styles.statValue}>
+                  {daysSpent} days
+                </ThemedText>
               </View>
 
               <View style={styles.statsRow}>
@@ -167,31 +197,37 @@ export const DidNotFinishDeadlineModal: React.FC<DidNotFinishDeadlineModalProps>
             </View>
 
             <View style={styles.reasonSection}>
-              <ThemedText style={styles.reasonTitle}>Why are you stopping? (optional)</ThemedText>
+              <ThemedText style={styles.reasonTitle}>
+                Why are you stopping? (optional)
+              </ThemedText>
 
-              {(Object.keys(reasonLabels) as Exclude<StopReason, null>[]).map((reason) => (
-                <TouchableOpacity
-                  key={reason}
-                  style={styles.reasonOption}
-                  onPress={() => setSelectedReason(reason)}
-                >
-                  <View
-                    style={[
-                      styles.radioButton,
-                      { borderColor: colors.border },
-                      selectedReason === reason && {
-                        backgroundColor: colors.primary,
-                        borderColor: colors.primary,
-                      },
-                    ]}
+              {(Object.keys(reasonLabels) as Exclude<StopReason, null>[]).map(
+                reason => (
+                  <TouchableOpacity
+                    key={reason}
+                    style={styles.reasonOption}
+                    onPress={() => setSelectedReason(reason)}
                   >
-                    {selectedReason === reason && (
-                      <View style={styles.radioButtonInner} />
-                    )}
-                  </View>
-                  <ThemedText style={styles.reasonLabel}>{reasonLabels[reason]}</ThemedText>
-                </TouchableOpacity>
-              ))}
+                    <View
+                      style={[
+                        styles.radioButton,
+                        { borderColor: colors.border },
+                        selectedReason === reason && {
+                          backgroundColor: colors.primary,
+                          borderColor: colors.primary,
+                        },
+                      ]}
+                    >
+                      {selectedReason === reason && (
+                        <View style={styles.radioButtonInner} />
+                      )}
+                    </View>
+                    <ThemedText style={styles.reasonLabel}>
+                      {reasonLabels[reason]}
+                    </ThemedText>
+                  </TouchableOpacity>
+                )
+              )}
             </View>
 
             <View style={styles.buttonContainer}>
@@ -238,7 +274,7 @@ const styles = StyleSheet.create({
   },
   emoji: {
     fontSize: 48,
-    lineHeight: 52,
+    lineHeight: 56,
     textAlign: 'center',
     marginBottom: 4,
   },

@@ -1,15 +1,16 @@
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
-  calculateTotalUnitsForDeadlines,
+  calculateAudioTotals,
   calculateCurrentProgressForDeadlines,
   calculateDeadlineTotals,
-  calculateAudioTotals,
   calculateReadingTotals,
-  calculateTodaysGoalUnitsForDeadlines,
-  calculateTodaysGoalTotals,
   calculateTodaysAudioTotals,
+  calculateTodaysGoalTotals,
+  calculateTodaysGoalUnitsForDeadlines,
   calculateTodaysReadingTotals,
+  calculateTotalUnitsForDeadlines,
   DeadlineCalculationResult,
+  formatDailyGoalDisplay,
 } from '../deadlineAggregationUtils';
 
 const createMockDeadline = (
@@ -651,6 +652,60 @@ describe('deadlineAggregationUtils', () => {
         expect(originalResult.total).toBe(0); // Archive-aware returns 0
         expect(todaysGoalResult.total).toBeGreaterThan(0); // Today's goals ignore archive status
         expect(originalResult.current).toBe(todaysGoalResult.current); // Current progress should be same
+      });
+    });
+  });
+
+  describe('formatDailyGoalDisplay', () => {
+    describe('audio format', () => {
+      it('should format minutes only when less than 60', () => {
+        expect(formatDailyGoalDisplay(45, 'audio')).toBe('45m');
+      });
+
+      it('should format hours only when exact hour', () => {
+        expect(formatDailyGoalDisplay(120, 'audio')).toBe('2h');
+      });
+
+      it('should format hours and minutes when mixed', () => {
+        expect(formatDailyGoalDisplay(90, 'audio')).toBe('1h 30m');
+        expect(formatDailyGoalDisplay(135, 'audio')).toBe('2h 15m');
+      });
+
+      it('should handle zero minutes', () => {
+        expect(formatDailyGoalDisplay(0, 'audio')).toBe('0m');
+      });
+
+      it('should round minutes', () => {
+        expect(formatDailyGoalDisplay(45.7, 'audio')).toBe('46m');
+        expect(formatDailyGoalDisplay(90.3, 'audio')).toBe('1h 30m');
+      });
+    });
+
+    describe('physical format', () => {
+      it('should format pages correctly', () => {
+        expect(formatDailyGoalDisplay(50, 'physical')).toBe('50 pages');
+      });
+
+      it('should round pages', () => {
+        expect(formatDailyGoalDisplay(50.7, 'physical')).toBe('51 pages');
+      });
+
+      it('should handle zero pages', () => {
+        expect(formatDailyGoalDisplay(0, 'physical')).toBe('0 pages');
+      });
+
+      it('should handle large numbers', () => {
+        expect(formatDailyGoalDisplay(999, 'physical')).toBe('999 pages');
+      });
+    });
+
+    describe('eBook format', () => {
+      it('should format pages correctly', () => {
+        expect(formatDailyGoalDisplay(75, 'eBook')).toBe('75 pages');
+      });
+
+      it('should round pages', () => {
+        expect(formatDailyGoalDisplay(75.4, 'eBook')).toBe('75 pages');
       });
     });
   });

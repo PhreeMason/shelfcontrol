@@ -110,6 +110,7 @@ describe('DeadlineCard', () => {
   const mockDeadlines = {
     getDeadlineCalculations: jest.fn(),
     formatUnitsPerDayForDisplay: jest.fn(),
+    getDailyGoalImpactMessage: jest.fn(),
   };
 
   const mockDeadline: ReadingDeadlineWithProgress = {
@@ -339,7 +340,7 @@ describe('DeadlineCard', () => {
       expect(screen.queryByText('days')).toBeNull();
     });
 
-    it('should show date for archived deadlines', () => {
+    it('should show completion date for completed deadlines', () => {
       const completedDeadline = {
         ...mockDeadline,
         status: [
@@ -355,10 +356,57 @@ describe('DeadlineCard', () => {
 
       render(<DeadlineCard deadline={completedDeadline} />);
 
-      expect(screen.getByText('Jan 15, 2024')).toBeTruthy();
+      expect(screen.getByText('Completed: Jan 15, 2024')).toBeTruthy();
     });
 
-    it('should show date for pending status', () => {
+    it('should show archived date for did_not_finish deadlines', () => {
+      const dnfDeadline = {
+        ...mockDeadline,
+        status: [
+          {
+            id: 'status-1',
+            status: 'did_not_finish' as const,
+            created_at: '2024-01-20T00:00:00Z',
+            updated_at: '2024-01-20T00:00:00Z',
+            deadline_id: '1',
+          },
+        ],
+      };
+
+      render(<DeadlineCard deadline={dnfDeadline} />);
+
+      expect(screen.getByText('Archived: Jan 15, 2024')).toBeTruthy();
+    });
+
+    it('should handle unsorted status array and show latest status', () => {
+      const unsortedStatusDeadline = {
+        ...mockDeadline,
+        status: [
+          {
+            id: 'status-2',
+            status: 'complete' as const,
+            created_at: '2024-01-20T00:00:00Z',
+            updated_at: '2024-01-20T00:00:00Z',
+            deadline_id: '1',
+          },
+          {
+            id: 'status-1',
+            status: 'reading' as const,
+            created_at: '2024-01-15T00:00:00Z',
+            updated_at: '2024-01-15T00:00:00Z',
+            deadline_id: '1',
+          },
+        ],
+      };
+
+      render(<DeadlineCard deadline={unsortedStatusDeadline} />);
+
+      expect(screen.getByText('🏆')).toBeTruthy();
+      expect(screen.getByText('done')).toBeTruthy();
+      expect(screen.getByText('Completed: Jan 15, 2024')).toBeTruthy();
+    });
+
+    it('should show capacity message for pending deadlines', () => {
       const pendingDeadline = {
         ...mockDeadline,
         status: [
@@ -374,7 +422,7 @@ describe('DeadlineCard', () => {
 
       render(<DeadlineCard deadline={pendingDeadline} />);
 
-      expect(screen.getByText('Jan 15, 2024')).toBeTruthy();
+      expect(screen.getByText('Will add 30 pages/day')).toBeTruthy();
     });
 
     it('should handle empty status array', () => {

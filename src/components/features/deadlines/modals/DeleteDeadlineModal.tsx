@@ -5,7 +5,7 @@ import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { calculateTotalQuantity } from '@/utils/deadlineCalculations';
 import {
-  calculateDaysSpent,
+  calculateReadingDaysCount,
   calculateTimeSinceAdded,
 } from '@/utils/deadlineModalUtils';
 import {
@@ -13,7 +13,13 @@ import {
   calculateProgressPercentage,
 } from '@/utils/deadlineUtils';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -58,7 +64,7 @@ export const DeleteDeadlineModal: React.FC<DeleteDeadlineModalProps> = ({
         setIsDeleting(false);
         onClose();
       },
-      (error) => {
+      error => {
         setIsDeleting(false);
         console.error('Failed to delete deadline:', error);
       }
@@ -71,7 +77,7 @@ export const DeleteDeadlineModal: React.FC<DeleteDeadlineModalProps> = ({
     deadline.total_quantity
   );
   const progressPercentage = calculateProgressPercentage(deadline);
-  const daysInvested = calculateDaysSpent(deadline);
+  const daysInvested = calculateReadingDaysCount(deadline);
   const timeSinceAdded = calculateTimeSinceAdded(deadline);
 
   return (
@@ -102,7 +108,9 @@ export const DeleteDeadlineModal: React.FC<DeleteDeadlineModalProps> = ({
             <ThemedText style={styles.title}>Delete Deadline</ThemedText>
             <ThemedText style={styles.message}>
               Are you sure you want to remove{' '}
-              <ThemedText style={{ fontWeight: '700' }}>"{deadline.book_title}"</ThemedText>{' '}
+              <ThemedText style={{ fontWeight: '700' }}>
+                "{deadline.book_title}"
+              </ThemedText>{' '}
               from your reading list?
             </ThemedText>
 
@@ -110,11 +118,19 @@ export const DeleteDeadlineModal: React.FC<DeleteDeadlineModalProps> = ({
               <ThemedText style={styles.sectionTitle}>YOUR PROGRESS</ThemedText>
 
               <View style={styles.progressBarContainer}>
-                <View style={[styles.progressBar, { backgroundColor: colors.border }]}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    { backgroundColor: colors.border },
+                  ]}
+                >
                   <View
                     style={[
                       styles.progressBarFill,
-                      { width: `${progressPercentage}%`, backgroundColor: colors.error },
+                      {
+                        width: `${progressPercentage}%`,
+                        backgroundColor: colors.error,
+                      },
                     ]}
                   />
                 </View>
@@ -129,16 +145,25 @@ export const DeleteDeadlineModal: React.FC<DeleteDeadlineModalProps> = ({
 
               <View style={styles.statsRow}>
                 <ThemedText style={styles.statLabel}>Time invested</ThemedText>
-                <ThemedText style={styles.statValue}>{daysInvested} days</ThemedText>
+                <ThemedText style={styles.statValue}>
+                  {daysInvested} days
+                </ThemedText>
               </View>
 
               <View style={styles.statsRow}>
                 <ThemedText style={styles.statLabel}>Added to list</ThemedText>
-                <ThemedText style={styles.statValue}>{timeSinceAdded}</ThemedText>
+                <ThemedText style={styles.statValue}>
+                  {timeSinceAdded}
+                </ThemedText>
               </View>
             </View>
 
-            <View style={[styles.warningBox, { backgroundColor: colors.error + '15' }]}>
+            <View
+              style={[
+                styles.warningBox,
+                { backgroundColor: colors.error + '15' },
+              ]}
+            >
               <ThemedText style={[styles.warningText, { color: colors.error }]}>
                 • This action cannot be undone
               </ThemedText>

@@ -111,3 +111,24 @@ export const formatRemainingDisplay = (
   }
   return `${remaining} ${unit} remaining`;
 };
+
+export const formatDailyGoalImpactMessage = (
+  currentGoal: number,
+  projectedGoal: number,
+  format: 'physical' | 'eBook' | 'audio',
+  formatGoalFn: (
+    units: number,
+    format: 'physical' | 'eBook' | 'audio'
+  ) => string
+): string => {
+  const type = format === 'audio' ? 'listening' : 'reading';
+
+  if (currentGoal === 0) {
+    const formattedProjected = formatGoalFn(projectedGoal, format);
+    return `Starting will set your daily ${type} goal to ${formattedProjected}/day`;
+  }
+
+  const formattedCurrent = formatGoalFn(currentGoal, format);
+  const formattedProjected = formatGoalFn(projectedGoal, format);
+  return `Starting will increase your daily ${type} goal from ${formattedCurrent}→${formattedProjected}/day`;
+};

@@ -59,8 +59,9 @@ export function getDeadlineStatus(
       : 'reading';
 
   const isCompleted = latestStatus === 'complete';
+  const isDnf = latestStatus === 'did_not_finish';
   const isSetAside = latestStatus === 'paused';
-  const isArchived = isCompleted || isSetAside;
+  const isArchived = isCompleted || isDnf;
 
   return {
     latestStatus,

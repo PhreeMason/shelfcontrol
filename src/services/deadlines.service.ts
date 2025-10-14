@@ -233,7 +233,11 @@ class DeadlinesService {
     return { ...deadlineData, progress: progressData };
   }
 
-  async updateDeadlineDate(userId: string, deadlineId: string, newDate: string) {
+  async updateDeadlineDate(
+    userId: string,
+    deadlineId: string,
+    newDate: string
+  ) {
     const { data, error } = await supabase
       .from(DB_TABLES.DEADLINES)
       .update({

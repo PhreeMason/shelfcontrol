@@ -567,6 +567,86 @@ describe('DeadlineActionSheet', () => {
     });
   });
 
+  describe('Date Display', () => {
+    it('should show "Due" date for non-archived deadline', () => {
+      const activeDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        deadline_date: '2025-12-25',
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'reading',
+            created_at: '2025-01-01',
+            updated_at: '2025-01-01',
+          },
+        ],
+      };
+
+      const { getByText } = render(
+        <DeadlineActionSheet
+          deadline={activeDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      expect(getByText(/Due Dec 25, 2025/)).toBeTruthy();
+    });
+
+    it('should show "Archived" date for completed deadline', () => {
+      const completedDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        deadline_date: '2025-12-25',
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'complete',
+            created_at: '2025-06-15T10:30:00Z',
+            updated_at: '2025-06-15T10:30:00Z',
+          },
+        ],
+      };
+
+      const { getByText } = render(
+        <DeadlineActionSheet
+          deadline={completedDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      expect(getByText(/Archived Jun 15, 2025/)).toBeTruthy();
+    });
+
+    it('should show "Archived" date for did_not_finish deadline', () => {
+      const dnfDeadline: ReadingDeadlineWithProgress = {
+        ...mockDeadline,
+        deadline_date: '2025-12-25',
+        status: [
+          {
+            id: '1',
+            deadline_id: '1',
+            status: 'did_not_finish',
+            created_at: '2025-03-10T14:20:00Z',
+            updated_at: '2025-03-10T14:20:00Z',
+          },
+        ],
+      };
+
+      const { getByText } = render(
+        <DeadlineActionSheet
+          deadline={dnfDeadline}
+          visible={true}
+          onClose={jest.fn()}
+        />
+      );
+
+      expect(getByText(/Archived Mar 10, 2025/)).toBeTruthy();
+    });
+  });
+
   describe('Action List Rendering', () => {
     it('should show all non-archived actions for active deadline', () => {
       const activeDeadline: ReadingDeadlineWithProgress = {
@@ -620,7 +700,7 @@ describe('DeadlineActionSheet', () => {
       expect(queryByText('Update Deadline Date')).toBeNull();
     });
 
-    it('should always show Change Reading Status and Delete actions', () => {
+    it('should only show Delete action for archived deadline', () => {
       const archivedDeadline: ReadingDeadlineWithProgress = {
         ...mockDeadline,
         status: [
@@ -634,7 +714,7 @@ describe('DeadlineActionSheet', () => {
         ],
       };
 
-      const { getByText } = render(
+      const { getByText, queryByText } = render(
         <DeadlineActionSheet
           deadline={archivedDeadline}
           visible={true}
@@ -642,7 +722,7 @@ describe('DeadlineActionSheet', () => {
         />
       );
 
-      expect(getByText('Change Reading Status')).toBeTruthy();
+      expect(queryByText('Change Reading Status')).toBeNull();
       expect(getByText('Delete This Book')).toBeTruthy();
     });
   });

@@ -2,6 +2,7 @@ import {
   getBookCoverIcon,
   getGradientBackground,
   formatRemainingDisplay,
+  formatDailyGoalImpactMessage,
 } from '../deadlineDisplayUtils';
 
 describe('deadlineDisplayUtils', () => {
@@ -390,6 +391,151 @@ describe('deadlineDisplayUtils', () => {
       const result = formatRemainingDisplay(120, 'audio');
       expect(result).toContain('remaining');
       expect(result).toContain('2h');
+    });
+  });
+
+  describe('formatDailyGoalImpactMessage', () => {
+    const mockFormatGoalFn = jest.fn((units: number, format: string) => {
+      if (format === 'audio') {
+        const hours = Math.floor(units / 60);
+        const minutes = Math.round(units % 60);
+        if (hours > 0 && minutes > 0) return `${hours}h ${minutes}m`;
+        if (hours > 0) return `${hours}h`;
+        return `${minutes}m`;
+      }
+      return `${Math.round(units)} pages`;
+    });
+
+    beforeEach(() => {
+      mockFormatGoalFn.mockClear();
+    });
+
+    describe('physical and eBook formats (reading)', () => {
+      it('should show "set" message when current goal is 0', () => {
+        const result = formatDailyGoalImpactMessage(
+          0,
+          50,
+          'physical',
+          mockFormatGoalFn
+        );
+
+        expect(result).toBe(
+          'Starting will set your daily reading goal to 50 pages/day'
+        );
+        expect(mockFormatGoalFn).toHaveBeenCalledWith(50, 'physical');
+      });
+
+      it('should show "increase" message when current goal exists', () => {
+        const result = formatDailyGoalImpactMessage(
+          50,
+          70,
+          'physical',
+          mockFormatGoalFn
+        );
+
+        expect(result).toBe(
+          'Starting will increase your daily reading goal from 50 pages→70 pages/day'
+        );
+        expect(mockFormatGoalFn).toHaveBeenCalledWith(50, 'physical');
+        expect(mockFormatGoalFn).toHaveBeenCalledWith(70, 'physical');
+      });
+
+      it('should work with eBook format', () => {
+        const result = formatDailyGoalImpactMessage(
+          30,
+          55,
+          'eBook',
+          mockFormatGoalFn
+        );
+
+        expect(result).toBe(
+          'Starting will increase your daily reading goal from 30 pages→55 pages/day'
+        );
+      });
+    });
+
+    describe('audio format (listening)', () => {
+      it('should show "set" message when current goal is 0', () => {
+        const result = formatDailyGoalImpactMessage(
+          0,
+          45,
+          'audio',
+          mockFormatGoalFn
+        );
+
+        expect(result).toBe(
+          'Starting will set your daily listening goal to 45m/day'
+        );
+        expect(mockFormatGoalFn).toHaveBeenCalledWith(45, 'audio');
+      });
+
+      it('should show "increase" message when current goal exists', () => {
+        const result = formatDailyGoalImpactMessage(
+          30,
+          75,
+          'audio',
+          mockFormatGoalFn
+        );
+
+        expect(result).toBe(
+          'Starting will increase your daily listening goal from 30m→1h 15m/day'
+        );
+        expect(mockFormatGoalFn).toHaveBeenCalledWith(30, 'audio');
+        expect(mockFormatGoalFn).toHaveBeenCalledWith(75, 'audio');
+      });
+
+      it('should format hours and minutes correctly', () => {
+        const result = formatDailyGoalImpactMessage(
+          60,
+          150,
+          'audio',
+          mockFormatGoalFn
+        );
+
+        expect(result).toContain('1h');
+        expect(result).toContain('2h 30m');
+      });
+    });
+
+    describe('edge cases', () => {
+      it('should handle zero projected goal', () => {
+        const result = formatDailyGoalImpactMessage(
+          0,
+          0,
+          'physical',
+          mockFormatGoalFn
+        );
+
+        expect(result).toContain('set your daily reading goal');
+        expect(result).toContain('0 pages/day');
+      });
+
+      it('should handle large numbers', () => {
+        const result = formatDailyGoalImpactMessage(
+          500,
+          1000,
+          'physical',
+          mockFormatGoalFn
+        );
+
+        expect(result).toContain('500 pages');
+        expect(result).toContain('1000 pages');
+      });
+
+      it('should call format function for both goals when current exists', () => {
+        formatDailyGoalImpactMessage(25, 50, 'physical', mockFormatGoalFn);
+
+        expect(mockFormatGoalFn).toHaveBeenCalledTimes(2);
+        expect(mockFormatGoalFn).toHaveBeenNthCalledWith(1, 25, 'physical');
+        expect(mockFormatGoalFn).toHaveBeenNthCalledWith(2, 50, 'physical');
+      });
+
+      it('should call format function once when current is zero', () => {
+        formatDailyGoalImpactMessage(0, 50, 'physical', mockFormatGoalFn);
+
+        expect(mockFormatGoalFn).toHaveBeenCalledTimes(1);
+        expect(mockFormatGoalFn).toHaveBeenCalledWith(50, 'physical');
+      });
     });
   });
 });

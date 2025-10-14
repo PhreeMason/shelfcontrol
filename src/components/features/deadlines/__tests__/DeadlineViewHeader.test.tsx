@@ -21,9 +21,7 @@ describe('DeadlineViewHeader', () => {
   it('should not render edit button when onEdit is not provided', () => {
     const mockOnBack = jest.fn();
 
-    const { queryByText } = render(
-      <DeadlineViewHeader onBack={mockOnBack} />
-    );
+    const { queryByText } = render(<DeadlineViewHeader onBack={mockOnBack} />);
 
     const editButton = queryByText('Edit');
     expect(editButton).toBeNull();
