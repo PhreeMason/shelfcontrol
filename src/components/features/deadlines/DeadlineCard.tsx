@@ -80,10 +80,14 @@ export function DeadlineCard({
       : [];
 
   const latestStatus =
-    sortedStatuses.length > 0 ? sortedStatuses[sortedStatuses.length - 1].status : 'reading';
+    sortedStatuses.length > 0
+      ? sortedStatuses[sortedStatuses.length - 1].status
+      : 'reading';
 
   const latestStatusRecord =
-    sortedStatuses.length > 0 ? sortedStatuses[sortedStatuses.length - 1] : null;
+    sortedStatuses.length > 0
+      ? sortedStatuses[sortedStatuses.length - 1]
+      : null;
 
   const isPending = latestStatus === 'pending';
   const isPaused = latestStatus === 'paused';
@@ -142,66 +146,66 @@ export function DeadlineCard({
   // Countdown/Status Display Component
   const CountdownDisplay = () => (
     <View style={styles.countdownContainer}>
-        <View style={[styles.countdownSquare, { borderColor }]}>
-          {latestStatus === 'complete' ? (
-            <>
-              <ThemedText
-                style={[
-                  styles.archivedIcon,
-                  { paddingTop: Platform.select({ ios: 6, android: 3 }) },
-                ]}
-              >
-                🏆
-              </ThemedText>
-              <ThemedText
-                style={[
-                  styles.countdownLabel,
-                  { color: countdownColor },
-                  { marginTop: Platform.select({ ios: -2, android: 1 }) },
-                ]}
-              >
-                done
-              </ThemedText>
-            </>
-          ) : latestStatus === 'did_not_finish' ? (
-            <>
-              <IconSymbol
-                name="bookmark.slash"
-                size={28}
-                color={countdownColor}
-                style={{ marginTop: 8 }}
-              />
-              <ThemedText
-                style={[
-                  styles.countdownLabel,
-                  { color: countdownColor },
-                  { marginTop: 4 },
-                ]}
-              >
-                dnf
-              </ThemedText>
-            </>
-          ) : isPaused ? (
-            <>
-              <ThemedText
-                style={[
-                  styles.archivedIcon,
-                  { paddingTop: Platform.select({ ios: 6, android: 3 }) },
-                ]}
-              >
-                ⏸️
-              </ThemedText>
-              <ThemedText
-                style={[
-                  styles.countdownLabel,
-                  { color: countdownColor },
-                  { marginTop: Platform.select({ ios: -2, android: 1 }) },
-                ]}
-              >
-                paused
-              </ThemedText>
-            </>
-          ) : (
+      <View style={[styles.countdownSquare, { borderColor }]}>
+        {latestStatus === 'complete' ? (
+          <>
+            <ThemedText
+              style={[
+                styles.archivedIcon,
+                { paddingTop: Platform.select({ ios: 6, android: 3 }) },
+              ]}
+            >
+              🏆
+            </ThemedText>
+            <ThemedText
+              style={[
+                styles.countdownLabel,
+                { color: countdownColor },
+                { marginTop: Platform.select({ ios: -2, android: 1 }) },
+              ]}
+            >
+              done
+            </ThemedText>
+          </>
+        ) : latestStatus === 'did_not_finish' ? (
+          <>
+            <IconSymbol
+              name="bookmark.slash"
+              size={28}
+              color={countdownColor}
+              style={{ marginTop: 8 }}
+            />
+            <ThemedText
+              style={[
+                styles.countdownLabel,
+                { color: countdownColor },
+                { marginTop: 4 },
+              ]}
+            >
+              dnf
+            </ThemedText>
+          </>
+        ) : isPaused ? (
+          <>
+            <ThemedText
+              style={[
+                styles.archivedIcon,
+                { paddingTop: Platform.select({ ios: 6, android: 3 }) },
+              ]}
+            >
+              ⏸️
+            </ThemedText>
+            <ThemedText
+              style={[
+                styles.countdownLabel,
+                { color: countdownColor },
+                { marginTop: Platform.select({ ios: -2, android: 1 }) },
+              ]}
+            >
+              paused
+            </ThemedText>
+          </>
+        ) : (
           <>
             <ThemedText
               style={[styles.countdownNumber, { color: countdownColor }]}

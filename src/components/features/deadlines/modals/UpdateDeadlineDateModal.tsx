@@ -72,7 +72,8 @@ export const UpdateDeadlineDateModal: React.FC<
 
   const handleQuickSelectDate = useCallback(
     (type: QuickSelectType): Date => {
-      const baseDate = currentDeadlineDate < today ? today : currentDeadlineDate;
+      const baseDate =
+        currentDeadlineDate < today ? today : currentDeadlineDate;
       return getQuickSelectDate(baseDate, type);
     },
     [currentDeadlineDate, today]

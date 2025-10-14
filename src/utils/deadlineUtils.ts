@@ -37,7 +37,11 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   const today = dayjs().startOf('day');
 
   deadlines.forEach(deadline => {
-    const sortedStatus = sortByDateField(deadline.status || [], 'created_at', 'asc');
+    const sortedStatus = sortByDateField(
+      deadline.status || [],
+      'created_at',
+      'asc'
+    );
     const latestStatus =
       sortedStatus.length > 0
         ? sortedStatus[sortedStatus.length - 1].status
