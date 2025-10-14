@@ -259,7 +259,7 @@ export function DeadlineCard({
               <ThemedText style={styles.bookDeadline}>
                 {isArchived
                   ? latestStatus === 'complete'
-                    ? `Completed: ${latestStatusRecord ? dayjs(latestStatusRecord.created_at).format('MMM D, YYYY') : 'N/A'}`
+                    ? `${latestStatusRecord ? dayjs(latestStatusRecord.created_at).format('MMM D, YYYY') : 'N/A'}`
                     : `Archived: ${latestStatusRecord ? dayjs(latestStatusRecord.created_at).format('MMM D, YYYY') : 'N/A'}`
                   : urgencyLevel === 'overdue'
                     ? formatRemainingDisplay(remaining, deadline.format)
@@ -347,8 +347,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
-    borderLeftWidth: 1,
-    borderLeftColor: 'rgba(232, 194, 185, 0.1)',
     minWidth: 100,
     transform: [{ translateX: -10 }],
   },

@@ -356,7 +356,7 @@ describe('DeadlineCard', () => {
 
       render(<DeadlineCard deadline={completedDeadline} />);
 
-      expect(screen.getByText('Completed: Jan 15, 2024')).toBeTruthy();
+      expect(screen.getByText('Jan 15, 2024')).toBeTruthy();
     });
 
     it('should show archived date for did_not_finish deadlines', () => {
@@ -403,7 +403,7 @@ describe('DeadlineCard', () => {
 
       expect(screen.getByText('🏆')).toBeTruthy();
       expect(screen.getByText('done')).toBeTruthy();
-      expect(screen.getByText('Completed: Jan 15, 2024')).toBeTruthy();
+      expect(screen.getByText('Jan 15, 2024')).toBeTruthy();
     });
 
     it('should show capacity message for pending deadlines', () => {
