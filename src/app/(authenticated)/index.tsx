@@ -38,7 +38,7 @@ export default function HomeScreen() {
     overdueDeadlines,
     pendingDeadlines,
     completedDeadlines,
-    pausedDeadlines,
+    toReviewDeadlines,
     didNotFinishDeadlines,
     refetch,
     isRefreshing,
@@ -93,7 +93,7 @@ export default function HomeScreen() {
     if (overdueDeadlines.length > 0) available.push('overdue');
     if (pendingDeadlines.length > 0) available.push('pending');
     if (completedDeadlines.length > 0) available.push('completed');
-    if (pausedDeadlines.length > 0) available.push('paused');
+    if (toReviewDeadlines.length > 0) available.push('toReview');
     if (didNotFinishDeadlines.length > 0) available.push('didNotFinish');
     if (deadlines.length > 0) available.push('all');
 
@@ -103,7 +103,7 @@ export default function HomeScreen() {
     overdueDeadlines.length,
     pendingDeadlines.length,
     completedDeadlines.length,
-    pausedDeadlines.length,
+    toReviewDeadlines.length,
     didNotFinishDeadlines.length,
     deadlines.length,
   ]);

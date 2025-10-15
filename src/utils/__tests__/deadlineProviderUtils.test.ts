@@ -92,7 +92,7 @@ describe('deadlineProviderUtils', () => {
 
       expect(result.latestStatus).toBe('reading');
       expect(result.isCompleted).toBe(false);
-      expect(result.isSetAside).toBe(false);
+      expect(result.isToReview).toBe(false);
       expect(result.isArchived).toBe(false);
     });
 
@@ -101,7 +101,7 @@ describe('deadlineProviderUtils', () => {
       // Basic test - the function should work with real mock data
       expect(result).toHaveProperty('latestStatus');
       expect(result).toHaveProperty('isCompleted');
-      expect(result).toHaveProperty('isSetAside');
+      expect(result).toHaveProperty('isToReview');
       expect(result).toHaveProperty('isArchived');
     });
 
@@ -115,7 +115,7 @@ describe('deadlineProviderUtils', () => {
 
       expect(result.latestStatus).toBe('reading');
       expect(result.isCompleted).toBe(false);
-      expect(result.isSetAside).toBe(false);
+      expect(result.isToReview).toBe(false);
       expect(result.isArchived).toBe(false);
     });
   });

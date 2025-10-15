@@ -385,7 +385,7 @@ class DeadlinesService {
    */
   async updateDeadlineStatus(
     deadlineId: string,
-    status: 'complete' | 'paused' | 'reading' | 'did_not_finish'
+    status: 'complete' | 'to_review' | 'reading' | 'did_not_finish'
   ) {
     const { data, error } = await supabase
       .from(DB_TABLES.DEADLINE_STATUS)

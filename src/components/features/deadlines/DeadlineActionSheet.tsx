@@ -38,14 +38,13 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const translateY = useSharedValue(500);
-  const { startReadingDeadline, pauseDeadline, reactivateDeadline } =
-    useDeadlines();
+  const { startReadingDeadline, reactivateDeadline } = useDeadlines();
   const [showUpdateDateModal, setShowUpdateDateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showChangeStatusModal, setShowChangeStatusModal] = useState(false);
 
   const latestStatus = getDeadlineStatus(deadline);
-  const { isCompleted, isSetAside, isActive, isPending } =
+  const { isCompleted, isToReview, isActive, isPending } =
     getStatusFlags(latestStatus);
 
   const isArchived = isCompleted || latestStatus === 'did_not_finish';
@@ -65,7 +64,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const getStatusBadge = () => {
     if (isPending) return { label: 'Pending', color: colors.secondary };
     if (isActive) return { label: 'Active', color: colors.primary };
-    if (isSetAside) return { label: 'Paused', color: colors.approaching };
+    if (isToReview) return { label: 'To Review', color: colors.approaching };
     if (isCompleted) return { label: 'Completed', color: colors.good };
     if (latestStatus === 'did_not_finish')
       return { label: 'Did Not Finish', color: colors.error };
@@ -113,23 +112,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
           );
         },
       };
-    } else if (isActive) {
-      return {
-        label: 'Pause',
-        icon: 'pause.circle.fill' as const,
-        onPress: () => {
-          pauseDeadline(
-            deadline.id,
-            () => {
-              onClose();
-            },
-            error => {
-              console.error('Failed to pause deadline:', error);
-            }
-          );
-        },
-      };
-    } else if (isSetAside) {
+    } else if (isToReview) {
       return {
         label: 'Resume Reading',
         icon: 'play.circle.fill' as const,
@@ -139,7 +122,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
             () => {
               onClose();
             },
-            error => {
+            (error: Error) => {
               console.error('Failed to resume reading:', error);
             }
           );

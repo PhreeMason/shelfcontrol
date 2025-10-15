@@ -175,7 +175,7 @@ export const useGetDeadlines = () => {
 };
 
 const useUpdateDeadlineStatus = (
-  status: 'complete' | 'paused' | 'reading' | 'did_not_finish'
+  status: 'complete' | 'to_review' | 'reading' | 'did_not_finish'
 ) => {
   const { session } = useAuth();
   const userId = session?.user?.id;
@@ -185,8 +185,6 @@ const useUpdateDeadlineStatus = (
     switch (status) {
       case DEADLINE_STATUS.COMPLETE:
         return 'completing';
-      case DEADLINE_STATUS.PAUSED:
-        return 'pausing';
       case DEADLINE_STATUS.DID_NOT_FINISH:
         return 'marking as did not finish';
       case DEADLINE_STATUS.READING:
@@ -200,8 +198,6 @@ const useUpdateDeadlineStatus = (
     switch (status) {
       case DEADLINE_STATUS.COMPLETE:
         return MUTATION_KEYS.DEADLINES.COMPLETE;
-      case DEADLINE_STATUS.PAUSED:
-        return MUTATION_KEYS.DEADLINES.PAUSE;
       case DEADLINE_STATUS.DID_NOT_FINISH:
         return MUTATION_KEYS.DEADLINES.DID_NOT_FINISH;
       case DEADLINE_STATUS.READING:
@@ -266,9 +262,6 @@ export const useCompleteDeadline = () => {
     },
   });
 };
-
-export const usePauseDeadline = () =>
-  useUpdateDeadlineStatus(DEADLINE_STATUS.PAUSED);
 
 export const useReactivateDeadline = () =>
   useUpdateDeadlineStatus(DEADLINE_STATUS.READING);

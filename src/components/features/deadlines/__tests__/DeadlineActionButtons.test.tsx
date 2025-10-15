@@ -201,7 +201,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-5',
             deadline_id: 'deadline-123',
-            status: 'paused' as const,
+            status: 'to_review' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
@@ -266,7 +266,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-8',
             deadline_id: 'deadline-123',
-            status: 'paused' as const,
+            status: 'to_review' as const,
             created_at: '2024-01-03T00:00:00Z',
             updated_at: '2024-01-03T00:00:00Z',
           },
@@ -430,8 +430,8 @@ describe('DeadlineActionButtons', () => {
       expect(mockToast.show).toHaveBeenCalledWith({
         swipeable: true,
         type: 'success',
-        text1: 'Book paused',
-        text2: '"Test Book" has been paused',
+        text1: 'Book set to review',
+        text2: '"Test Book" has been set to review',
         autoHide: true,
         visibilityTime: 1500,
         position: 'top',
@@ -447,7 +447,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-5',
             deadline_id: 'deadline-123',
-            status: 'paused' as const,
+            status: 'to_review' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
@@ -471,7 +471,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-5',
             deadline_id: 'deadline-123',
-            status: 'paused' as const,
+            status: 'to_review' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
@@ -504,7 +504,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-5',
             deadline_id: 'deadline-123',
-            status: 'paused' as const,
+            status: 'to_review' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
@@ -732,7 +732,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-5',
             deadline_id: 'deadline-123',
-            status: 'paused' as const,
+            status: 'to_review' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },
@@ -817,7 +817,7 @@ describe('DeadlineActionButtons', () => {
           {
             id: 'status-5',
             deadline_id: 'deadline-123',
-            status: 'paused' as const,
+            status: 'to_review' as const,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
           },

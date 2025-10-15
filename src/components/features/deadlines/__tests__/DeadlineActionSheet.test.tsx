@@ -238,7 +238,7 @@ describe('DeadlineActionSheet', () => {
         {
           id: '1',
           deadline_id: '1',
-          status: 'paused',
+          status: 'to_review',
           created_at: '2025-01-01',
           updated_at: '2025-01-01',
         },
@@ -356,7 +356,7 @@ describe('DeadlineActionSheet', () => {
           {
             id: '1',
             deadline_id: '1',
-            status: 'paused',
+            status: 'to_review',
             created_at: '2025-01-01',
             updated_at: '2025-01-01',
           },
@@ -498,7 +498,7 @@ describe('DeadlineActionSheet', () => {
           {
             id: '1',
             deadline_id: '1',
-            status: 'paused',
+            status: 'to_review',
             created_at: '2025-01-01',
             updated_at: '2025-01-01',
           },

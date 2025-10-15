@@ -58,10 +58,10 @@ describe('deadlineActionUtils', () => {
         status: [
           { status: 'pending' },
           { status: 'reading' },
-          { status: 'paused' },
+          { status: 'to_review' },
         ],
       } as any;
-      expect(getDeadlineStatus(deadline)).toBe('paused');
+      expect(getDeadlineStatus(deadline)).toBe('to_review');
     });
 
     it('should return single status from array', () => {
@@ -77,17 +77,17 @@ describe('deadlineActionUtils', () => {
       const flags = getStatusFlags('complete');
       expect(flags).toEqual({
         isCompleted: true,
-        isSetAside: false,
+        isToReview: false,
         isActive: false,
         isPending: false,
       });
     });
 
-    it('should return correct flags for set_aside status', () => {
-      const flags = getStatusFlags('paused');
+    it('should return correct flags for to_review status', () => {
+      const flags = getStatusFlags('to_review');
       expect(flags).toEqual({
         isCompleted: false,
-        isSetAside: true,
+        isToReview: true,
         isActive: false,
         isPending: false,
       });
@@ -97,7 +97,7 @@ describe('deadlineActionUtils', () => {
       const flags = getStatusFlags('reading');
       expect(flags).toEqual({
         isCompleted: false,
-        isSetAside: false,
+        isToReview: false,
         isActive: true,
         isPending: false,
       });
@@ -107,7 +107,7 @@ describe('deadlineActionUtils', () => {
       const flags = getStatusFlags('pending');
       expect(flags).toEqual({
         isCompleted: false,
-        isSetAside: false,
+        isToReview: false,
         isActive: false,
         isPending: true,
       });
@@ -117,7 +117,7 @@ describe('deadlineActionUtils', () => {
       const flags = getStatusFlags('unknown');
       expect(flags).toEqual({
         isCompleted: false,
-        isSetAside: false,
+        isToReview: false,
         isActive: false,
         isPending: false,
       });
@@ -132,19 +132,6 @@ describe('deadlineActionUtils', () => {
         type: 'success',
         text1: 'Book completed!',
         text2: '"Harry Potter" has been marked as complete',
-        autoHide: true,
-        visibilityTime: 1500,
-        position: 'top',
-      });
-    });
-
-    it('should create success toast for paused type', () => {
-      const toast = createSuccessToast('paused', 'Lord of the Rings');
-      expect(toast).toEqual({
-        swipeable: true,
-        type: 'success',
-        text1: 'Book paused',
-        text2: '"Lord of the Rings" has been paused',
         autoHide: true,
         visibilityTime: 1500,
         position: 'top',
@@ -199,20 +186,6 @@ describe('deadlineActionUtils', () => {
         type: 'error',
         text1: 'Failed to complete deadline',
         text2: 'Please try again',
-        autoHide: true,
-        visibilityTime: 1500,
-        position: 'top',
-      });
-    });
-
-    it('should create error toast with custom error message', () => {
-      const error = { message: 'Network error occurred' };
-      const toast = createErrorToast('pause', error);
-      expect(toast).toEqual({
-        swipeable: true,
-        type: 'error',
-        text1: 'Failed to pause deadline',
-        text2: 'Network error occurred',
         autoHide: true,
         visibilityTime: 1500,
         position: 'top',

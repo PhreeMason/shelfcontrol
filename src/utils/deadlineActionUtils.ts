@@ -20,7 +20,7 @@ export const getDeadlineStatus = (
 
 export interface StatusFlags {
   isCompleted: boolean;
-  isSetAside: boolean;
+  isToReview: boolean;
   isActive: boolean;
   isPending: boolean;
 }
@@ -28,7 +28,7 @@ export interface StatusFlags {
 export const getStatusFlags = (status: string): StatusFlags => {
   return {
     isCompleted: status === DEADLINE_STATUS.COMPLETE,
-    isSetAside: status === DEADLINE_STATUS.PAUSED,
+    isToReview: status === DEADLINE_STATUS.TO_REVIEW,
     isActive: status === DEADLINE_STATUS.READING,
     isPending: status === DEADLINE_STATUS.PENDING,
   };
@@ -45,17 +45,13 @@ export interface ToastConfig {
 }
 
 export const createSuccessToast = (
-  type: 'completed' | 'paused' | 'deleted' | 'reactivated' | 'started',
+  type: 'completed' | 'deleted' | 'reactivated' | 'started',
   bookTitle: string
 ): ToastConfig => {
   const messages = {
     completed: {
       text1: 'Book completed!',
       text2: `"${bookTitle}" has been marked as complete`,
-    },
-    paused: {
-      text1: 'Book paused',
-      text2: `"${bookTitle}" has been paused`,
     },
     deleted: {
       text1: 'Deadline deleted',
@@ -82,12 +78,11 @@ export const createSuccessToast = (
 };
 
 export const createErrorToast = (
-  type: 'complete' | 'pause' | 'delete' | 'reactivate' | 'start',
+  type: 'complete' | 'delete' | 'reactivate' | 'start',
   error?: { message?: string }
 ): ToastConfig => {
   const messages = {
     complete: 'Failed to complete deadline',
-    pause: 'Failed to pause deadline',
     delete: 'Failed to delete deadline',
     reactivate: 'Failed to reactivate deadline',
     start: 'Failed to start reading',

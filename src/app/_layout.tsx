@@ -41,7 +41,10 @@ export default function RootLayout() {
                   name="(authenticated)"
                   options={{ headerShown: false }}
                 />
-                <Stack.Screen name="deadline" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="deadline"
+                  options={{ headerShown: false }}
+                />
                 <Stack.Screen name="+not-found" />
               </Stack>
             </DeadlineProvider>

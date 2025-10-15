@@ -27,7 +27,7 @@ import {
 export interface DeadlineStatus {
   latestStatus: string;
   isCompleted: boolean;
-  isSetAside: boolean;
+  isToReview: boolean;
   isArchived: boolean;
 }
 
@@ -60,13 +60,13 @@ export function getDeadlineStatus(
 
   const isCompleted = latestStatus === 'complete';
   const isDnf = latestStatus === 'did_not_finish';
-  const isSetAside = latestStatus === 'paused';
+  const isToReview = latestStatus === 'to_review';
   const isArchived = isCompleted || isDnf;
 
   return {
     latestStatus,
     isCompleted,
-    isSetAside,
+    isToReview,
     isArchived,
   };
 }

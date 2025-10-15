@@ -324,7 +324,7 @@ describe('DeadlineCard', () => {
         status: [
           {
             id: 'status-1',
-            status: 'paused' as const,
+            status: 'to_review' as const,
             created_at: '2024-01-15T00:00:00Z',
             updated_at: '2024-01-15T00:00:00Z',
             deadline_id: '1',

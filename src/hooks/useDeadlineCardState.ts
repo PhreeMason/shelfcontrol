@@ -46,13 +46,14 @@ export function useDeadlineCardState(
       deadline.status && deadline.status.length > 0
         ? [...deadline.status].sort(
             (a, b) =>
-              new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime()
           )
         : [];
 
     const latestStatus =
       sortedStatuses.length > 0
-        ? sortedStatuses[sortedStatuses.length - 1].status ?? 'reading'
+        ? (sortedStatuses[sortedStatuses.length - 1].status ?? 'reading')
         : 'reading';
 
     const latestStatusRecord =
@@ -61,7 +62,7 @@ export function useDeadlineCardState(
         : null;
 
     const isPending = latestStatus === 'pending';
-    const isPaused = latestStatus === 'paused';
+    const isPaused = latestStatus === 'to_review';
     const isArchived =
       latestStatus === 'complete' || latestStatus === 'did_not_finish';
     const isInActive = isPending || isPaused;

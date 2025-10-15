@@ -27,7 +27,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     activeDeadlines,
     overdueDeadlines,
     completedDeadlines,
-    pausedDeadlines,
+    toReviewDeadlines,
     didNotFinishDeadlines,
     pendingDeadlines,
     isLoading,
@@ -78,7 +78,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     deadlineMap.set('overdue', overdueDeadlines);
     deadlineMap.set('pending', pendingDeadlines);
     deadlineMap.set('completed', completedDeadlines);
-    deadlineMap.set('paused', pausedDeadlines);
+    deadlineMap.set('toReview', toReviewDeadlines);
     deadlineMap.set('didNotFinish', didNotFinishDeadlines);
     deadlineMap.set('all', deadlines);
 

@@ -17,14 +17,12 @@ export const ChangeReadingStatusModal: React.FC<
   ChangeReadingStatusModalProps
 > = ({ deadline, visible, onClose }) => {
   const { colors } = useTheme();
-  const { startReadingDeadline, pauseDeadline, reactivateDeadline } =
-    useDeadlines();
+  const { startReadingDeadline, reactivateDeadline } = useDeadlines();
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showDidNotFinishModal, setShowDidNotFinishModal] = useState(false);
 
   const latestStatus = getDeadlineStatus(deadline);
-  const { isCompleted, isSetAside, isActive, isPending } =
-    getStatusFlags(latestStatus);
+  const { isCompleted, isToReview, isPending } = getStatusFlags(latestStatus);
 
   const isArchived = isCompleted || latestStatus === 'did_not_finish';
 
@@ -46,24 +44,7 @@ export const ChangeReadingStatusModal: React.FC<
         );
       },
     });
-  } else if (isActive) {
-    actions.push({
-      label: 'Pause',
-      icon: 'pause.circle.fill',
-      iconColor: colors.approaching,
-      onPress: () => {
-        pauseDeadline(
-          deadline.id,
-          () => {
-            onClose();
-          },
-          error => {
-            console.error('Failed to pause deadline:', error);
-          }
-        );
-      },
-    });
-  } else if (isSetAside) {
+  } else if (isToReview) {
     actions.push({
       label: 'Resume Reading',
       icon: 'play.circle.fill',

@@ -1,9 +1,9 @@
 export const DEADLINE_STATUS = {
   COMPLETE: 'complete',
-  PAUSED: 'paused',
   READING: 'reading',
   DID_NOT_FINISH: 'did_not_finish',
   PENDING: 'pending',
+  TO_REVIEW: 'to_review',
 } as const;
 
 export const ACTIVITY_STATE = {

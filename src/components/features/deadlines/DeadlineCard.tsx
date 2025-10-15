@@ -124,13 +124,13 @@ export function DeadlineCard({
                     : capacityMessage}
                 </ThemedText>
               )}
-              {isArchived ?
+              {isArchived ? (
                 <ThemedText style={styles.capacityText}>
                   {latestStatus === 'complete'
                     ? `Completed ${latestStatusRecord ? dayjs(latestStatusRecord.created_at).format('MMM D, YYYY') : 'N/A'}`
                     : `Archived ${latestStatusRecord ? dayjs(latestStatusRecord.created_at).format('MMM D, YYYY') : 'N/A'}`}
                 </ThemedText>
-                : null}
+              ) : null}
               <ThemedText style={styles.dueDate}>
                 {`Due: ${dayjs(deadline.deadline_date).format('MMM D, YYYY')}`}
               </ThemedText>

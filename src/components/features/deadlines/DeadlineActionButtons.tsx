@@ -22,18 +22,16 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   const {
     deleteDeadline,
     completeDeadline,
-    pauseDeadline,
     reactivateDeadline,
     startReadingDeadline,
   } = useDeadlines();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
-  const [isPausing, setIsPausing] = useState(false);
   const [isReactivating, setIsReactivating] = useState(false);
   const [isStartingReading, setIsStartingReading] = useState(false);
 
   const latestStatus = getDeadlineStatus(deadline);
-  const { isCompleted, isSetAside, isActive, isPending } =
+  const { isCompleted, isToReview, isActive, isPending } =
     getStatusFlags(latestStatus);
   const handleComplete = () => {
     Alert.alert(
@@ -71,37 +69,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           },
         },
       ]
-    );
-  };
-
-  const handlePause = () => {
-    setIsPausing(true);
-    pauseDeadline(
-      deadline.id,
-      () => {
-        setIsPausing(false);
-        Toast.show({
-          swipeable: true,
-          type: 'success',
-          text1: 'Book paused',
-          text2: `"${deadline.book_title}" has been paused`,
-          autoHide: true,
-          visibilityTime: 1500,
-          position: 'top',
-        });
-      },
-      error => {
-        setIsPausing(false);
-        Toast.show({
-          swipeable: true,
-          type: 'error',
-          text1: 'Failed to pause deadline',
-          text2: error.message || 'Please try again',
-          autoHide: true,
-          visibilityTime: 1500,
-          position: 'top',
-        });
-      }
     );
   };
 
@@ -169,7 +136,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           position: 'top',
         });
 
-        if (isSetAside) {
+        if (isToReview) {
           setTimeout(() => {
             Alert.alert(
               'Update Deadline?',
@@ -311,20 +278,10 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
             onPress={handleComplete}
             disabled={isCompleting}
           />
-          <ThemedButton
-            hapticsOnPress
-            title={isPausing ? 'Pausing...' : 'Pause'}
-            variant="secondary"
-            style={styles.actionButton}
-            onPress={handlePause}
-            disabled={isPausing}
-            backgroundColor="warning"
-            textColor="textInverse"
-          />
         </>
       )}
 
-      {isSetAside && (
+      {isToReview && (
         <>
           <ThemedButton
             hapticsOnPress

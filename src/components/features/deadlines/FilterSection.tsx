@@ -37,7 +37,7 @@ const filterOptions: FilterOption[] = [
   { key: 'active', label: 'Active' },
   { key: 'completed', label: 'Completed' },
   { key: 'overdue', label: 'Overdue' },
-  { key: 'paused', label: 'Paused' },
+  { key: 'toReview', label: 'To Review' },
   { key: 'didNotFinish', label: 'Did Not Finish' },
   { key: 'all', label: 'All' },
 ];
@@ -63,7 +63,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     overdueDeadlines,
     pendingDeadlines,
     completedDeadlines,
-    pausedDeadlines,
+    toReviewDeadlines,
     didNotFinishDeadlines,
   } = useDeadlines();
 
@@ -73,7 +73,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     deadlineMap.set('overdue', overdueDeadlines);
     deadlineMap.set('pending', pendingDeadlines);
     deadlineMap.set('completed', completedDeadlines);
-    deadlineMap.set('paused', pausedDeadlines);
+    deadlineMap.set('toReview', toReviewDeadlines);
     deadlineMap.set('didNotFinish', didNotFinishDeadlines);
     deadlineMap.set('all', deadlines);
 
@@ -91,7 +91,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     countMap.set('overdue', overdueDeadlines.length);
     countMap.set('pending', pendingDeadlines.length);
     countMap.set('completed', completedDeadlines.length);
-    countMap.set('paused', pausedDeadlines.length);
+    countMap.set('toReview', toReviewDeadlines.length);
     countMap.set('didNotFinish', didNotFinishDeadlines.length);
     countMap.set('all', deadlines.length);
 

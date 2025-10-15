@@ -24,8 +24,8 @@ export type FilterType =
   | 'active'
   | 'overdue'
   | 'pending'
+  | 'toReview'
   | 'completed'
-  | 'paused'
   | 'didNotFinish'
   | 'all';
 
