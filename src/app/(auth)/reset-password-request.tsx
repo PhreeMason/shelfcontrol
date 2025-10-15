@@ -3,8 +3,9 @@ import {
   AnimatedCustomInputRef,
 } from '@/components/AnimatedCustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
-import { useAuth } from '@/providers/AuthProvider';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
+import { posthog } from '@/lib/posthog';
+import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Linking from 'expo-linking';
 import { Link, useRouter } from 'expo-router';
@@ -56,15 +57,22 @@ export default function ResetPasswordRequestScreen() {
       );
 
       if (error) {
+        posthog.capture('password reset request failed', {
+          error_message: error.message,
+        });
         setError('root', {
           message: error.message || 'Failed to send reset email',
         });
       } else {
+        posthog.capture('password reset requested');
         alert('Password reset email sent! Please check your email.');
         router.replace(ROUTES.AUTH.SIGN_IN);
       }
     } catch (err) {
       console.error('Reset password request error:', err);
+      posthog.capture('password reset request failed', {
+        error_message: 'An unexpected error occurred',
+      });
       setError('root', { message: 'An unexpected error occurred' });
     }
   };

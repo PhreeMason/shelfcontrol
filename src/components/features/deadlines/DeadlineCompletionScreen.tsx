@@ -19,12 +19,18 @@ interface DeadlineCompletionScreenProps {
 }
 
 const congratsQuotes = [
-  'finished with 2 days to spare - look at you being ahead of schedule',
-  'finished early enough to actually write a thoughtful review',
-  "from 'too far gone' to 'finished on time' - that's the glow up",
-  'no last-minute speed reading required - you planned this perfectly',
-  "finished without that guilty 'barely made it' feeling",
-  'you actually had time to enjoy the ending - imagine that',
+  'way to go, book finisher!',
+  'another one bites the dust!',
+  'you did it! Time to celebrate with a snack.',
+  'you read it like a boss!',
+  'you came, you read, you conquered!',
+  'mission accomplished! book devoured!',
+  'reading level: expert. well done!',
+  'you turned pages like a pro!',
+  'book completed! you are a reading machine!',
+  'you read it all! impressive stamina!',
+  'you finished a book! cue the victory dance!',
+  'book completed! you are on fire!',
 ];
 
 const DeadlineCompletionScreen: React.FC<DeadlineCompletionScreenProps> = ({

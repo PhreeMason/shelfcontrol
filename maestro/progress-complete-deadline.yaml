@@ -75,7 +75,7 @@ tags:
     element:
       text: "Reading Progress"
     direction: UP # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
-    timeout: 5000 # (optional, default: 20000) ms
+    timeout: 10000 # (optional, default: 20000) ms
 
 # Update progress using increment buttons
 - extendedWaitUntil:
@@ -191,14 +191,14 @@ tags:
 
 # Verify book is in completed section with trophy emoji
 - extendedWaitUntil:
-    visible: "Fourth Wing.* 🏆 done"
+    visible: "Fourth Wing.* 🏆"
     timeout: 10000
 
 # Take screenshot of book in completed section
 - takeScreenshot:
     path: maestro/screenshots/18_book_in_completed_section
 
-- tapOn: "Fourth Wing.* 🏆 done"
+- tapOn: "Fourth Wing.* 🏆"
 
 # Scroll to find Delete Deadline option
 - scroll

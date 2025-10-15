@@ -4,6 +4,7 @@ import {
 } from '@/components/AnimatedCustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as QueryParams from 'expo-auth-session/build/QueryParams';
@@ -116,15 +117,22 @@ export default function ResetPasswordUpdateScreen() {
       const { error } = await updatePassword(data.password);
 
       if (error) {
+        posthog.capture('password update failed', {
+          error_message: error.message,
+        });
         setError('root', {
           message: error.message || 'Failed to update password',
         });
       } else {
+        posthog.capture('password updated');
         alert('Password updated successfully!');
         router.replace(ROUTES.HOME);
       }
     } catch (err) {
       console.error('Update password error:', err);
+      posthog.capture('password update failed', {
+        error_message: 'An unexpected error occurred',
+      });
       setError('root', { message: 'An unexpected error occurred' });
     }
   };

@@ -5,6 +5,7 @@ import {
 import { AppleSSO } from '@/components/auth/AppleSSO';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useRouter } from 'expo-router';
@@ -63,7 +64,15 @@ export default function SignInScreen() {
       const { error } = await signIn(data.email, data.password);
       console.log('Sign in response error:', error);
       if (error) {
-        // Handle different Supabase auth errors
+        posthog.capture('sign in failed', {
+          error_type: error.message.includes('Invalid login credentials')
+            ? 'invalid_credentials'
+            : error.message.includes('Email not confirmed')
+              ? 'email_not_confirmed'
+              : 'other',
+          error_message: error.message,
+        });
+
         if (error.message.includes('Invalid login credentials')) {
           setError('root', { message: 'Invalid email or password' });
         } else if (error.message.includes('Email not confirmed')) {
@@ -72,11 +81,17 @@ export default function SignInScreen() {
           setError('root', { message: error.message || 'Sign in failed' });
         }
       } else {
-        // Success - AuthProvider will handle navigation
+        posthog.capture('user signed in', {
+          method: 'email',
+        });
         router.replace(ROUTES.HOME);
       }
     } catch (err) {
       console.error('Sign in error:', err);
+      posthog.capture('sign in failed', {
+        error_type: 'unexpected',
+        error_message: 'An unexpected error occurred',
+      });
       setError('root', { message: 'An unexpected error occurred' });
     }
   };

@@ -33,10 +33,10 @@ interface FilterSectionProps {
 }
 
 const filterOptions: FilterOption[] = [
-  { key: 'active', label: 'Active' },
-  { key: 'overdue', label: 'Overdue' },
   { key: 'pending', label: 'Pending' },
+  { key: 'active', label: 'Active' },
   { key: 'completed', label: 'Completed' },
+  { key: 'overdue', label: 'Overdue' },
   { key: 'paused', label: 'Paused' },
   { key: 'didNotFinish', label: 'Did Not Finish' },
   { key: 'all', label: 'All' },
@@ -85,6 +85,19 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
   const baseDeadlines = getBaseDeadlines();
 
+  const getFilterCount = (filterKey: FilterType): number => {
+    const countMap = new Map<FilterType, number>();
+    countMap.set('active', activeDeadlines.length);
+    countMap.set('overdue', overdueDeadlines.length);
+    countMap.set('pending', pendingDeadlines.length);
+    countMap.set('completed', completedDeadlines.length);
+    countMap.set('paused', pausedDeadlines.length);
+    countMap.set('didNotFinish', didNotFinishDeadlines.length);
+    countMap.set('all', deadlines.length);
+
+    return countMap.get(filterKey) ?? 0;
+  };
+
   const visibleOptions = availableFilters
     ? filterOptions.filter(option => availableFilters.includes(option.key))
     : filterOptions;
@@ -114,15 +127,18 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             size="sm"
           />
 
-          {visibleOptions.map(option => (
-            <ThemedButton
-              key={option.key}
-              title={option.label}
-              style={styles.filterButton}
-              variant={selectedFilter === option.key ? 'primary' : 'outline'}
-              onPress={() => onFilterChange(option.key)}
-            />
-          ))}
+          {visibleOptions.map(option => {
+            const count = getFilterCount(option.key);
+            return (
+              <ThemedButton
+                key={option.key}
+                title={`${option.label} (${count})`}
+                style={styles.filterButton}
+                variant={selectedFilter === option.key ? 'primary' : 'outline'}
+                onPress={() => onFilterChange(option.key)}
+              />
+            );
+          })}
         </ScrollView>
       </View>
 

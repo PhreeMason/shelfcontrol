@@ -1,11 +1,12 @@
 import { toastConfig } from '@/components/ui/ToastConfig';
+import { posthog } from '@/lib/posthog';
 import AuthProvider from '@/providers/AuthProvider';
 import { DeadlineProvider } from '@/providers/DeadlineProvider';
 import PreferencesProvider from '@/providers/PreferencesProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
-// import { StatusBar } from 'expo-status-bar';
+import { PostHogProvider } from 'posthog-react-native';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 
@@ -29,23 +30,25 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <PreferencesProvider>
-          <DeadlineProvider>
-            <Stack>
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="(authenticated)"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen name="deadline" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-          </DeadlineProvider>
-        </PreferencesProvider>
-        <Toast config={toastConfig} />
-      </QueryClientProvider>
-    </AuthProvider>
+    <PostHogProvider client={posthog}>
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <PreferencesProvider>
+            <DeadlineProvider>
+              <Stack>
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="(authenticated)"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen name="deadline" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </DeadlineProvider>
+          </PreferencesProvider>
+          <Toast config={toastConfig} />
+        </QueryClientProvider>
+      </AuthProvider>
+    </PostHogProvider>
   );
 }

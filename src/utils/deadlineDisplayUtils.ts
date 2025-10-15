@@ -132,3 +132,14 @@ export const formatDailyGoalImpactMessage = (
   const formattedProjected = formatGoalFn(projectedGoal, format);
   return `Starting will increase your daily ${type} goal from ${formattedCurrent}→${formattedProjected}/day`;
 };
+
+export const formatCapacityMessage = (
+  baseMessage: string,
+  isInActive: boolean
+): string => {
+  if (isInActive) {
+    const cleaned = baseMessage.replaceAll('needed', '');
+    return `Will add ${cleaned}`;
+  }
+  return baseMessage;
+};
