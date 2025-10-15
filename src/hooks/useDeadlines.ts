@@ -216,7 +216,11 @@ const useUpdateDeadlineStatus = (
       }
 
       try {
-        return await deadlinesService.updateDeadlineStatus(deadlineId, status);
+        return await deadlinesService.updateDeadlineStatus(
+          userId,
+          deadlineId,
+          status
+        );
       } catch (error) {
         console.error(`Error ${actionName} deadline:`, error);
         throw error;

@@ -441,6 +441,7 @@ describe('useDeadlines hooks', () => {
       await mutationConfig.mutationFn('deadline-123');
 
       expect(mockDeadlinesService.updateDeadlineStatus).toHaveBeenCalledWith(
+        'session-user-123',
         'deadline-123',
         'reading'
       );

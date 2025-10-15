@@ -384,6 +384,7 @@ class DeadlinesService {
    * Update deadline status (complete, to_review, reading, did_not_finish)
    */
   async updateDeadlineStatus(
+    userId: string,
     deadlineId: string,
     status: 'complete' | 'to_review' | 'reading' | 'did_not_finish' | 'pending'
   ) {
@@ -391,15 +392,31 @@ class DeadlinesService {
       pending: ['reading'],
       reading: ['to_review', 'complete', 'did_not_finish'],
       to_review: ['complete', 'did_not_finish'],
+      complete: [],
+      did_not_finish: [],
     };
 
-    const { data: currentStatusData } = await supabase
-      .from(DB_TABLES.DEADLINE_STATUS)
-      .select('status')
-      .eq('deadline_id', deadlineId)
-      .order('created_at', { ascending: false })
-      .limit(1)
+    const { data: deadline } = await supabase
+      .from(DB_TABLES.DEADLINES)
+      .select(
+        `
+        id,
+        status:deadline_status(status)
+      `
+      )
+      .eq('id', deadlineId)
+      .eq('user_id', userId)
       .single();
+
+    if (!deadline) {
+      throw new Error('Deadline not found or access denied');
+    }
+
+    const currentStatusArray = deadline.status as { status: string }[];
+    const currentStatusData =
+      currentStatusArray && currentStatusArray.length > 0
+        ? currentStatusArray[0]
+        : null;
 
     if (currentStatusData && currentStatusData.status) {
       const currentStatus = currentStatusData.status;
@@ -411,14 +428,14 @@ class DeadlinesService {
         );
       }
     }
-    const { data, error } = await supabase
+
+    const { error } = await supabase
       .from(DB_TABLES.DEADLINE_STATUS)
-      .insert({
-        deadline_id: deadlineId,
+      .update({
         status,
-        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
+      .eq('deadline_id', deadlineId)
       .select()
       .single();
 
@@ -429,7 +446,20 @@ class DeadlinesService {
       status,
     });
 
-    return data;
+    const { data: updatedDeadline } = await supabase
+      .from(DB_TABLES.DEADLINES)
+      .select(
+        `
+        *,
+        progress:deadline_progress(*),
+        status:deadline_status(*)
+      `
+      )
+      .eq('id', deadlineId)
+      .eq('user_id', userId)
+      .single();
+
+    return updatedDeadline;
   }
 
   /**
@@ -471,7 +501,11 @@ class DeadlinesService {
     }
 
     // Now mark as complete
-    return this.updateDeadlineStatus(deadlineId, DEADLINE_STATUS.COMPLETE);
+    return this.updateDeadlineStatus(
+      userId,
+      deadlineId,
+      DEADLINE_STATUS.COMPLETE
+    );
   }
 
   /**
