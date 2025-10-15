@@ -2,27 +2,27 @@ import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Typography } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
+import { useDeadlineCardState } from '@/hooks/useDeadlineCardState';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
+  formatCapacityMessage,
   formatRemainingDisplay,
-  getBookCoverIcon,
-  getGradientBackground,
 } from '@/utils/deadlineDisplayUtils';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   GestureResponderEvent,
-  Image,
   Platform,
   Pressable,
   StyleSheet,
   View,
 } from 'react-native';
 import { DeadlineActionSheet } from './DeadlineActionSheet';
+import { DeadlineBookCover } from './DeadlineBookCover';
+import { DeadlineCountdownDisplay } from './DeadlineCountdownDisplay';
 interface DeadlineCardProps {
   deadline: ReadingDeadlineWithProgress;
   disableNavigation?: boolean;
@@ -37,24 +37,20 @@ export function DeadlineCard({
   const router = useRouter();
   const { colors } = useTheme();
   const [showActionSheet, setShowActionSheet] = useState(false);
-  const { good, approaching, urgent, overdue, impossible, complete, paused } =
-    colors;
-  const urgencyTextColorMap = {
-    complete,
-    paused,
-    did_not_finish: paused,
-    overdue,
-    urgent,
-    good,
-    approaching,
-    impossible,
-    pending: paused,
-  };
-  // Fetch book data if deadline has a book_id
+
   const { data: bookData } = useFetchBookById(deadline.book_id);
 
   const { daysLeft, unitsPerDay, urgencyLevel, remaining } =
     getDeadlineCalculations(deadline);
+
+  const {
+    latestStatus,
+    latestStatusRecord,
+    isArchived,
+    isInActive,
+    borderColor,
+    countdownColor,
+  } = useDeadlineCardState(deadline, urgencyLevel);
 
   const shadowStyle = Platform.select({
     ios: {
@@ -68,44 +64,6 @@ export function DeadlineCard({
     },
   });
 
-  let countdownColor = urgencyTextColorMap[urgencyLevel];
-  let borderColor = urgencyTextColorMap[urgencyLevel];
-
-  const sortedStatuses =
-    deadline.status && deadline.status.length > 0
-      ? [...deadline.status].sort(
-          (a, b) =>
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        )
-      : [];
-
-  const latestStatus =
-    sortedStatuses.length > 0
-      ? sortedStatuses[sortedStatuses.length - 1].status
-      : 'reading';
-
-  const latestStatusRecord =
-    sortedStatuses.length > 0
-      ? sortedStatuses[sortedStatuses.length - 1]
-      : null;
-
-  const isPending = latestStatus === 'pending';
-  const isPaused = latestStatus === 'paused';
-
-  const isArchived =
-    latestStatus === 'complete' || latestStatus === 'did_not_finish';
-  const isInActive = isPending || isPaused;
-
-  if (isArchived) {
-    borderColor = urgencyTextColorMap[latestStatus];
-    countdownColor = urgencyTextColorMap[latestStatus];
-  }
-
-  if (isPending) {
-    borderColor = urgencyTextColorMap[latestStatus];
-    countdownColor = urgencyTextColorMap[latestStatus];
-  }
-
   const handlePress = () => {
     if (!disableNavigation) {
       router.push(`/deadline/${deadline.id}`);
@@ -117,123 +75,17 @@ export function DeadlineCard({
     setShowActionSheet(true);
   };
 
-  // Book Cover Component
-  const BookCover = () => {
-    if (bookData?.cover_image_url) {
-      return (
-        <Image
-          source={{ uri: bookData.cover_image_url }}
-          style={styles.bookCover}
-          resizeMode="cover"
-        />
-      );
-    }
-
-    return (
-      <LinearGradient
-        colors={getGradientBackground(deadline, daysLeft)}
-        style={[styles.bookCover, styles.bookCoverPlaceholder]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <ThemedText style={styles.bookCoverIcon}>
-          {getBookCoverIcon(deadline, daysLeft)}
-        </ThemedText>
-      </LinearGradient>
-    );
-  };
-
-  // Countdown/Status Display Component
-  const CountdownDisplay = () => (
-    <View style={styles.countdownContainer}>
-      <View style={[styles.countdownSquare, { borderColor }]}>
-        {latestStatus === 'complete' ? (
-          <>
-            <ThemedText
-              style={[
-                styles.archivedIcon,
-                { paddingTop: Platform.select({ ios: 6, android: 3 }) },
-              ]}
-            >
-              🏆
-            </ThemedText>
-            <ThemedText
-              style={[
-                styles.countdownLabel,
-                { color: countdownColor },
-                { marginTop: Platform.select({ ios: -2, android: 1 }) },
-              ]}
-            >
-              done
-            </ThemedText>
-          </>
-        ) : latestStatus === 'did_not_finish' ? (
-          <>
-            <IconSymbol
-              name="bookmark.slash"
-              size={28}
-              color={countdownColor}
-              style={{ marginTop: 8 }}
-            />
-            <ThemedText
-              style={[
-                styles.countdownLabel,
-                { color: countdownColor },
-                { marginTop: 4 },
-              ]}
-            >
-              dnf
-            </ThemedText>
-          </>
-        ) : isPaused ? (
-          <>
-            <ThemedText
-              style={[
-                styles.archivedIcon,
-                { paddingTop: Platform.select({ ios: 6, android: 3 }) },
-              ]}
-            >
-              ⏸️
-            </ThemedText>
-            <ThemedText
-              style={[
-                styles.countdownLabel,
-                { color: countdownColor },
-                { marginTop: Platform.select({ ios: -2, android: 1 }) },
-              ]}
-            >
-              paused
-            </ThemedText>
-          </>
-        ) : (
-          <>
-            <ThemedText
-              style={[styles.countdownNumber, { color: countdownColor }]}
-            >
-              {daysLeft}
-            </ThemedText>
-            <ThemedText
-              style={[styles.countdownLabel, { color: countdownColor }]}
-            >
-              days
-            </ThemedText>
-          </>
-        )}
-      </View>
-    </View>
-  );
-
-  let capacityMessage = formatUnitsPerDayForDisplay(
+  const baseCapacityMessage = formatUnitsPerDayForDisplay(
     unitsPerDay,
     deadline.format,
     remaining,
     daysLeft
   );
 
-  if (isInActive) {
-    capacityMessage = capacityMessage.replaceAll('needed', '');
-    capacityMessage = `Will add ${capacityMessage}`;
-  }
+  const capacityMessage = formatCapacityMessage(
+    baseCapacityMessage,
+    isInActive
+  );
 
   return (
     <>
@@ -251,23 +103,40 @@ export function DeadlineCard({
           ]}
         >
           <View style={styles.bookContent}>
-            <BookCover />
+            <DeadlineBookCover
+              coverImageUrl={bookData?.cover_image_url}
+              deadline={deadline}
+              daysLeft={daysLeft}
+            />
             <View style={styles.bookInfo}>
               <ThemedText style={styles.bookTitle} numberOfLines={2}>
                 {deadline.book_title}
               </ThemedText>
-              <ThemedText style={styles.bookDeadline}>
-                {isArchived
-                  ? latestStatus === 'complete'
-                    ? `${latestStatusRecord ? dayjs(latestStatusRecord.created_at).format('MMM D, YYYY') : 'N/A'}`
-                    : `Archived: ${latestStatusRecord ? dayjs(latestStatusRecord.created_at).format('MMM D, YYYY') : 'N/A'}`
-                  : urgencyLevel === 'overdue'
+              {!isArchived && (
+                <ThemedText style={styles.capacityText}>
+                  {urgencyLevel === 'overdue'
                     ? formatRemainingDisplay(remaining, deadline.format)
                     : capacityMessage}
+                </ThemedText>
+              )}
+              {isArchived ?
+                <ThemedText style={styles.capacityText}>
+                  {latestStatus === 'complete'
+                    ? `Completed ${latestStatusRecord ? dayjs(latestStatusRecord.created_at).format('MMM D, YYYY') : 'N/A'}`
+                    : `Archived ${latestStatusRecord ? dayjs(latestStatusRecord.created_at).format('MMM D, YYYY') : 'N/A'}`}
+                </ThemedText>
+                : null}
+              <ThemedText style={styles.dueDate}>
+                {`Due: ${dayjs(deadline.deadline_date).format('MMM D, YYYY')}`}
               </ThemedText>
             </View>
           </View>
-          <CountdownDisplay />
+          <DeadlineCountdownDisplay
+            latestStatus={latestStatus}
+            daysLeft={daysLeft}
+            countdownColor={countdownColor}
+            borderColor={borderColor}
+          />
 
           <Pressable
             onPress={handleMorePress}
@@ -320,72 +189,26 @@ const styles = StyleSheet.create({
     flex: 3,
     minWidth: 0,
   },
-  bookCover: {
-    width: 63,
-    height: 100,
-    borderRadius: 5,
-    flexShrink: 0,
-  },
   bookInfo: {
     flex: 1,
-    minWidth: 0,
-    gap: 10,
+    marginBottom: 4,
   },
   bookTitle: {
     color: '#2B3D4F',
-    marginBottom: 2,
+    paddingVertical: 10,
     marginLeft: 1,
     ...Typography.titleMedium,
     fontSize: 18,
   },
-  bookDeadline: {
-    color: '#6B7280',
-    fontSize: 13,
-  },
-  countdownContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    minWidth: 100,
-    transform: [{ translateX: -10 }],
-  },
-  bookCoverPlaceholder: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bookCoverIcon: {
-    fontSize: 20,
-  },
-  countdownSquare: {
-    width: 72,
-    height: 72,
-    borderWidth: 3,
-    borderRadius: 20,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-  },
-  countdownNumber: {
-    fontSize: 28,
-    fontWeight: '800',
-    lineHeight: 30,
-    textAlign: 'center',
-    includeFontPadding: false,
-    paddingTop: Platform.select({ ios: 8, android: 3 }),
-  },
-  countdownLabel: {
+  capacityText: {
+    color: '#2B3D4F',
     fontSize: 13,
     fontWeight: '600',
-    opacity: 0.8,
-    marginTop: Platform.select({ ios: -5, android: -2 }),
+    marginBottom: 1,
   },
-  archivedIcon: {
-    fontSize: 24,
-    fontWeight: '700',
-    lineHeight: 28,
-    marginBottom: Platform.select({ ios: 2, android: 0 }),
+  dueDate: {
+    color: '#6B7280',
+    fontSize: 12,
   },
 });
 
