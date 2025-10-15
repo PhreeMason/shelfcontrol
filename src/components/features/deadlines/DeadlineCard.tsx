@@ -5,6 +5,7 @@ import { useFetchBookById } from '@/hooks/useBooks';
 import { useDeadlineCardState } from '@/hooks/useDeadlineCardState';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
+import { posthog } from '@/lib/posthog';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
@@ -66,6 +67,10 @@ export function DeadlineCard({
 
   const handlePress = () => {
     if (!disableNavigation) {
+      posthog.capture('deadline card clicked', {
+        deadline_status: latestStatus,
+        deadline_format: deadline.format,
+      });
       router.push(`/deadline/${deadline.id}`);
     }
   };

@@ -199,7 +199,3 @@ Tests:
 
 Rationale:
 This approach prevents subtle off-by-one issues caused by implicit timezone shifts on date-only values while preserving correct instant-based ordering for true timestamps.
-
-## Bugs
-- Password is white text 
-- when user logs in there is nothing at first

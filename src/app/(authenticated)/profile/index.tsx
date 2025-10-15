@@ -10,6 +10,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ROUTES } from '@/constants/routes';
 import { useExportReadingProgress } from '@/hooks/useExport';
 import { useTheme, useThemedStyles } from '@/hooks/useThemeColor';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
@@ -37,6 +38,7 @@ export default function Profile() {
   const exportMutation = useExportReadingProgress();
 
   React.useEffect(() => {
+    posthog.capture('profile viewed');
     refreshProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

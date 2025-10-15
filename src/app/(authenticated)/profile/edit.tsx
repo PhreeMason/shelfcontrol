@@ -3,6 +3,7 @@ import Avatar from '@/components/shared/Avatar';
 import CustomInput from '@/components/shared/CustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
@@ -63,6 +64,7 @@ export default function EditProfile() {
     setIsLoading(true);
     try {
       let avatarPath = profile?.avatar_url;
+      let avatarUploaded = false;
 
       if (newAvatarUri) {
         const { data: uploadedPath, error: uploadError } =
@@ -76,6 +78,8 @@ export default function EditProfile() {
           return;
         }
         avatarPath = uploadedPath;
+        avatarUploaded = true;
+        posthog.capture('avatar uploaded');
       }
 
       const updates: any = {
@@ -91,6 +95,9 @@ export default function EditProfile() {
       if (error) {
         Alert.alert('Error', error.message);
       } else {
+        posthog.capture('profile updated', {
+          avatar_changed: avatarUploaded,
+        });
         Alert.alert('Success', 'Profile updated successfully', [
           { text: 'OK', onPress: () => router.back() },
         ]);

@@ -4,6 +4,7 @@ import { Header } from '@/components/navigation';
 import { ThemedView } from '@/components/themed';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { useDeadlineSources } from '@/hooks/useDeadlineSources';
+import { posthog } from '@/lib/posthog';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { usePreferences } from '@/providers/PreferencesProvider';
 import { FilterType } from '@/types/deadline.types';
@@ -133,6 +134,13 @@ export default function HomeScreen() {
     setSelectedSources,
   ]);
 
+  const handleFilterChange = (filter: FilterType) => {
+    posthog.capture('filter changed', {
+      filter_type: filter,
+    });
+    setSelectedFilter(filter);
+  };
+
   return (
     <ThemedView style={[styles.container]}>
       <LinearGradient
@@ -145,7 +153,7 @@ export default function HomeScreen() {
       {/* Sticky filter that appears when scrolling */}
       <FilterSection
         selectedFilter={selectedFilter}
-        onFilterChange={setSelectedFilter}
+        onFilterChange={handleFilterChange}
         timeRangeFilter={timeRangeFilter}
         onTimeRangeChange={setTimeRangeFilter}
         selectedFormats={selectedFormats}
@@ -172,7 +180,7 @@ export default function HomeScreen() {
         {/* Scrollable filter that hides when sticky */}
         <FilterSection
           selectedFilter={selectedFilter}
-          onFilterChange={setSelectedFilter}
+          onFilterChange={handleFilterChange}
           timeRangeFilter={timeRangeFilter}
           onTimeRangeChange={setTimeRangeFilter}
           selectedFormats={selectedFormats}

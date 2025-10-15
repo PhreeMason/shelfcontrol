@@ -1,6 +1,7 @@
 import { ThemedView } from '@/components/themed';
-import { authService } from '@/services';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
+import { authService } from '@/services';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import React, { useEffect, useState } from 'react';
 import { Platform, StyleSheet, ViewStyle } from 'react-native';
@@ -38,6 +39,8 @@ export function AppleSSO({
   }, []);
   const handleAppleSignIn = async () => {
     try {
+      posthog.capture('apple sso started');
+
       const available = await AppleAuthentication.isAvailableAsync();
       if (!available) {
         throw new Error('Apple Authentication not available');
@@ -86,18 +89,26 @@ export function AppleSSO({
             );
           }
 
+          posthog.capture('apple sso completed');
           onSuccess?.();
         }
       } else {
         const error = new Error('No identity token received from Apple');
         console.error('Apple sign-in error:', error);
+        posthog.capture('apple sso failed', {
+          error_message: 'No identity token received',
+        });
         onError?.(error);
       }
     } catch (e: any) {
       if (e.code === 'ERR_REQUEST_CANCELED') {
         console.log('Apple sign-in canceled by user');
+        posthog.capture('apple sso cancelled');
       } else {
         console.error('Apple sign-in error:', e);
+        posthog.capture('apple sso failed', {
+          error_message: e.message || 'Unknown error',
+        });
         onError?.(e);
       }
     }
