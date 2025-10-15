@@ -9,7 +9,6 @@ A React Native application for tracking reading deadlines and managing book prog
 - User authentication and profile management
 - Reading session tracking
 - Progress visualization and analytics
-- Cross-platform support (iOS, Android, Web)
 
 ## Tech Stack
 

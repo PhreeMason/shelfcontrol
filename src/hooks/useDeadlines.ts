@@ -200,8 +200,6 @@ const useUpdateDeadlineStatus = (
         return MUTATION_KEYS.DEADLINES.COMPLETE;
       case DEADLINE_STATUS.DID_NOT_FINISH:
         return MUTATION_KEYS.DEADLINES.DID_NOT_FINISH;
-      case DEADLINE_STATUS.READING:
-        return MUTATION_KEYS.DEADLINES.REACTIVATE;
       default:
         return MUTATION_KEYS.DEADLINES.UPDATE_STATUS;
     }

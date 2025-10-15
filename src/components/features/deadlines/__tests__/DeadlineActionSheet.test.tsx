@@ -1,7 +1,7 @@
-import React from 'react';
-import { render } from '@testing-library/react-native';
-import { DeadlineActionSheet } from '../DeadlineActionSheet';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { render } from '@testing-library/react-native';
+import React from 'react';
+import { DeadlineActionSheet } from '../DeadlineActionSheet';
 
 const mockDeadline: ReadingDeadlineWithProgress = {
   id: '1',
@@ -63,13 +63,11 @@ jest.mock('@/hooks/useThemeColor', () => ({
 }));
 
 const mockStartReadingDeadline = jest.fn();
-const mockPauseDeadline = jest.fn();
 const mockReactivateDeadline = jest.fn();
 
 jest.mock('@/providers/DeadlineProvider', () => ({
   useDeadlines: jest.fn(() => ({
     startReadingDeadline: mockStartReadingDeadline,
-    pauseDeadline: mockPauseDeadline,
     reactivateDeadline: mockReactivateDeadline,
   })),
 }));
@@ -205,58 +203,6 @@ describe('DeadlineActionSheet', () => {
     expect(primaryButton).toBeTruthy();
   });
 
-  it('should show Pause action for reading deadline', () => {
-    const readingDeadline: ReadingDeadlineWithProgress = {
-      ...mockDeadline,
-      status: [
-        {
-          id: '1',
-          deadline_id: '1',
-          status: 'reading',
-          created_at: '2025-01-01',
-          updated_at: '2025-01-01',
-        },
-      ],
-    };
-
-    const { getByTestId } = render(
-      <DeadlineActionSheet
-        deadline={readingDeadline}
-        visible={true}
-        onClose={jest.fn()}
-      />
-    );
-
-    const primaryButton = getByTestId('primary-action-button');
-    expect(primaryButton).toBeTruthy();
-  });
-
-  it('should show Resume Reading action for paused deadline', () => {
-    const pausedDeadline: ReadingDeadlineWithProgress = {
-      ...mockDeadline,
-      status: [
-        {
-          id: '1',
-          deadline_id: '1',
-          status: 'to_review',
-          created_at: '2025-01-01',
-          updated_at: '2025-01-01',
-        },
-      ],
-    };
-
-    const { getByTestId } = render(
-      <DeadlineActionSheet
-        deadline={pausedDeadline}
-        visible={true}
-        onClose={jest.fn()}
-      />
-    );
-
-    const primaryButton = getByTestId('primary-action-button');
-    expect(primaryButton).toBeTruthy();
-  });
-
   it('should not show any status change action for completed deadline', () => {
     const completedDeadline: ReadingDeadlineWithProgress = {
       ...mockDeadline,
@@ -280,7 +226,6 @@ describe('DeadlineActionSheet', () => {
     );
 
     expect(queryByText('Start Reading')).toBeNull();
-    expect(queryByText('Pause')).toBeNull();
     expect(queryByText('Resume Reading')).toBeNull();
   });
 
@@ -311,70 +256,6 @@ describe('DeadlineActionSheet', () => {
       require('@testing-library/react-native').fireEvent.press(primaryButton);
 
       expect(mockStartReadingDeadline).toHaveBeenCalledWith(
-        '1',
-        expect.any(Function),
-        expect.any(Function)
-      );
-    });
-
-    it('should execute pauseDeadline for reading status', () => {
-      const readingDeadline: ReadingDeadlineWithProgress = {
-        ...mockDeadline,
-        status: [
-          {
-            id: '1',
-            deadline_id: '1',
-            status: 'reading',
-            created_at: '2025-01-01',
-            updated_at: '2025-01-01',
-          },
-        ],
-      };
-
-      const { getByTestId } = render(
-        <DeadlineActionSheet
-          deadline={readingDeadline}
-          visible={true}
-          onClose={jest.fn()}
-        />
-      );
-
-      const primaryButton = getByTestId('primary-action-button');
-      require('@testing-library/react-native').fireEvent.press(primaryButton);
-
-      expect(mockPauseDeadline).toHaveBeenCalledWith(
-        '1',
-        expect.any(Function),
-        expect.any(Function)
-      );
-    });
-
-    it('should execute reactivateDeadline for paused status', () => {
-      const pausedDeadline: ReadingDeadlineWithProgress = {
-        ...mockDeadline,
-        status: [
-          {
-            id: '1',
-            deadline_id: '1',
-            status: 'to_review',
-            created_at: '2025-01-01',
-            updated_at: '2025-01-01',
-          },
-        ],
-      };
-
-      const { getByTestId } = render(
-        <DeadlineActionSheet
-          deadline={pausedDeadline}
-          visible={true}
-          onClose={jest.fn()}
-        />
-      );
-
-      const primaryButton = getByTestId('primary-action-button');
-      require('@testing-library/react-native').fireEvent.press(primaryButton);
-
-      expect(mockReactivateDeadline).toHaveBeenCalledWith(
         '1',
         expect.any(Function),
         expect.any(Function)
@@ -489,31 +370,6 @@ describe('DeadlineActionSheet', () => {
       );
 
       expect(getByText('Active')).toBeTruthy();
-    });
-
-    it('should show correct badge for paused status', () => {
-      const pausedDeadline: ReadingDeadlineWithProgress = {
-        ...mockDeadline,
-        status: [
-          {
-            id: '1',
-            deadline_id: '1',
-            status: 'to_review',
-            created_at: '2025-01-01',
-            updated_at: '2025-01-01',
-          },
-        ],
-      };
-
-      const { getByText } = render(
-        <DeadlineActionSheet
-          deadline={pausedDeadline}
-          visible={true}
-          onClose={jest.fn()}
-        />
-      );
-
-      expect(getByText('Paused')).toBeTruthy();
     });
 
     it('should show correct badge for completed status', () => {

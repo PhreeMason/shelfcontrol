@@ -96,7 +96,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       overdue: 'No overdue deadlines',
       pending: 'No pending deadlines',
       completed: 'No completed deadlines',
-      paused: 'No deadlines paused',
+      toReview: 'No books waiting for reviews',
       didNotFinish: 'No deadlines marked as did not finish',
       all: 'No deadlines found',
     };

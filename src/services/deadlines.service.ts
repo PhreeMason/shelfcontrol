@@ -381,12 +381,36 @@ class DeadlinesService {
   }
 
   /**
-   * Update deadline status (complete, paused, reading, did_not_finish)
+   * Update deadline status (complete, to_review, reading, did_not_finish)
    */
   async updateDeadlineStatus(
     deadlineId: string,
-    status: 'complete' | 'to_review' | 'reading' | 'did_not_finish'
+    status: 'complete' | 'to_review' | 'reading' | 'did_not_finish' | 'pending'
   ) {
+    const validTransitions: Record<string, string[]> = {
+      pending: ['reading'],
+      reading: ['to_review', 'complete', 'did_not_finish'],
+      to_review: ['complete', 'did_not_finish'],
+    };
+
+    const { data: currentStatusData } = await supabase
+      .from(DB_TABLES.DEADLINE_STATUS)
+      .select('status')
+      .eq('deadline_id', deadlineId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (currentStatusData && currentStatusData.status) {
+      const currentStatus = currentStatusData.status;
+      const allowedTransitions = validTransitions[currentStatus as string] || [];
+
+      if (!allowedTransitions.includes(status) && currentStatus !== status) {
+        throw new Error(
+          `Invalid status transition from ${currentStatus} to ${status}`
+        );
+      }
+    }
     const { data, error } = await supabase
       .from(DB_TABLES.DEADLINE_STATUS)
       .insert({

@@ -426,7 +426,7 @@ describe('useDeadlines hooks', () => {
 
       expect(mockUseMutation).toHaveBeenCalledWith(
         expect.objectContaining({
-          mutationKey: ['reactivateDeadline'],
+          mutationKey: ['updateDeadlineStatus'],
           mutationFn: expect.any(Function),
           onSuccess: expect.any(Function),
           onError: expect.any(Function),

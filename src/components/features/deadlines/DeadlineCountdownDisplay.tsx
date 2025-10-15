@@ -16,8 +16,6 @@ export function DeadlineCountdownDisplay({
   countdownColor,
   borderColor,
 }: DeadlineCountdownDisplayProps) {
-  const isPaused = latestStatus === 'paused';
-
   return (
     <View style={styles.countdownContainer}>
       <View style={[styles.countdownSquare, { borderColor }]}>
@@ -59,7 +57,7 @@ export function DeadlineCountdownDisplay({
               dnf
             </ThemedText>
           </>
-        ) : isPaused ? (
+        ) : latestStatus === 'to_review' ? (
           <>
             <ThemedText
               style={[
@@ -67,7 +65,7 @@ export function DeadlineCountdownDisplay({
                 { paddingTop: Platform.select({ ios: 6, android: 3 }) },
               ]}
             >
-              ⏸️
+              📝
             </ThemedText>
             <ThemedText
               style={[
@@ -76,7 +74,7 @@ export function DeadlineCountdownDisplay({
                 { marginTop: Platform.select({ ios: -2, android: 1 }) },
               ]}
             >
-              paused
+              review
             </ThemedText>
           </>
         ) : (

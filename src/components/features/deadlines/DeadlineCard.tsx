@@ -48,7 +48,7 @@ export function DeadlineCard({
     latestStatus,
     latestStatusRecord,
     isArchived,
-    isInActive,
+    isNotReading,
     borderColor,
     countdownColor,
   } = useDeadlineCardState(deadline, urgencyLevel);
@@ -89,7 +89,7 @@ export function DeadlineCard({
 
   const capacityMessage = formatCapacityMessage(
     baseCapacityMessage,
-    isInActive
+    isNotReading
   );
 
   return (

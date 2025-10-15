@@ -135,9 +135,9 @@ export const formatDailyGoalImpactMessage = (
 
 export const formatCapacityMessage = (
   baseMessage: string,
-  isInActive: boolean
+  isNotReading: boolean
 ): string => {
-  if (isInActive) {
+  if (isNotReading) {
     const cleaned = baseMessage.replaceAll('needed', '');
     return `Will add ${cleaned}`;
   }

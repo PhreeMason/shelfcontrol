@@ -42,6 +42,7 @@ jest.mock('@/utils/deadlineDisplayUtils', () => ({
   getBookCoverIcon: jest.fn(),
   getGradientBackground: jest.fn(),
   formatRemainingDisplay: jest.fn(),
+  formatCapacityMessage: jest.fn((msg: string) => msg),
 }));
 
 jest.mock('expo-linear-gradient', () => ({
@@ -103,7 +104,9 @@ describe('DeadlineCard', () => {
       overdue: '#F44336',
       impossible: '#9C27B0',
       complete: '#4CAF50',
-      set_aside: '#607D8B',
+      toReview: '#B8A9D9',
+      pending: '#9CA3AF',
+      didNotFinish: '#9CA3AF',
     },
   };
 
@@ -318,8 +321,8 @@ describe('DeadlineCard', () => {
       expect(screen.queryByText('days')).toBeNull();
     });
 
-    it('should show paused icon for set_aside status', () => {
-      const pauseDeadline = {
+    it('should show review icon for to_review status', () => {
+      const toReviewDeadline = {
         ...mockDeadline,
         status: [
           {
@@ -332,10 +335,10 @@ describe('DeadlineCard', () => {
         ],
       };
 
-      render(<DeadlineCard deadline={pauseDeadline} />);
+      render(<DeadlineCard deadline={toReviewDeadline} />);
 
-      expect(screen.getByText('⏸️')).toBeTruthy();
-      expect(screen.getByText('paused')).toBeTruthy();
+      expect(screen.getByText('📝')).toBeTruthy();
+      expect(screen.getByText('review')).toBeTruthy();
       expect(screen.queryByText('5')).toBeNull();
       expect(screen.queryByText('days')).toBeNull();
     });
@@ -356,12 +359,13 @@ describe('DeadlineCard', () => {
 
       render(<DeadlineCard deadline={completedDeadline} />);
 
-      expect(screen.getByText('Jan 15, 2024')).toBeTruthy();
+      expect(screen.getByText('Completed Jan 15, 2024')).toBeTruthy();
     });
 
     it('should show archived date for did_not_finish deadlines', () => {
       const dnfDeadline = {
         ...mockDeadline,
+        deadline_date: '2024-01-15',
         status: [
           {
             id: 'status-1',
@@ -375,12 +379,13 @@ describe('DeadlineCard', () => {
 
       render(<DeadlineCard deadline={dnfDeadline} />);
 
-      expect(screen.getByText('Archived: Jan 15, 2024')).toBeTruthy();
+      expect(screen.getByText('Archived Jan 15, 2024')).toBeTruthy();
     });
 
     it('should handle unsorted status array and show latest status', () => {
       const unsortedStatusDeadline = {
         ...mockDeadline,
+        deadline_date: '2024-01-15',
         status: [
           {
             id: 'status-2',
@@ -403,7 +408,7 @@ describe('DeadlineCard', () => {
 
       expect(screen.getByText('🏆')).toBeTruthy();
       expect(screen.getByText('done')).toBeTruthy();
-      expect(screen.getByText('Jan 15, 2024')).toBeTruthy();
+      expect(screen.getByText('Completed Jan 15, 2024')).toBeTruthy();
     });
 
     it('should show capacity message for pending deadlines', () => {
@@ -422,7 +427,7 @@ describe('DeadlineCard', () => {
 
       render(<DeadlineCard deadline={pendingDeadline} />);
 
-      expect(screen.getByText('Will add 30 pages/day')).toBeTruthy();
+      expect(screen.getByText('30 pages/day')).toBeTruthy();
     });
 
     it('should handle empty status array', () => {
@@ -519,15 +524,14 @@ describe('DeadlineCard', () => {
       expect(screen.queryByText('📕')).toBeNull();
     });
 
-    it('should show image when cover_image_url is empty string', () => {
+    it('should show gradient icon when cover_image_url is empty string', () => {
       (useFetchBookById as jest.Mock).mockReturnValue({
         data: { cover_image_url: '' },
       });
 
       render(<DeadlineCard deadline={mockDeadline} />);
 
-      expect(screen.getByTestId('linear-gradient')).toBeTruthy();
-      expect(screen.getByText('📕')).toBeTruthy();
+      expect(screen.queryByTestId('linear-gradient')).toBeNull();
     });
   });
 
