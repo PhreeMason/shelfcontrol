@@ -8,6 +8,8 @@ interface DeadlineCountdownDisplayProps {
   daysLeft: number;
   countdownColor: string;
   borderColor: string;
+  reviewDaysLeft?: number;
+  unpostedPlatformCount?: number;
 }
 
 export function DeadlineCountdownDisplay({
@@ -15,6 +17,8 @@ export function DeadlineCountdownDisplay({
   daysLeft,
   countdownColor,
   borderColor,
+  reviewDaysLeft,
+  unpostedPlatformCount,
 }: DeadlineCountdownDisplayProps) {
   return (
     <View style={styles.countdownContainer}>
@@ -59,23 +63,53 @@ export function DeadlineCountdownDisplay({
           </>
         ) : latestStatus === 'to_review' ? (
           <>
-            <ThemedText
-              style={[
-                styles.archivedIcon,
-                { paddingTop: Platform.select({ ios: 6, android: 3 }) },
-              ]}
-            >
-              📝
-            </ThemedText>
-            <ThemedText
-              style={[
-                styles.countdownLabel,
-                { color: countdownColor },
-                { marginTop: Platform.select({ ios: -2, android: 1 }) },
-              ]}
-            >
-              review
-            </ThemedText>
+            {reviewDaysLeft !== undefined ? (
+              <>
+                <ThemedText
+                  style={[styles.countdownNumber, { color: countdownColor }]}
+                >
+                  {reviewDaysLeft}
+                </ThemedText>
+                <ThemedText
+                  style={[styles.countdownLabel, { color: countdownColor }]}
+                >
+                  review
+                </ThemedText>
+              </>
+            ) : unpostedPlatformCount !== undefined ? (
+              <>
+                <ThemedText
+                  style={[styles.countdownNumber, { color: countdownColor }]}
+                >
+                  {unpostedPlatformCount}
+                </ThemedText>
+                <ThemedText
+                  style={[styles.countdownLabel, { color: countdownColor }]}
+                >
+                  left
+                </ThemedText>
+              </>
+            ) : (
+              <>
+                <ThemedText
+                  style={[
+                    styles.archivedIcon,
+                    { paddingTop: Platform.select({ ios: 6, android: 3 }) },
+                  ]}
+                >
+                  📝
+                </ThemedText>
+                <ThemedText
+                  style={[
+                    styles.countdownLabel,
+                    { color: countdownColor },
+                    { marginTop: Platform.select({ ios: -2, android: 1 }) },
+                  ]}
+                >
+                  review
+                </ThemedText>
+              </>
+            )}
           </>
         ) : (
           <>

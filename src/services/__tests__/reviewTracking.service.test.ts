@@ -35,6 +35,8 @@ describe('ReviewTrackingService', () => {
     };
 
     it('should create review tracking without review notes', async () => {
+      let reviewTrackingCallCount = 0;
+
       mockSupabaseFrom.mockImplementation((table: string) => {
         if (table === 'deadlines') {
           return {
@@ -52,6 +54,19 @@ describe('ReviewTrackingService', () => {
         }
 
         if (table === 'review_tracking') {
+          reviewTrackingCallCount++;
+          if (reviewTrackingCallCount === 1) {
+            return {
+              select: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: null,
+                    error: { code: 'PGRST116', message: 'Not found' },
+                  }),
+                }),
+              }),
+            };
+          }
           return {
             insert: jest.fn().mockReturnValue({
               select: jest.fn().mockReturnValue({
@@ -67,11 +82,9 @@ describe('ReviewTrackingService', () => {
         if (table === 'review_platforms') {
           return {
             insert: jest.fn().mockReturnValue({
-              select: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: [],
-                  error: null,
-                }),
+              select: jest.fn().mockResolvedValue({
+                data: [],
+                error: null,
               }),
             }),
           };
@@ -94,6 +107,8 @@ describe('ReviewTrackingService', () => {
         review_notes: 'Great book, loved the characters!',
       };
 
+      let reviewTrackingCallCount = 0;
+
       mockSupabaseFrom.mockImplementation((table: string) => {
         if (table === 'deadlines') {
           return {
@@ -111,6 +126,19 @@ describe('ReviewTrackingService', () => {
         }
 
         if (table === 'review_tracking') {
+          reviewTrackingCallCount++;
+          if (reviewTrackingCallCount === 1) {
+            return {
+              select: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: null,
+                    error: { code: 'PGRST116', message: 'Not found' },
+                  }),
+                }),
+              }),
+            };
+          }
           return {
             insert: jest.fn().mockReturnValue({
               select: jest.fn().mockReturnValue({
@@ -126,11 +154,9 @@ describe('ReviewTrackingService', () => {
         if (table === 'review_platforms') {
           return {
             insert: jest.fn().mockReturnValue({
-              select: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: [],
-                  error: null,
-                }),
+              select: jest.fn().mockResolvedValue({
+                data: [],
+                error: null,
               }),
             }),
           };

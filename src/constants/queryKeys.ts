@@ -18,6 +18,10 @@ export const QUERY_KEYS = {
   PROFILE: {
     DETAIL: (userId: string) => ['profile', userId] as const,
   },
+  REVIEW_TRACKING: {
+    BY_DEADLINE: (userId: string, deadlineId: string) =>
+      ['review_tracking', userId, deadlineId] as const,
+  },
   AVATAR: {
     URL: (userId: string) => ['avatar', 'url', userId] as const,
     SIGNED_URL: (avatarPath: string) =>
