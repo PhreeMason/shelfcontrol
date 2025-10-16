@@ -70,7 +70,7 @@ const mockToast = Toast as jest.Mocked<typeof Toast>;
 
 describe('DeadlineActionButtons', () => {
   const mockDeleteDeadline = jest.fn();
-  const mockCompleteDeadline = jest.fn();
+  const mockReactivateDeadline = jest.fn();
   const mockStartReadingDeadline = jest.fn();
 
   const baseDeadline: ReadingDeadlineWithProgress = {
@@ -104,7 +104,7 @@ describe('DeadlineActionButtons', () => {
 
     mockUseDeadlines.mockReturnValue({
       deleteDeadline: mockDeleteDeadline,
-      completeDeadline: mockCompleteDeadline,
+      reactivateDeadline: mockReactivateDeadline,
       startReadingDeadline: mockStartReadingDeadline,
     } as any);
   });
@@ -166,7 +166,7 @@ describe('DeadlineActionButtons', () => {
       render(<DeadlineActionButtons deadline={pendingDeadline} />);
 
       expect(screen.getByTestId('button-start-reading')).toBeTruthy();
-      expect(screen.queryByTestId('button-mark-as-complete')).toBeNull();
+      expect(screen.queryByTestId("button-i'm-done-reading")).toBeNull();
     });
 
     it('should show Complete button for active status', () => {
@@ -184,7 +184,7 @@ describe('DeadlineActionButtons', () => {
       };
       render(<DeadlineActionButtons deadline={activeDeadline} />);
 
-      expect(screen.getByTestId('button-mark-as-complete')).toBeTruthy();
+      expect(screen.getByTestId("button-i'm-done-reading")).toBeTruthy();
       expect(screen.queryByTestId('button-start-reading')).toBeNull();
     });
 
@@ -204,7 +204,7 @@ describe('DeadlineActionButtons', () => {
       render(<DeadlineActionButtons deadline={completedDeadline} />);
 
       expect(screen.getByTestId('button-read-again?')).toBeTruthy();
-      expect(screen.queryByTestId('button-mark-as-complete')).toBeNull();
+      expect(screen.queryByTestId("button-i'm-done-reading")).toBeNull();
     });
 
     it('should default to reading status for empty status array', () => {
@@ -214,7 +214,7 @@ describe('DeadlineActionButtons', () => {
       };
       render(<DeadlineActionButtons deadline={noStatusDeadline} />);
 
-      expect(screen.getByTestId('button-mark-as-complete')).toBeTruthy();
+      expect(screen.getByTestId("button-i'm-done-reading")).toBeTruthy();
     });
 
     it('should handle multiple status changes correctly', () => {
@@ -253,7 +253,7 @@ describe('DeadlineActionButtons', () => {
       };
       render(<DeadlineActionButtons deadline={multiStatusDeadline} />);
 
-      expect(screen.getByTestId('button-mark-as-complete')).toBeTruthy();
+      expect(screen.getByTestId("button-i'm-done-reading")).toBeTruthy();
     });
   });
 
@@ -332,52 +332,29 @@ describe('DeadlineActionButtons', () => {
     });
   });
 
-  describe('Button Interactions - Complete', () => {
-    it('should show complete confirmation alert when complete button is pressed', () => {
+  describe('Button Interactions - Notes', () => {
+    it('should navigate to notes page when Notes button is pressed', () => {
       render(<DeadlineActionButtons deadline={baseDeadline} />);
 
-      fireEvent.press(screen.getByTestId('button-mark-as-complete'));
+      fireEvent.press(screen.getByTestId('button-notes'));
 
-      expect(mockAlert).toHaveBeenCalledWith(
-        'Complete Book',
-        'Are you sure you want to mark "Test Book" as complete?',
-        expect.arrayContaining([
-          expect.objectContaining({ text: 'Cancel', style: 'cancel' }),
-          expect.objectContaining({ text: 'Complete', style: 'default' }),
-        ])
-      );
-    });
-
-    it('should call completeDeadline when confirmation is accepted', () => {
-      render(<DeadlineActionButtons deadline={baseDeadline} />);
-
-      fireEvent.press(screen.getByTestId('button-mark-as-complete'));
-      const confirmButton = mockAlert.mock.calls[0][2]?.[1];
-      confirmButton?.onPress?.();
-
-      expect(mockCompleteDeadline).toHaveBeenCalledWith(
-        'deadline-123',
-        expect.any(Function),
-        expect.any(Function)
-      );
-    });
-
-    it('should navigate to completion page on successful complete', () => {
-      render(<DeadlineActionButtons deadline={baseDeadline} />);
-
-      fireEvent.press(screen.getByTestId('button-mark-as-complete'));
-      const confirmButton = mockAlert.mock.calls[0][2]?.[1];
-      confirmButton?.onPress?.();
-
-      const successCallback = mockCompleteDeadline.mock.calls[0][1];
-      successCallback();
-
-      expect(mockRouter.replace).toHaveBeenCalledWith(
-        '/deadline/deadline-123/completion'
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        '/deadline/deadline-123/notes'
       );
     });
   });
 
+  describe('Button Interactions - Complete', () => {
+    it('should navigate directly to completion-flow when I\'m Done Reading button is pressed', () => {
+      render(<DeadlineActionButtons deadline={baseDeadline} />);
+
+      fireEvent.press(screen.getByTestId("button-i'm-done-reading"));
+
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        '/deadline/deadline-123/completion-flow'
+      );
+    });
+  });
 
   describe('Button Interactions - Start Reading', () => {
     it('should call startReadingDeadline when start reading button is pressed', () => {
@@ -534,6 +511,118 @@ describe('DeadlineActionButtons', () => {
     });
   });
 
+  describe('Button Interactions - Resume Reading (to_review)', () => {
+    const toReviewDeadline = {
+      ...baseDeadline,
+      status: [
+        {
+          id: 'status-to-review',
+          deadline_id: 'deadline-123',
+          status: 'to_review' as const,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
+        },
+      ],
+    };
+
+    it('should show Resume Reading and I\'m Done Reading buttons for to_review status', () => {
+      render(<DeadlineActionButtons deadline={toReviewDeadline} />);
+
+      expect(screen.getByTestId('button-resume-reading')).toBeTruthy();
+      expect(screen.getByTestId("button-i'm-done-reading")).toBeTruthy();
+    });
+
+    it('should call reactivateDeadline when Resume Reading button is pressed', () => {
+      render(<DeadlineActionButtons deadline={toReviewDeadline} />);
+
+      fireEvent.press(screen.getByTestId('button-resume-reading'));
+
+      expect(mockReactivateDeadline).toHaveBeenCalledWith(
+        'deadline-123',
+        expect.any(Function),
+        expect.any(Function)
+      );
+    });
+
+    it('should show success toast and update deadline prompt after reactivating', async () => {
+      render(<DeadlineActionButtons deadline={toReviewDeadline} />);
+
+      fireEvent.press(screen.getByTestId('button-resume-reading'));
+      const successCallback = mockReactivateDeadline.mock.calls[0][1];
+      successCallback();
+
+      expect(mockToast.show).toHaveBeenCalledWith({
+        swipeable: true,
+        type: 'success',
+        text1: 'Deadline reactivated!',
+        text2: '"Test Book" is now active again',
+        autoHide: true,
+        visibilityTime: 1500,
+        position: 'top',
+      });
+
+      jest.advanceTimersByTime(2500);
+
+      await waitFor(() => {
+        expect(mockAlert).toHaveBeenCalledWith(
+          'Update Deadline?',
+          "Would you like to update the deadline date since you're resuming this book?",
+          expect.arrayContaining([
+            expect.objectContaining({ text: 'Not Now', style: 'cancel' }),
+            expect.objectContaining({ text: 'Yes, Update' }),
+          ])
+        );
+      });
+    });
+
+    it('should navigate to edit page when update deadline is confirmed', async () => {
+      render(<DeadlineActionButtons deadline={toReviewDeadline} />);
+
+      fireEvent.press(screen.getByTestId('button-resume-reading'));
+      const successCallback = mockReactivateDeadline.mock.calls[0][1];
+      successCallback();
+
+      jest.advanceTimersByTime(2500);
+
+      await waitFor(() => {
+        expect(mockAlert).toHaveBeenCalled();
+      });
+
+      const updateButton = mockAlert.mock.calls[0][2]?.[1];
+      updateButton?.onPress?.();
+
+      expect(mockRouter.push).toHaveBeenCalledWith('/deadline/deadline-123/edit?page=3');
+    });
+
+    it('should handle reactivate error', () => {
+      render(<DeadlineActionButtons deadline={toReviewDeadline} />);
+
+      fireEvent.press(screen.getByTestId('button-resume-reading'));
+      const errorCallback = mockReactivateDeadline.mock.calls[0][2];
+      errorCallback({ message: 'Reactivate failed' });
+
+      expect(mockToast.show).toHaveBeenCalledWith({
+        swipeable: true,
+        type: 'error',
+        text1: 'Failed to reactivate deadline',
+        text2: 'Reactivate failed',
+        autoHide: true,
+        visibilityTime: 1500,
+        position: 'top',
+      });
+    });
+
+    it('should show loading state during reactivation', () => {
+      render(<DeadlineActionButtons deadline={toReviewDeadline} />);
+
+      fireEvent.press(screen.getByTestId('button-resume-reading'));
+
+      const resumeButton = screen.getByTestId('button-reactivating...');
+      expect(resumeButton).toBeTruthy();
+      expect(resumeButton.props['data-disabled']).toBe(true);
+    });
+  });
+
   describe('Loading States', () => {
     it('should show loading text and disable delete button during delete operation', () => {
       render(<DeadlineActionButtons deadline={baseDeadline} />);
@@ -544,21 +633,6 @@ describe('DeadlineActionButtons', () => {
 
       // Verify that deleteDeadline was called (the loading state is set internally)
       expect(mockDeleteDeadline).toHaveBeenCalledWith(
-        'deadline-123',
-        expect.any(Function),
-        expect.any(Function)
-      );
-    });
-
-    it('should show loading text and disable complete button during complete operation', () => {
-      render(<DeadlineActionButtons deadline={baseDeadline} />);
-
-      fireEvent.press(screen.getByTestId('button-mark-as-complete'));
-      const confirmButton = mockAlert.mock.calls[0][2]?.[1];
-      confirmButton?.onPress?.();
-
-      // Verify that completeDeadline was called (the loading state is set internally)
-      expect(mockCompleteDeadline).toHaveBeenCalledWith(
         'deadline-123',
         expect.any(Function),
         expect.any(Function)
@@ -589,27 +663,6 @@ describe('DeadlineActionButtons', () => {
   });
 
   describe('Error Handling', () => {
-    it('should handle complete error with toast', () => {
-      render(<DeadlineActionButtons deadline={baseDeadline} />);
-
-      fireEvent.press(screen.getByTestId('button-mark-as-complete'));
-      const confirmButton = mockAlert.mock.calls[0][2]?.[1];
-      confirmButton?.onPress?.();
-
-      const errorCallback = mockCompleteDeadline.mock.calls[0][2];
-      errorCallback({ message: 'Server error' });
-
-      expect(mockToast.show).toHaveBeenCalledWith({
-        swipeable: true,
-        type: 'error',
-        text1: 'Failed to complete deadline',
-        text2: 'Server error',
-        autoHide: true,
-        visibilityTime: 1500,
-        position: 'top',
-      });
-    });
-
     it('should handle start reading error', () => {
       const pendingDeadline = {
         ...baseDeadline,
@@ -649,7 +702,7 @@ describe('DeadlineActionButtons', () => {
       } as any;
       render(<DeadlineActionButtons deadline={nullStatusDeadline} />);
 
-      expect(screen.getByTestId('button-mark-as-complete')).toBeTruthy();
+      expect(screen.getByTestId("button-i'm-done-reading")).toBeTruthy();
     });
 
     it('should handle deadline with missing author', () => {
