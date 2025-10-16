@@ -36,6 +36,46 @@ export interface ReviewTrackingResponse {
 }
 
 class ReviewTrackingService {
+  /**
+   * Initializes review tracking for a deadline
+   *
+   * Creates review_tracking record, review_platforms records for all selected platforms,
+   * and optionally creates a deadline_notes entry if review notes are provided.
+   *
+   * @param userId - The authenticated user's ID
+   * @param params - Review tracking configuration
+   * @param params.deadline_id - ID of the deadline to track reviews for
+   * @param params.review_due_date - Optional ISO date string for review deadline
+   * @param params.needs_link_submission - Whether user needs to submit review URLs
+   * @param params.review_notes - Optional review thoughts (saved to deadline_notes table)
+   * @param params.platforms - Array of platforms (min 1 required). Can include preset
+   *                           platforms (NetGalley, Goodreads, etc.) or custom strings
+   *
+   * @returns Object containing the created review_tracking_id
+   *
+   * @throws {Error} "At least one platform must be selected" - Empty platforms array
+   * @throws {Error} "Deadline not found or access denied" - Invalid deadline or wrong user
+   * @throws {Error} "Review tracking already exists for this deadline" - Duplicate attempt
+   *
+   * @example
+   * const result = await reviewTrackingService.createReviewTracking(userId, {
+   *   deadline_id: 'rd_123',
+   *   review_due_date: '2025-10-30',
+   *   needs_link_submission: true,
+   *   review_notes: 'Great romantic tension!',
+   *   platforms: [
+   *     { name: 'NetGalley' },
+   *     { name: 'Goodreads' },
+   *     { name: 'My Blog' }
+   *   ]
+   * });
+   *
+   * @remarks
+   * - If review_notes provided, fetches current progress from deadline_progress table
+   *   and stores it in deadline_notes.deadline_progress field as a numeric snapshot
+   * - All platforms treated equally for completion tracking (no required/optional)
+   * - Creates unique review_tracking record per deadline (enforced by DB constraint)
+   */
   async createReviewTracking(
     userId: string,
     params: CreateReviewTrackingParams
@@ -135,6 +175,44 @@ class ReviewTrackingService {
     return { review_tracking_id: reviewTrackingId };
   }
 
+  /**
+   * Batch updates platform posted status and review URLs
+   *
+   * Updates multiple review platforms in a single operation, recalculates completion
+   * percentage, and returns the updated progress.
+   *
+   * @param userId - The authenticated user's ID
+   * @param reviewTrackingId - ID of the review_tracking record
+   * @param params - Platform updates to apply
+   * @param params.platforms - Array of platform updates
+   * @param params.platforms[].id - Platform record ID to update
+   * @param params.platforms[].posted - New posted status
+   * @param params.platforms[].review_url - Optional review URL (only if posted)
+   *
+   * @returns Object containing recalculated completion_percentage (0-100)
+   *
+   * @throws {Error} "Review tracking not found" - Invalid reviewTrackingId
+   * @throws {Error} "Review tracking not found or access denied" - Wrong user
+   *
+   * @example
+   * const result = await reviewTrackingService.updateReviewPlatforms(
+   *   userId,
+   *   'rt_456',
+   *   {
+   *     platforms: [
+   *       { id: 'rp_001', posted: true, review_url: 'https://netgalley.com/review/123' },
+   *       { id: 'rp_002', posted: true }
+   *     ]
+   *   }
+   * );
+   * // Returns: { completion_percentage: 67 }
+   *
+   * @remarks
+   * - Sets posted_date to current timestamp when posted: true
+   * - Completion calculated as: Math.round((posted / total) * 100)
+   * - Updates are not atomic; individual failures logged but don't halt batch
+   * - Validates ownership via deadline → user_id relationship
+   */
   async updateReviewPlatforms(
     userId: string,
     reviewTrackingId: string,
@@ -199,6 +277,40 @@ class ReviewTrackingService {
     return { completion_percentage };
   }
 
+  /**
+   * Fetches review tracking data for a specific deadline
+   *
+   * Returns complete review tracking information including all platforms and
+   * calculated completion percentage. Returns null if no review tracking exists
+   * for the deadline (not an error condition).
+   *
+   * @param userId - The authenticated user's ID
+   * @param deadlineId - ID of the deadline to fetch review tracking for
+   *
+   * @returns ReviewTrackingResponse object or null if no tracking exists
+   *
+   * @throws {Error} "Deadline not found or access denied" - Invalid deadline or wrong user
+   *
+   * @example
+   * const tracking = await reviewTrackingService.getReviewTrackingByDeadline(
+   *   userId,
+   *   'rd_123'
+   * );
+   *
+   * if (!tracking) {
+   *   console.log('No review tracking set up');
+   * } else {
+   *   console.log(`${tracking.completion_percentage}% complete`);
+   *   const postedCount = tracking.platforms.filter(p => p.posted).length;
+   *   console.log(`Posted to ${postedCount} of ${tracking.platforms.length} platforms`);
+   * }
+   *
+   * @remarks
+   * - Returns null for PGRST116 error (not found) - this is expected behavior
+   * - Completion percentage calculated as: Math.round((posted / total) * 100)
+   * - Validates user owns deadline before fetching tracking data
+   * - Includes all platform records with posted status and optional URLs
+   */
   async getReviewTrackingByDeadline(
     userId: string,
     deadlineId: string

@@ -381,7 +381,47 @@ class DeadlinesService {
   }
 
   /**
-   * Update deadline status (complete, to_review, reading, did_not_finish)
+   * Updates deadline status with validation of allowed transitions
+   *
+   * Status is stored in the deadline_status table (NOT on deadlines table directly).
+   * All status queries and updates require a JOIN with deadline_status.
+   *
+   * Valid transitions are enforced to maintain data integrity:
+   * - pending → reading
+   * - reading → to_review | complete | did_not_finish
+   * - to_review → complete | did_not_finish
+   * - complete → (terminal, no transitions)
+   * - did_not_finish → (terminal, no transitions)
+   *
+   * @param userId - The authenticated user's ID
+   * @param deadlineId - ID of the deadline to update
+   * @param status - New status to transition to
+   *
+   * @returns Updated deadline with joined status and progress data
+   *
+   * @throws {Error} "Deadline not found or access denied" - Invalid deadline or wrong user
+   * @throws {Error} "Invalid status transition from {current} to {new}" - Blocked transition
+   *
+   * @example
+   * // Valid: Move from reading to to_review
+   * const deadline = await deadlinesService.updateDeadlineStatus(
+   *   userId,
+   *   'rd_123',
+   *   'to_review'
+   * );
+   *
+   * // Invalid: Would throw error
+   * await deadlinesService.updateDeadlineStatus(userId, 'rd_123', 'pending');
+   * // Error: "Invalid status transition from to_review to pending"
+   *
+   * @remarks
+   * Critical architecture notes:
+   * - Status field lives in deadline_status table, accessed via deadline_id foreign key
+   * - Updates occur in deadline_status table: `UPDATE deadline_status SET status = ... WHERE deadline_id = ...`
+   * - Query pattern: `SELECT d.*, ds.status FROM deadlines d JOIN deadline_status ds ON d.id = ds.deadline_id`
+   * - Overdue is NOT a status - it's a runtime calculation: `status = 'reading' AND deadline_date < CURRENT_DATE`
+   * - 'paused' status was removed from the system and migrated to 'reading'
+   * - Logs activity event for status changes
    */
   async updateDeadlineStatus(
     userId: string,
