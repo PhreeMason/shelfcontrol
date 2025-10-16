@@ -1,6 +1,8 @@
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ActionSheetOption } from '@/components/ui/ActionSheet';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
+import { useReviewTrackingMutation } from '@/hooks/useReviewTrackingMutation';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
@@ -21,6 +23,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import PostReviewModal from '../review/PostReviewModal';
 import { ChangeReadingStatusModal } from './modals/ChangeReadingStatusModal';
 import { DeleteDeadlineModal } from './modals/DeleteDeadlineModal';
 import { UpdateDeadlineDateModal } from './modals/UpdateDeadlineDateModal';
@@ -44,10 +47,17 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const [showUpdateDateModal, setShowUpdateDateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showChangeStatusModal, setShowChangeStatusModal] = useState(false);
+  const [showPostReviewModal, setShowPostReviewModal] = useState(false);
 
   const latestStatus = getDeadlineStatus(deadline);
   const { isCompleted, isToReview, isActive, isPending } =
     getStatusFlags(latestStatus);
+
+  const { reviewTracking, platforms } = useReviewTrackingData(
+    deadline.id,
+    isToReview
+  );
+  const { updatePlatforms } = useReviewTrackingMutation(deadline.id);
 
   const isArchived = isCompleted || latestStatus === 'did_not_finish';
 
@@ -137,6 +147,17 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
 
   const actionButton = getActionButton();
 
+  const handlePostReviewSave = (
+    updates: { id: string; posted: boolean; review_url?: string }[]
+  ) => {
+    if (!reviewTracking) return;
+
+    updatePlatforms({
+      reviewTrackingId: reviewTracking.id,
+      params: { platforms: updates },
+    });
+  };
+
   const actions: ActionSheetOption[] = [];
 
   if (!isArchived) {
@@ -160,6 +181,18 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
         },
       }
     );
+
+    if (isToReview) {
+      actions.push({
+        label: 'Post Review',
+        icon: 'square.and.pencil',
+        iconColor: colors.primary,
+        showChevron: true,
+        onPress: () => {
+          setShowPostReviewModal(true);
+        },
+      });
+    }
   }
 
   actions.push(
@@ -327,6 +360,15 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
       />
+
+      {isToReview && (
+        <PostReviewModal
+          visible={showPostReviewModal}
+          platforms={platforms}
+          onClose={() => setShowPostReviewModal(false)}
+          onSave={handlePostReviewSave}
+        />
+      )}
     </>
   );
 };

@@ -26,6 +26,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
       onPress={onToggle}
       disabled={disabled}
       activeOpacity={0.7}
+      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
     >
       <View
         style={[
@@ -38,7 +39,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
         {checked && (
           <IconSymbol
             name="checkmark"
-            size={16}
+            size={18}
             color={colors.textOnPrimary}
           />
         )}
@@ -54,8 +55,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 8,
+    gap: 10,
   },
   checkbox: {
     width: 24,
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     flex: 1,
   },
 });
