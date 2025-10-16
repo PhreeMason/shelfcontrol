@@ -1,11 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { StyleSheet } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 import AppHeader from '@/components/shared/AppHeader';
 import {
   ThemedButton,
@@ -42,6 +34,13 @@ import {
   prepareProgressDetailsFromForm,
 } from '@/utils/deadlineFormUtils';
 import { getInitialStepFromSearchParams } from '@/utils/deadlineUtils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { StyleSheet } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { DeadlineFormStep1 } from './DeadlineFormStep1';
 import { DeadlineFormStep2 } from './DeadlineFormStep2';
 import { DeadlineFormStep3 } from './DeadlineFormStep3';

@@ -32,17 +32,7 @@ export default function HomeScreen() {
     selectedSources,
     setSelectedSources,
   } = usePreferences();
-  const {
-    deadlines,
-    activeDeadlines,
-    overdueDeadlines,
-    pendingDeadlines,
-    completedDeadlines,
-    toReviewDeadlines,
-    didNotFinishDeadlines,
-    refetch,
-    isRefreshing,
-  } = useDeadlines();
+  const { refetch, isRefreshing } = useDeadlines();
   const { data: availableSources = [] } = useDeadlineSources();
   const prevSelectedFilterRef = React.useRef<FilterType | null>(null);
 
@@ -85,37 +75,6 @@ export default function HomeScreen() {
     filterHeight.value = event.nativeEvent.layout.height;
     filterTop.value = event.nativeEvent.layout.y;
   };
-
-  const availableFilters = React.useMemo(() => {
-    const available: FilterType[] = [];
-
-    if (activeDeadlines.length > 0) available.push('active');
-    if (overdueDeadlines.length > 0) available.push('overdue');
-    if (pendingDeadlines.length > 0) available.push('pending');
-    if (completedDeadlines.length > 0) available.push('completed');
-    if (toReviewDeadlines.length > 0) available.push('toReview');
-    if (didNotFinishDeadlines.length > 0) available.push('didNotFinish');
-    if (deadlines.length > 0) available.push('all');
-
-    return available;
-  }, [
-    activeDeadlines.length,
-    overdueDeadlines.length,
-    pendingDeadlines.length,
-    completedDeadlines.length,
-    toReviewDeadlines.length,
-    didNotFinishDeadlines.length,
-    deadlines.length,
-  ]);
-
-  React.useEffect(() => {
-    if (
-      availableFilters.length > 0 &&
-      !availableFilters.includes(selectedFilter)
-    ) {
-      setSelectedFilter(availableFilters[0]);
-    }
-  }, [availableFilters, selectedFilter, setSelectedFilter]);
 
   React.useEffect(() => {
     if (
@@ -162,7 +121,6 @@ export default function HomeScreen() {
         onSourcesChange={setSelectedSources}
         availableSources={availableSources}
         animatedStyle={stickyFilterStyle}
-        availableFilters={availableFilters}
       />
 
       <Animated.ScrollView
@@ -190,7 +148,6 @@ export default function HomeScreen() {
           availableSources={availableSources}
           animatedStyle={scrollableFilterStyle}
           onLayout={handleFilterLayout}
-          availableFilters={availableFilters}
         />
 
         <FilteredDeadlines

@@ -29,16 +29,15 @@ interface FilterSectionProps {
   availableSources: string[];
   animatedStyle?: any;
   onLayout?: (event: LayoutChangeEvent) => void;
-  availableFilters?: FilterType[];
 }
 
 const filterOptions: FilterOption[] = [
   { key: 'pending', label: 'Pending' },
   { key: 'active', label: 'Active' },
-  { key: 'completed', label: 'Completed' },
   { key: 'overdue', label: 'Overdue' },
   { key: 'toReview', label: 'To Review' },
-  { key: 'didNotFinish', label: 'Did Not Finish' },
+  { key: 'completed', label: 'Completed' },
+  { key: 'didNotFinish', label: 'DNF' },
   { key: 'all', label: 'All' },
 ];
 
@@ -54,7 +53,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   availableSources,
   animatedStyle,
   onLayout,
-  availableFilters,
 }) => {
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const {
@@ -98,9 +96,12 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     return countMap.get(filterKey) ?? 0;
   };
 
-  const visibleOptions = availableFilters
-    ? filterOptions.filter(option => availableFilters.includes(option.key))
-    : filterOptions;
+  const visibleOptions = filterOptions.filter(option => {
+    if (option.key === 'overdue' && overdueDeadlines.length === 0) {
+      return false;
+    }
+    return true;
+  });
 
   const hasActiveFilters =
     timeRangeFilter !== 'all' ||

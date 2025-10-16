@@ -63,6 +63,16 @@ class ReviewTrackingService {
       throw new Error('Deadline not found or access denied');
     }
 
+    const { data: existingTracking } = await supabase
+      .from(DB_TABLES.REVIEW_TRACKING)
+      .select('id')
+      .eq('deadline_id', deadline_id)
+      .single();
+
+    if (existingTracking) {
+      throw new Error('Review tracking already exists for this deadline');
+    }
+
     const reviewTrackingId = generateId('rt');
 
     const { error: reviewTrackingError } = await supabase
@@ -91,8 +101,7 @@ class ReviewTrackingService {
     const { error: platformsError } = await supabase
       .from(DB_TABLES.REVIEW_PLATFORMS)
       .insert(platformRecords)
-      .select()
-      .single();
+      .select();
 
     if (platformsError) throw platformsError;
 

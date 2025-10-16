@@ -6,6 +6,7 @@ import { dayjs } from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getDeadlineStatus, getStatusFlags } from '@/utils/deadlineActionUtils';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   Modal,
@@ -37,6 +38,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
 }) => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const translateY = useSharedValue(500);
   const { startReadingDeadline, reactivateDeadline } = useDeadlines();
   const [showUpdateDateModal, setShowUpdateDateModal] = useState(false);
@@ -160,15 +162,26 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
     );
   }
 
-  actions.push({
-    label: 'Delete This Book',
-    icon: 'trash.fill',
-    iconColor: colors.error,
-    showChevron: true,
-    onPress: () => {
-      setShowDeleteModal(true);
+  actions.push(
+    {
+      label: 'Add Note',
+      icon: 'note.text',
+      iconColor: colors.primary,
+      showChevron: true,
+      onPress: () => {
+        router.push(`/deadline/${deadline.id}/notes`);
+      },
     },
-  });
+    {
+      label: 'Delete This Book',
+      icon: 'trash.fill',
+      iconColor: colors.error,
+      showChevron: true,
+      onPress: () => {
+        setShowDeleteModal(true);
+      },
+    }
+  );
 
   return (
     <>

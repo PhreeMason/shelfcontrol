@@ -19,14 +19,8 @@ interface DeadlineActionButtonsProps {
 const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   deadline,
 }) => {
-  const {
-    deleteDeadline,
-    completeDeadline,
-    reactivateDeadline,
-    startReadingDeadline,
-  } = useDeadlines();
+  const { deleteDeadline, reactivateDeadline, startReadingDeadline } = useDeadlines();
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isCompleting, setIsCompleting] = useState(false);
   const [isReactivating, setIsReactivating] = useState(false);
   const [isStartingReading, setIsStartingReading] = useState(false);
 
@@ -34,42 +28,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   const { isCompleted, isToReview, isActive, isPending } =
     getStatusFlags(latestStatus);
   const handleComplete = () => {
-    Alert.alert(
-      'Complete Book',
-      `Are you sure you want to mark "${deadline.book_title}" as complete?`,
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Complete',
-          style: 'default',
-          onPress: () => {
-            setIsCompleting(true);
-            completeDeadline(
-              deadline.id,
-              () => {
-                setIsCompleting(false);
-                router.replace(`/deadline/${deadline.id}/completion`);
-              },
-              error => {
-                setIsCompleting(false);
-                Toast.show({
-                  swipeable: true,
-                  type: 'error',
-                  text1: 'Failed to complete deadline',
-                  text2: error.message || 'Please try again',
-                  autoHide: true,
-                  visibilityTime: 1500,
-                  position: 'top',
-                });
-              }
-            );
-          },
-        },
-      ]
-    );
+    router.push(`/deadline/${deadline.id}/completion-flow`);
   };
 
   const handleDelete = () => {
@@ -223,7 +182,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
               {
                 text: 'Yes, Update',
                 onPress: () => {
-                  // @ts-ignore
                   router.push(`/deadline/${deadline.id}/edit?page=3`);
                 },
               },
@@ -272,11 +230,10 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         <>
           <ThemedButton
             hapticsOnPress
-            title={isCompleting ? 'Completing...' : 'Mark as Complete'}
+            title="I'm Done Reading"
             variant="success"
             style={styles.actionButton}
             onPress={handleComplete}
-            disabled={isCompleting}
           />
         </>
       )}
@@ -295,11 +252,10 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           />
           <ThemedButton
             hapticsOnPress
-            title={isCompleting ? 'Completing...' : 'Mark as Complete'}
+            title="I'm Done Reading"
             variant="success"
             style={styles.actionButton}
             onPress={handleComplete}
-            disabled={isCompleting}
           />
         </>
       )}
