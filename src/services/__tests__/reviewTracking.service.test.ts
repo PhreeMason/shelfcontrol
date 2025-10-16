@@ -249,6 +249,163 @@ describe('ReviewTrackingService', () => {
         reviewTrackingService.createReviewTracking(userId, paramsNoPlatforms)
       ).rejects.toThrow('At least one platform must be selected');
     });
+
+    it('should throw error if review tracking already exists', async () => {
+      mockSupabaseFrom.mockImplementation((table: string) => {
+        if (table === 'deadlines') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { id: 'rd-123', user_id: userId },
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_tracking') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({
+                  data: { id: 'rt-existing' },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+
+        return {};
+      });
+
+      await expect(
+        reviewTrackingService.createReviewTracking(userId, mockParams)
+      ).rejects.toThrow('Review tracking already exists for this deadline');
+    });
+
+    it('should throw error if review tracking insert fails', async () => {
+      let reviewTrackingCallCount = 0;
+
+      mockSupabaseFrom.mockImplementation((table: string) => {
+        if (table === 'deadlines') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { id: 'rd-123', user_id: userId },
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_tracking') {
+          reviewTrackingCallCount++;
+          if (reviewTrackingCallCount === 1) {
+            return {
+              select: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: null,
+                    error: { code: 'PGRST116', message: 'Not found' },
+                  }),
+                }),
+              }),
+            };
+          }
+          const insertError = new Error('Insert failed');
+          return {
+            insert: jest.fn().mockReturnValue({
+              select: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({
+                  data: null,
+                  error: insertError,
+                }),
+              }),
+            }),
+          };
+        }
+
+        return {};
+      });
+
+      await expect(
+        reviewTrackingService.createReviewTracking(userId, mockParams)
+      ).rejects.toThrow('Insert failed');
+    });
+
+    it('should throw error if platforms insert fails', async () => {
+      let reviewTrackingCallCount = 0;
+
+      mockSupabaseFrom.mockImplementation((table: string) => {
+        if (table === 'deadlines') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { id: 'rd-123', user_id: userId },
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_tracking') {
+          reviewTrackingCallCount++;
+          if (reviewTrackingCallCount === 1) {
+            return {
+              select: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: null,
+                    error: { code: 'PGRST116', message: 'Not found' },
+                  }),
+                }),
+              }),
+            };
+          }
+          return {
+            insert: jest.fn().mockReturnValue({
+              select: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({
+                  data: { id: 'rt-1', deadline_id: 'rd-123' },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_platforms') {
+          const platformsError = new Error('Platforms insert failed');
+          return {
+            insert: jest.fn().mockReturnValue({
+              select: jest.fn().mockResolvedValue({
+                data: null,
+                error: platformsError,
+              }),
+            }),
+          };
+        }
+
+        return {};
+      });
+
+      await expect(
+        reviewTrackingService.createReviewTracking(userId, mockParams)
+      ).rejects.toThrow('Platforms insert failed');
+    });
   });
 
   describe('updateReviewPlatforms', () => {
@@ -444,6 +601,94 @@ describe('ReviewTrackingService', () => {
         )
       ).rejects.toThrow('Review tracking not found or access denied');
     });
+
+    it('should throw error if review tracking not found', async () => {
+      mockSupabaseFrom.mockImplementation(() => ({
+        select: jest.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
+            single: jest.fn().mockResolvedValue({
+              data: null,
+              error: { code: 'PGRST116', message: 'Not found' },
+            }),
+          }),
+        }),
+      }));
+
+      await expect(
+        reviewTrackingService.updateReviewPlatforms(
+          userId,
+          reviewTrackingId,
+          mockUpdateParams
+        )
+      ).rejects.toThrow('Review tracking not found');
+    });
+
+    it('should calculate 0% completion when no platforms exist', async () => {
+      let platformCallCount = 0;
+      mockSupabaseFrom.mockImplementation((table: string) => {
+        if (table === 'review_tracking') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({
+                  data: { id: 'rt-123', deadline_id: 'rd-123' },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'deadlines') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { id: 'rd-123', user_id: userId },
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_platforms') {
+          platformCallCount++;
+          if (platformCallCount <= 2) {
+            return {
+              update: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: {},
+                    error: null,
+                  }),
+                }),
+              }),
+            };
+          }
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({
+                data: [],
+                error: null,
+              }),
+            }),
+          };
+        }
+
+        return {};
+      });
+
+      const result = await reviewTrackingService.updateReviewPlatforms(
+        userId,
+        reviewTrackingId,
+        mockUpdateParams
+      );
+
+      expect(result.completion_percentage).toBe(0);
+    });
   });
 
   describe('getReviewTrackingByDeadline', () => {
@@ -608,6 +853,105 @@ describe('ReviewTrackingService', () => {
       await expect(
         reviewTrackingService.getReviewTrackingByDeadline(userId, deadlineId)
       ).rejects.toThrow('Deadline not found or access denied');
+    });
+
+    it('should throw error if review tracking query fails with non-PGRST116 error', async () => {
+      const dbError = new Error('Database error');
+      mockSupabaseFrom.mockImplementation((table: string) => {
+        if (table === 'deadlines') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { id: 'rd-123', user_id: userId },
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_tracking') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({
+                  data: null,
+                  error: dbError,
+                }),
+              }),
+            }),
+          };
+        }
+
+        return {};
+      });
+
+      await expect(
+        reviewTrackingService.getReviewTrackingByDeadline(userId, deadlineId)
+      ).rejects.toThrow('Database error');
+    });
+
+    it('should calculate 0% completion when no platforms exist', async () => {
+      mockSupabaseFrom.mockImplementation((table: string) => {
+        if (table === 'deadlines') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { id: 'rd-123', user_id: userId },
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_tracking') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({
+                  data: {
+                    id: 'rt-123',
+                    deadline_id: 'rd-123',
+                    review_due_date: '2025-10-20',
+                    needs_link_submission: true,
+                    all_reviews_complete: false,
+                  },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_platforms') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({
+                data: [],
+                error: null,
+              }),
+            }),
+          };
+        }
+
+        return {};
+      });
+
+      const result =
+        await reviewTrackingService.getReviewTrackingByDeadline(
+          userId,
+          deadlineId
+        );
+
+      expect(result?.completion_percentage).toBe(0);
+      expect(result?.platforms).toEqual([]);
     });
   });
 });

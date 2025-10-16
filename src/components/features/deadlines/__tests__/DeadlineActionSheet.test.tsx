@@ -49,6 +49,15 @@ jest.mock('../modals/DidNotFinishDeadlineModal', () => ({
   DidNotFinishDeadlineModal: () => null,
 }));
 
+jest.mock('../modals/ChangeReadingStatusModal', () => ({
+  ChangeReadingStatusModal: () => null,
+}));
+
+jest.mock('../../review/PostReviewModal', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
 jest.mock('@/hooks/useThemeColor', () => ({
   useTheme: jest.fn(() => ({
     colors: {
@@ -58,6 +67,8 @@ jest.mock('@/hooks/useThemeColor', () => ({
       error: '#E8B4B8',
       good: '#10B981',
       text: '#000000',
+      surface: '#FFFFFF',
+      border: '#E2E8F0',
     },
   })),
 }));
@@ -69,6 +80,36 @@ jest.mock('@/providers/DeadlineProvider', () => ({
   useDeadlines: jest.fn(() => ({
     startReadingDeadline: mockStartReadingDeadline,
     reactivateDeadline: mockReactivateDeadline,
+  })),
+}));
+
+jest.mock('@/hooks/useReviewTrackingData', () => ({
+  useReviewTrackingData: jest.fn(() => ({
+    reviewTracking: null,
+    platforms: [],
+    completionPercentage: 0,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  })),
+}));
+
+const mockUpdatePlatforms = jest.fn();
+
+jest.mock('@/hooks/useReviewTrackingMutation', () => ({
+  useReviewTrackingMutation: jest.fn(() => ({
+    updatePlatforms: mockUpdatePlatforms,
+    isUpdating: false,
+  })),
+}));
+
+const mockRouterPush = jest.fn();
+
+jest.mock('expo-router', () => ({
+  useRouter: jest.fn(() => ({
+    push: mockRouterPush,
+    back: jest.fn(),
+    replace: jest.fn(),
   })),
 }));
 

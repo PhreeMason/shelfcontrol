@@ -3,6 +3,7 @@ import BookDetailsSection from '@/components/features/deadlines/BookDetailsSecti
 import DeadlineActionButtons from '@/components/features/deadlines/DeadlineActionButtons';
 import DeadlineHeroSection from '@/components/features/deadlines/DeadlineHeroSection';
 import DeadlineViewHeader from '@/components/features/deadlines/DeadlineViewHeader';
+import ReviewProgressSection from '@/components/features/review/ReviewProgressSection';
 import ReadingProgress from '@/components/progress/ReadingProgressUpdate';
 import {
   ThemedButton,
@@ -101,6 +102,8 @@ const DeadlineView = () => {
         <DailyReadingChart deadline={deadline} />
 
         <BookDetailsSection deadline={deadline} />
+
+        <ReviewProgressSection deadline={deadline} />
 
         <DeadlineActionButtons deadline={deadline} />
       </ThemedScrollView>

@@ -9,7 +9,6 @@ interface DeadlineCountdownDisplayProps {
   countdownColor: string;
   borderColor: string;
   reviewDaysLeft?: number;
-  unpostedPlatformCount?: number;
 }
 
 export function DeadlineCountdownDisplay({
@@ -18,7 +17,6 @@ export function DeadlineCountdownDisplay({
   countdownColor,
   borderColor,
   reviewDaysLeft,
-  unpostedPlatformCount,
 }: DeadlineCountdownDisplayProps) {
   return (
     <View style={styles.countdownContainer}>
@@ -73,20 +71,7 @@ export function DeadlineCountdownDisplay({
                 <ThemedText
                   style={[styles.countdownLabel, { color: countdownColor }]}
                 >
-                  review
-                </ThemedText>
-              </>
-            ) : unpostedPlatformCount !== undefined ? (
-              <>
-                <ThemedText
-                  style={[styles.countdownNumber, { color: countdownColor }]}
-                >
-                  {unpostedPlatformCount}
-                </ThemedText>
-                <ThemedText
-                  style={[styles.countdownLabel, { color: countdownColor }]}
-                >
-                  left
+                  days
                 </ThemedText>
               </>
             ) : (
@@ -164,7 +149,7 @@ const styles = StyleSheet.create({
     marginTop: Platform.select({ ios: -5, android: -2 }),
   },
   archivedIcon: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '700',
     lineHeight: 28,
     marginBottom: Platform.select({ ios: 2, android: 0 }),

@@ -1,5 +1,5 @@
-import React from 'react';
 import { render } from '@testing-library/react-native';
+import React from 'react';
 import { DeadlineCountdownDisplay } from '../DeadlineCountdownDisplay';
 
 describe('DeadlineCountdownDisplay', () => {
@@ -81,47 +81,6 @@ describe('DeadlineCountdownDisplay', () => {
 
       expect(getByText('7')).toBeTruthy();
       expect(getByText('review')).toBeTruthy();
-    });
-
-    it('should display unposted platform count when no review due date', () => {
-      const { getByText } = render(
-        <DeadlineCountdownDisplay
-          {...defaultProps}
-          latestStatus="to_review"
-          unpostedPlatformCount={3}
-        />
-      );
-
-      expect(getByText('3')).toBeTruthy();
-      expect(getByText('left')).toBeTruthy();
-    });
-
-    it('should prioritize reviewDaysLeft over unpostedPlatformCount', () => {
-      const { getByText } = render(
-        <DeadlineCountdownDisplay
-          {...defaultProps}
-          latestStatus="to_review"
-          reviewDaysLeft={5}
-          unpostedPlatformCount={3}
-        />
-      );
-
-      expect(getByText('5')).toBeTruthy();
-      expect(getByText('review')).toBeTruthy();
-      expect(() => getByText('left')).toThrow();
-    });
-
-    it('should display 0 when no platforms need posting', () => {
-      const { getByText } = render(
-        <DeadlineCountdownDisplay
-          {...defaultProps}
-          latestStatus="to_review"
-          unpostedPlatformCount={0}
-        />
-      );
-
-      expect(getByText('0')).toBeTruthy();
-      expect(getByText('left')).toBeTruthy();
     });
 
     it('should display negative days when review is overdue', () => {
