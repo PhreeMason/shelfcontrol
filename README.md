@@ -154,6 +154,14 @@ npm run genTypes
 - **Type Safety**: Full TypeScript coverage with strict type checking
 - **Testing Strategy**: Unit tests for utilities/services, component tests for UI
 
+### Service Layer
+
+The application uses a service layer pattern for all business logic and database operations. See [src/services/README.md](./src/services/README.md) for:
+- Database architecture and schema details
+- Review tracking system documentation
+- Service API reference with examples
+- Error handling patterns
+
 ## Performance
 
 - Code splitting with dynamic imports
@@ -198,3 +206,5 @@ Tests:
 
 Rationale:
 This approach prevents subtle off-by-one issues caused by implicit timezone shifts on date-only values while preserving correct instant-based ordering for true timestamps.
+
+If user selects that they need to post links. Update mark complete to be all links submitted mark complete button.
