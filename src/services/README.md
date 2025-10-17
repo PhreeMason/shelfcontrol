@@ -20,6 +20,85 @@ This directory contains all business logic and API services for ShelfControl. Se
 3. **Supabase Client**: All services use the shared Supabase client from `@/lib/supabase`
 4. **Error Propagation**: Services throw errors; UI components handle them
 5. **Type Safety**: Full TypeScript coverage with generated database types
+6. **CRITICAL - React Query Integration**: Services must NEVER be called directly from components (see below)
+
+### React Query Integration - CRITICAL
+
+**IMPORTANT: Services must NEVER be called directly from components or pages.**
+
+All service calls must go through React Query hooks to ensure proper cache management and data consistency.
+
+#### AVOID - Direct Service Call (Wrong Pattern)
+
+```typescript
+// In a component
+const handleSubmit = async () => {
+  try {
+    await deadlinesService.updateDeadlineStatus(userId, deadlineId, 'complete');
+    router.back();
+  } catch (error) {
+    console.error(error);
+  }
+};
+```
+
+**Problem:** Cache is not invalidated, causing stale data and UI inconsistencies.
+
+#### RECOMMENDED - Use React Query Hook (Correct Pattern)
+
+```typescript
+// In hooks/useDeadlines.ts
+export const useCompleteDeadline = () => {
+  const { session } = useAuth();
+  const userId = session?.user?.id;
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: [MUTATION_KEYS.DEADLINES.COMPLETE],
+    mutationFn: async (deadlineId: string) => {
+      if (!userId) throw new Error('User not authenticated');
+      return deadlinesService.completeDeadline(userId, deadlineId);
+    },
+    onSuccess: () => {
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
+      }
+    },
+  });
+};
+
+// In component
+const { mutate: completeDeadline } = useCompleteDeadline();
+
+const handleSubmit = () => {
+  completeDeadline(deadlineId, {
+    onSuccess: () => router.back(),
+    onError: (error) => showToast('Error', error.message),
+  });
+};
+```
+
+**Benefits:**
+- Cache automatically invalidated
+- UI updates immediately
+- Loading/error states managed
+- Optimistic updates possible
+- Request deduplication
+- Automatic retries
+
+#### Exceptions
+
+**Authentication code is exempt from this requirement:**
+- `AuthProvider.tsx` - Manages auth state below React Query layer
+- `AppleSSO.tsx` and other auth components - Part of auth flow
+
+All other components MUST use React Query hooks.
+
+See `REACT_QUERY_VIOLATIONS.md` for detailed examples and migration guide.
+
+---
 
 ### Database Architecture - Critical Concepts
 
@@ -164,18 +243,18 @@ When users add review notes during setup, a `deadline_notes` entry is created wi
 ### Status Flow Diagram
 
 ```
-┌─────────┐     ┌────────┐     ┌───────────┐     ┌───────────┐
-│ Pending │ ──▶ │Reading │ ──▶ │ To Review │ ──▶ │ Completed │
-└─────────┘     └────────┘     └───────────┘     └───────────┘
-                    │                │
-                    │                └──────────▶ ┌─────┐
-                    │                             │ DNF │
-                    └─────────────────────────────┘─────┘
++---------+     +--------+     +-----------+     +-----------+
+| Pending | --> | Reading| --> | To Review | --> | Completed |
++---------+     +--------+     +-----------+     +-----------+
+                    |                |
+                    |                +---------> +-----+
+                    |                             | DNF |
+                    +-------------------------+-----+
 
 Alternate Flows:
-- Reading → Completed (skip review tracking)
-- Reading → DNF (quit early)
-- To Review → DNF (decided not to finish after reviewing partial)
+- Reading -> Completed (skip review tracking)
+- Reading -> DNF (quit early)
+- To Review -> DNF (decided not to finish after reviewing partial)
 
 Note: Overdue is shown on Reading items, not a separate status
 ```

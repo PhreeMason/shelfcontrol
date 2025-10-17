@@ -151,7 +151,7 @@ export const CompleteDeadlineModal: React.FC<CompleteDeadlineModalProps> = ({
                     {isEarly ? 'Finished early by' : 'Finished late by'}
                   </ThemedText>
                   <ThemedText style={styles.statValue}>
-                    {Math.abs(earlyLateDays)} days {isEarly ? '🎯' : ''}
+                    {Math.abs(earlyLateDays)} days {isEarly ? '!' : ''}
                   </ThemedText>
                 </View>
               )}

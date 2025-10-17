@@ -80,7 +80,7 @@ describe('DeadlineCountdownDisplay', () => {
       );
 
       expect(getByText('7')).toBeTruthy();
-      expect(getByText('review')).toBeTruthy();
+      expect(getByText('days')).toBeTruthy();
     });
 
     it('should display negative days when review is overdue', () => {
@@ -93,7 +93,7 @@ describe('DeadlineCountdownDisplay', () => {
       );
 
       expect(getByText('-2')).toBeTruthy();
-      expect(getByText('review')).toBeTruthy();
+      expect(getByText('days')).toBeTruthy();
     });
   });
 });

@@ -145,15 +145,63 @@ export const useUpdateDeadlineProgress = () => {
       }
       return deadlinesService.updateDeadlineProgress(progressDetails);
     },
-    onSuccess: () => {
+    onMutate: async (progressDetails) => {
+      if (!userId) return;
+
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+      });
+
+      const previousDeadlines = queryClient.getQueryData<ReadingDeadlineWithProgress[]>(
+        QUERY_KEYS.DEADLINES.ALL(userId)
+      );
+
+      queryClient.setQueryData<ReadingDeadlineWithProgress[]>(
+        QUERY_KEYS.DEADLINES.ALL(userId),
+        (old) => {
+          if (!old) return old;
+
+          return old.map((deadline) => {
+            if (deadline.id === progressDetails.deadlineId) {
+              return {
+                ...deadline,
+                progress: [
+                  ...deadline.progress,
+                  {
+                    id: 'temp-' + Date.now(),
+                    deadline_id: deadline.id,
+                    current_progress: progressDetails.currentProgress,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    ignore_in_calcs: false,
+                    time_spent_reading: progressDetails.timeSpentReading || null,
+                  },
+                ],
+              };
+            }
+            return deadline;
+          });
+        }
+      );
+
+      return { previousDeadlines };
+    },
+    onError: (error, _variables, context) => {
+      console.error('Error updating deadline progress:', error);
+
+      if (context?.previousDeadlines && userId) {
+        queryClient.setQueryData(
+          QUERY_KEYS.DEADLINES.ALL(userId),
+          context.previousDeadlines
+        );
+      }
+    },
+    onSettled: () => {
       if (userId) {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
         });
       }
-    },
-    onError: error => {
-      console.error('Error updating deadline progress:', error);
     },
   });
 };
@@ -273,6 +321,9 @@ export const useStartReadingDeadline = () =>
 
 export const useDidNotFinishDeadline = () =>
   useUpdateDeadlineStatus(DEADLINE_STATUS.DID_NOT_FINISH);
+
+export const useToReviewDeadline = () =>
+  useUpdateDeadlineStatus(DEADLINE_STATUS.TO_REVIEW);
 
 export const useGetDeadlineById = (deadlineId: string | undefined) => {
   const { session } = useAuth();

@@ -1,29 +1,35 @@
 import DailyReadingChart from '@/components/charts/DailyReadingChart';
+import ProgressCheckDialog from '@/components/features/completion/ProgressCheckDialog';
 import BookDetailsSection from '@/components/features/deadlines/BookDetailsSection';
 import DeadlineActionButtons from '@/components/features/deadlines/DeadlineActionButtons';
 import DeadlineHeroSection from '@/components/features/deadlines/DeadlineHeroSection';
 import DeadlineViewHeader from '@/components/features/deadlines/DeadlineViewHeader';
 import ReviewProgressSection from '@/components/features/review/ReviewProgressSection';
-import ReadingProgress from '@/components/progress/ReadingProgressUpdate';
+import ReadingProgressUpdate from '@/components/progress/ReadingProgressUpdate';
+import ReadingStats from '@/components/stats/ReadingStats';
 import {
   ThemedButton,
   ThemedScrollView,
   ThemedText,
   ThemedView,
 } from '@/components/themed';
-import { useGetDeadlineById } from '@/hooks/useDeadlines';
+import { useGetDeadlineById, useUpdateDeadlineProgress } from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 const DeadlineView = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { deadlines } = useDeadlines();
   const { colors } = useTheme();
+  const { mutate: updateProgress } = useUpdateDeadlineProgress();
+  const [showProgressCheck, setShowProgressCheck] = useState(false);
 
   let deadline = deadlines.find(d => d.id === id);
   const {
@@ -72,7 +78,7 @@ const DeadlineView = () => {
     );
   }
 
-  const { isCompleted, isArchived } = getDeadlineStatus(deadline);
+  const { isCompleted, isToReview, isArchived } = getDeadlineStatus(deadline);
 
   const handleEdit = () => {
     router.push(`/deadline/${id}/edit`);
@@ -82,10 +88,56 @@ const DeadlineView = () => {
     router.back();
   };
 
+  const totalPages = deadline.total_quantity || 0;
+  const latestProgress =
+    deadline.progress && deadline.progress.length > 0
+      ? deadline.progress[deadline.progress.length - 1]
+      : null;
+  const currentProgress = latestProgress?.current_progress || 0;
+
+  const handleComplete = () => {
+    if (currentProgress < totalPages) {
+      setShowProgressCheck(true);
+    } else {
+      router.push(`/deadline/${id}/completion-flow`);
+    }
+  };
+
+  const handleMarkAllPages = () => {
+    if (!deadline) return;
+
+    updateProgress(
+      {
+        deadlineId: deadline.id,
+        currentProgress: totalPages,
+      },
+      {
+        onSuccess: () => {
+          setShowProgressCheck(false);
+          router.push(`/deadline/${id}/completion-flow`);
+        },
+        onError: error => {
+          Toast.show({
+            type: 'error',
+            text1: 'Failed to update progress',
+            text2: error.message || 'Please try again',
+          });
+        },
+      }
+    );
+  };
+
+  const handleDidNotFinish = () => {
+    setShowProgressCheck(false);
+    router.push(`/deadline/${id}/completion-flow?skipToReview=true`);
+  };
+
   const headerProps = {
     onBack: handleBack,
     ...(isCompleted ? {} : { onEdit: handleEdit }),
   };
+
+  const shouldShowStats = isToReview || isArchived;
 
   return (
     <SafeAreaView
@@ -97,7 +149,11 @@ const DeadlineView = () => {
       <ThemedScrollView style={[styles.content, { backgroundColor: 'white' }]}>
         <DeadlineHeroSection deadline={deadline} />
 
-        {isArchived ? null : <ReadingProgress deadline={deadline} />}
+        {shouldShowStats ? (
+          <ReadingStats deadline={deadline} />
+        ) : (
+          <ReadingProgressUpdate deadline={deadline} />
+        )}
 
         <DailyReadingChart deadline={deadline} />
 
@@ -105,8 +161,16 @@ const DeadlineView = () => {
 
         <ReviewProgressSection deadline={deadline} />
 
-        <DeadlineActionButtons deadline={deadline} />
+        <DeadlineActionButtons deadline={deadline} onComplete={handleComplete} />
       </ThemedScrollView>
+
+      <ProgressCheckDialog
+        visible={showProgressCheck}
+        totalPages={totalPages}
+        currentProgress={currentProgress}
+        onMarkAllPages={handleMarkAllPages}
+        onDidNotFinish={handleDidNotFinish}
+      />
     </SafeAreaView>
   );
 };

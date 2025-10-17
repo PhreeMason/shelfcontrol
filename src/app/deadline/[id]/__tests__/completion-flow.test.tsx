@@ -1,4 +1,3 @@
-import { useUpdateDeadlineProgress } from '@/hooks/useDeadlines';
 import { useCompletionFlow } from '@/providers/CompletionFlowProvider';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -6,7 +5,6 @@ import {
   fireEvent,
   render,
   screen,
-  waitFor,
 } from '@testing-library/react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
@@ -15,7 +13,6 @@ import CompletionFlowPage from '../completion-flow';
 
 jest.mock('@/providers/CompletionFlowProvider');
 jest.mock('@/providers/DeadlineProvider');
-jest.mock('@/hooks/useDeadlines');
 jest.mock('expo-router', () => ({
   router: {
     push: jest.fn(),
@@ -81,72 +78,6 @@ jest.mock('@/components/features/completion/CelebrationScreen', () => {
     ]);
 });
 
-jest.mock('@/components/features/completion/ProgressCheckDialog', () => {
-  const React = require('react');
-  return ({
-    visible,
-    onMarkAllPages,
-    onDidNotFinish,
-  }: {
-    visible: boolean;
-    onMarkAllPages: () => void;
-    onDidNotFinish: () => void;
-  }) =>
-    visible
-      ? React.createElement(
-          'View',
-          { testID: 'progress-check-dialog', key: 'dialog' },
-          [
-            React.createElement(
-              'View',
-              {
-                testID: 'mark-all-pages-button',
-                onPress: onMarkAllPages,
-                key: 'mark-all',
-              },
-              null
-            ),
-            React.createElement(
-              'View',
-              {
-                testID: 'did-not-finish-button',
-                onPress: onDidNotFinish,
-                key: 'dnf',
-              },
-              null
-            ),
-          ]
-        )
-      : null;
-});
-
-jest.mock('@/components/features/completion/DNFConfirmationDialog', () => {
-  const React = require('react');
-  return ({
-    visible,
-    onMoveToDNF,
-    onGoBack,
-  }: {
-    visible: boolean;
-    onMoveToDNF: () => void;
-    onGoBack: () => void;
-  }) =>
-    visible
-      ? React.createElement('View', { testID: 'dnf-confirm-dialog' }, [
-          React.createElement(
-            'View',
-            { testID: 'move-to-dnf-button', onPress: onMoveToDNF, key: 'move' },
-            null
-          ),
-          React.createElement(
-            'View',
-            { testID: 'go-back-button', onPress: onGoBack, key: 'back' },
-            null
-          ),
-        ])
-      : null;
-});
-
 jest.mock('@/components/features/completion/ReviewQuestionScreen', () => {
   const React = require('react');
   return ({ onContinue }: { onContinue: (needsReview: boolean) => void }) =>
@@ -178,10 +109,6 @@ const mockUseCompletionFlow = useCompletionFlow as jest.MockedFunction<
 const mockUseDeadlines = useDeadlines as jest.MockedFunction<
   typeof useDeadlines
 >;
-const mockUseUpdateDeadlineProgress =
-  useUpdateDeadlineProgress as jest.MockedFunction<
-    typeof useUpdateDeadlineProgress
-  >;
 const mockUseLocalSearchParams = useLocalSearchParams as jest.MockedFunction<
   typeof useLocalSearchParams
 >;
@@ -191,11 +118,10 @@ const mockToast = Toast as jest.Mocked<typeof Toast>;
 describe('CompletionFlowPage - Integration Tests', () => {
   const mockInitializeFlow = jest.fn();
   const mockUpdateStep = jest.fn();
-  const mockUpdateCompletionData = jest.fn();
+  const mockSetNeedsReview = jest.fn();
   const mockResetFlow = jest.fn();
   const mockCompleteDeadline = jest.fn();
   const mockDidNotFinishDeadline = jest.fn();
-  const mockUpdateProgress = jest.fn();
 
   const baseDeadline: ReadingDeadlineWithProgress = {
     id: 'deadline-123',
@@ -226,7 +152,8 @@ describe('CompletionFlowPage - Integration Tests', () => {
         current_progress: 250,
         created_at: '2024-01-01T00:00:00Z',
         updated_at: '2024-01-01T00:00:00Z',
-        user_id: 'user-123',
+        ignore_in_calcs: false,
+        time_spent_reading: null,
       },
     ],
   };
@@ -244,17 +171,8 @@ describe('CompletionFlowPage - Integration Tests', () => {
       source: 'NetGalley',
       bookId: 'book-123',
     },
-    completionData: {
-      finishedAllPages: null,
-      needsReview: null,
-      isDNF: false,
-    },
-    reviewData: {
-      reviewDueDate: null,
-      platforms: [],
-      needsLinkSubmission: false,
-      reviewNotes: '',
-    },
+    isDNF: false,
+    needsReview: null,
   };
 
   beforeEach(() => {
@@ -266,8 +184,7 @@ describe('CompletionFlowPage - Integration Tests', () => {
       flowState: baseFlowState,
       initializeFlow: mockInitializeFlow,
       updateStep: mockUpdateStep,
-      updateCompletionData: mockUpdateCompletionData,
-      updateReviewData: jest.fn(),
+      setNeedsReview: mockSetNeedsReview,
       resetFlow: mockResetFlow,
     });
 
@@ -276,26 +193,40 @@ describe('CompletionFlowPage - Integration Tests', () => {
       completeDeadline: mockCompleteDeadline,
       didNotFinishDeadline: mockDidNotFinishDeadline,
     } as any);
-
-    mockUseUpdateDeadlineProgress.mockReturnValue({
-      mutate: mockUpdateProgress,
-    } as any);
   });
 
   describe('Initialization', () => {
-    it('should initialize flow on mount when flowState is null', () => {
+    it('should initialize flow with isDNF=false when skipToReview is not set', () => {
       mockUseCompletionFlow.mockReturnValue({
         flowState: null,
         initializeFlow: mockInitializeFlow,
         updateStep: mockUpdateStep,
-        updateCompletionData: mockUpdateCompletionData,
-        updateReviewData: jest.fn(),
+        setNeedsReview: mockSetNeedsReview,
         resetFlow: mockResetFlow,
       });
 
       render(<CompletionFlowPage />);
 
-      expect(mockInitializeFlow).toHaveBeenCalledWith(baseDeadline);
+      expect(mockInitializeFlow).toHaveBeenCalledWith(baseDeadline, false);
+    });
+
+    it('should initialize flow with isDNF=true when skipToReview is true', () => {
+      mockUseLocalSearchParams.mockReturnValue({
+        id: 'deadline-123',
+        skipToReview: 'true',
+      });
+
+      mockUseCompletionFlow.mockReturnValue({
+        flowState: null,
+        initializeFlow: mockInitializeFlow,
+        updateStep: mockUpdateStep,
+        setNeedsReview: mockSetNeedsReview,
+        resetFlow: mockResetFlow,
+      });
+
+      render(<CompletionFlowPage />);
+
+      expect(mockInitializeFlow).toHaveBeenCalledWith(baseDeadline, true);
     });
 
     it('should redirect to home if deadline not found', () => {
@@ -315,8 +246,7 @@ describe('CompletionFlowPage - Integration Tests', () => {
         flowState: null,
         initializeFlow: mockInitializeFlow,
         updateStep: mockUpdateStep,
-        updateCompletionData: mockUpdateCompletionData,
-        updateReviewData: jest.fn(),
+        setNeedsReview: mockSetNeedsReview,
         resetFlow: mockResetFlow,
       });
 
@@ -327,52 +257,24 @@ describe('CompletionFlowPage - Integration Tests', () => {
     });
   });
 
-  describe('Complete Flow - Happy Path (with progress check)', () => {
-    it('should complete full flow: celebration → progress check → mark all pages → review question → complete', async () => {
+  describe('Complete Flow - Happy Path', () => {
+    it('should complete full flow: celebration → review question → complete', async () => {
       const { rerender } = render(<CompletionFlowPage />);
 
       expect(screen.getByTestId('celebration-screen')).toBeTruthy();
 
       fireEvent.press(screen.getByTestId('continue-button'));
 
-      await waitFor(() => {
-        expect(screen.getByTestId('progress-check-dialog')).toBeTruthy();
-      });
-
-      fireEvent.press(screen.getByTestId('mark-all-pages-button'));
-
-      expect(mockUpdateProgress).toHaveBeenCalledWith(
-        {
-          deadlineId: 'deadline-123',
-          currentProgress: 300,
-        },
-        expect.objectContaining({
-          onSuccess: expect.any(Function),
-          onError: expect.any(Function),
-        })
-      );
-
-      const onSuccess = mockUpdateProgress.mock.calls[0][1].onSuccess;
-      onSuccess();
-
-      expect(mockUpdateCompletionData).toHaveBeenCalledWith({
-        finishedAllPages: true,
-      });
       expect(mockUpdateStep).toHaveBeenCalledWith('review_question');
 
       mockUseCompletionFlow.mockReturnValue({
         flowState: {
           ...baseFlowState,
           currentStep: 'review_question',
-          completionData: {
-            ...baseFlowState.completionData,
-            finishedAllPages: true,
-          },
         },
         initializeFlow: mockInitializeFlow,
         updateStep: mockUpdateStep,
-        updateCompletionData: mockUpdateCompletionData,
-        updateReviewData: jest.fn(),
+        setNeedsReview: mockSetNeedsReview,
         resetFlow: mockResetFlow,
       });
 
@@ -382,6 +284,7 @@ describe('CompletionFlowPage - Integration Tests', () => {
 
       fireEvent.press(screen.getByTestId('needs-review-no-button'));
 
+      expect(mockSetNeedsReview).toHaveBeenCalledWith(false);
       expect(mockCompleteDeadline).toHaveBeenCalledWith(
         'deadline-123',
         expect.any(Function),
@@ -408,8 +311,7 @@ describe('CompletionFlowPage - Integration Tests', () => {
         },
         initializeFlow: mockInitializeFlow,
         updateStep: mockUpdateStep,
-        updateCompletionData: mockUpdateCompletionData,
-        updateReviewData: jest.fn(),
+        setNeedsReview: mockSetNeedsReview,
         resetFlow: mockResetFlow,
       });
 
@@ -419,85 +321,54 @@ describe('CompletionFlowPage - Integration Tests', () => {
 
       fireEvent.press(screen.getByTestId('needs-review-yes-button'));
 
-      expect(mockUpdateCompletionData).toHaveBeenCalledWith({
-        needsReview: true,
-      });
+      expect(mockSetNeedsReview).toHaveBeenCalledWith(true);
       expect(mockRouter.push).toHaveBeenCalledWith(
         '/deadline/deadline-123/review-form'
       );
     });
   });
 
-  describe('Complete Flow - Skip Progress Check (already at 100%)', () => {
-    it('should skip progress check when currentProgress equals totalPages', async () => {
+  describe('DNF Flow', () => {
+    it('should start at review_question when initialized with isDNF=true', () => {
       mockUseCompletionFlow.mockReturnValue({
         flowState: {
           ...baseFlowState,
-          bookData: {
-            ...baseFlowState.bookData,
-            currentProgress: 300,
-            totalPages: 300,
-          },
+          currentStep: 'review_question',
+          isDNF: true,
         },
         initializeFlow: mockInitializeFlow,
         updateStep: mockUpdateStep,
-        updateCompletionData: mockUpdateCompletionData,
-        updateReviewData: jest.fn(),
+        setNeedsReview: mockSetNeedsReview,
         resetFlow: mockResetFlow,
       });
 
       render(<CompletionFlowPage />);
 
-      fireEvent.press(screen.getByTestId('continue-button'));
-
-      expect(mockUpdateStep).toHaveBeenCalledWith('review_question');
-      expect(screen.queryByTestId('progress-check-dialog')).toBeNull();
+      expect(screen.getByTestId('review-question-screen')).toBeTruthy();
+      expect(screen.queryByTestId('celebration-screen')).toBeNull();
     });
-  });
 
-  describe('DNF Flow', () => {
-    it('should complete DNF flow: celebration → progress check → did not finish → DNF confirm → review question → DNF', async () => {
-      const { rerender } = render(<CompletionFlowPage />);
-
-      fireEvent.press(screen.getByTestId('continue-button'));
-
-      await waitFor(() => {
-        expect(screen.getByTestId('progress-check-dialog')).toBeTruthy();
+    it('should complete DNF flow when navigated with skipToReview', async () => {
+      mockUseLocalSearchParams.mockReturnValue({
+        id: 'deadline-123',
+        skipToReview: 'true',
       });
-
-      fireEvent.press(screen.getByTestId('did-not-finish-button'));
-
-      expect(mockUpdateCompletionData).toHaveBeenCalledWith({
-        finishedAllPages: false,
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('dnf-confirm-dialog')).toBeTruthy();
-      });
-
-      fireEvent.press(screen.getByTestId('move-to-dnf-button'));
-
-      expect(mockUpdateCompletionData).toHaveBeenCalledWith({ isDNF: true });
-      expect(mockUpdateStep).toHaveBeenCalledWith('review_question');
 
       mockUseCompletionFlow.mockReturnValue({
         flowState: {
           ...baseFlowState,
           currentStep: 'review_question',
-          completionData: {
-            ...baseFlowState.completionData,
-            finishedAllPages: false,
-            isDNF: true,
-          },
+          isDNF: true,
         },
         initializeFlow: mockInitializeFlow,
         updateStep: mockUpdateStep,
-        updateCompletionData: mockUpdateCompletionData,
-        updateReviewData: jest.fn(),
+        setNeedsReview: mockSetNeedsReview,
         resetFlow: mockResetFlow,
       });
 
-      rerender(<CompletionFlowPage />);
+      render(<CompletionFlowPage />);
+
+      expect(screen.getByTestId('review-question-screen')).toBeTruthy();
 
       fireEvent.press(screen.getByTestId('needs-review-no-button'));
 
@@ -518,66 +389,9 @@ describe('CompletionFlowPage - Integration Tests', () => {
       expect(mockResetFlow).toHaveBeenCalled();
       expect(mockRouter.replace).toHaveBeenCalledWith('/');
     });
-
-    it('should allow going back from DNF confirmation to celebration', async () => {
-      const { rerender } = render(<CompletionFlowPage />);
-
-      fireEvent.press(screen.getByTestId('continue-button'));
-
-      await waitFor(() => {
-        expect(screen.getByTestId('progress-check-dialog')).toBeTruthy();
-      });
-
-      fireEvent.press(screen.getByTestId('did-not-finish-button'));
-
-      await waitFor(() => {
-        expect(screen.getByTestId('dnf-confirm-dialog')).toBeTruthy();
-      });
-
-      fireEvent.press(screen.getByTestId('go-back-button'));
-
-      expect(mockUpdateStep).toHaveBeenCalledWith('celebration');
-
-      mockUseCompletionFlow.mockReturnValue({
-        flowState: {
-          ...baseFlowState,
-          currentStep: 'celebration',
-        },
-        initializeFlow: mockInitializeFlow,
-        updateStep: mockUpdateStep,
-        updateCompletionData: mockUpdateCompletionData,
-        updateReviewData: jest.fn(),
-        resetFlow: mockResetFlow,
-      });
-
-      rerender(<CompletionFlowPage />);
-
-      expect(screen.getByTestId('celebration-screen')).toBeTruthy();
-    });
   });
 
   describe('Error Handling', () => {
-    it('should show error toast when progress update fails', async () => {
-      render(<CompletionFlowPage />);
-
-      fireEvent.press(screen.getByTestId('continue-button'));
-
-      await waitFor(() => {
-        expect(screen.getByTestId('progress-check-dialog')).toBeTruthy();
-      });
-
-      fireEvent.press(screen.getByTestId('mark-all-pages-button'));
-
-      const onError = mockUpdateProgress.mock.calls[0][1].onError;
-      onError(new Error('Network error'));
-
-      expect(mockToast.show).toHaveBeenCalledWith({
-        type: 'error',
-        text1: 'Failed to update progress',
-        text2: 'Network error',
-      });
-    });
-
     it('should show error toast when complete deadline fails', async () => {
       mockUseCompletionFlow.mockReturnValue({
         flowState: {
@@ -586,8 +400,7 @@ describe('CompletionFlowPage - Integration Tests', () => {
         },
         initializeFlow: mockInitializeFlow,
         updateStep: mockUpdateStep,
-        updateCompletionData: mockUpdateCompletionData,
-        updateReviewData: jest.fn(),
+        setNeedsReview: mockSetNeedsReview,
         resetFlow: mockResetFlow,
       });
 
@@ -610,15 +423,11 @@ describe('CompletionFlowPage - Integration Tests', () => {
         flowState: {
           ...baseFlowState,
           currentStep: 'review_question',
-          completionData: {
-            ...baseFlowState.completionData,
-            isDNF: true,
-          },
+          isDNF: true,
         },
         initializeFlow: mockInitializeFlow,
         updateStep: mockUpdateStep,
-        updateCompletionData: mockUpdateCompletionData,
-        updateReviewData: jest.fn(),
+        setNeedsReview: mockSetNeedsReview,
         resetFlow: mockResetFlow,
       });
 
@@ -638,65 +447,6 @@ describe('CompletionFlowPage - Integration Tests', () => {
   });
 
   describe('State Management', () => {
-    it('should properly update completion data throughout the flow', async () => {
-      render(<CompletionFlowPage />);
-
-      fireEvent.press(screen.getByTestId('continue-button'));
-
-      await waitFor(() => {
-        expect(screen.getByTestId('progress-check-dialog')).toBeTruthy();
-      });
-
-      fireEvent.press(screen.getByTestId('mark-all-pages-button'));
-
-      const onSuccess = mockUpdateProgress.mock.calls[0][1].onSuccess;
-      onSuccess();
-
-      expect(mockUpdateCompletionData).toHaveBeenCalledWith({
-        finishedAllPages: true,
-      });
-
-      mockUseCompletionFlow.mockReturnValue({
-        flowState: {
-          ...baseFlowState,
-          currentStep: 'review_question',
-          completionData: {
-            ...baseFlowState.completionData,
-            finishedAllPages: true,
-          },
-        },
-        initializeFlow: mockInitializeFlow,
-        updateStep: mockUpdateStep,
-        updateCompletionData: mockUpdateCompletionData,
-        updateReviewData: jest.fn(),
-        resetFlow: mockResetFlow,
-      });
-    });
-
-    it('should track isDNF flag correctly in DNF flow', async () => {
-      render(<CompletionFlowPage />);
-
-      fireEvent.press(screen.getByTestId('continue-button'));
-
-      await waitFor(() => {
-        expect(screen.getByTestId('progress-check-dialog')).toBeTruthy();
-      });
-
-      fireEvent.press(screen.getByTestId('did-not-finish-button'));
-
-      expect(mockUpdateCompletionData).toHaveBeenCalledWith({
-        finishedAllPages: false,
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('dnf-confirm-dialog')).toBeTruthy();
-      });
-
-      fireEvent.press(screen.getByTestId('move-to-dnf-button'));
-
-      expect(mockUpdateCompletionData).toHaveBeenCalledWith({ isDNF: true });
-    });
-
     it('should reset flow after successful completion', async () => {
       mockUseCompletionFlow.mockReturnValue({
         flowState: {
@@ -705,8 +455,7 @@ describe('CompletionFlowPage - Integration Tests', () => {
         },
         initializeFlow: mockInitializeFlow,
         updateStep: mockUpdateStep,
-        updateCompletionData: mockUpdateCompletionData,
-        updateReviewData: jest.fn(),
+        setNeedsReview: mockSetNeedsReview,
         resetFlow: mockResetFlow,
       });
 

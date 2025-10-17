@@ -145,6 +145,7 @@ npm run genTypes
 4. Run linting and type checking: `npm run lint && npm run typecheck`
 5. Add tests for new functionality
 6. Update documentation as needed
+7. **Never call services directly** - Always use React Query hooks
 
 ## Architecture
 
@@ -161,6 +162,27 @@ The application uses a service layer pattern for all business logic and database
 - Review tracking system documentation
 - Service API reference with examples
 - Error handling patterns
+
+**CRITICAL PATTERN:** Services must NEVER be called directly from components. All service calls must go through React Query hooks to ensure proper cache management. See [REACT_QUERY_VIOLATIONS.md](./REACT_QUERY_VIOLATIONS.md) for detailed guidelines.
+
+### Data Flow Pattern
+
+```
+Component → Custom Hook (useQuery/useMutation) → Service → Supabase
+                    ↓
+              React Query Cache
+                    ↓
+              Automatic Invalidation
+                    ↓
+            UI Auto-Updates
+```
+
+**Key principles:**
+- Components use custom hooks (e.g., `useDeadlines`, `useBooks`)
+- Hooks wrap service calls in `useQuery` or `useMutation`
+- Mutations invalidate relevant queries in `onSuccess`
+- Cache ensures data consistency across the app
+- Exception: Auth-related code (AuthProvider, auth components)
 
 ## Performance
 

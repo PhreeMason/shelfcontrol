@@ -98,6 +98,8 @@ export const Colors = {
     impossible: '#c8696e',
     pending: '#9CA3AF',
     didNotFinish: '#9CA3AF',
+    backupPurple: '#d8b4fe',
+    backupPink: '#f9a8d4',
   },
   dark: {
     // Text colors
@@ -193,6 +195,8 @@ export const Colors = {
     impossible: '#c8696e',
     pending: '#9CA3AF',
     didNotFinish: '#9CA3AF',
+    backupPurple: '#d8b4fe',
+    backupPink: '#f9a8d4',
   },
 };
 
@@ -232,7 +236,7 @@ export const Typography = {
   headlineLarge: {
     fontSize: 32,
     lineHeight: 36,
-    fontWeight: '600' as const,
+    fontWeight: '800' as const,
     fontFamily: FontFamily.semiBold,
   },
   headlineMedium: {
@@ -323,7 +327,7 @@ export const Spacing = {
 export const BorderRadius = {
   none: 0,
   sm: 4,
-  md: 8,
+  md: 10,
   lg: 12,
   xl: 16,
   xxl: 24,

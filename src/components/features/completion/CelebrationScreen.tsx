@@ -124,20 +124,11 @@ const CelebrationScreen: React.FC<CelebrationScreenProps> = ({ onContinue }) => 
 
       {showContent && (
         <>
-          <Animated.Text
-            style={[styles.emoji, { transform: [{ scale: emojiScale }] }]}
-          >
-            🎉
-          </Animated.Text>
-
-          <Animated.View style={{ opacity: titleOpacity }}>
+          <Animated.View style={{ opacity: titleOpacity, }}>
             <ThemedText variant="headline" style={styles.headline}>
               You finished!
             </ThemedText>
-            <ThemedText variant="title" style={styles.bookTitle}>
-              {flowState.bookData.title}
-            </ThemedText>
-            <View style={styles.quoteContainer}>
+            <View style={[styles.quoteContainer, styles.mediumShadow]}>
               <ThemedText variant="secondary" style={styles.quoteText}>
                 {randomQuote}
               </ThemedText>
@@ -154,7 +145,7 @@ const CelebrationScreen: React.FC<CelebrationScreenProps> = ({ onContinue }) => 
             ]}
           >
             {fetchedBook?.cover_image_url ? (
-              <View style={styles.bookCoverContainer}>
+              <View style={[styles.bookCoverContainer, styles.mediumShadow]}>
                 <Image
                   source={{ uri: fetchedBook.cover_image_url }}
                   style={[styles.bookCover, { height: coverHeight }]}
@@ -173,10 +164,10 @@ const CelebrationScreen: React.FC<CelebrationScreenProps> = ({ onContinue }) => 
 
           <Animated.View style={[styles.statsContainer, { opacity: statsOpacity }]}>
             <ThemedText variant="secondary" style={styles.statsText}>
-              Started: {formatDate(startDate)} • Finished: {formatDate(finishDate)}
+              {formatDate(startDate)} → {formatDate(finishDate)}
             </ThemedText>
             <ThemedText variant="secondary" style={styles.statsText}>
-              Time: {duration} {duration === 1 ? 'day' : 'days'} •{' '}
+              {duration} {duration === 1 ? 'day' : 'days'} •{' '}
               {bookData.currentProgress}/{bookData.totalPages} pages read
             </ThemedText>
           </Animated.View>
@@ -187,6 +178,7 @@ const CelebrationScreen: React.FC<CelebrationScreenProps> = ({ onContinue }) => 
               variant="primary"
               onPress={onContinue}
               style={styles.button}
+              hapticsOnPress
             />
           </Animated.View>
         </>
@@ -201,41 +193,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-  },
-  emoji: {
-    fontSize: 80,
-    marginBottom: 20,
+    gap: 30,
   },
   headline: {
     textAlign: 'center',
-    marginBottom: 8,
-  },
-  bookTitle: {
-    textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 10,
   },
   quoteContainer: {
-    backgroundColor: '#FFF7ED',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#ffd5809d',
-    marginBottom: 20,
+    borderColor: '#FFF7ED',
   },
   quoteText: {
     textAlign: 'center',
     fontSize: 16,
     lineHeight: 22,
+    fontWeight: '700',
     color: Colors.light.darkPurple,
   },
   coverContainer: {
     width: '80%',
-    marginBottom: 30,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bookCoverContainer: {
-    position: 'relative',
+  mediumShadow: {
     shadowColor: '#0000006b',
     shadowOffset: {
       width: 2,
@@ -244,6 +227,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 8,
+  },
+  bookCoverContainer: {
+    position: 'relative',
   },
   bookCover: {
     width: 200,
@@ -281,12 +267,11 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     alignItems: 'center',
-    marginBottom: 40,
   },
   statsText: {
     textAlign: 'center',
     color: Colors.light.textSecondary,
-    marginVertical: 4,
+    fontSize: 16,
   },
   buttonContainer: {
     width: '100%',

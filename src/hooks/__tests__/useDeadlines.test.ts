@@ -261,8 +261,9 @@ describe('useDeadlines hooks', () => {
         expect.objectContaining({
           mutationKey: ['updateDeadlineProgress'],
           mutationFn: expect.any(Function),
-          onSuccess: expect.any(Function),
+          onMutate: expect.any(Function),
           onError: expect.any(Function),
+          onSettled: expect.any(Function),
         })
       );
     });

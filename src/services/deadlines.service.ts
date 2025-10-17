@@ -10,6 +10,26 @@ import {
 import { activityService } from './activity.service';
 import { booksService } from './books.service';
 
+const sortByCreatedAtAsc = <T extends { created_at?: string | null }>(
+  array: T[]
+): T[] => {
+  return [...array].sort((a, b) => {
+    const dateA = new Date(a.created_at || 0).getTime();
+    const dateB = new Date(b.created_at || 0).getTime();
+    return dateA - dateB;
+  });
+};
+
+const sortDeadlineArrays = (
+  deadline: ReadingDeadlineWithProgress
+): ReadingDeadlineWithProgress => {
+  return {
+    ...deadline,
+    progress: deadline.progress ? sortByCreatedAtAsc(deadline.progress) : [],
+    status: deadline.status ? sortByCreatedAtAsc(deadline.status) : [],
+  };
+};
+
 export interface AddDeadlineParams {
   deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
   progressDetails: ReadingDeadlineProgressInsert;
@@ -213,16 +233,17 @@ class DeadlinesService {
     if (status) {
       const { error: statusError } = await supabase
         .from(DB_TABLES.DEADLINE_STATUS)
-        .update({
+        .insert({
+          deadline_id: deadlineDetails.id!,
           status: status as 'reading' | 'pending',
+          created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
-        .eq('deadline_id', deadlineDetails.id!)
         .select()
         .single();
 
       if (statusError) {
-        console.warn('Failed to update status:', statusError);
+        console.warn('Failed to insert status:', statusError);
       }
     }
 
@@ -315,6 +336,8 @@ class DeadlinesService {
 
   /**
    * Get all deadlines for a user
+   *
+   * @returns Deadlines with status and progress arrays ordered by created_at asc (oldest first, newest last)
    */
   async getDeadlines(userId: string): Promise<ReadingDeadlineWithProgress[]> {
     const { data, error } = await supabase
@@ -324,13 +347,15 @@ class DeadlinesService {
         *,
         progress:deadline_progress(*),
         status:deadline_status(*)
-      `
+      ` as any
       )
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data as ReadingDeadlineWithProgress[];
+
+    const deadlines = data as unknown as ReadingDeadlineWithProgress[];
+    return deadlines.map(sortDeadlineArrays);
   }
 
   /**
@@ -352,6 +377,8 @@ class DeadlinesService {
 
   /**
    * Get a single deadline by ID
+   *
+   * @returns Deadline with status and progress arrays ordered by created_at asc (oldest first, newest last)
    */
   async getDeadlineById(
     userId: string,
@@ -364,7 +391,7 @@ class DeadlinesService {
         *,
         progress:deadline_progress(*),
         status:deadline_status(*)
-      `
+      ` as any
       )
       .eq('user_id', userId)
       .eq('id', deadlineId)
@@ -377,14 +404,16 @@ class DeadlinesService {
       throw error;
     }
 
-    return data as ReadingDeadlineWithProgress;
+    const deadline = data as unknown as ReadingDeadlineWithProgress;
+    return sortDeadlineArrays(deadline);
   }
 
   /**
    * Updates deadline status with validation of allowed transitions
    *
    * Status is stored in the deadline_status table (NOT on deadlines table directly).
-   * All status queries and updates require a JOIN with deadline_status.
+   * All status queries require a JOIN with deadline_status.
+   * Status changes INSERT new records to maintain complete history.
    *
    * Valid transitions are enforced to maintain data integrity:
    * - pending → reading
@@ -397,7 +426,7 @@ class DeadlinesService {
    * @param deadlineId - ID of the deadline to update
    * @param status - New status to transition to
    *
-   * @returns Updated deadline with joined status and progress data
+   * @returns Updated deadline with status and progress arrays ordered by created_at asc (oldest first, newest last)
    *
    * @throws {Error} "Deadline not found or access denied" - Invalid deadline or wrong user
    * @throws {Error} "Invalid status transition from {current} to {new}" - Blocked transition
@@ -417,8 +446,10 @@ class DeadlinesService {
    * @remarks
    * Critical architecture notes:
    * - Status field lives in deadline_status table, accessed via deadline_id foreign key
-   * - Updates occur in deadline_status table: `UPDATE deadline_status SET status = ... WHERE deadline_id = ...`
+   * - Status changes INSERT new records to maintain complete history
    * - Query pattern: `SELECT d.*, ds.status FROM deadlines d JOIN deadline_status ds ON d.id = ds.deadline_id`
+   * - Latest status determined by most recent created_at timestamp
+   * - Status and progress arrays ordered by created_at asc (oldest first, newest last, last index is current)
    * - Overdue is NOT a status - it's a runtime calculation: `status = 'reading' AND deadline_date < CURRENT_DATE`
    * - 'paused' status was removed from the system and migrated to 'reading'
    * - Logs activity event for status changes
@@ -441,8 +472,8 @@ class DeadlinesService {
       .select(
         `
         id,
-        status:deadline_status(status)
-      `
+        status:deadline_status(status,created_at)
+      ` as any
       )
       .eq('id', deadlineId)
       .eq('user_id', userId)
@@ -452,10 +483,11 @@ class DeadlinesService {
       throw new Error('Deadline not found or access denied');
     }
 
-    const currentStatusArray = deadline.status as { status: string }[];
+    const deadlineData = deadline as unknown as { id: string; status: { status: string }[] };
+    const currentStatusArray = deadlineData.status;
     const currentStatusData =
       currentStatusArray && currentStatusArray.length > 0
-        ? currentStatusArray[0]
+        ? currentStatusArray[currentStatusArray.length - 1]
         : null;
 
     if (currentStatusData && currentStatusData.status) {
@@ -471,11 +503,12 @@ class DeadlinesService {
 
     const { error } = await supabase
       .from(DB_TABLES.DEADLINE_STATUS)
-      .update({
+      .insert({
+        deadline_id: deadlineId,
         status,
+        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
-      .eq('deadline_id', deadlineId)
       .select()
       .single();
 
@@ -493,13 +526,13 @@ class DeadlinesService {
         *,
         progress:deadline_progress(*),
         status:deadline_status(*)
-      `
+      ` as any
       )
       .eq('id', deadlineId)
       .eq('user_id', userId)
       .single();
 
-    return updatedDeadline;
+    return sortDeadlineArrays(updatedDeadline as unknown as ReadingDeadlineWithProgress);
   }
 
   /**
@@ -569,6 +602,8 @@ class DeadlinesService {
 
   /**
    * Get deadline history for calendar view
+   *
+   * @returns Deadlines with status and progress arrays ordered by created_at asc (oldest first, newest last)
    */
   async getDeadlineHistory(params: DeadlineHistoryParams) {
     const { userId, formats } = params;
@@ -597,7 +632,7 @@ class DeadlinesService {
           status,
           created_at
         )
-      `
+      ` as any
       )
       .eq('user_id', userId)
       .order('created_at', { ascending: false });

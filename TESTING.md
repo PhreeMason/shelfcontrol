@@ -6,10 +6,10 @@ This document provides comprehensive guidance for understanding and extending th
 
 - **Target Coverage**: 80% overall test coverage
 - **Current Status**: **1600 tests passing** across 50 test suites
-  - **Statements**: 74.94% (target: 70% ✅)
-  - **Branches**: 71% (target: 70% ✅)
-  - **Functions**: 68.93% (target: 70% ❌ - close!)
-  - **Lines**: 75.09% (target: 70% ✅)
+  - **Statements**: 74.94% (target: 70% PASS)
+  - **Branches**: 71% (target: 70% PASS)
+  - **Functions**: 68.93% (target: 70% FAIL - close!)
+  - **Lines**: 75.09% (target: 70% PASS)
 - **Testing Philosophy**: Test internal business logic separately from components for better maintainability
 
 ## Project Structure
@@ -234,69 +234,69 @@ jest.mock('@/components/shared/LinearProgressBar', () => {
 ## Implementation Phases
 
 ### Phase 1: Foundation & Utilities (Complete)
-- [x] Test infrastructure setup
-- [x] Utility function extraction and testing
-- [x] Component function extraction
-- [x] Coverage: `dateUtils.ts` (100%), `formUtils.ts` (100%)
+- [DONE] Test infrastructure setup
+- [DONE] Utility function extraction and testing
+- [DONE] Component function extraction
+- [DONE] Coverage: `dateUtils.ts` (100%), `formUtils.ts` (100%)
 
 ### Phase 2: Services & Hooks (Complete)
-- [x] Core utility functions tested: `stringUtils.ts`, `deadlineCalculations.ts`, `audiobookTimeUtils.ts`
-- [x] Service layer testing: `books.service.ts` (100%), `auth.service.ts` (92.3%)
-- [x] Comprehensive mock strategies for Supabase and external dependencies
-- [x] Error handling and edge case coverage
-- [x] **Total Coverage**: 10.26% overall (up from 1.36%)
+- [DONE] Core utility functions tested: `stringUtils.ts`, `deadlineCalculations.ts`, `audiobookTimeUtils.ts`
+- [DONE] Service layer testing: `books.service.ts` (100%), `auth.service.ts` (92.3%)
+- [DONE] Comprehensive mock strategies for Supabase and external dependencies
+- [DONE] Error handling and edge case coverage
+- [DONE] **Total Coverage**: 10.26% overall (up from 1.36%)
 
 ### Phase 3: High-Impact Services (Complete)
-- [x] **Major achievement**: `deadlines.service.ts` tested (91.66% coverage, was 0%)
-- [x] `profile.service.ts` partially tested (35.8% coverage)
-- [x] `storage.service.ts` tested (54% coverage)
-- [x] **Total Coverage**: 16.46% overall (60% improvement from Phase 2!)
-- [x] **Test Count**: 251 tests passing (up from 197)
+- [DONE] **Major achievement**: `deadlines.service.ts` tested (91.66% coverage, was 0%)
+- [DONE] `profile.service.ts` partially tested (35.8% coverage)
+- [DONE] `storage.service.ts` tested (54% coverage)
+- [DONE] **Total Coverage**: 16.46% overall (60% improvement from Phase 2!)
+- [DONE] **Test Count**: 251 tests passing (up from 197)
 
 ### Phase 4: React Query Hooks & Advanced Utilities (Complete)
-- [x] **Major breakthrough**: React Query hooks testing implementation
-- [x] `useDeadlines.ts` hook tested with comprehensive mutation coverage
-- [x] New utility functions: `typeaheadUtils.ts` (100%), `dateNormalization.ts` (85%)
-- [x] Component integration: `SourceTypeaheadInput.test.tsx`
-- [x] **Total Coverage**: 37.88% overall (130% improvement from Phase 3!)
-- [x] **Test Count**: 549 tests passing (118% increase from Phase 3)
+- [DONE] **Major breakthrough**: React Query hooks testing implementation
+- [DONE] `useDeadlines.ts` hook tested with comprehensive mutation coverage
+- [DONE] New utility functions: `typeaheadUtils.ts` (100%), `dateNormalization.ts` (85%)
+- [DONE] Component integration: `SourceTypeaheadInput.test.tsx`
+- [DONE] **Total Coverage**: 37.88% overall (130% improvement from Phase 3!)
+- [DONE] **Test Count**: 549 tests passing (118% increase from Phase 3)
 ### Completed Services:
 ```typescript
-// ✅ services/books.service.ts (100% coverage)
-- ✅ searchBooks() - with empty query handling
-- ✅ fetchBookData() - with error handling
-- ✅ fetchBookById() - with database integration
-- ✅ getBookByApiId() - with PGRST116 error handling
-- ✅ insertBook() - with format type validation
+// PASS services/books.service.ts (100% coverage)
+- PASS searchBooks() - with empty query handling
+- PASS fetchBookData() - with error handling
+- PASS fetchBookById() - with database integration
+- PASS getBookByApiId() - with PGRST116 error handling
+- PASS insertBook() - with format type validation
 
-// ✅ services/auth.service.ts (92.3% coverage)
-- ✅ signIn() - with credential validation
-- ✅ signOut() - with error handling
-- ✅ signUp() - with user data options
-- ✅ resetPassword() - with email validation
-- ✅ updatePassword() - with auth state management
-- ✅ Apple sign-in integration
+// PASS services/auth.service.ts (92.3% coverage)
+- PASS signIn() - with credential validation
+- PASS signOut() - with error handling
+- PASS signUp() - with user data options
+- PASS resetPassword() - with email validation
+- PASS updatePassword() - with auth state management
+- PASS Apple sign-in integration
 
-// ✅ services/deadlines.service.ts (91.66% coverage) - NEW!
-- ✅ addDeadline() - with complex book linking logic
-- ✅ updateDeadline() - with progress management
-- ✅ updateDeadlineProgress() - progress tracking
-- ✅ getDeadlines() - data fetching with joins
-- ✅ getArchivedDeadlines() - filtering and sorting
-- ✅ getDeadlineById() - PGRST116 error handling
-- ✅ updateDeadlineStatus() - status transitions
-- ✅ completeDeadline() - complex completion logic
-- ✅ deleteFutureProgress() - progress cleanup
-- ✅ getDeadlineHistory() - with format filtering
+// PASS services/deadlines.service.ts (91.66% coverage) - NEW!
+- PASS addDeadline() - with complex book linking logic
+- PASS updateDeadline() - with progress management
+- PASS updateDeadlineProgress() - progress tracking
+- PASS getDeadlines() - data fetching with joins
+- PASS getArchivedDeadlines() - filtering and sorting
+- PASS getDeadlineById() - PGRST116 error handling
+- PASS updateDeadlineStatus() - status transitions
+- PASS completeDeadline() - complex completion logic
+- PASS deleteFutureProgress() - progress cleanup
+- PASS getDeadlineHistory() - with format filtering
 
-// ✅ services/profile.service.ts (35.8% coverage) - NEW!
-- ✅ getProfile() - with error handling
-- ✅ updateProfile() - data validation
-- ✅ updateProfileFromApple() - Apple ID integration
+// PASS services/profile.service.ts (35.8% coverage) - NEW!
+- PASS getProfile() - with error handling
+- PASS updateProfile() - data validation
+- PASS updateProfileFromApple() - Apple ID integration
 
-// ✅ services/storage.service.ts (54% coverage) - NEW!
-- ✅ setupAvatarsBucket() - bucket creation/update
-- ✅ testAvatarsBucket() - accessibility testing
+// PASS services/storage.service.ts (54% coverage) - NEW!
+- PASS setupAvatarsBucket() - bucket creation/update
+- PASS testAvatarsBucket() - accessibility testing
 ```
 
 ### Still Need Testing:
@@ -311,20 +311,20 @@ jest.mock('@/components/shared/LinearProgressBar', () => {
 - useFetchBookData()
 - useFetchBookById()
 
-// ✅ hooks/useDeadlines.ts (Tested) - NEW!
-- ✅ useDeadlines() - with React Query integration
-- ✅ useAddDeadline() - mutation testing
-- ✅ useUpdateDeadline() - update operations
-- ✅ useUpdateDeadlineProgress() - progress tracking
-- ✅ useCompleteDeadline() - completion logic
-- ✅ useStartReadingDeadline() - status transition to 'reading'
-- ✅ useSetAsideDeadline() - status transition to 'set_aside'
-- ✅ useReactivateDeadline() - status transition back to 'reading'
+// PASS hooks/useDeadlines.ts (Tested) - NEW!
+- PASS useDeadlines() - with React Query integration
+- PASS useAddDeadline() - mutation testing
+- PASS useUpdateDeadline() - update operations
+- PASS useUpdateDeadlineProgress() - progress tracking
+- PASS useCompleteDeadline() - completion logic
+- PASS useStartReadingDeadline() - status transition to 'reading'
+- PASS useSetAsideDeadline() - status transition to 'set_aside'
+- PASS useReactivateDeadline() - status transition back to 'reading'
 
-// ✅ hooks/useDeadlineSources.ts (Tested) - NEW!
-- ✅ Source fetching and caching logic
-- ✅ Default source handling
-- ✅ User authentication integration
+// PASS hooks/useDeadlineSources.ts (Tested) - NEW!
+- PASS Source fetching and caching logic
+- PASS Default source handling
+- PASS User authentication integration
 
 // hooks/useReadingHistory.ts (0% coverage) - Still needed
 - Reading history management
@@ -335,35 +335,35 @@ jest.mock('@/components/shared/LinearProgressBar', () => {
 
 **Completed Components:**
 ```typescript
-// ✅ utils/deadlineFormUtils.ts (93.2% coverage) - NEW!
-- ✅ getFormDefaultValues() - mode-specific defaults
-- ✅ initializeFormState() - state initialization
-- ✅ prepareDeadlineDetailsFromForm() - form data transformation
-- ✅ prepareProgressDetailsFromForm() - progress data preparation
-- ✅ populateFormFromParams() - URL parameter parsing
-- ✅ populateFormFromDeadline() - existing deadline population
-- ✅ createFormatChangeHandler() - format switching with memory
-- ✅ createPriorityChangeHandler() - priority selection
-- ✅ createDateChangeHandler() - date picker logic
-- ✅ createFormNavigation() - step navigation and validation
-- ✅ handleBookSelection() - book selection workflow
-- ✅ createSuccessToast() / createErrorToast() - notifications
+// PASS utils/deadlineFormUtils.ts (93.2% coverage) - NEW!
+- PASS getFormDefaultValues() - mode-specific defaults
+- PASS initializeFormState() - state initialization
+- PASS prepareDeadlineDetailsFromForm() - form data transformation
+- PASS prepareProgressDetailsFromForm() - progress data preparation
+- PASS populateFormFromParams() - URL parameter parsing
+- PASS populateFormFromDeadline() - existing deadline population
+- PASS createFormatChangeHandler() - format switching with memory
+- PASS createPriorityChangeHandler() - priority selection
+- PASS createDateChangeHandler() - date picker logic
+- PASS createFormNavigation() - step navigation and validation
+- PASS handleBookSelection() - book selection workflow
+- PASS createSuccessToast() / createErrorToast() - notifications
 
-// ✅ utils/deadlineFormSchema.ts (100% coverage) - NEW!
-- ✅ All field validation rules tested
-- ✅ Conditional validation (audio vs non-audio formats)
-- ✅ Error message validation
-- ✅ Edge cases and boundary conditions
-- ✅ Complete form validation scenarios
+// PASS utils/deadlineFormSchema.ts (100% coverage) - NEW!
+- PASS All field validation rules tested
+- PASS Conditional validation (audio vs non-audio formats)
+- PASS Error message validation
+- PASS Edge cases and boundary conditions
+- PASS Complete form validation scenarios
 
-// ✅ components/forms/DeadlineFormStep1.test.tsx (100% coverage) - NEW!
-- ✅ 39 comprehensive integration tests implemented
-- ✅ Jest module resolution issues RESOLVED
-- ✅ Strategic mocking without complex form libraries
-- ✅ Complete book search and selection workflow testing
+// PASS components/forms/DeadlineFormStep1.test.tsx (100% coverage) - NEW!
+- PASS 39 comprehensive integration tests implemented
+- PASS Jest module resolution issues RESOLVED
+- PASS Strategic mocking without complex form libraries
+- PASS Complete book search and selection workflow testing
 
-// 🔧 Bug Fix: components/forms/DeadlineFormStep1.tsx
-- 🔧 Fixed null safety: item.metadata?.authors (line 162)
+// FIXED Bug Fix: components/forms/DeadlineFormStep1.tsx
+- FIXED Fixed null safety: item.metadata?.authors (line 162)
 ```
 
 **Phase 5 Results:**
@@ -659,19 +659,19 @@ The Jest module resolution issues that were blocking `DeadlineFormStep1.test.tsx
 ## Phase 6 Summary: Progress Update Component Testing Success
 
 ### What Was Accomplished
-- ✅ **102+ new tests** for progress update functionality
-- ✅ **100% coverage** on `progressUpdateUtils.ts` (49 comprehensive tests)
-- ✅ **95.65% coverage** on `progressUpdateSchema.ts` (35 validation tests)
-- ✅ **Complete component testing** for ProgressHeader, ProgressStats, QuickActionButtons (56 tests)
-- ✅ **Integration testing** for ReadingProgressUpdate component (18 tests)
-- ✅ **45%+ overall project coverage** achieved
-- ✅ **All lint and TypeScript checks passing**
-- ✅ **Zero hanging or timeout issues resolved**
+- PASS **102+ new tests** for progress update functionality
+- PASS **100% coverage** on `progressUpdateUtils.ts` (49 comprehensive tests)
+- PASS **95.65% coverage** on `progressUpdateSchema.ts` (35 validation tests)
+- PASS **Complete component testing** for ProgressHeader, ProgressStats, QuickActionButtons (56 tests)
+- PASS **Integration testing** for ReadingProgressUpdate component (18 tests)
+- PASS **45%+ overall project coverage** achieved
+- PASS **All lint and TypeScript checks passing**
+- PASS **Zero hanging or timeout issues resolved**
 
 ### Key Testing Breakthrough: Component Testing Strategy
 **MAJOR DISCOVERY**: Complex react-hook-form mocking causes unreliable tests. Solution implemented:
 
-#### ❌ **Avoid This Pattern** (Causes Hangs/Failures):
+#### AVOID THIS PATTERN (Causes Hangs/Failures):
 ```typescript
 // DON'T: Complex react-hook-form mocking
 jest.mock('react-hook-form', () => ({
@@ -683,7 +683,7 @@ jest.mock('react-hook-form', () => ({
 }));
 ```
 
-#### ✅ **Use This Pattern Instead** (Reliable):
+#### USE THIS PATTERN INSTEAD (Reliable):
 ```typescript
 // DO: Focus on integration behavior, mock child components
 jest.mock('@/components/progress/ProgressInput', () => {
@@ -704,12 +704,12 @@ describe('ReadingProgressUpdate', () => {
 
 ### Component Testing Best Practices Established
 
-#### 1. **Integration Over Unit Testing**
+#### 1. Integration Over Unit Testing
 - Test how components integrate with hooks/providers
 - Validate rendering behavior and state changes
 - Avoid testing internal form mechanics directly
 
-#### 2. **Strategic Mocking Approach**
+#### 2. Strategic Mocking Approach
 ```typescript
 // Mock child components to isolate testing
 jest.mock('@/components/child/Component', () => {
@@ -723,7 +723,7 @@ jest.mock('@/components/child/Component', () => {
 expect(screen.getByTestId('mock-component')).toBeTruthy();
 ```
 
-#### 3. **Test Structure for Components**
+#### 3. Test Structure for Components
 ```typescript
 describe('ComponentName', () => {
   describe('Component Structure', () => {
@@ -745,11 +745,11 @@ describe('ComponentName', () => {
 ```
 
 ### Testing Philosophy Reinforced
-1. **Utility-First Testing**: Extract complex business logic to pure functions (100% success rate)
-2. **Component Integration Testing**: Focus on behavior and integration points, not internal mechanics
-3. **Strategic Mocking**: Mock external dependencies and child components, avoid complex form mocking
-4. **Error Handling**: Test both success and error paths thoroughly
-5. **Type Safety**: Maintain strict TypeScript compliance in all test code
+1. Utility-First Testing: Extract complex business logic to pure functions (100% success rate)
+2. Component Integration Testing: Focus on behavior and integration points, not internal mechanics
+3. Strategic Mocking: Mock external dependencies and child components, avoid complex form mocking
+4. Error Handling: Test both success and error paths thoroughly
+5. Type Safety: Maintain strict TypeScript compliance in all test code
 
 ### Problem Resolution: React Hook Form Testing
 **Root Cause**: Complex form libraries like react-hook-form are difficult to mock accurately, leading to:
@@ -758,9 +758,9 @@ describe('ComponentName', () => {
 - Complex mock setup that's hard to maintain
 
 **Solution**: Extract business logic to utilities and test component integration separately:
-- ✅ **Business Logic**: Test via utility functions (reliable, fast)
-- ✅ **Component Integration**: Test hook calls, rendering, props (maintainable)
-- ✅ **Form Validation**: Test via schema utilities (comprehensive)
+- PASS Business Logic: Test via utility functions (reliable, fast)
+- PASS Component Integration: Test hook calls, rendering, props (maintainable)
+- PASS Form Validation: Test via schema utilities (comprehensive)
 
 ### Coverage Improvements
 - **Before Phase 6**: 43.66% overall coverage
@@ -778,7 +778,7 @@ describe('ComponentName', () => {
 
 ## Critical Lessons Learned (Phase 6-7)
 
-### 🚨 **React Hook Form Testing - AVOID COMPLEX MOCKING**
+### CRITICAL: React Hook Form Testing - AVOID COMPLEX MOCKING
 **Problem**: Attempting to mock `react-hook-form` with `useForm`, `handleSubmit`, and form validation causes:
 - Tests that hang indefinitely
 - Timeout failures (1000ms+)
@@ -787,13 +787,13 @@ describe('ComponentName', () => {
 
 **Solution**: Extract business logic and test integration separately:
 ```typescript
-// ✅ GOOD: Extract business logic to utilities
+// RECOMMENDED: Extract business logic to utilities
 export const calculateNewProgress = (currentValue, increment, currentProgress, totalQuantity) => {
   // Pure function - easy to test
   return Math.max(0, Math.min(totalQuantity, currentValue + increment));
 };
 
-// ✅ GOOD: Test component integration, not form internals
+// RECOMMENDED: Test component integration, not form internals
 describe('MyFormComponent', () => {
   it('should call required hooks', () => {
     render(<MyFormComponent />);
@@ -807,7 +807,7 @@ describe('MyFormComponent', () => {
 });
 ```
 
-### ⚡ **Fast, Reliable Test Pattern**
+### Fast, Reliable Test Pattern
 **Components with react-hook-form**: Use integration testing approach
 1. **Mock child components** that contain the actual form inputs
 2. **Test hook integrations** (mutations, providers)
@@ -825,7 +825,7 @@ describe('mySchema', () => {
 });
 ```
 
-### 📝 **Component Test Template**
+### Component Test Template
 Use this proven template for component testing:
 
 ```typescript
@@ -867,18 +867,18 @@ describe('MyComponent', () => {
 ```
 
 This approach provides:
-- ⚡ **Fast execution** (no complex mocking overhead)
-- 🔒 **Reliable results** (no hanging or timeout issues)
-- 🔧 **Easy maintenance** (simple, focused tests)
-- 📈 **Good coverage** (tests real integration behavior)
+- Fast execution (no complex mocking overhead)
+- Reliable results (no hanging or timeout issues)
+- Easy maintenance (simple, focused tests)
+- Good coverage (tests real integration behavior)
 
-### 🎯 **Phase 7 Success Pattern: DeadlineFormStep1 Resolution**
+### Phase 7 Success Pattern: DeadlineFormStep1 Resolution
 
-**PROVEN SOLUTION** for complex component testing with hooks and forms:
+PROVEN SOLUTION for complex component testing with hooks and forms:
 
-#### 1. **Extract Business Logic First**
+#### 1. Extract Business Logic First
 ```typescript
-// ✅ Move complex logic to pure utility functions
+// RECOMMENDED: Move complex logic to pure utility functions
 export const transformBookSearchResult = (fullBookData, apiId) => {
   return {
     id: fullBookData.id || '',
@@ -889,7 +889,7 @@ export const transformBookSearchResult = (fullBookData, apiId) => {
   };
 };
 
-// ✅ Test utilities separately (fast, reliable)
+// RECOMMENDED: Test utilities separately (fast, reliable)
 describe('transformBookSearchResult', () => {
   it('should transform book data correctly', () => {
     const result = transformBookSearchResult(mockData, 'api-123');
@@ -898,9 +898,9 @@ describe('transformBookSearchResult', () => {
 });
 ```
 
-#### 2. **Strategic Component Mocking**
+#### 2. Strategic Component Mocking
 ```typescript
-// ✅ Mock child components with testIDs
+// RECOMMENDED: Mock child components with testIDs
 jest.mock('@/components/themed', () => ({
   ThemedText: ({ children, ...props }: any) => {
     const React = require('react');
@@ -916,9 +916,9 @@ jest.mock('@/components/ui/IconSymbol', () => ({
 }));
 ```
 
-#### 3. **Clean Hook Integration Testing**
+#### 3. Clean Hook Integration Testing
 ```typescript
-// ✅ Test hook calls and integration
+// RECOMMENDED: Test hook calls and integration
 describe('Hook Integration', () => {
   it('should call useSearchBooksList with debounced query', async () => {
     jest.useFakeTimers();
@@ -938,9 +938,9 @@ describe('Hook Integration', () => {
 });
 ```
 
-#### 4. **Component Structure Testing**
+#### 4. Component Structure Testing
 ```typescript
-// ✅ Test rendering and UI behavior
+// RECOMMENDED: Test rendering and UI behavior
 describe('Component Structure', () => {
   it('should render all main UI elements', () => {
     render(<DeadlineFormStep1 {...props} />);
@@ -952,23 +952,23 @@ describe('Component Structure', () => {
 });
 ```
 
-#### 5. **Results Achieved**
+#### 5. Results Achieved
 - **68 tests** passing reliably in < 1 second
 - **Zero hanging or timeout issues**
 - **100% TypeScript compliance**
 - **Complete workflow coverage**
 - **Jest module resolution issues PERMANENTLY RESOLVED**
 
-### 📚 **Reusable Pattern for Future Components**
+### Reusable Pattern for Future Components
 
-**Use this exact approach for any complex component with:**
+Use this exact approach for any complex component with:
 - React Query hooks
 - Form interactions (but not react-hook-form directly)
 - Multiple child components
 - Async operations
 - State management
 
-**Template Structure:**
+Template Structure:
 1. Extract business logic → `utils/componentNameUtils.ts`
 2. Test utilities first → `utils/__tests__/componentNameUtils.test.ts`
 3. Mock child components with testIDs
@@ -976,24 +976,24 @@ describe('Component Structure', () => {
 5. Test user interactions and workflows
 6. Test error scenarios and edge cases
 
-This pattern is now **proven successful** and should be the **standard approach** for all future component testing.
+This pattern is now proven successful and should be the standard approach for all future component testing.
 
 ## Phase 9: DeadlineFormStep2 Component Testing (Complete)
 
-**SUCCESS**: Applied proven testing patterns from DeadlineFormStep1 to successfully test DeadlineFormStep2.
+SUCCESS: Applied proven testing patterns from DeadlineFormStep1 to successfully test DeadlineFormStep2.
 
 ### Completed Component Testing
 ```typescript
-// ✅ components/forms/__tests__/DeadlineFormStep2.test.tsx (50 tests)
-- ✅ Component Structure (11 tests) - All UI elements render correctly
-- ✅ Hook Integration (3 tests) - useWatch hook properly tested
-- ✅ Format-Based Conditional Rendering (6 tests) - Dynamic labels and inputs
-- ✅ Book Linking Indicators (4 tests) - Shows when book_id present
-- ✅ Edit Mode Behavior (3 tests) - Format selector disabled appropriately
-- ✅ Props Handling (8 tests) - All callbacks and props verified
-- ✅ Input Field Configuration (7 tests) - Correct testIDs and types
-- ✅ Dynamic Label/Placeholder (4 tests) - Updates based on format
-- ✅ Integration Scenarios (4 tests) - Complete workflows tested
+// PASS components/forms/__tests__/DeadlineFormStep2.test.tsx (50 tests)
+- PASS Component Structure (11 tests) - All UI elements render correctly
+- PASS Hook Integration (3 tests) - useWatch hook properly tested
+- PASS Format-Based Conditional Rendering (6 tests) - Dynamic labels and inputs
+- PASS Book Linking Indicators (4 tests) - Shows when book_id present
+- PASS Edit Mode Behavior (3 tests) - Format selector disabled appropriately
+- PASS Props Handling (8 tests) - All callbacks and props verified
+- PASS Input Field Configuration (7 tests) - Correct testIDs and types
+- PASS Dynamic Label/Placeholder (4 tests) - Updates based on format
+- PASS Integration Scenarios (4 tests) - Complete workflows tested
 ```
 
 ### Key Testing Patterns for Form Components with Multiple Inputs
@@ -1057,7 +1057,7 @@ it('should show indicators when book_id is present', () => {
 
   render(<Component {...defaultProps} />);
 
-  expect(screen.getAllByText('✓ Linked from library')).toHaveLength(2);
+  expect(screen.getAllByText('[LINKED] Linked from library')).toHaveLength(2);
 });
 ```
 
@@ -1119,13 +1119,13 @@ This approach has proven successful for both DeadlineFormStep1 and DeadlineFormS
 
 ## Animation Testing Best Practices
 
-### ⚠️ **CRITICAL: Avoid Slow Animation Tests**
+### CRITICAL: Avoid Slow Animation Tests
 
 **Problem**: Animation tests using `jest.requireActual('react-native-reanimated/mock')` can be significantly slower than necessary.
 
 **Solution**: Use minimal mocking strategy with timer controls.
 
-#### ❌ **Slow Pattern** (Avoid):
+#### AVOID - Slow Pattern:
 ```typescript
 // DON'T: Test animations without timer control - this can be slow and unreliable
 it('should trigger animation', () => {
@@ -1137,7 +1137,7 @@ it('should trigger animation', () => {
 });
 ```
 
-#### ✅ **Optimized Pattern** (Use This):
+#### RECOMMENDED - Optimized Pattern:
 ```typescript
 // DO: Use existing reanimated mock but add timer controls for animation tests
 jest.mock('react-native-reanimated', () => ({
@@ -1200,15 +1200,15 @@ describe('Component with Animations', () => {
 
 ## Phase 10: DeadlineFormContainer Testing - MAJOR BREAKTHROUGH (Complete)
 
-**MASSIVE SUCCESS**: Achieved 80%+ coverage across ALL metrics with revolutionary minimal mocking strategy!
+MASSIVE SUCCESS: Achieved 80%+ coverage across ALL metrics with revolutionary minimal mocking strategy!
 
 ### Final Coverage Achievement
 ```typescript
-// ✅ components/forms/__tests__/DeadlineFormContainer.test.tsx (48 comprehensive tests)
-- **91.86% Statements** (target: 80%+ ✅)
-- **81.08% Branches** (target: 80%+ ✅)
-- **81.25% Functions** (target: 80%+ ✅)
-- **93.97% Lines** (target: 80%+ ✅)
+// PASS components/forms/__tests__/DeadlineFormContainer.test.tsx (48 comprehensive tests)
+- 91.86% Statements (target: 80%+ PASS)
+- 81.08% Branches (target: 80%+ PASS)
+- 81.25% Functions (target: 80%+ PASS)
+- 93.97% Lines (target: 80%+ PASS)
 ```
 
 ### GROUNDBREAKING DISCOVERY: Minimal Mocking Strategy
@@ -1217,7 +1217,7 @@ describe('Component with Animations', () => {
 
 **The Solution**: Revolutionary "minimal mocking" strategy that tests real component behavior:
 
-#### ❌ **Old Approach** (Brittle, Unreliable):
+#### AVOID - Old Approach (Brittle, Unreliable):
 ```typescript
 // DON'T: Mock entire components
 jest.mock('../DeadlineFormStep2', () => MockComponent);
@@ -1226,7 +1226,7 @@ jest.mock('../DeadlineFormStep3', () => MockComponent);
 // This creates fake tests that don't represent real behavior
 ```
 
-#### ✅ **NEW BREAKTHROUGH APPROACH** (Reliable, Authentic):
+#### RECOMMENDED - NEW BREAKTHROUGH APPROACH (Reliable, Authentic):
 ```typescript
 // DO: Mock only leaf components (UI boundaries)
 jest.mock('@/components/shared/CustomInput', () => MockTextInput);
@@ -1245,22 +1245,22 @@ jest.mock('@react-native-community/datetimepicker', () => MockDatePicker);
 4. **Proven minimal mocking works** for complex multi-step forms
 
 **Why This Is Revolutionary**:
-- ✅ **Tests real behavior** instead of mock approximations
-- ✅ **Form validation works naturally** with actual Zod schema
-- ✅ **More reliable tests** that don't break with implementation changes
-- ✅ **Better coverage** with authentic integration testing
-- ✅ **Minimal mocking** - only external boundaries, not business logic
+- PASS Tests real behavior instead of mock approximations
+- PASS Form validation works naturally with actual Zod schema
+- PASS More reliable tests that don't break with implementation changes
+- PASS Better coverage with authentic integration testing
+- PASS Minimal mocking - only external boundaries, not business logic
 
 ### The Minimal Mocking Philosophy
 
-**Core Principle**: Mock external boundaries, test real business logic.
+Core Principle: Mock external boundaries, test real business logic.
 
-**What to Mock**:
+What to Mock:
 - Platform components (`DateTimePicker`, `KeyboardAwareScrollView`)
 - External services (`Supabase`, `expo-router`)
 - UI leaf components (`TextInput`, basic selectors)
 
-**What NOT to Mock**:
+What NOT to Mock:
 - Business logic components (`DeadlineFormStep2`, `DeadlineFormStep3`)
 - Form validation (`react-hook-form`, `Zod`)
 - State management (`useState`, `useEffect`)
@@ -1284,7 +1284,7 @@ jest.mock('../FormatSelector', () => {
         React.createElement(TouchableOpacity, {
           testID: 'format-physical',
           onPress: () => onFormatChange?.('physical')
-        }, React.createElement('Text', null, `Physical ${selectedFormat === 'physical' ? '✓' : ''}`))
+        }, React.createElement('Text', null, `Physical ${selectedFormat === 'physical' ? '[X]' : ''}`))
       ]);
     }
   };
@@ -1305,7 +1305,7 @@ describe('ComplexFormComponent', () => {
 
       // Interact with REAL form components
       fireEvent.press(screen.getByTestId('format-physical'));
-      expect(screen.getByText(/Physical ✓/)).toBeTruthy();
+      expect(screen.getByText(/Physical \[X\]/)).toBeTruthy();
 
       // Fill REAL form inputs
       fireEvent.changeText(screen.getByTestId('input-title'), 'Test');
@@ -1322,12 +1322,12 @@ describe('ComplexFormComponent', () => {
 
 ### Results Achieved
 
-**Before Minimal Mocking**:
+Before Minimal Mocking:
 - 75.58% statements, 78.31% lines
 - Brittle mocks that break with changes
 - Tests that don't represent real behavior
 
-**After Minimal Mocking**:
+After Minimal Mocking:
 - **91.86% statements, 93.97% lines**
 - Reliable tests that work with real components
 - **80%+ coverage across ALL metrics**
@@ -1335,7 +1335,7 @@ describe('ComplexFormComponent', () => {
 
 ### Coverage Strategy for 80%+ Achievement
 
-**Target the Specific Uncovered Functions**:
+Target the Specific Uncovered Functions:
 
 1. **Function Coverage Gap**: The main blocker was functions at 62.5%
 2. **Solution**: Create tests that specifically trigger function execution:
@@ -1400,7 +1400,7 @@ describe('ComplexComponent', () => {
 
 ### Impact on Project
 
-**Phase 10 Results**:
+Phase 10 Results:
 - **48 comprehensive tests** for DeadlineFormContainer functionality
 - **80%+ coverage across ALL metrics** achieved for the first time
 - **Minimal mocking strategy proven** for complex React Native forms
@@ -1410,7 +1410,7 @@ describe('ComplexComponent', () => {
 **Strategic Value**:
 This breakthrough establishes the **gold standard** for testing complex React Native components. The minimal mocking strategy is now the **proven approach** for achieving high coverage while maintaining test reliability and authenticity.
 
-**Future Applications**:
+Future Applications:
 Use this exact pattern for any complex component with:
 - Multi-step forms
 - React Query hooks
@@ -1418,7 +1418,7 @@ Use this exact pattern for any complex component with:
 - Multiple child components
 - Async operations
 
-**Template Structure** (Proven Successful):
+Template Structure (Proven Successful):
 1. Extract business logic → `utils/componentNameUtils.ts`
 2. Test utilities first → `utils/__tests__/componentNameUtils.test.ts`
 3. Mock only external boundaries (platform components, services)
@@ -1426,7 +1426,7 @@ Use this exact pattern for any complex component with:
 5. Target specific coverage gaps with strategic tests
 6. Verify error scenarios and edge cases
 
-This pattern is now **proven successful** and should be the **standard approach** for all future complex component testing to achieve 80%+ coverage.
+This pattern is now proven successful and should be the standard approach for all future complex component testing to achieve 80%+ coverage.
 
 ## Phase 11: Deadline Actions Modal Testing - Pragmatic Approach (Complete)
 
@@ -1435,9 +1435,9 @@ This pattern is now **proven successful** and should be the **standard approach*
 
 ### What Was Accomplished
 
-**Core Test Improvements** ✅
+**Core Test Improvements** PASS
 ```typescript
-// ✅ Fixed failing tests and added integration coverage
+// PASS Fixed failing tests and added integration coverage
 - Fixed 5 failing DeadlineActionSheet tests
 - Added testIDs to DeadlineActionSheet for better test reliability
 - Added 5 chevron feature tests to ActionSheet (32→37 tests, 100% branch coverage)
@@ -1445,7 +1445,7 @@ This pattern is now **proven successful** and should be the **standard approach*
 - Total: 58 new/fixed tests
 ```
 
-**Coverage Results** ✅
+**Coverage Results** PASS
 ```
 Component                    Statements  Branches  Functions  Lines
 ─────────────────────────────────────────────────────────────────────
@@ -1476,41 +1476,41 @@ FilterSheet                    88.46%    84.44%      92.30%    91.42%
 
 **Why This Was The Right Call**:
 
-1. **Integration Coverage Sufficient** ✅
+1. Integration Coverage Sufficient PASS
    - Modal triggering tested via DeadlineActionSheet integration tests
    - Modal state management verified through real user flows
 
-2. **Business Logic Already Tested** ✅
+2. Business Logic Already Tested PASS
    - All complex calculations in `deadlineModalUtils.ts` have 100% coverage
    - Pure functions extracted and thoroughly tested
 
-3. **Mocking Challenges** ⚠️
+3. Mocking Challenges WARNING
    - `react-native-reanimated` mocking conflicts with minimal mocking philosophy
    - Complex Animated.View mocking creates brittle, unreliable tests
    - Would require elaborate mock infrastructure that provides limited value
 
-4. **Type Safety** ✅
+4. Type Safety PASS
    - TypeScript provides compile-time guarantees for props and data flow
    - Modal interfaces enforced through type system
 
-5. **E2E Testing Strategy** ✅
+5. E2E Testing Strategy PASS
    - Maestro tests cover actual user flows through these modals
    - Manual testing validates UI and animations
 
 ### Testing Strategy for Modal Components
 
-**✅ What We Test**:
+TESTED - What We Test:
 - **Business Logic**: 100% coverage of utility functions (deadlineModalUtils)
 - **Integration Points**: Modal triggering and state management (DeadlineActionSheet)
 - **User Actions**: Button presses, status changes, data flow
 - **UI Components**: ActionSheet behavior with real user interactions
 
-**⏸️ What We Skip**:
+SKIPPED - What We Skip:
 - **Complex Component Mocking**: Avoided elaborate Animated.View mocking
 - **Presentation Testing**: Visual layout and styling (better suited for visual regression)
 - **Modal Internals**: Detailed unit tests of modal component structure
 
-**🚀 Where We Rely On**:
+WHERE WE RELY ON:
 - **TypeScript**: Type safety for props, data structures, and API contracts
 - **Integration Tests**: Higher-level tests that exercise real component interactions
 - **E2E Tests**: Maestro flows that test actual user journeys
@@ -1518,11 +1518,11 @@ FilterSheet                    88.46%    84.44%      92.30%    91.42%
 
 ### Key Learnings for Future Developers
 
-#### 1. React Native Reanimated Mocking Challenges ⚠️
+#### 1. React Native Reanimated Mocking Challenges WARNING
 
 **Problem Encountered**:
 ```typescript
-// ❌ This approach causes component test failures
+// AVOID - This approach causes component test failures
 jest.mock('react-native-reanimated', () => ({
   ...jest.requireActual('react-native-reanimated/mock'),
   // Complex Animated.View mocking required for modals
@@ -1532,7 +1532,7 @@ jest.mock('react-native-reanimated', () => ({
 
 **Solution Applied**:
 ```typescript
-// ✅ Test integration points instead of animation internals
+// RECOMMENDED - Test integration points instead of animation internals
 describe('DeadlineActionSheet', () => {
   it('should open CompleteDeadlineModal when action pressed', () => {
     render(<DeadlineActionSheet deadline={mockDeadline} visible={true} onClose={jest.fn()} />);
@@ -1544,7 +1544,7 @@ describe('DeadlineActionSheet', () => {
 });
 ```
 
-#### 2. Pragmatic Coverage Strategy 📊
+#### 2. Pragmatic Coverage Strategy
 
 **Before**: Aimed for 80% coverage across ALL components (estimated 15-22 hours)
 **After**: Achieved 75-100% coverage on high-value components (actual 3-4 hours)
@@ -1559,11 +1559,11 @@ describe('DeadlineActionSheet', () => {
 - **Medium Value**: Component behavior, edge cases
 - **Low Value**: Presentation, styling, complex mocking scenarios
 
-#### 3. Integration Over Exhaustive Unit Testing 🎯
+#### 3. Integration Over Exhaustive Unit Testing
 
 **Pattern That Works**:
 ```typescript
-// ✅ Test modal triggering and state management
+// RECOMMENDED - Test modal triggering and state management
 describe('DeadlineActionSheet Integration', () => {
   it('should trigger CompleteDeadlineModal from action list', () => {
     render(<DeadlineActionSheet deadline={mockDeadline} visible={true} onClose={jest.fn()} />);
@@ -1579,7 +1579,7 @@ describe('DeadlineActionSheet Integration', () => {
 
 **Pattern That Doesn't Work**:
 ```typescript
-// ❌ Exhaustive modal component unit tests with complex mocking
+// AVOID - Exhaustive modal component unit tests with complex mocking
 describe('CompleteDeadlineModal', () => {
   // 20+ tests trying to mock Animated.View, withSpring, etc.
   // Brittle, unreliable, time-consuming to maintain
@@ -1641,35 +1641,35 @@ npm run typecheck && npm run lint
 **Testing Priority Framework**:
 ```typescript
 // HIGH PRIORITY: Always test these
-✅ Business logic utilities (target: 100% coverage)
-✅ Integration points (modal triggering, data flow)
-✅ User action handling (button presses, form submissions)
+HIGH Business logic utilities (target: 100% coverage)
+HIGH Integration points (modal triggering, data flow)
+HIGH User action handling (button presses, form submissions)
 
 // MEDIUM PRIORITY: Test when practical
-⚠️ Component behavior (rendering, state changes)
-⚠️ Edge cases (error handling, boundary conditions)
+MEDIUM Component behavior (rendering, state changes)
+MEDIUM Edge cases (error handling, boundary conditions)
 
 // LOW PRIORITY: Often better tested through other means
-❌ Presentation logic (layout, styling)
-❌ Animation mechanics (use E2E or manual testing)
-❌ Complex mocking scenarios (diminishing returns)
+LOW Presentation logic (layout, styling)
+LOW Animation mechanics (use E2E or manual testing)
+LOW Complex mocking scenarios (diminishing returns)
 ```
 
 ### Success Metrics
 
 **Achieved**:
-- ✅ Fixed all failing tests (5 tests)
-- ✅ Added 53 new tests (chevron + integration)
-- ✅ Achieved 75-100% coverage on tested components
-- ✅ All business logic tested (deadlineModalUtils: 100%)
-- ✅ Improved component testability (testIDs added)
-- ✅ All lint and TypeScript checks passing
-- ✅ Zero hanging or timeout issues
+- PASS Fixed all failing tests (5 tests)
+- PASS Added 53 new tests (chevron + integration)
+- PASS Achieved 75-100% coverage on tested components
+- PASS All business logic tested (deadlineModalUtils: 100%)
+- PASS Improved component testability (testIDs added)
+- PASS All lint and TypeScript checks passing
+- PASS Zero hanging or timeout issues
 
 **Deferred (Acceptable Trade-offs)**:
-- ⏸️ Comprehensive modal component unit tests
-- ⏸️ Complex react-native-reanimated mocking
-- ⏸️ Exhaustive presentation layer testing
+- DEFERRED Comprehensive modal component unit tests
+- DEFERRED Complex react-native-reanimated mocking
+- DEFERRED Exhaustive presentation layer testing
 
 **Outcome**: High-value test coverage achieved with minimal mocking, following project philosophy of testing real behavior over implementation details. Modal components adequately covered through integration tests, type safety, and E2E testing strategy.
 
@@ -1689,23 +1689,23 @@ This document serves as a reference for understanding the testing decisions made
 This phase builds on established patterns from previous phases:
 
 **From Phase 10** (Minimal Mocking):
-- ✅ Mock external boundaries, not business logic
-- ✅ Test real component behavior when possible
-- ✅ Extract complex logic to utilities first
+- PASS Mock external boundaries, not business logic
+- PASS Test real component behavior when possible
+- PASS Extract complex logic to utilities first
 
 **From Phase 6-7** (React Hook Form):
-- ✅ Avoid complex form library mocking
-- ✅ Focus on integration over unit testing
-- ✅ Test component behavior, not internal mechanics
+- PASS Avoid complex form library mocking
+- PASS Focus on integration over unit testing
+- PASS Test component behavior, not internal mechanics
 
 **New Contribution**:
-- ✅ Pragmatic approach to animated component testing
-- ✅ Clear guidelines for when to defer testing
-- ✅ Integration testing as sufficient coverage for modals
+- PASS Pragmatic approach to animated component testing
+- PASS Clear guidelines for when to defer testing
+- PASS Integration testing as sufficient coverage for modals
 
 ### Phase 11 Summary
 
-**Status**: ✅ Completed with pragmatic approach
+**Status**: COMPLETED with pragmatic approach
 
 **What We Accomplished**:
 - Fixed all failing tests and added valuable integration coverage

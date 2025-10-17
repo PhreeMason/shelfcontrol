@@ -49,14 +49,19 @@ export interface PaceStatusResult {
   progressPercentage: number;
 }
 
-// Extract deadline status determination
 export function getDeadlineStatus(
   deadline: ReadingDeadlineWithProgress
 ): DeadlineStatus {
-  const latestStatus =
-    deadline.status && deadline.status.length > 0
-      ? (deadline.status[deadline.status.length - 1].status ?? 'reading')
-      : 'reading';
+  let latestStatus = 'reading';
+
+  if (deadline.status && deadline.status.length > 0) {
+    const sortedStatuses = [...deadline.status].sort((a, b) => {
+      const dateA = new Date(a.created_at || 0).getTime();
+      const dateB = new Date(b.created_at || 0).getTime();
+      return dateB - dateA;
+    });
+    latestStatus = sortedStatuses[0].status ?? 'reading';
+  }
 
   const isCompleted = latestStatus === 'complete';
   const isDnf = latestStatus === 'did_not_finish';
@@ -173,34 +178,50 @@ export function calculateProgressForToday(
   return Math.max(0, currentProgress - progressAtStartOfDay);
 }
 
+export function formatLowFrequency(daysPerUnit: number, unitName: string): string {
+  if (daysPerUnit === 7) {
+    return `1 ${unitName}/week`;
+  }
+  if (daysPerUnit === 14) {
+    return `1 ${unitName}/2 weeks`;
+  }
+  if (daysPerUnit === 21) {
+    return `1 ${unitName}/3 weeks`;
+  }
+  if (daysPerUnit === 28) {
+    return `1 ${unitName}/month`;
+  }
+  if (daysPerUnit > 7 && daysPerUnit % 7 === 0) {
+    const weeks = daysPerUnit / 7;
+    return `1 ${unitName}/${weeks} weeks`;
+  }
+  return `1 ${unitName} every ${daysPerUnit} days`;
+}
+
+export function formatTimeDisplay(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const mins = Math.round(minutes % 60);
+  if (hours > 0) {
+    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+  }
+  return `${mins} minute${mins !== 1 ? 's' : ''}`;
+}
+
 // Format audio units per day
 export function formatAudioUnitsPerDay(
   units: number,
   actualUnitsPerDay: number,
   daysLeft: number
 ): string {
-  // For audio: if less than 1 minute per day, show in week format when appropriate
-  if (actualUnitsPerDay < 1 && daysLeft > 0) {
-    const daysPerMinute = Math.round(1 / actualUnitsPerDay);
-
-    // Convert to weeks if it makes sense
-    if (daysPerMinute === 7) {
-      return '1 minute/week';
-    } else if (daysPerMinute === 14) {
-      return '1 minute/2 weeks';
-    } else if (daysPerMinute === 21) {
-      return '1 minute/3 weeks';
-    } else if (daysPerMinute === 28) {
-      return '1 minute/month';
-    } else if (daysPerMinute > 7 && daysPerMinute % 7 === 0) {
-      const weeks = daysPerMinute / 7;
-      return `1 minute/${weeks} weeks`;
-    }
-
-    return `1 minute every ${daysPerMinute} days`;
+  if (actualUnitsPerDay === 0) {
+    return '0 minutes/day needed';
   }
 
-  // For >= 1 minute/day, use standard formatting
+  if (actualUnitsPerDay < 1 && daysLeft > 0) {
+    const daysPerMinute = Math.round(1 / actualUnitsPerDay);
+    return formatLowFrequency(daysPerMinute, 'minute');
+  }
+
   const hours = Math.floor(units / 60);
   const minutes = Math.round(units % 60);
   if (hours > 0) {
@@ -218,28 +239,15 @@ export function formatBookUnitsPerDay(
   daysLeft: number,
   format: 'physical' | 'eBook'
 ): string {
-  // For physical/eBook: if less than 1 page per day, show in week format when appropriate
-  if (actualUnitsPerDay < 1 && daysLeft > 0) {
-    const daysPerPage = Math.round(1 / actualUnitsPerDay);
-
-    // Convert to weeks if it makes sense
-    if (daysPerPage === 7) {
-      return '1 page/week';
-    } else if (daysPerPage === 14) {
-      return '1 page/2 weeks';
-    } else if (daysPerPage === 21) {
-      return '1 page/3 weeks';
-    } else if (daysPerPage === 28) {
-      return '1 page/month';
-    } else if (daysPerPage > 7 && daysPerPage % 7 === 0) {
-      const weeks = daysPerPage / 7;
-      return `1 page/${weeks} weeks`;
-    }
-
-    return `1 page every ${daysPerPage} days`;
+  if (actualUnitsPerDay === 0) {
+    return '0 pages/day needed';
   }
 
-  // For >= 1 page/day, use standard formatting
+  if (actualUnitsPerDay < 1 && daysLeft > 0) {
+    const daysPerPage = Math.round(1 / actualUnitsPerDay);
+    return formatLowFrequency(daysPerPage, 'page');
+  }
+
   const unit = getUnitForFormat(format);
   return `${Math.round(units)} ${unit}/day needed`;
 }
@@ -270,7 +278,16 @@ export function formatUnitsPerDayForDisplay(
   remaining: number,
   daysLeft: number
 ): string {
-  // Calculate the actual decimal value for precise formatting
+  if (format === BOOK_FORMAT.AUDIO) {
+    if (remaining > 0 && remaining <= 30) {
+      return `Just ${formatTimeDisplay(remaining)} left`;
+    }
+  } else {
+    if (remaining > 0 && remaining <= 5) {
+      return `Just ${remaining} page${remaining !== 1 ? 's' : ''} left`;
+    }
+  }
+
   const actualUnitsPerDay = daysLeft > 0 ? remaining / daysLeft : units;
 
   if (format === BOOK_FORMAT.AUDIO) {

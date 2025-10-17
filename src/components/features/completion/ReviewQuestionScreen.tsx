@@ -1,10 +1,12 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
-import { Colors, Spacing } from '@/constants/Colors';
+import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
+import { useTheme } from '@/hooks/useTheme';
 import { useCompletionFlow } from '@/providers/CompletionFlowProvider';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 interface ReviewQuestionScreenProps {
   onContinue: (needsReview: boolean) => void;
@@ -16,10 +18,9 @@ const ReviewQuestionScreen: React.FC<ReviewQuestionScreenProps> = ({
   const { flowState } = useCompletionFlow();
   const { data: fetchedBook } = useFetchBookById(flowState?.bookData.bookId || '');
   const [needsReview, setNeedsReview] = useState<boolean | null>(null);
-
+  const { colors, typography } = useTheme();
+  
   if (!flowState) return null;
-
-  const { bookData } = flowState;
 
   const handleContinue = () => {
     if (needsReview !== null) {
@@ -28,13 +29,14 @@ const ReviewQuestionScreen: React.FC<ReviewQuestionScreenProps> = ({
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedView style={styles.content}>
-        <ThemedText variant="title" style={styles.title}>
-          Does this book need a review?
-        </ThemedText>
-
-        <ThemedView style={styles.bookInfo}>
+    <LinearGradient
+      colors={['#F5F1EA', colors.accent, colors.primary]}
+      start={{ x: 1, y: 1 }}
+      end={{ x: 0, y: 0 }}
+      style={styles.container}
+    >
+      <View style={styles.content}>
+        <View style={[styles.bookInfo, styles.mediumShadow]}>
           {fetchedBook?.cover_image_url ? (
             <Image
               source={{ uri: fetchedBook.cover_image_url }}
@@ -46,62 +48,61 @@ const ReviewQuestionScreen: React.FC<ReviewQuestionScreenProps> = ({
               <ThemedText style={styles.coverEmoji}>📖</ThemedText>
             </ThemedView>
           )}
-          <ThemedText variant="default" style={styles.bookTitle}>
-            {bookData.title}
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedView style={styles.optionsContainer}>
-          <TouchableOpacity
-            style={[
-              styles.radioOption,
-              needsReview === true && styles.radioOptionSelected,
-            ]}
+        </View>
+        <ThemedText variant="title" style={[styles.title, { ...typography.headlineMedium }]}>
+          Need to post reviews?
+        </ThemedText>
+        <ThemedText variant="default" style={[styles.title, { marginBottom: Spacing.xl }]}>
+          We can help you track them
+        </ThemedText>
+        <View style={styles.buttonContainer}>
+          <Pressable
             onPress={() => setNeedsReview(true)}
+            style={[
+              styles.selectionButton,
+              needsReview === true && styles.selectionButtonSelected,
+            ]}
           >
-            <ThemedView
+            <ThemedText
               style={[
-                styles.radioCircle,
-                needsReview === true && styles.radioCircleSelected,
+                styles.selectionButtonText,
+                needsReview === true && styles.selectionButtonTextSelected,
               ]}
             >
-              {needsReview === true && <ThemedView style={styles.radioInner} />}
-            </ThemedView>
-            <ThemedText variant="default" style={styles.radioLabel}>
               Yes, I need to post reviews
             </ThemedText>
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
-            style={[
-              styles.radioOption,
-              needsReview === false && styles.radioOptionSelected,
-            ]}
+          <Pressable
             onPress={() => setNeedsReview(false)}
+            style={[
+              styles.selectionButton,
+              needsReview === false && styles.selectionButtonSelected,
+            ]}
           >
-            <ThemedView
+            <ThemedText
               style={[
-                styles.radioCircle,
-                needsReview === false && styles.radioCircleSelected,
+                styles.selectionButtonText,
+                needsReview === false && styles.selectionButtonTextSelected,
               ]}
             >
-              {needsReview === false && <ThemedView style={styles.radioInner} />}
-            </ThemedView>
-            <ThemedText variant="default" style={styles.radioLabel}>
               No, I'm all done
             </ThemedText>
-          </TouchableOpacity>
-        </ThemedView>
+          </Pressable>
+        </View>
 
-        <ThemedButton
-          title="Continue →"
-          variant="primary"
-          onPress={handleContinue}
-          disabled={needsReview === null}
-          style={styles.button}
-        />
-      </ThemedView>
-    </ThemedView>
+        {needsReview !== null && (
+          <View style={styles.confirmationContainer}>
+            <ThemedButton
+              title="Continue →"
+              variant="primary"
+              onPress={handleContinue}
+              style={styles.button}
+            />
+          </View>
+        )}
+      </View>
+    </LinearGradient>
   );
 };
 
@@ -117,11 +118,20 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    marginBottom: Spacing.xl,
   },
   bookInfo: {
     alignItems: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.md,
+  },
+  mediumShadow: {
+    shadowColor: '#0000006b',
+    shadowOffset: {
+      width: 2,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8,
   },
   coverImage: {
     width: 120,
@@ -140,51 +150,43 @@ const styles = StyleSheet.create({
   },
   coverEmoji: {
     fontSize: 40,
+    lineHeight: 44,
   },
-  bookTitle: {
-    textAlign: 'center',
-  },
-  optionsContainer: {
-    marginBottom: Spacing.xl,
+  buttonContainer: {
     gap: Spacing.md,
+    marginBottom: Spacing.md,
   },
-  radioOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: Spacing.md,
-    borderRadius: 8,
-    borderWidth: 1,
+  selectionButton: {
+    width: '100%',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    borderRadius: BorderRadius.md,
+    borderWidth: 2,
     borderColor: Colors.light.border,
+    opacity: 0.6,
     backgroundColor: Colors.light.surface,
   },
-  radioOptionSelected: {
+  selectionButtonSelected: {
+    backgroundColor: Colors.light.primary + '80',
     borderColor: Colors.light.primary,
-    backgroundColor: Colors.light.surfaceVariant,
+    borderWidth: 3,
+    opacity: 1,
   },
-  radioCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: Colors.light.outline,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: Spacing.md,
+  selectionButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.light.text,
+    textAlign: 'center',
   },
-  radioCircleSelected: {
-    borderColor: Colors.light.primary,
+  selectionButtonTextSelected: {
+    color: Colors.light.textOnPrimary,
   },
-  radioInner: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: Colors.light.primary,
-  },
-  radioLabel: {
-    flex: 1,
+  confirmationContainer: {
+    marginTop: Spacing.lg,
+    backgroundColor: 'transparent',
   },
   button: {
-    paddingVertical: 14,
+    width: '100%',
   },
 });
 

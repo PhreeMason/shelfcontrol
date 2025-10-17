@@ -1,20 +1,7 @@
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 
-export type CompletionFlowStep =
-  | 'celebration'
-  | 'progress_check'
-  | 'dnf_confirm'
-  | 'review_question'
-  | 'review_form'
-  | 'complete';
-
-export interface ReviewPlatform {
-  name: string;
-  posted: boolean;
-  postedDate: string | null;
-  reviewUrl: string | null;
-}
+export type CompletionFlowStep = 'celebration' | 'review_question';
 
 export interface CompletionFlowState {
   currentStep: CompletionFlowStep;
@@ -29,25 +16,15 @@ export interface CompletionFlowState {
     source: string;
     bookId: string;
   };
-  completionData: {
-    finishedAllPages: boolean | null;
-    needsReview: boolean | null;
-    isDNF: boolean;
-  };
-  reviewData: {
-    reviewDueDate: string | null;
-    platforms: ReviewPlatform[];
-    needsLinkSubmission: boolean;
-    reviewNotes: string;
-  };
+  isDNF: boolean;
+  needsReview: boolean | null;
 }
 
 interface CompletionFlowContextType {
   flowState: CompletionFlowState | null;
-  initializeFlow: (deadline: ReadingDeadlineWithProgress) => void;
+  initializeFlow: (deadline: ReadingDeadlineWithProgress, isDNF?: boolean) => void;
   updateStep: (step: CompletionFlowStep) => void;
-  updateCompletionData: (data: Partial<CompletionFlowState['completionData']>) => void;
-  updateReviewData: (data: Partial<CompletionFlowState['reviewData']>) => void;
+  setNeedsReview: (needsReview: boolean) => void;
   resetFlow: () => void;
 }
 
@@ -72,14 +49,19 @@ export const CompletionFlowProvider: React.FC<CompletionFlowProviderProps> = ({
 }) => {
   const [flowState, setFlowState] = useState<CompletionFlowState | null>(null);
 
-  const initializeFlow = (deadline: ReadingDeadlineWithProgress) => {
+  const initializeFlow = (deadline: ReadingDeadlineWithProgress, isDNF = false) => {
     const totalPages = deadline.total_quantity || 0;
-    const latestProgress = deadline.progress?.[0];
+    const latestProgress =
+      deadline.progress && deadline.progress.length > 0
+        ? deadline.progress[deadline.progress.length - 1]
+        : null;
     const currentProgress = latestProgress?.current_progress || 0;
-    const startDate = latestProgress?.created_at || new Date().toISOString();
+    const firstProgress =
+      deadline.progress && deadline.progress.length > 0 ? deadline.progress[0] : null;
+    const startDate = firstProgress?.created_at || new Date().toISOString();
 
     setFlowState({
-      currentStep: 'celebration',
+      currentStep: isDNF ? 'review_question' : 'celebration',
       deadlineId: deadline.id,
       bookData: {
         title: deadline.book_title,
@@ -91,17 +73,8 @@ export const CompletionFlowProvider: React.FC<CompletionFlowProviderProps> = ({
         source: deadline.source || 'Personal',
         bookId: deadline.book_id || '',
       },
-      completionData: {
-        finishedAllPages: null,
-        needsReview: null,
-        isDNF: false,
-      },
-      reviewData: {
-        reviewDueDate: null,
-        platforms: [],
-        needsLinkSubmission: false,
-        reviewNotes: '',
-      },
+      isDNF,
+      needsReview: null,
     });
   };
 
@@ -110,22 +83,9 @@ export const CompletionFlowProvider: React.FC<CompletionFlowProviderProps> = ({
     setFlowState({ ...flowState, currentStep: step });
   };
 
-  const updateCompletionData = (
-    data: Partial<CompletionFlowState['completionData']>
-  ) => {
+  const setNeedsReview = (needsReview: boolean) => {
     if (!flowState) return;
-    setFlowState({
-      ...flowState,
-      completionData: { ...flowState.completionData, ...data },
-    });
-  };
-
-  const updateReviewData = (data: Partial<CompletionFlowState['reviewData']>) => {
-    if (!flowState) return;
-    setFlowState({
-      ...flowState,
-      reviewData: { ...flowState.reviewData, ...data },
-    });
+    setFlowState({ ...flowState, needsReview });
   };
 
   const resetFlow = () => {
@@ -138,8 +98,7 @@ export const CompletionFlowProvider: React.FC<CompletionFlowProviderProps> = ({
         flowState,
         initializeFlow,
         updateStep,
-        updateCompletionData,
-        updateReviewData,
+        setNeedsReview,
         resetFlow,
       }}
     >

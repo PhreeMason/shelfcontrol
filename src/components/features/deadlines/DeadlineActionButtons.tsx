@@ -14,10 +14,12 @@ import Toast from 'react-native-toast-message';
 
 interface DeadlineActionButtonsProps {
   deadline: ReadingDeadlineWithProgress;
+  onComplete?: () => void;
 }
 
 const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   deadline,
+  onComplete,
 }) => {
   const { deleteDeadline, reactivateDeadline, startReadingDeadline } = useDeadlines();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -28,7 +30,11 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   const { isCompleted, isToReview, isActive, isPending } =
     getStatusFlags(latestStatus);
   const handleComplete = () => {
-    router.push(`/deadline/${deadline.id}/completion-flow`);
+    if (onComplete) {
+      onComplete();
+    } else {
+      router.push(`/deadline/${deadline.id}/completion-flow`);
+    }
   };
 
   const handleDelete = () => {

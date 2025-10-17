@@ -3,8 +3,8 @@ import {
   ActivityIndicator,
   TextStyle,
   TouchableOpacity,
-  type TouchableOpacityProps,
   View,
+  type TouchableOpacityProps,
 } from 'react-native';
 
 import {
@@ -103,6 +103,7 @@ export function ThemedButton({
         <ThemedText
           variant="default"
           style={{
+            fontWeight: '700',
             color: disabled ? disabledTextColor : themeTextColor,
             textAlign: 'center',
             ...textStyle,

@@ -9,24 +9,28 @@ import {
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
 import { ROUTES } from '@/constants/routes';
+import { useFetchBookById } from '@/hooks/useBooks';
+import { useToReviewDeadline, useCompleteDeadline, useDidNotFinishDeadline } from '@/hooks/useDeadlines';
+import { useCreateReviewTracking } from '@/hooks/useReviewTracking';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCompletionFlow } from '@/providers/CompletionFlowProvider';
-import { deadlinesService } from '@/services/deadlines.service';
-import { reviewTrackingService } from '@/services/reviewTracking.service';
 import { ReviewFormData, reviewFormSchema } from '@/utils/reviewFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
+  Image,
   Platform,
   StyleSheet,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 const PRESET_PLATFORMS = [
@@ -46,12 +50,20 @@ const ReviewForm: React.FC = () => {
   const { session } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const insets = useSafeAreaInsets();
+
+  const { mutate: createReviewTracking } = useCreateReviewTracking();
+  const { mutate: updateToReview } = useToReviewDeadline();
+  const { mutate: completeDeadline } = useCompleteDeadline();
+  const { mutate: didNotFinishDeadline } = useDidNotFinishDeadline();
 
   const [selectedPlatforms, setSelectedPlatforms] = useState<Set<string>>(new Set());
   const [hasBlog, setHasBlog] = useState(false);
   const [blogUrl, setBlogUrl] = useState('');
   const [customPlatforms, setCustomPlatforms] = useState<string[]>([]);
   const [newCustomPlatform, setNewCustomPlatform] = useState('');
+
+  const { data: bookData } = useFetchBookById(flowState?.bookData.bookId || null);
 
   const { control, handleSubmit, watch, setValue } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewFormSchema),
@@ -132,7 +144,7 @@ const ReviewForm: React.FC = () => {
     return platforms;
   };
 
-  const handleSaveAndFinish = async (data: ReviewFormData) => {
+  const handleSaveAndFinish = (data: ReviewFormData) => {
     if (!flowState || !session?.user?.id) return;
 
     const allPlatforms = getAllSelectedPlatforms();
@@ -148,88 +160,87 @@ const ReviewForm: React.FC = () => {
 
     setIsSubmitting(true);
 
-    try {
-      const params: any = {
-        deadline_id: flowState.deadlineId,
-        needs_link_submission: data.needsLinkSubmission,
-        platforms: allPlatforms.map((name) => ({ name })),
-      };
+    const params: any = {
+      deadline_id: flowState.deadlineId,
+      needs_link_submission: data.needsLinkSubmission,
+      platforms: allPlatforms.map((name) => ({ name })),
+    };
 
-      if (data.hasReviewDeadline && data.reviewDueDate) {
-        params.review_due_date = data.reviewDueDate.toISOString();
-      }
-
-      if (data.reviewNotes) {
-        params.review_notes = data.reviewNotes;
-      }
-
-      await reviewTrackingService.createReviewTracking(session.user.id, params);
-
-      try {
-        await deadlinesService.updateDeadlineStatus(
-          session.user.id,
-          flowState.deadlineId,
-          'to_review'
-        );
-      } catch (statusError: any) {
-        console.warn('Could not update status to to_review:', statusError.message);
-      }
-
-      Toast.show({
-        type: 'success',
-        text1: 'Review tracking set up!',
-      });
-
-      router.replace(`/deadline/${flowState.deadlineId}`);
-    } catch (error) {
-      console.error('Error setting up review tracking:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Failed to set up review tracking. Please try again.',
-      });
-    } finally {
-      setIsSubmitting(false);
+    if (data.hasReviewDeadline && data.reviewDueDate) {
+      params.review_due_date = data.reviewDueDate.toISOString();
     }
+
+    if (data.reviewNotes) {
+      params.review_notes = data.reviewNotes;
+    }
+
+    createReviewTracking(params, {
+      onSuccess: () => {
+        updateToReview(flowState.deadlineId, {
+          onSuccess: () => {
+            Toast.show({
+              type: 'success',
+              text1: 'Review tracking set up!',
+            });
+            setIsSubmitting(false);
+            router.replace(`/deadline/${flowState.deadlineId}`);
+          },
+          onError: (error) => {
+            console.warn('Could not update status to to_review:', error.message);
+            Toast.show({
+              type: 'success',
+              text1: 'Review tracking set up!',
+            });
+            setIsSubmitting(false);
+            router.replace(`/deadline/${flowState.deadlineId}`);
+          },
+        });
+      },
+      onError: (error) => {
+        console.error('Error setting up review tracking:', error);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Failed to set up review tracking. Please try again.',
+        });
+        setIsSubmitting(false);
+      },
+    });
   };
 
-  const handleSkip = async () => {
+  const handleSkip = () => {
     if (!flowState || !session?.user?.id) return;
 
-    const finalStatus = flowState.completionData.isDNF ? 'did_not_finish' : 'complete';
+    const finalStatus = flowState.isDNF ? 'did_not_finish' : 'complete';
 
     setIsSubmitting(true);
 
-    try {
-      await deadlinesService.updateDeadlineStatus(
-        session.user.id,
-        flowState.deadlineId,
-        finalStatus
-      );
+    const statusMutation = finalStatus === 'did_not_finish' ? didNotFinishDeadline : completeDeadline;
 
-      Toast.show({
-        type: 'success',
-        text1: 'All done!',
-      });
-
-      resetFlow();
-      router.replace(ROUTES.HOME);
-    } catch (error) {
-      console.error('Error updating deadline status:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Failed to update deadline. Please try again.',
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    statusMutation(flowState.deadlineId, {
+      onSuccess: () => {
+        Toast.show({
+          type: 'success',
+          text1: 'All done!',
+        });
+        setIsSubmitting(false);
+        resetFlow();
+        router.replace(ROUTES.HOME);
+      },
+      onError: (error) => {
+        console.error('Error updating deadline status:', error);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Failed to update deadline. Please try again.',
+        });
+        setIsSubmitting(false);
+      },
+    });
   };
 
   const handleDateChange = (_event: any, selectedDate?: Date) => {
-    if (Platform.OS === 'android') {
-      setShowDatePicker(false);
-    }
+    setShowDatePicker(false);
     if (selectedDate) {
       setValue('reviewDueDate', selectedDate);
     }
@@ -237,123 +248,174 @@ const ReviewForm: React.FC = () => {
 
   if (!flowState) return null;
 
+  const isPastDate = watchReviewDueDate && watchReviewDueDate < new Date(new Date().setHours(0, 0, 0, 0));
+
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, {
+      paddingBottom: insets.bottom,
+      paddingLeft: insets.left,
+      paddingRight: insets.right,
+    }]}>
+      <LinearGradient
+        colors={[colors.accent, colors.primary]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.gradientHeader, { paddingTop: insets.top }]}
+      >
+        <ThemedView style={styles.bookCard}>
+          <View style={styles.bookCardContent}>
+            {bookData?.cover_image_url ? (
+              <Image
+                source={{ uri: bookData.cover_image_url }}
+                style={styles.bookCover}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={styles.bookCoverPlaceholder}>
+                <ThemedText style={styles.bookCoverPlaceholderText}>
+                  📖
+                </ThemedText>
+              </View>
+            )}
+            <View style={styles.bookInfoText}>
+              <ThemedText variant="default" style={styles.bookTitle}>
+                {flowState.bookData.title}
+              </ThemedText>
+              <ThemedText variant="secondary" style={styles.bookAuthor}>
+                by {flowState.bookData.author}
+              </ThemedText>
+            </View>
+          </View>
+        </ThemedView>
+      </LinearGradient>
+
       <ThemedKeyboardAwareScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
         <ThemedView style={styles.content}>
-          <ThemedView style={styles.bookInfo}>
-            <ThemedText variant="default" style={styles.bookTitle}>
-              {flowState.bookData.title}
-            </ThemedText>
-            <ThemedText variant="secondary" style={styles.bookAuthor}>
-              by {flowState.bookData.author}
-            </ThemedText>
-          </ThemedView>
-
-          <ThemedView style={styles.section}>
-            <ThemedText variant="title" style={styles.sectionHeader}>
-              Review Timeline
-            </ThemedText>
-            <ThemedView style={styles.radioGroup}>
-              <TouchableOpacity
-                style={styles.radioOption}
-                onPress={() => setValue('hasReviewDeadline', true)}
-                activeOpacity={0.7}
-              >
-                <View
-                  style={[
-                    styles.radioCircle,
-                    { borderColor: colors.border },
-                    watchHasDeadline && {
-                      borderColor: colors.primary,
-                      backgroundColor: colors.primary,
-                    },
-                  ]}
-                >
-                  {watchHasDeadline && (
-                    <View
-                      style={[
-                        styles.radioInnerCircle,
-                        { backgroundColor: colors.textOnPrimary },
-                      ]}
-                    />
-                  )}
-                </View>
-                <ThemedText>Yes, I have a review deadline</ThemedText>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.radioOption}
-                onPress={() => setValue('hasReviewDeadline', false)}
-                activeOpacity={0.7}
-              >
-                <View
-                  style={[
-                    styles.radioCircle,
-                    { borderColor: colors.border },
-                    !watchHasDeadline && {
-                      borderColor: colors.primary,
-                      backgroundColor: colors.primary,
-                    },
-                  ]}
-                >
-                  {!watchHasDeadline && (
-                    <View
-                      style={[
-                        styles.radioInnerCircle,
-                        { backgroundColor: colors.textOnPrimary },
-                      ]}
-                    />
-                  )}
-                </View>
-                <ThemedText>No deadline, review when I can</ThemedText>
-              </TouchableOpacity>
-            </ThemedView>
-            {watchHasDeadline && watchReviewDueDate && (
-              <ThemedView style={styles.datePickerContainer}>
+          <ThemedView style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <ThemedView style={styles.section}>
+              <ThemedText variant="title" style={styles.sectionHeader}>
+                Review Timeline
+              </ThemedText>
+              <ThemedView style={styles.radioGroup}>
                 <TouchableOpacity
                   style={[
-                    styles.dateInput,
-                    {
-                      backgroundColor: colors.surface,
-                      borderColor: colors.border,
+                    styles.radioOption,
+                    { borderColor: colors.border },
+                    watchHasDeadline && {
+                      backgroundColor: colors.primaryContainer,
+                      borderColor: colors.primary,
                     },
                   ]}
-                  onPress={() => setShowDatePicker(true)}
+                  onPress={() => setValue('hasReviewDeadline', true)}
+                  activeOpacity={0.7}
                 >
-                  <ThemedText>
-                    {watchReviewDueDate.toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </ThemedText>
+                  <View
+                    style={[
+                      styles.radioCircle,
+                      { borderColor: colors.border },
+                      watchHasDeadline && {
+                        borderColor: colors.primary,
+                        backgroundColor: colors.primary,
+                      },
+                    ]}
+                  >
+                    {watchHasDeadline && (
+                      <View
+                        style={[
+                          styles.radioInnerCircle,
+                          { backgroundColor: colors.textOnPrimary },
+                        ]}
+                      />
+                    )}
+                  </View>
+                  <ThemedText style={styles.radioLabel}>Yes, I have a review deadline</ThemedText>
                 </TouchableOpacity>
-                {showDatePicker && (
-                  <DateTimePicker
-                    themeVariant="light"
-                    value={watchReviewDueDate}
-                    mode="date"
-                    display={Platform.OS === 'ios' ? 'inline' : 'default'}
-                    onChange={handleDateChange}
-                    minimumDate={new Date()}
-                  />
-                )}
+                <TouchableOpacity
+                  style={[
+                    styles.radioOption,
+                    { borderColor: colors.border },
+                    !watchHasDeadline && {
+                      backgroundColor: colors.primaryContainer,
+                      borderColor: colors.primary,
+                    },
+                  ]}
+                  onPress={() => setValue('hasReviewDeadline', false)}
+                  activeOpacity={0.7}
+                >
+                  <View
+                    style={[
+                      styles.radioCircle,
+                      { borderColor: colors.border },
+                      !watchHasDeadline && {
+                        borderColor: colors.primary,
+                        backgroundColor: colors.primary,
+                      },
+                    ]}
+                  >
+                    {!watchHasDeadline && (
+                      <View
+                        style={[
+                          styles.radioInnerCircle,
+                          { backgroundColor: colors.textOnPrimary },
+                        ]}
+                      />
+                    )}
+                  </View>
+                  <ThemedText style={styles.radioLabel}>No deadline, review when I can</ThemedText>
+                </TouchableOpacity>
               </ThemedView>
-            )}
+              {watchHasDeadline && watchReviewDueDate && (
+                <ThemedView style={styles.datePickerContainer}>
+                  <TouchableOpacity
+                    style={[
+                      styles.dateInput,
+                      {
+                        backgroundColor: colors.surface,
+                        borderColor: colors.border,
+                      },
+                    ]}
+                    onPress={() => setShowDatePicker(true)}
+                  >
+                    <ThemedText style={styles.dateText}>
+                      {watchReviewDueDate.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </ThemedText>
+                  </TouchableOpacity>
+                  {isPastDate && (
+                    <ThemedText color="error" style={styles.warningText}>
+                      This date is in the past
+                    </ThemedText>
+                  )}
+                  {showDatePicker && (
+                    <DateTimePicker
+                      themeVariant="light"
+                      value={watchReviewDueDate}
+                      mode="date"
+                      display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                      onChange={handleDateChange}
+                    />
+                  )}
+                </ThemedView>
+              )}
+            </ThemedView>
           </ThemedView>
 
-          <ThemedView style={styles.section}>
-            <ThemedText variant="title" style={styles.sectionHeader}>
-              Where to Post Reviews
-            </ThemedText>
-            <ThemedText variant="secondary" style={styles.sectionSubtext}>
-              Select all that apply:
-            </ThemedText>
+          <ThemedView style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <ThemedView style={styles.section}>
+              <ThemedText variant="title" style={styles.sectionHeader}>
+                Where to Post Reviews
+              </ThemedText>
+              <ThemedText variant="secondary" style={styles.sectionSubtext}>
+                Select all that apply:
+              </ThemedText>
             <ThemedView style={styles.platformsList}>
               <ThemedView style={styles.platformsGrid}>
                 {PRESET_PLATFORMS.map((platform) => (
@@ -362,6 +424,15 @@ const ReviewForm: React.FC = () => {
                       label={platform}
                       checked={selectedPlatforms.has(platform)}
                       onToggle={() => togglePlatform(platform)}
+                    />
+                  </ThemedView>
+                ))}
+                {customPlatforms.map((platform, index) => (
+                  <ThemedView key={`custom-${index}`} style={styles.platformItem}>
+                    <Checkbox
+                      label={platform}
+                      checked={true}
+                      onToggle={() => removeCustomPlatform(index)}
                     />
                   </ThemedView>
                 ))}
@@ -385,24 +456,11 @@ const ReviewForm: React.FC = () => {
                   value={blogUrl}
                   onChangeText={setBlogUrl}
                   placeholder="Enter blog URL..."
+                  autoCorrect={false}
+                  autoCapitalize="none"
                   placeholderTextColor={colors.textMuted}
                 />
               )}
-
-              {customPlatforms.map((platform, index) => (
-                <ThemedView key={index} style={styles.customPlatformRow}>
-                  <ThemedText style={styles.customPlatformText}>
-                    {platform}
-                  </ThemedText>
-                  <TouchableOpacity onPress={() => removeCustomPlatform(index)}>
-                    <IconSymbol
-                      name="xmark.circle.fill"
-                      size={20}
-                      color={colors.textMuted}
-                    />
-                  </TouchableOpacity>
-                </ThemedView>
-              ))}
 
               <ThemedView style={styles.addCustomContainer}>
                 <TextInput
@@ -432,84 +490,103 @@ const ReviewForm: React.FC = () => {
                 </TouchableOpacity>
               </ThemedView>
             </ThemedView>
-          </ThemedView>
-
-          <ThemedView style={styles.section}>
-            <ThemedText variant="title" style={styles.sectionHeader}>
-              Do you need to submit review links?
-            </ThemedText>
-            <ThemedView style={styles.radioGroup}>
-              <TouchableOpacity
-                style={styles.radioOption}
-                onPress={() => setValue('needsLinkSubmission', true)}
-                activeOpacity={0.7}
-              >
-                <View
-                  style={[
-                    styles.radioCircle,
-                    { borderColor: colors.border },
-                    watch('needsLinkSubmission') && {
-                      borderColor: colors.primary,
-                      backgroundColor: colors.primary,
-                    },
-                  ]}
-                >
-                  {watch('needsLinkSubmission') && (
-                    <View
-                      style={[
-                        styles.radioInnerCircle,
-                        { backgroundColor: colors.textOnPrimary },
-                      ]}
-                    />
-                  )}
-                </View>
-                <ThemedText>Yes, I'll need to share review URLs</ThemedText>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.radioOption}
-                onPress={() => setValue('needsLinkSubmission', false)}
-                activeOpacity={0.7}
-              >
-                <View
-                  style={[
-                    styles.radioCircle,
-                    { borderColor: colors.border },
-                    !watch('needsLinkSubmission') && {
-                      borderColor: colors.primary,
-                      backgroundColor: colors.primary,
-                    },
-                  ]}
-                >
-                  {!watch('needsLinkSubmission') && (
-                    <View
-                      style={[
-                        styles.radioInnerCircle,
-                        { backgroundColor: colors.textOnPrimary },
-                      ]}
-                    />
-                  )}
-                </View>
-                <ThemedText>No link submission needed</ThemedText>
-              </TouchableOpacity>
             </ThemedView>
           </ThemedView>
 
-          <ThemedView style={styles.section}>
-            <ThemedText variant="title" style={styles.sectionHeader}>
-              Quick Review Thoughts (Optional)
-            </ThemedText>
-            <CustomInput
-              control={control}
-              name="reviewNotes"
-              placeholder="Jot down key points while they're fresh..."
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-              style={styles.textArea}
-            />
-            <ThemedText variant="secondary" style={styles.noteExplanation}>
-              This will be saved to your Notes for this deadline.
-            </ThemedText>
+          <ThemedView style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <ThemedView style={styles.section}>
+              <ThemedText variant="title" style={styles.sectionHeader}>
+                Do you need to submit review links?
+              </ThemedText>
+              <ThemedView style={styles.radioGroup}>
+                <TouchableOpacity
+                  style={[
+                    styles.radioOption,
+                    { borderColor: colors.border },
+                    watch('needsLinkSubmission') && {
+                      backgroundColor: colors.primaryContainer,
+                      borderColor: colors.primary,
+                    },
+                  ]}
+                  onPress={() => setValue('needsLinkSubmission', true)}
+                  activeOpacity={0.7}
+                >
+                  <View
+                    style={[
+                      styles.radioCircle,
+                      { borderColor: colors.border },
+                      watch('needsLinkSubmission') && {
+                        borderColor: colors.primary,
+                        backgroundColor: colors.primary,
+                      },
+                    ]}
+                  >
+                    {watch('needsLinkSubmission') && (
+                      <View
+                        style={[
+                          styles.radioInnerCircle,
+                          { backgroundColor: colors.textOnPrimary },
+                        ]}
+                      />
+                    )}
+                  </View>
+                  <ThemedText style={styles.radioLabel}>Yes, I'll need to share review URLs</ThemedText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.radioOption,
+                    { borderColor: colors.border },
+                    !watch('needsLinkSubmission') && {
+                      backgroundColor: colors.primaryContainer,
+                      borderColor: colors.primary,
+                    },
+                  ]}
+                  onPress={() => setValue('needsLinkSubmission', false)}
+                  activeOpacity={0.7}
+                >
+                  <View
+                    style={[
+                      styles.radioCircle,
+                      { borderColor: colors.border },
+                      !watch('needsLinkSubmission') && {
+                        borderColor: colors.primary,
+                        backgroundColor: colors.primary,
+                      },
+                    ]}
+                  >
+                    {!watch('needsLinkSubmission') && (
+                      <View
+                        style={[
+                          styles.radioInnerCircle,
+                          { backgroundColor: colors.textOnPrimary },
+                        ]}
+                      />
+                    )}
+                  </View>
+                  <ThemedText style={styles.radioLabel}>No link submission needed</ThemedText>
+                </TouchableOpacity>
+              </ThemedView>
+            </ThemedView>
+          </ThemedView>
+
+          <ThemedView style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <ThemedView style={styles.section}>
+              <ThemedText variant="title" style={styles.sectionHeader}>
+                Quick Review Thoughts (Optional)
+              </ThemedText>
+              <CustomInput
+                control={control}
+                name="reviewNotes"
+                placeholder="Jot down key points while they're fresh they will be saved to your Notes..."
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+                style={styles.textArea}
+              />
+              <ThemedText variant="secondary" style={styles.noteExplanation}>
+                This will be saved to your Notes for this deadline.
+              </ThemedText>
+            </ThemedView>
           </ThemedView>
         </ThemedView>
       </ThemedKeyboardAwareScrollView>
@@ -520,14 +597,13 @@ const ReviewForm: React.FC = () => {
           variant="secondary"
           onPress={handleSkip}
           disabled={isSubmitting}
-          style={styles.actionButton}
         />
         <ThemedButton
           title={isSubmitting ? 'Saving...' : 'Save & Finish'}
           variant="primary"
           onPress={handleSubmit(handleSaveAndFinish)}
           disabled={isSubmitting}
-          style={styles.actionButton}
+          hapticsOnPress
         />
       </ThemedView>
     </ThemedView>
@@ -539,6 +615,65 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.light.background,
   },
+  gradientHeader: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xl,
+    paddingBottom: Spacing.lg,
+  },
+  bookCard: {
+    backgroundColor: Colors.light.surface,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  bookCardContent: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  bookCover: {
+    width: 96,
+    height: 144,
+    borderRadius: BorderRadius.sm,
+    flexShrink: 0,
+  },
+  bookCoverPlaceholder: {
+    width: 96,
+    height: 144,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: Colors.light.surfaceVariant,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  bookCoverPlaceholderText: {
+    fontSize: 40,
+  },
+  bookInfoText: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  bookTitle: {
+    fontWeight: '600',
+    fontSize: 18,
+    lineHeight: 24,
+    marginBottom: Spacing.xs,
+  },
+  bookAuthor: {
+    fontSize: 14,
+    lineHeight: 18,
+  },
   scrollView: {
     flex: 1,
   },
@@ -546,37 +681,66 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   content: {
-    padding: Spacing.xl,
-    gap: Spacing.xl,
+    padding: Spacing.lg,
+    gap: Spacing.md,
   },
-  bookInfo: {
-    alignItems: 'center',
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    backgroundColor: Colors.light.surface,
-    borderRadius: BorderRadius.md,
+  card: {
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.light.border,
-  },
-  bookTitle: {
-    textAlign: 'center',
-    fontWeight: '600',
-    marginBottom: Spacing.xs,
-  },
-  bookAuthor: {
-    textAlign: 'center',
-    fontSize: 14,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 3,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   section: {
-    gap: Spacing.md,
+    gap: Spacing.sm,
   },
   sectionHeader: {
     fontSize: 16,
+    lineHeight: 20,
     marginBottom: Spacing.xs,
   },
   sectionSubtext: {
     fontSize: 14,
+    lineHeight: 18,
     marginBottom: Spacing.sm,
+  },
+  radioGroup: {
+    gap: Spacing.md,
+  },
+  radioOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 16,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 2,
+  },
+  radioCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  radioInnerCircle: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  radioLabel: {
+    flex: 1,
+    lineHeight: 20,
   },
   datePickerContainer: {
     marginTop: Spacing.sm,
@@ -585,6 +749,14 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     padding: 16,
     borderRadius: BorderRadius.md,
+  },
+  dateText: {
+    lineHeight: 20,
+  },
+  warningText: {
+    fontSize: 12,
+    lineHeight: 18,
+    marginTop: 6,
   },
   platformsList: {
     gap: Spacing.md,
@@ -602,21 +774,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: BorderRadius.md,
     fontSize: 16,
-    marginLeft: 36,
-  },
-  customPlatformRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    backgroundColor: Colors.light.surfaceVariant,
-    borderRadius: BorderRadius.sm,
-    marginLeft: 36,
-  },
-  customPlatformText: {
-    fontSize: 14,
-    flex: 1,
+    lineHeight: 20,
   },
   addCustomContainer: {
     flexDirection: 'row',
@@ -629,19 +787,20 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
     borderWidth: 2,
     borderRadius: BorderRadius.md,
-    paddingVertical: 12,
+    paddingVertical: 16,
     paddingHorizontal: Spacing.md,
   },
   addButtonText: {
     fontSize: 14,
+    lineHeight: 18,
     fontWeight: '600',
   },
   textArea: {
     minHeight: 100,
-    maxHeight: 200,
   },
   noteExplanation: {
     fontSize: 12,
+    lineHeight: 18,
     fontStyle: 'italic',
   },
   actionBar: {
@@ -650,36 +809,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    gap: Spacing.md,
+    justifyContent: 'space-around',
     padding: Spacing.lg,
     backgroundColor: Colors.light.surface,
     borderTopWidth: 1,
     borderTopColor: Colors.light.border,
-  },
-  actionButton: {
-    flex: 1,
-  },
-  radioGroup: {
-    gap: Spacing.md,
-  },
-  radioOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingVertical: 8,
-  },
-  radioCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  radioInnerCircle: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
   },
 });
 
