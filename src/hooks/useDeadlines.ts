@@ -313,9 +313,6 @@ export const useCompleteDeadline = () => {
   });
 };
 
-export const useReactivateDeadline = () =>
-  useUpdateDeadlineStatus(DEADLINE_STATUS.READING);
-
 export const useStartReadingDeadline = () =>
   useUpdateDeadlineStatus(DEADLINE_STATUS.READING);
 

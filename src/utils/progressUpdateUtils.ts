@@ -94,21 +94,6 @@ export const hasProgressChanged = (
 };
 
 /**
- * Gets the appropriate toast message for book completion
- */
-export const getCompletionToastMessage = (
-  bookTitle: string
-): {
-  title: string;
-  message: string;
-} => {
-  return {
-    title: 'Deadline completed!',
-    message: `Congratulations on finishing "${bookTitle}"!`,
-  };
-};
-
-/**
  * Gets the appropriate error toast message
  */
 export const getErrorToastMessage = (

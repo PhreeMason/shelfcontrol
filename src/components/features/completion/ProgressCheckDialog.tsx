@@ -9,6 +9,7 @@ interface ProgressCheckDialogProps {
   currentProgress: number;
   onMarkAllPages: () => void;
   onDidNotFinish: () => void;
+  onClose: () => void;
 }
 
 const ProgressCheckDialog: React.FC<ProgressCheckDialogProps> = ({
@@ -17,6 +18,7 @@ const ProgressCheckDialog: React.FC<ProgressCheckDialogProps> = ({
   currentProgress,
   onMarkAllPages,
   onDidNotFinish,
+  onClose,
 }) => {
   const [selectedOption, setSelectedOption] = useState<'finished' | 'dnf' | null>(null);
 
@@ -33,10 +35,11 @@ const ProgressCheckDialog: React.FC<ProgressCheckDialogProps> = ({
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={() => {}}
+      onRequestClose={onClose}
     >
-      <ThemedView style={styles.backdrop}>
-        <ThemedView style={styles.dialog}>
+      <Pressable style={styles.backdrop} onPress={onClose}>
+        <Pressable onPress={(e) => e.stopPropagation()}>
+          <ThemedView style={styles.dialog}>
           <ThemedText variant="title" style={styles.title}>
             Did you finish all {totalPages} pages?
           </ThemedText>
@@ -92,7 +95,8 @@ const ProgressCheckDialog: React.FC<ProgressCheckDialogProps> = ({
             </ThemedView>
           )}
         </ThemedView>
-      </ThemedView>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };

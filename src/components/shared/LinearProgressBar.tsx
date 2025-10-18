@@ -17,7 +17,7 @@ const LinearProgressBar: React.FC<LinearProgressBarProps> = ({
   backgroundColor = 'rgba(232, 194, 185, 0.2)',
   borderRadius = 100,
   showShimmer = true,
-  gradientColors = ['#f9a8d4', '#d8b4fe'],
+  gradientColors = ['#E8C2B9', '#B8A9D9'],
 }) => {
   const shimmerTranslateX = useRef(new Animated.Value(-40)).current;
 

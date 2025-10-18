@@ -70,7 +70,7 @@ export default function CompletionFlowPage() {
             Toast.show({
               type: 'success',
               text1: 'All done!',
-              text2: `"${deadline.book_title}" marked as complete`,
+              text2: `"${deadline.book_title}" moved to complete`,
             });
             resetFlow();
             router.replace(ROUTES.HOME);

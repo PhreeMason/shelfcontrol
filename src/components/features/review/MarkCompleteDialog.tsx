@@ -1,7 +1,7 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
 import React from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 interface Platform {
   id: string;
@@ -29,12 +29,14 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
-      <View style={styles.backdrop}>
-        <ThemedView style={styles.dialog}>
+      {/* Outer Pressable closes modal on backdrop click, inner Pressable prevents dialog content clicks from bubbling up */}
+      <Pressable style={styles.backdrop} onPress={onCancel}>
+        <Pressable onPress={(e) => e.stopPropagation()}>
+          <ThemedView style={styles.dialog}>
           {allPosted ? (
             <>
               <ThemedText variant="title" style={styles.title}>
-                All reviews posted! 🎉
+                All reviews posted!
               </ThemedText>
               <ThemedText variant="secondary" style={styles.message}>
                 Move this book to Completed?
@@ -47,26 +49,29 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
           ) : (
             <>
               <ThemedText variant="title" style={styles.title}>
-                Not All Reviews Posted
+                Just checking
               </ThemedText>
               <ThemedText variant="secondary" style={styles.message}>
-                You still need to post reviews on:
+                These platforms don't{'\n'}have checkmarks yet:
               </ThemedText>
               <View style={styles.platformList}>
                 {unpostedPlatforms.map(platform => (
-                  <ThemedText key={platform.id} style={styles.platformItem}>
-                    • {platform.platform_name}
-                  </ThemedText>
+                  <ThemedView key={platform.id} style={styles.platformCard}>
+                    <ThemedText style={styles.platformItem}>
+                      {platform.platform_name}
+                    </ThemedText>
+                  </ThemedView>
                 ))}
               </View>
               <View style={styles.buttonContainer}>
-                <ThemedButton title="Go Back" variant="outline" onPress={onCancel} />
-                <ThemedButton title="Mark Complete Anyway" variant="primary" onPress={onComplete} />
+                <ThemedButton title="Go back and finish these" textStyle={{ fontWeight: '700' }} style={{ borderWidth: 1.5, borderColor: Colors.light.primary }} variant="outline" onPress={onCancel} />
+                <ThemedButton title="That's okay, mark complete" textStyle={{ fontWeight: '700' }} variant="primary" onPress={onComplete} />
               </View>
             </>
           )}
         </ThemedView>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };
@@ -77,7 +82,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: Spacing.lg,
   },
   dialog: {
     backgroundColor: Colors.light.surface,
@@ -85,27 +89,40 @@ const styles = StyleSheet.create({
     padding: Spacing.xl,
   },
   title: {
-    fontSize: 22,
-    lineHeight: 26,
-    marginBottom: Spacing.md,
+    fontSize: 24,
+    lineHeight: 28,
+    fontWeight: '700',
+    marginBottom: Spacing.sm,
     textAlign: 'center',
   },
   message: {
     fontSize: 14,
-    marginBottom: Spacing.md,
+    color: Colors.light.textSecondary,
+    marginBottom: Spacing.xl,
     textAlign: 'center',
   },
   platformList: {
+    gap: Spacing.sm,
     marginBottom: Spacing.lg,
-    paddingLeft: Spacing.md,
+  },
+  platformCard: {
+    width: '100%',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.light.primary,
+    backgroundColor: Colors.light.primary + '20',
   },
   platformItem: {
-    fontSize: 14,
-    marginVertical: Spacing.xs,
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.light.text,
+    textAlign: 'left',
   },
   buttonContainer: {
-    flexDirection: 'row',
     gap: Spacing.md,
+    marginTop: Spacing.md,
   },
 });
 

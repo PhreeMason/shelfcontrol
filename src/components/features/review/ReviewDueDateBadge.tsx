@@ -1,3 +1,4 @@
+import StatsSummaryCard from '@/components/stats/StatsSummaryCard';
 import { ThemedText } from '@/components/themed';
 import { BorderRadius, Colors, FontFamily, Spacing } from '@/constants/Colors';
 import React from 'react';
@@ -5,9 +6,15 @@ import { StyleSheet, View } from 'react-native';
 
 interface ReviewDueDateBadgeProps {
   reviewDueDate: string | null;
+  postedCount: number;
+  totalCount: number;
 }
 
-const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({ reviewDueDate }) => {
+const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({
+  reviewDueDate,
+  postedCount,
+  totalCount,
+}) => {
   if (!reviewDueDate) return null;
 
   const dueDate = new Date(reviewDueDate);
@@ -15,45 +22,79 @@ const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({ reviewDueDate }
   const daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
   const isOverdue = daysUntilDue < 0;
-  const isApproaching = daysUntilDue >= 0 && daysUntilDue < 3;
-
-  const backgroundColor = isOverdue
-    ? Colors.light.errorContainer
-    : isApproaching
-    ? Colors.light.warningContainer
-    : Colors.light.successContainer;
-
-  const textColor = isOverdue
-    ? Colors.light.error
-    : isApproaching
-    ? Colors.light.warning
-    : Colors.light.success;
+  const percentage = totalCount > 0 ? Math.round((postedCount / totalCount) * 100) : 0;
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
+  const label = isOverdue ? 'REVIEW OVERDUE' : 'REVIEW DEADLINE';
+  const subtitle = isOverdue
+    ? `${Math.abs(daysUntilDue)} ${Math.abs(daysUntilDue) === 1 ? 'day' : 'days'} overdue`
+    : `${daysUntilDue} ${daysUntilDue === 1 ? 'day' : 'days'} left`;
+
   return (
-    <View style={[styles.badge, { backgroundColor }]}>
-      <ThemedText style={[styles.badgeText, { color: textColor }]}>
-        {isOverdue ? 'Overdue: ' : 'Review by: '}
-        {formatDate(dueDate)}
-      </ThemedText>
-    </View>
+    <StatsSummaryCard
+      label={label}
+      dateText={formatDate(dueDate)}
+      subtitle={subtitle}
+    >
+      <View style={styles.progressSection}>
+        <View style={styles.progressLabelContainer}>
+          <ThemedText style={styles.progressLabel}>Reviews Posted</ThemedText>
+          <ThemedText style={styles.progressFraction}>
+            {postedCount}/{totalCount}
+          </ThemedText>
+        </View>
+
+        <View style={styles.progressTrack}>
+          <View
+            style={[
+              styles.progressFill,
+              {
+                width: `${percentage}%`,
+              },
+            ]}
+          />
+        </View>
+      </View>
+    </StatsSummaryCard>
   );
 };
 
 const styles = StyleSheet.create({
-  badge: {
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.sm,
-    borderRadius: BorderRadius.sm,
-    alignSelf: 'flex-start',
+  progressSection: {
+    width: '100%',
+    marginTop: Spacing.md,
+    gap: Spacing.xs,
   },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '500',
-    fontFamily: FontFamily.medium,
+  progressLabelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  progressLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: FontFamily.regular,
+    color: Colors.light.textSecondary,
+  },
+  progressFraction: {
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
+    color: Colors.light.primary,
+  },
+  progressTrack: {
+    height: 10,
+    backgroundColor: Colors.light.border,
+    borderRadius: BorderRadius.full,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: Colors.light.primary,
+    borderRadius: BorderRadius.full,
   },
 });
 

@@ -4,7 +4,6 @@ import {
   useDeleteDeadline,
   useDidNotFinishDeadline,
   useGetDeadlines,
-  useReactivateDeadline,
   useStartReadingDeadline,
   useUpdateDeadline,
   useUpdateDeadlineDate,
@@ -95,11 +94,6 @@ interface DeadlineContextType {
     onError?: (error: Error) => void
   ) => void;
   completeDeadline: (
-    deadlineId: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => void;
-  reactivateDeadline: (
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
@@ -195,7 +189,6 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
   const { mutate: updateDeadlineDateMutation } = useUpdateDeadlineDate();
   const { mutate: deleteDeadlineMutation } = useDeleteDeadline();
   const { mutate: completeDeadlineMutation } = useCompleteDeadline();
-  const { mutate: reactivateDeadlineMutation } = useReactivateDeadline();
   const { mutate: startReadingDeadlineMutation } = useStartReadingDeadline();
   const { mutate: didNotFinishDeadlineMutation } = useDidNotFinishDeadline();
 
@@ -424,23 +417,6 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     });
   };
 
-  const reactivateDeadline = (
-    deadlineId: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => {
-    reactivateDeadlineMutation(deadlineId, {
-      onSuccess: () => {
-        posthog.capture('deadline reactivated');
-        onSuccess?.();
-      },
-      onError: (error: Error) => {
-        console.error('Error reactivating deadline:', error);
-        onError?.(error);
-      },
-    });
-  };
-
   const startReadingDeadline = (
     deadlineId: string,
     onSuccess?: () => void,
@@ -496,7 +472,6 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     updateDeadlineDate,
     deleteDeadline,
     completeDeadline,
-    reactivateDeadline,
     startReadingDeadline,
     didNotFinishDeadline,
 

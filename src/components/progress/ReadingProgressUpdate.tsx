@@ -13,16 +13,16 @@ import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { createProgressUpdateSchema } from '@/utils/progressUpdateSchema';
 import {
   calculateNewProgress,
-  isBookComplete,
-  shouldShowBackwardProgressWarning,
   formatBackwardProgressWarning,
-  formatProgressUpdateMessage,
   formatCompletionMessage,
-  getCompletionToastMessage,
+  formatProgressUpdateMessage,
   getErrorToastMessage,
   hasProgressChanged,
+  isBookComplete,
+  shouldShowBackwardProgressWarning,
 } from '@/utils/progressUpdateUtils';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { router } from 'expo-router';
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, StyleSheet, View } from 'react-native';
@@ -37,7 +37,7 @@ const ReadingProgressUpdate = ({
   timeSpentReading?: number;
   onProgressSubmitted?: () => void;
 }) => {
-  const { getDeadlineCalculations, completeDeadline } = useDeadlines();
+  const { getDeadlineCalculations } = useDeadlines();
   const calculations = getDeadlineCalculations(deadline);
   const {
     urgencyLevel,
@@ -62,40 +62,6 @@ const ReadingProgressUpdate = ({
     mode: 'onSubmit',
   });
 
-  const handleBookCompletion = useCallback(
-    (deadlineId: string, bookTitle: string) => {
-      completeDeadline(
-        deadlineId,
-        () => {
-          const { title, message } = getCompletionToastMessage(bookTitle);
-          Toast.show({
-            swipeable: true,
-            type: 'success',
-            text1: title,
-            text2: message,
-            autoHide: true,
-            visibilityTime: 1500,
-            position: 'top',
-          });
-          onProgressSubmitted?.();
-        },
-        error => {
-          const { title, message } = getErrorToastMessage('complete', error);
-          Toast.show({
-            swipeable: true,
-            type: 'error',
-            text1: title,
-            text2: message,
-            autoHide: true,
-            visibilityTime: 1500,
-            position: 'top',
-          });
-        }
-      );
-    },
-    [completeDeadline, onProgressSubmitted]
-  );
-
   const showCompletionDialog = useCallback(
     (newProgress: number, bookTitle: string) => {
       const message = formatCompletionMessage(
@@ -110,13 +76,13 @@ const ReadingProgressUpdate = ({
           onPress: () => onProgressSubmitted?.(),
         },
         {
-          text: 'Mark Complete',
+          text: "I'm done reading",
           style: 'default',
-          onPress: () => handleBookCompletion(deadline.id, bookTitle),
+          onPress: () => router.push(`/deadline/${deadline.id}/completion-flow`),
         },
       ]);
     },
-    [deadline.format, deadline.id, handleBookCompletion, onProgressSubmitted]
+    [deadline.format, deadline.id, onProgressSubmitted]
   );
 
   const handleProgressUpdateSuccess = useCallback(

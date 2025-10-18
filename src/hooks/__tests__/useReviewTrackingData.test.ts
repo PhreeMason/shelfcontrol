@@ -1,7 +1,7 @@
-import { renderHook, waitFor } from '@testing-library/react-native';
-import { useReviewTrackingData } from '../useReviewTrackingData';
 import { reviewTrackingService } from '@/services/reviewTracking.service';
 import { useQuery } from '@tanstack/react-query';
+import { renderHook } from '@testing-library/react-native';
+import { useReviewTrackingData } from '../useReviewTrackingData';
 
 jest.mock('@/services/reviewTracking.service');
 jest.mock('@tanstack/react-query', () => ({

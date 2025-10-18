@@ -1,16 +1,15 @@
-import { deadlinesService } from '@/services';
 import { useAuth } from '@/providers/AuthProvider';
+import { deadlinesService } from '@/services';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   useAddDeadline,
-  useUpdateDeadline,
-  useDeleteDeadline,
-  useUpdateDeadlineProgress,
-  useGetDeadlines,
   useCompleteDeadline,
-  useReactivateDeadline,
-  useGetDeadlineById,
+  useDeleteDeadline,
   useDeleteFutureProgress,
+  useGetDeadlineById,
+  useGetDeadlines,
+  useUpdateDeadline,
+  useUpdateDeadlineProgress,
 } from '../useDeadlines';
 
 jest.mock('@/services', () => ({
@@ -418,48 +417,6 @@ describe('useDeadlines hooks', () => {
       await expect(mutationConfig.mutationFn('deadline-123')).rejects.toThrow(
         'User not authenticated'
       );
-    });
-  });
-
-  describe('useReactivateDeadline', () => {
-    it('should configure mutation with reading status', () => {
-      useReactivateDeadline();
-
-      expect(mockUseMutation).toHaveBeenCalledWith(
-        expect.objectContaining({
-          mutationKey: ['updateDeadlineStatus'],
-          mutationFn: expect.any(Function),
-          onSuccess: expect.any(Function),
-          onError: expect.any(Function),
-        })
-      );
-    });
-
-    it('should call deadlinesService.updateDeadlineStatus with reading', async () => {
-      useReactivateDeadline();
-
-      const mutationConfig = mockUseMutation.mock.calls[0][0];
-      await mutationConfig.mutationFn('deadline-123');
-
-      expect(mockDeadlinesService.updateDeadlineStatus).toHaveBeenCalledWith(
-        'session-user-123',
-        'deadline-123',
-        'reading'
-      );
-    });
-
-    it('should invalidate queries with correct userId on success - FAILING TEST', () => {
-      useReactivateDeadline();
-
-      const mutationConfig = mockUseMutation.mock.calls[0][0];
-      mutationConfig.onSuccess();
-
-      // This test should FAIL initially due to the query invalidation bug
-      // useReactivateDeadline uses useUpdateDeadlineStatus which invalidates ['deadlines'] only
-      // instead of ['deadlines', userId] like other hooks
-      expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: ['deadlines', 'session-user-123'],
-      });
     });
   });
 

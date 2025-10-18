@@ -1,5 +1,5 @@
 import { ThemedText } from '@/components/themed';
-import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
+import { BorderRadius, Colors, FontFamily, Spacing } from '@/constants/Colors';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -13,22 +13,24 @@ const ReviewProgressBar: React.FC<ReviewProgressBarProps> = ({ postedCount, tota
 
   return (
     <View style={styles.container}>
-      <ThemedText variant="secondary" style={styles.label}>
-        Reviews Posted: {postedCount} of {totalCount}
-      </ThemedText>
+      <View style={styles.labelContainer}>
+        <ThemedText variant="secondary" style={styles.label}>
+          Reviews Posted
+        </ThemedText>
+        <ThemedText style={styles.fraction}>
+          {postedCount}/{totalCount}
+        </ThemedText>
+      </View>
 
-      <View style={styles.progressBarContainer}>
-        <View style={styles.progressTrack}>
-          <View
-            style={[
-              styles.progressFill,
-              {
-                width: `${percentage}%`,
-              },
-            ]}
-          />
-        </View>
-        <ThemedText style={styles.percentage}>{percentage}%</ThemedText>
+      <View style={styles.progressTrack}>
+        <View
+          style={[
+            styles.progressFill,
+            {
+              width: `${percentage}%`,
+            },
+          ]}
+        />
       </View>
     </View>
   );
@@ -36,21 +38,27 @@ const ReviewProgressBar: React.FC<ReviewProgressBarProps> = ({ postedCount, tota
 
 const styles = StyleSheet.create({
   container: {
-    gap: 4,
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  progressBarContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: Spacing.xs,
   },
+  labelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: '400',
+    color: Colors.light.textSecondary,
+  },
+  fraction: {
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
+    color: Colors.light.primary,
+  },
   progressTrack: {
-    flex: 1,
-    height: 5,
-    backgroundColor: Colors.light.surfaceVariant,
+    height: 8,
+    backgroundColor: Colors.light.border,
     borderRadius: BorderRadius.full,
     overflow: 'hidden',
   },
@@ -58,13 +66,6 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: Colors.light.primary,
     borderRadius: BorderRadius.full,
-  },
-  percentage: {
-    fontSize: 9,
-    fontWeight: '500',
-    color: Colors.light.textSecondary,
-    minWidth: 32,
-    textAlign: 'right',
   },
 });
 

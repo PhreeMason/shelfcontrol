@@ -103,7 +103,7 @@ export function ThemedButton({
         <ThemedText
           variant="default"
           style={{
-            fontWeight: '700',
+            fontWeight: '600',
             color: disabled ? disabledTextColor : themeTextColor,
             textAlign: 'center',
             ...textStyle,

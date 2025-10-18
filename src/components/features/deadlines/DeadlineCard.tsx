@@ -58,7 +58,7 @@ export function DeadlineCard({
           </View>
           <DeadlineCountdownDisplay {...viewModel.componentProps.countdown} />
 
-          <Pressable
+          {!disableNavigation && <Pressable
             onPress={viewModel.handlers.onMorePress}
             hitSlop={8}
             style={styles.moreButton}
@@ -68,14 +68,14 @@ export function DeadlineCard({
               size={24}
               color={colors.textMuted}
             />
-          </Pressable>
+          </Pressable>}
         </View>
       </Pressable>
 
-      <DeadlineActionSheet
+      {!disableNavigation && <DeadlineActionSheet
         {...viewModel.componentProps.actionSheet}
         onClose={() => viewModel.state.setShowActionSheet(false)}
-      />
+      />}
     </>
   );
 }

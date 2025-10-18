@@ -43,7 +43,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const translateY = useSharedValue(500);
-  const { startReadingDeadline, reactivateDeadline } = useDeadlines();
+  const { startReadingDeadline } = useDeadlines();
   const [showUpdateDateModal, setShowUpdateDateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showChangeStatusModal, setShowChangeStatusModal] = useState(false);
@@ -124,22 +124,6 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
           );
         },
       };
-    } else if (isToReview) {
-      return {
-        label: 'Resume Reading',
-        icon: 'play.circle.fill' as const,
-        onPress: () => {
-          reactivateDeadline(
-            deadline.id,
-            () => {
-              onClose();
-            },
-            (error: Error) => {
-              console.error('Failed to resume reading:', error);
-            }
-          );
-        },
-      };
     }
 
     return null;
@@ -179,14 +163,23 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
         onPress: () => {
           setShowChangeStatusModal(true);
         },
+      },
+      {
+        label: 'Edit Deadline Details',
+        icon: 'pencil.and.scribble',
+        iconColor: colors.primary,
+        showChevron: true,
+        onPress: () => {
+          router.push(`/deadline/${deadline.id}/edit`);
+        },
       }
     );
 
     if (isToReview) {
       actions.push({
-        label: 'Post Review',
-        icon: 'square.and.pencil',
-        iconColor: colors.primary,
+        label: 'Track Reviews',
+        icon: 'note.text',
+        iconColor: colors.backupPink,
         showChevron: true,
         onPress: () => {
           setShowPostReviewModal(true);
@@ -198,7 +191,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   actions.push(
     {
       label: 'Add Note',
-      icon: 'note.text',
+      icon: 'square.and.pencil',
       iconColor: colors.primary,
       showChevron: true,
       onPress: () => {

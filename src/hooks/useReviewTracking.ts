@@ -70,3 +70,18 @@ export const useCreateReviewTracking = () => {
     },
   });
 };
+
+export const useUserPlatforms = () => {
+  const { session } = useAuth();
+  const userId = session?.user?.id;
+
+  return useQuery({
+    queryKey: userId ? ['user_platforms', userId] : ['user_platforms', 'null'],
+    queryFn: async () => {
+      if (!userId) throw new Error('User not authenticated');
+      return reviewTrackingService.getUserPlatforms(userId);
+    },
+    staleTime: 1000 * 60 * 5,
+    enabled: !!userId,
+  });
+};

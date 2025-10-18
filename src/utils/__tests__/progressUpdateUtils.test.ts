@@ -1,13 +1,12 @@
 import {
   calculateNewProgress,
-  shouldShowBackwardProgressWarning,
-  isBookComplete,
-  formatProgressUpdateMessage,
-  formatCompletionMessage,
   formatBackwardProgressWarning,
-  hasProgressChanged,
-  getCompletionToastMessage,
+  formatCompletionMessage,
+  formatProgressUpdateMessage,
   getErrorToastMessage,
+  hasProgressChanged,
+  isBookComplete,
+  shouldShowBackwardProgressWarning,
 } from '../progressUpdateUtils';
 
 // Mock the formatProgressDisplay function
@@ -306,27 +305,6 @@ describe('progressUpdateUtils', () => {
     it('should handle decimal differences', () => {
       expect(hasProgressChanged(100.1, 100)).toBe(true);
       expect(hasProgressChanged(100.0, 100)).toBe(false);
-    });
-  });
-
-  describe('getCompletionToastMessage', () => {
-    it('should format completion toast message', () => {
-      const result = getCompletionToastMessage('The Great Gatsby');
-      expect(result.title).toBe('Deadline completed!');
-      expect(result.message).toBe(
-        'Congratulations on finishing "The Great Gatsby"!'
-      );
-    });
-
-    it('should handle special characters in title', () => {
-      const result = getCompletionToastMessage('Book with "quotes" & symbols');
-      expect(result.message).toContain('Book with "quotes" & symbols');
-    });
-
-    it('should handle empty title', () => {
-      const result = getCompletionToastMessage('');
-      expect(result.title).toBe('Deadline completed!');
-      expect(result.message).toBe('Congratulations on finishing ""!');
     });
   });
 

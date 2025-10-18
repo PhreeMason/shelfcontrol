@@ -19,7 +19,7 @@ const ReviewQuestionScreen: React.FC<ReviewQuestionScreenProps> = ({
   const { data: fetchedBook } = useFetchBookById(flowState?.bookData.bookId || '');
   const [needsReview, setNeedsReview] = useState<boolean | null>(null);
   const { colors, typography } = useTheme();
-  
+
   if (!flowState) return null;
 
   const handleContinue = () => {
@@ -51,9 +51,6 @@ const ReviewQuestionScreen: React.FC<ReviewQuestionScreenProps> = ({
         </View>
         <ThemedText variant="title" style={[styles.title, { ...typography.headlineMedium }]}>
           Need to post reviews?
-        </ThemedText>
-        <ThemedText variant="default" style={[styles.title, { marginBottom: Spacing.xl }]}>
-          We can help you track them
         </ThemedText>
         <View style={styles.buttonContainer}>
           <Pressable
@@ -90,7 +87,11 @@ const ReviewQuestionScreen: React.FC<ReviewQuestionScreenProps> = ({
             </ThemedText>
           </Pressable>
         </View>
-
+        {needsReview && (
+          <ThemedText variant="default" style={[styles.title]}>
+            We'll help you track your review progress
+          </ThemedText>
+        )}
         {needsReview !== null && (
           <View style={styles.confirmationContainer}>
             <ThemedButton
@@ -115,13 +116,14 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: Spacing.xl,
     justifyContent: 'center',
+    gap: Spacing.lg,
+    
   },
   title: {
     textAlign: 'center',
   },
   bookInfo: {
     alignItems: 'center',
-    marginBottom: Spacing.md,
   },
   mediumShadow: {
     shadowColor: '#0000006b',
@@ -135,18 +137,16 @@ const styles = StyleSheet.create({
   },
   coverImage: {
     width: 120,
-    height: 180,
+    height: 200,
     borderRadius: 8,
-    marginBottom: Spacing.md,
   },
   coverThumbnail: {
     width: 120,
-    height: 180,
+    height: 200,
     backgroundColor: Colors.light.surfaceVariant,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.md,
   },
   coverEmoji: {
     fontSize: 40,
@@ -154,7 +154,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     gap: Spacing.md,
-    marginBottom: Spacing.md,
   },
   selectionButton: {
     width: '100%',
@@ -167,7 +166,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.surface,
   },
   selectionButtonSelected: {
-    backgroundColor: Colors.light.primary + '80',
+    backgroundColor: Colors.light.primary + '40',
     borderColor: Colors.light.primary,
     borderWidth: 3,
     opacity: 1,
@@ -175,14 +174,13 @@ const styles = StyleSheet.create({
   selectionButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.light.text,
+    color: Colors.light.secondary,
     textAlign: 'center',
   },
   selectionButtonTextSelected: {
     color: Colors.light.textOnPrimary,
   },
   confirmationContainer: {
-    marginTop: Spacing.lg,
     backgroundColor: 'transparent',
   },
   button: {

@@ -1,10 +1,10 @@
-import { render, screen } from '@testing-library/react-native';
-import React from 'react';
 import {
   ReadingDeadlineProgress,
   ReadingDeadlineStatus,
   ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
+import { render, screen } from '@testing-library/react-native';
+import React from 'react';
 import ReadingStats from '../ReadingStats';
 
 jest.mock('@/components/progress/ProgressBar', () => {
@@ -14,6 +14,22 @@ jest.mock('@/components/progress/ProgressBar', () => {
       'View',
       { testID: 'progress-bar' },
       `ProgressBar: ${props.progressPercentage}% urgency=${props.urgencyLevel}`
+    );
+  };
+});
+
+jest.mock('@/components/stats/StatsSummaryCard', () => {
+  return function MockStatsSummaryCard({ label, dateText, subtitle }: any) {
+    const React = require('react');
+    const { View, Text } = require('react-native');
+    return React.createElement(
+      View,
+      { testID: 'stats-summary-card' },
+      [
+        React.createElement(Text, { key: 'label' }, label),
+        React.createElement(Text, { key: 'date' }, dateText),
+        React.createElement(Text, { key: 'subtitle' }, subtitle),
+      ]
     );
   };
 });
@@ -104,7 +120,7 @@ describe('ReadingStats', () => {
       render(<ReadingStats deadline={deadline} />);
 
       expect(screen.getByText('Finished Reading')).toBeTruthy();
-      expect(screen.getByText('Reading Progress')).toBeTruthy();
+      expect(screen.getByText('Pages Read')).toBeTruthy();
       expect(screen.getByText('Reading Timeline')).toBeTruthy();
     });
 
@@ -119,7 +135,7 @@ describe('ReadingStats', () => {
 
       render(<ReadingStats deadline={deadline} />);
 
-      expect(screen.getByText('READING SESSIONS')).toBeTruthy();
+      expect(screen.getByText('reading sessions')).toBeTruthy();
     });
 
     it('should render timeline items', () => {
@@ -134,11 +150,26 @@ describe('ReadingStats', () => {
 
       expect(screen.getByText('Started')).toBeTruthy();
       expect(screen.getByText('Finished')).toBeTruthy();
+      expect(screen.getByText('Total Pages')).toBeTruthy();
       expect(screen.getByText('Format')).toBeTruthy();
     });
   });
 
   describe('ProgressBar Integration', () => {
+    it('should display pages read fraction', () => {
+      const deadline = createMockDeadline({
+        total_quantity: 300,
+        progress: [createProgressRecord(250, '2025-01-15T00:00:00Z')],
+        status: [
+          createStatusRecord('reading', '2025-01-05T00:00:00Z'),
+          createStatusRecord('complete', '2025-01-15T00:00:00Z'),
+        ],
+      });
+
+      render(<ReadingStats deadline={deadline} />);
+      expect(screen.getByText('250/300')).toBeTruthy();
+    });
+
     it('should render ProgressBar with 100% completion and good urgency', () => {
       const deadline = createMockDeadline({
         status: [
@@ -307,7 +338,7 @@ describe('ReadingStats', () => {
 
       render(<ReadingStats deadline={deadline} />);
       expect(screen.getByText('3')).toBeTruthy();
-      expect(screen.getByText('READING SESSIONS')).toBeTruthy();
+      expect(screen.getByText('reading sessions')).toBeTruthy();
     });
 
     it('should display 0 sessions when no progress records', () => {
@@ -342,6 +373,20 @@ describe('ReadingStats', () => {
   });
 
   describe('Timeline Display', () => {
+    it('should display total pages in timeline', () => {
+      const deadline = createMockDeadline({
+        total_quantity: 300,
+        status: [
+          createStatusRecord('reading', '2025-01-05T12:00:00Z'),
+          createStatusRecord('complete', '2025-01-15T12:00:00Z'),
+        ],
+      });
+
+      render(<ReadingStats deadline={deadline} />);
+      expect(screen.getByText('Total Pages')).toBeTruthy();
+      expect(screen.getByText('300 pages')).toBeTruthy();
+    });
+
     it('should display start date in timeline', () => {
       const deadline = createMockDeadline({
         status: [

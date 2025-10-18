@@ -21,13 +21,12 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   deadline,
   onComplete,
 }) => {
-  const { deleteDeadline, reactivateDeadline, startReadingDeadline } = useDeadlines();
+  const { deleteDeadline, startReadingDeadline } = useDeadlines();
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isReactivating, setIsReactivating] = useState(false);
   const [isStartingReading, setIsStartingReading] = useState(false);
 
   const latestStatus = getDeadlineStatus(deadline);
-  const { isCompleted, isToReview, isActive, isPending } =
+  const { isCompleted, isActive, isPending } =
     getStatusFlags(latestStatus);
   const handleComplete = () => {
     if (onComplete) {
@@ -82,59 +81,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           },
         },
       ]
-    );
-  };
-
-  const handleReactivate = () => {
-    setIsReactivating(true);
-    reactivateDeadline(
-      deadline.id,
-      () => {
-        setIsReactivating(false);
-        Toast.show({
-          swipeable: true,
-          type: 'success',
-          text1: 'Deadline reactivated!',
-          text2: `"${deadline.book_title}" is now active again`,
-          autoHide: true,
-          visibilityTime: 1500,
-          position: 'top',
-        });
-
-        if (isToReview) {
-          setTimeout(() => {
-            Alert.alert(
-              'Update Deadline?',
-              "Would you like to update the deadline date since you're resuming this book?",
-              [
-                {
-                  text: 'Not Now',
-                  style: 'cancel',
-                },
-                {
-                  text: 'Yes, Update',
-                  onPress: () => {
-                    // @ts-ignore
-                    router.push(`/deadline/${deadline.id}/edit?page=3`);
-                  },
-                },
-              ]
-            );
-          }, 2500);
-        }
-      },
-      error => {
-        setIsReactivating(false);
-        Toast.show({
-          swipeable: true,
-          type: 'error',
-          text1: 'Failed to reactivate deadline',
-          text2: error.message || 'Please try again',
-          autoHide: true,
-          visibilityTime: 1500,
-          position: 'top',
-        });
-      }
     );
   };
 
@@ -220,50 +166,24 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         onPress={() => router.push(`/deadline/${deadline.id}/notes`)}
       />
       {isPending && (
-        <>
-          <ThemedButton
-            hapticsOnPress
-            title={isStartingReading ? 'Starting...' : 'Start Reading'}
-            variant="primary"
-            style={styles.actionButton}
-            onPress={handleStartReading}
-            disabled={isStartingReading}
-          />
-        </>
+        <ThemedButton
+          hapticsOnPress
+          title={isStartingReading ? 'Starting...' : 'Start Reading'}
+          variant="primary"
+          style={styles.actionButton}
+          onPress={handleStartReading}
+          disabled={isStartingReading}
+        />
       )}
 
       {isActive && (
-        <>
-          <ThemedButton
-            hapticsOnPress
-            title="I'm Done Reading"
-            variant="success"
-            style={styles.actionButton}
-            onPress={handleComplete}
-          />
-        </>
-      )}
-
-      {isToReview && (
-        <>
-          <ThemedButton
-            hapticsOnPress
-            title={isReactivating ? 'Reactivating...' : 'Resume Reading'}
-            variant="secondary"
-            style={styles.actionButton}
-            backgroundColor="warning"
-            textColor="textInverse"
-            onPress={handleReactivate}
-            disabled={isReactivating}
-          />
-          <ThemedButton
-            hapticsOnPress
-            title="I'm Done Reading"
-            variant="success"
-            style={styles.actionButton}
-            onPress={handleComplete}
-          />
-        </>
+        <ThemedButton
+          hapticsOnPress
+          title="I'm Done Reading"
+          variant="success"
+          style={styles.actionButton}
+          onPress={handleComplete}
+        />
       )}
 
       {isCompleted && (
@@ -273,7 +193,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           variant="primary"
           style={styles.actionButton}
           onPress={handleReadAgain}
-          disabled={isReactivating}
         />
       )}
 

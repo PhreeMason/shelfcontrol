@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   },
   bookCover: {
     width: 200,
-    borderRadius: 12,
+    borderRadius: 10,
     aspectRatio: 0.66,
   },
   checkmarkBadge: {

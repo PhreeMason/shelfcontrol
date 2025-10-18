@@ -10,8 +10,8 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
 import { ROUTES } from '@/constants/routes';
 import { useFetchBookById } from '@/hooks/useBooks';
-import { useToReviewDeadline, useCompleteDeadline, useDidNotFinishDeadline } from '@/hooks/useDeadlines';
-import { useCreateReviewTracking } from '@/hooks/useReviewTracking';
+import { useCompleteDeadline, useDidNotFinishDeadline, useToReviewDeadline } from '@/hooks/useDeadlines';
+import { useCreateReviewTracking, useUserPlatforms } from '@/hooks/useReviewTracking';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCompletionFlow } from '@/providers/CompletionFlowProvider';
@@ -20,7 +20,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Image,
@@ -64,6 +64,39 @@ const ReviewForm: React.FC = () => {
   const [newCustomPlatform, setNewCustomPlatform] = useState('');
 
   const { data: bookData } = useFetchBookById(flowState?.bookData.bookId || null);
+  const { data: userPlatforms = [] } = useUserPlatforms();
+
+  const categorizedPlatforms = useMemo(() => {
+    const usedPresets: string[] = [];
+    const custom: string[] = [];
+    const blogs: string[] = [];
+
+    userPlatforms.forEach(p => {
+      if (p.startsWith('Blog: ')) {
+        const blogUrl = p.replace('Blog: ', '');
+        if (!blogs.includes(blogUrl)) {
+          blogs.push(blogUrl);
+        }
+      } else if (PRESET_PLATFORMS.includes(p)) {
+        if (!usedPresets.includes(p)) {
+          usedPresets.push(p);
+        }
+      } else {
+        if (!custom.includes(p)) {
+          custom.push(p);
+        }
+      }
+    });
+
+    const unusedPresets = PRESET_PLATFORMS.filter(p => !usedPresets.includes(p));
+
+    return {
+      usedPresets,
+      unusedPresets,
+      custom,
+      blogs,
+    };
+  }, [userPlatforms]);
 
   const { control, handleSubmit, watch, setValue } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewFormSchema),
@@ -111,6 +144,12 @@ const ReviewForm: React.FC = () => {
       setValue('reviewDueDate', null);
     }
   }, [watchHasDeadline, watchReviewDueDate, setValue]);
+
+  useEffect(() => {
+    if (hasBlog && !blogUrl && categorizedPlatforms.blogs.length > 0) {
+      setBlogUrl(categorizedPlatforms.blogs[0]);
+    }
+  }, [hasBlog, blogUrl, categorizedPlatforms.blogs]);
 
   const togglePlatform = (platform: string) => {
     setSelectedPlatforms((prev) => {
@@ -418,7 +457,25 @@ const ReviewForm: React.FC = () => {
               </ThemedText>
             <ThemedView style={styles.platformsList}>
               <ThemedView style={styles.platformsGrid}>
-                {PRESET_PLATFORMS.map((platform) => (
+                {categorizedPlatforms.usedPresets.map((platform) => (
+                  <ThemedView key={platform} style={styles.platformItem}>
+                    <Checkbox
+                      label={platform}
+                      checked={selectedPlatforms.has(platform)}
+                      onToggle={() => togglePlatform(platform)}
+                    />
+                  </ThemedView>
+                ))}
+                {categorizedPlatforms.custom.map((platform) => (
+                  <ThemedView key={`history-${platform}`} style={styles.platformItem}>
+                    <Checkbox
+                      label={platform}
+                      checked={selectedPlatforms.has(platform)}
+                      onToggle={() => togglePlatform(platform)}
+                    />
+                  </ThemedView>
+                ))}
+                {categorizedPlatforms.unusedPresets.map((platform) => (
                   <ThemedView key={platform} style={styles.platformItem}>
                     <Checkbox
                       label={platform}
@@ -804,13 +861,11 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   actionBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-around',
+    alignItems: 'center',
     padding: Spacing.lg,
+    paddingBottom: 0,
     backgroundColor: Colors.light.surface,
     borderTopWidth: 1,
     borderTopColor: Colors.light.border,

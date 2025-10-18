@@ -278,6 +278,71 @@ class ReviewTrackingService {
   }
 
   /**
+   * Fetches all unique platform names used by a user across all their reviews
+   *
+   * Returns a list of distinct platform names, ordered by most recently used.
+   * Useful for populating platform suggestions based on user history.
+   *
+   * @param userId - The authenticated user's ID
+   *
+   * @returns Array of unique platform names ordered by most recent usage
+   *
+   * @example
+   * const platforms = await reviewTrackingService.getUserPlatforms(userId);
+   * // Returns: ["NetGalley", "Goodreads", "Blog: https://myblog.com", "Instagram"]
+   *
+   * @remarks
+   * - Platforms are deduplicated (case-sensitive)
+   * - Includes all platform types: presets, custom, and blog URLs
+   * - Blog entries stored as "Blog: <url>" format
+   * - Returns empty array if user has no review history
+   */
+  async getUserPlatforms(userId: string): Promise<string[]> {
+    const { data: deadlines } = await supabase
+      .from(DB_TABLES.DEADLINES)
+      .select('id')
+      .eq('user_id', userId);
+
+    if (!deadlines || deadlines.length === 0) {
+      return [];
+    }
+
+    const deadlineIds = deadlines.map(d => d.id);
+
+    const { data: reviewTracking } = await supabase
+      .from(DB_TABLES.REVIEW_TRACKING)
+      .select('id')
+      .in('deadline_id', deadlineIds);
+
+    if (!reviewTracking || reviewTracking.length === 0) {
+      return [];
+    }
+
+    const reviewTrackingIds = reviewTracking.map(rt => rt.id);
+
+    const { data: platforms, error } = await supabase
+      .from(DB_TABLES.REVIEW_PLATFORMS)
+      .select('platform_name, created_at')
+      .in('review_tracking_id', reviewTrackingIds)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('Error fetching user platforms:', error);
+      return [];
+    }
+
+    if (!platforms || platforms.length === 0) {
+      return [];
+    }
+
+    const uniquePlatforms = Array.from(
+      new Set(platforms.map(p => p.platform_name))
+    );
+
+    return uniquePlatforms;
+  }
+
+  /**
    * Fetches review tracking data for a specific deadline
    *
    * Returns complete review tracking information including all platforms and

@@ -160,8 +160,6 @@ describe('DeadlineProvider', () => {
       expect(typeof result.current.updateDeadlineDate).toBe('function');
       expect(typeof result.current.deleteDeadline).toBe('function');
       expect(typeof result.current.completeDeadline).toBe('function');
-      expect(typeof result.current.reactivateDeadline).toBe('function');
-      expect(typeof result.current.reactivateDeadline).toBe('function');
       expect(typeof result.current.startReadingDeadline).toBe('function');
       expect(typeof result.current.didNotFinishDeadline).toBe('function');
 
@@ -307,31 +305,6 @@ describe('DeadlineProvider', () => {
       });
     });
 
-    it('should call reactivateDeadline mutation', () => {
-      const { result } = renderHook(() => useDeadlines(), { wrapper });
-
-      act(() => {
-        result.current.reactivateDeadline('test-id');
-      });
-
-      expect(mockMutate).toHaveBeenCalledWith('test-id', {
-        onSuccess: expect.any(Function),
-        onError: expect.any(Function),
-      });
-    });
-
-    it('should call reactivateDeadline mutation', () => {
-      const { result } = renderHook(() => useDeadlines(), { wrapper });
-
-      act(() => {
-        result.current.reactivateDeadline('test-id');
-      });
-
-      expect(mockMutate).toHaveBeenCalledWith('test-id', {
-        onSuccess: expect.any(Function),
-        onError: expect.any(Function),
-      });
-    });
 
     it('should call updateDeadlineDate mutation', () => {
       const { result } = renderHook(() => useDeadlines(), { wrapper });

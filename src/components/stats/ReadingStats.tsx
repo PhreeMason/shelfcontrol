@@ -1,5 +1,7 @@
 import ProgressBar from '@/components/progress/ProgressBar';
+import StatsSummaryCard from '@/components/stats/StatsSummaryCard';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { formatDisplayDate } from '@/utils/dateUtils';
@@ -32,6 +34,11 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
   const sessionCount = getReadingSessionCount(deadline);
   const statusLabel = getCompletionStatusLabel(latestStatus);
 
+  const currentProgress =
+    deadline.progress && deadline.progress.length > 0
+      ? deadline.progress[deadline.progress.length - 1].current_progress
+      : deadline.total_quantity;
+
   const formattedCompletionDate = completionDate
     ? formatDisplayDate(completionDate, 'MMM D, YYYY')
     : 'N/A';
@@ -49,22 +56,19 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView style={[styles.summaryCard, { borderColor: colors.border }]}>
-        <ThemedText variant="muted" style={styles.statusLabel}>
-          {statusLabel}
-        </ThemedText>
-        <ThemedText
-          style={[styles.completionDate, { color: colors.primary }]}
-        >
-          {formattedCompletionDate}
-        </ThemedText>
-        <ThemedText variant="muted" style={styles.daysSubtitle}>
-          {daysText}
-        </ThemedText>
-      </ThemedView>
+      <StatsSummaryCard
+        label={statusLabel}
+        dateText={formattedCompletionDate}
+        subtitle={daysText}
+      />
 
       <ThemedView style={styles.progressSection}>
-        <ThemedText style={styles.sectionLabel}>Reading Progress</ThemedText>
+        <View style={styles.progressHeader}>
+          <ThemedText style={styles.sectionLabel}>Pages Read</ThemedText>
+          <ThemedText style={styles.progressFraction}>
+            {currentProgress}/{deadline.total_quantity}
+          </ThemedText>
+        </View>
         <ProgressBar
           progressPercentage={100}
           deadlineDate={deadline.deadline_date}
@@ -74,18 +78,18 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
       </ThemedView>
 
       <ThemedView style={styles.statsGrid}>
-        <View style={styles.statItem}>
-          <ThemedText style={styles.statNumber}>
+        <View style={[styles.statCard, { borderColor: colors.border }]}>
+          <ThemedText style={[styles.statNumber, {color: colors.primary}]}>
             {averagePace ?? 'N/A'}
           </ThemedText>
-          <ThemedText variant="muted" style={styles.statLabel}>
-            {averagePace ? formatAveragePace(averagePace, deadline.format).split(' ')[1] : 'AVG PACE'}
+          <ThemedText variant="default" style={styles.statLabel}>
+            {averagePace ? formatAveragePace(averagePace, deadline.format).split(' ')[1] : 'avg pace'}
           </ThemedText>
         </View>
-        <View style={styles.statItem}>
-          <ThemedText style={styles.statNumber}>{sessionCount}</ThemedText>
-          <ThemedText variant="muted" style={styles.statLabel}>
-            READING SESSIONS
+        <View style={[styles.statCard, { borderColor: colors.border }]}>
+          <ThemedText style={[styles.statNumber, {color: colors.primary}]}>{sessionCount}</ThemedText>
+          <ThemedText variant="default" style={styles.statLabel}>
+            reading sessions
           </ThemedText>
         </View>
       </ThemedView>
@@ -110,6 +114,14 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
         </View>
         <View style={styles.timelineItem}>
           <ThemedText variant="muted" style={styles.timelineLabel}>
+            Total Pages
+          </ThemedText>
+          <ThemedText style={styles.timelineValue}>
+            {deadline.total_quantity} pages
+          </ThemedText>
+        </View>
+        <View style={styles.timelineItem}>
+          <ThemedText variant="muted" style={styles.timelineLabel}>
             Format
           </ThemedText>
           <ThemedText style={styles.timelineValue}>
@@ -126,44 +138,36 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 20,
   },
-  summaryCard: {
-    padding: 20,
-    borderRadius: 12,
-    borderWidth: 2,
-    alignItems: 'center',
-  },
-  statusLabel: {
-    fontSize: 12,
-    lineHeight: 16,
-    textTransform: 'uppercase',
-    marginBottom: 8,
-  },
-  completionDate: {
-    fontSize: 28,
-    lineHeight: 36,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  daysSubtitle: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
   progressSection: {
     gap: 12,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  progressFraction: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.light.primary,
   },
   sectionLabel: {
     fontSize: 16,
     lineHeight: 22,
     fontWeight: '600',
-    marginBottom: 4,
   },
   statsGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 12,
+    justifyContent: 'space-between',
+    gap: Spacing.md,
   },
-  statItem: {
+  statCard: {
+    flex: 1,
     alignItems: 'center',
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 2,
   },
   statNumber: {
     fontSize: 32,
@@ -172,9 +176,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   statLabel: {
-    fontSize: 11,
+    fontSize: 12,
     lineHeight: 16,
-    letterSpacing: 1,
     textAlign: 'center',
   },
   timeline: {

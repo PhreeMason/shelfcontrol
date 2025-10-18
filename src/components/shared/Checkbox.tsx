@@ -26,7 +26,6 @@ const Checkbox: React.FC<CheckboxProps> = ({
       onPress={onToggle}
       disabled={disabled}
       activeOpacity={0.7}
-      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
     >
       <View
         style={[
@@ -66,8 +65,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontSize: 13,
-    flex: 1,
+    fontSize: 16,
   },
 });
 

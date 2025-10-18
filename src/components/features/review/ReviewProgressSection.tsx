@@ -12,7 +12,6 @@ import Toast from 'react-native-toast-message';
 import MarkCompleteDialog from './MarkCompleteDialog';
 import PlatformChecklist from './PlatformChecklist';
 import ReviewDueDateBadge from './ReviewDueDateBadge';
-import ReviewProgressBar from './ReviewProgressBar';
 
 interface ReviewProgressSectionProps {
   deadline: ReadingDeadlineWithProgress;
@@ -60,6 +59,17 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({ deadline 
     });
   };
 
+  const handleUpdateUrl = (platformId: string, url: string) => {
+    if (!reviewTracking) return;
+
+    updatePlatforms({
+      reviewTrackingId: reviewTracking.id,
+      params: {
+        platforms: [{ id: platformId, posted: true, review_url: url }],
+      },
+    });
+  };
+
   const handleMarkComplete = () => {
     const finalStatus = deadline.status?.[0];
     const wasDNF = finalStatus?.status === 'did_not_finish';
@@ -93,19 +103,27 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({ deadline 
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText variant="title" style={styles.sectionTitle}>
-        Review Progress
-      </ThemedText>
 
       <View style={styles.content}>
-        <ReviewDueDateBadge reviewDueDate={reviewTracking.review_due_date} />
+        <ReviewDueDateBadge
+          reviewDueDate={reviewTracking.review_due_date}
+          postedCount={postedCount}
+          totalCount={totalCount}
+        />
 
-        <ReviewProgressBar postedCount={postedCount} totalCount={totalCount} />
+        <PlatformChecklist
+          platforms={platforms}
+          onToggle={handleTogglePlatform}
+          needsLinkSubmission={reviewTracking.needs_link_submission}
+          onUpdateUrl={handleUpdateUrl}
+        />
 
-        <PlatformChecklist platforms={platforms} onToggle={handleTogglePlatform} />
+        <ThemedText style={styles.reminderText}>
+          Reminder: Submit review links to publisher if required
+        </ThemedText>
 
         <ThemedButton
-          title="Mark Complete"
+          title="Mark All Complete"
           variant="primary"
           onPress={() => setShowMarkCompleteDialog(true)}
           style={styles.actionButton}
@@ -124,30 +142,31 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({ deadline 
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.light.surfaceVariant,
+    backgroundColor: Colors.light.background,
     borderRadius: BorderRadius.md,
-    padding: Spacing.xs,
+    padding: Spacing.md,
     marginTop: Spacing.md,
     marginBottom: Spacing.sm,
   },
   loadingContainer: {
-    backgroundColor: Colors.light.surfaceVariant,
+    backgroundColor: Colors.light.background,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     marginTop: Spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  sectionTitle: {
-    fontSize: 14,
-    marginBottom: Spacing.xs,
-  },
   content: {
-    gap: Spacing.xs,
+    gap: Spacing.md,
+  },
+  reminderText: {
+    fontSize: 11,
+    color: Colors.light.textSecondary,
+    textAlign: 'center',
+    marginBottom: -10,
   },
   actionButton: {
-    paddingVertical: Spacing.xs,
-    marginTop: Spacing.xs,
+    paddingVertical: Spacing.md,
   },
 });
 

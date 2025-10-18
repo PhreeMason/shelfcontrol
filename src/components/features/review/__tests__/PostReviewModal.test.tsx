@@ -2,6 +2,25 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
 import PostReviewModal from '../PostReviewModal';
 
+jest.mock('react-native-reanimated', () => {
+  const { View } = require('react-native');
+  return {
+    __esModule: true,
+    default: {
+      View: View,
+    },
+    useSharedValue: jest.fn(() => ({ value: 0 })),
+    useAnimatedStyle: jest.fn((callback) => {
+      return callback();
+    }),
+    withSpring: jest.fn((value) => value),
+  };
+});
+
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+}));
+
 jest.mock('@/components/shared/Checkbox', () => {
   return function MockCheckbox({ checked, onToggle, label }: any) {
     const React = require('react');
@@ -56,13 +75,22 @@ jest.mock('@/hooks/useTheme', () => ({
   }),
 }));
 
+jest.mock('@/hooks/useThemeColor', () => ({
+  useTheme: () => ({
+    colors: {
+      surface: '#FFFFFF',
+      textMuted: '#888888',
+    },
+  }),
+}));
+
 const mockPlatforms = [
   {
     id: '1',
     platform_name: 'Goodreads',
     posted: true,
     posted_date: '2025-01-15',
-    review_url: 'https://goodreads.com/review/123',
+    review_url: null,
   },
   {
     id: '2',
@@ -104,33 +132,6 @@ describe('PostReviewModal', () => {
       expect(screen.getByText('StoryGraph ✓')).toBeTruthy();
     });
 
-    it('should show existing review URLs when modal opens', () => {
-      render(
-        <PostReviewModal
-          visible={true}
-          platforms={mockPlatforms}
-          onClose={mockOnClose}
-          onSave={mockOnSave}
-        />
-      );
-
-      const urlInput = screen.getByDisplayValue('https://goodreads.com/review/123');
-      expect(urlInput).toBeTruthy();
-    });
-
-    it('should enable link submission checkbox when platforms have URLs', () => {
-      render(
-        <PostReviewModal
-          visible={true}
-          platforms={mockPlatforms}
-          onClose={mockOnClose}
-          onSave={mockOnSave}
-        />
-      );
-
-      expect(screen.getByText('I need to submit review links ✓')).toBeTruthy();
-    });
-
     it('should not initialize state when modal is not visible', () => {
       render(
         <PostReviewModal
@@ -154,7 +155,7 @@ describe('PostReviewModal', () => {
         />
       );
 
-      expect(screen.getByText('Post Review')).toBeTruthy();
+      expect(screen.getByText('Mark as Posted')).toBeTruthy();
     });
   });
 
@@ -177,7 +178,6 @@ describe('PostReviewModal', () => {
           expect.objectContaining({
             id: '1',
             posted: true,
-            review_url: 'https://goodreads.com/review/123',
           }),
           expect.objectContaining({
             id: '3',
@@ -290,59 +290,6 @@ describe('PostReviewModal', () => {
       );
     });
 
-    it('should handle adding review URL', () => {
-      render(
-        <PostReviewModal
-          visible={true}
-          platforms={mockPlatforms}
-          onClose={mockOnClose}
-          onSave={mockOnSave}
-        />
-      );
-
-      const storyGraphInput = screen.getByDisplayValue('');
-      fireEvent.changeText(storyGraphInput, 'https://storygraph.com/review/789');
-
-      const saveButton = screen.getByTestId('save-button');
-      fireEvent.press(saveButton);
-
-      expect(mockOnSave).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: '3',
-            posted: true,
-            review_url: 'https://storygraph.com/review/789',
-          }),
-        ])
-      );
-    });
-
-    it('should toggle link submission checkbox', () => {
-      const platformsWithoutUrls = [
-        {
-          id: '1',
-          platform_name: 'Goodreads',
-          posted: true,
-          posted_date: '2025-01-15',
-          review_url: null,
-        },
-      ];
-
-      render(
-        <PostReviewModal
-          visible={true}
-          platforms={platformsWithoutUrls}
-          onClose={mockOnClose}
-          onSave={mockOnSave}
-        />
-      );
-
-      const linkCheckbox = screen.getByTestId('checkbox-I need to submit review links');
-      fireEvent.press(linkCheckbox);
-
-      expect(screen.getByText('I need to submit review links ✓')).toBeTruthy();
-    });
-
     it('should persist state when reopening modal with same data', () => {
       const { rerender } = render(
         <PostReviewModal
@@ -374,10 +321,9 @@ describe('PostReviewModal', () => {
       );
 
       expect(screen.getByText('Goodreads ✓')).toBeTruthy();
-      expect(screen.getByDisplayValue('https://goodreads.com/review/123')).toBeTruthy();
     });
 
-    it('should remove platform URL when deselecting platform', () => {
+    it('should remove platform when deselecting', () => {
       render(
         <PostReviewModal
           visible={true}
@@ -398,35 +344,6 @@ describe('PostReviewModal', () => {
       expect(mockOnSave).toHaveBeenCalledWith(
         expect.not.arrayContaining([
           expect.objectContaining({ id: '1' }),
-        ])
-      );
-    });
-
-    it('should save without URLs when link submission disabled', () => {
-      render(
-        <PostReviewModal
-          visible={true}
-          platforms={mockPlatforms}
-          onClose={mockOnClose}
-          onSave={mockOnSave}
-        />
-      );
-
-      const linkCheckbox = screen.getByTestId('checkbox-I need to submit review links');
-      fireEvent.press(linkCheckbox);
-
-      const saveButton = screen.getByTestId('save-button');
-      fireEvent.press(saveButton);
-
-      expect(mockOnSave).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: '1',
-            posted: true,
-          }),
-          expect.not.objectContaining({
-            review_url: expect.anything(),
-          }),
         ])
       );
     });
@@ -452,41 +369,5 @@ describe('PostReviewModal', () => {
       expect(storyGraph.length).toBeGreaterThan(0);
     });
 
-    it('should show "(Posted)" indicator for already posted platforms', () => {
-      render(
-        <PostReviewModal
-          visible={true}
-          platforms={mockPlatforms}
-          onClose={mockOnClose}
-          onSave={mockOnSave}
-        />
-      );
-
-      const postedIndicators = screen.getAllByText('(Posted)');
-      expect(postedIndicators).toHaveLength(2);
-    });
-
-    it('should not show "(Posted)" for unposted platforms', () => {
-      const platformsAllUnposted = [
-        {
-          id: '1',
-          platform_name: 'Goodreads',
-          posted: false,
-          posted_date: null,
-          review_url: null,
-        },
-      ];
-
-      render(
-        <PostReviewModal
-          visible={true}
-          platforms={platformsAllUnposted}
-          onClose={mockOnClose}
-          onSave={mockOnSave}
-        />
-      );
-
-      expect(screen.queryByText('(Posted)')).toBeNull();
-    });
   });
 });

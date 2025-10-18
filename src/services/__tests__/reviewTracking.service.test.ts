@@ -954,4 +954,176 @@ describe('ReviewTrackingService', () => {
       expect(result?.platforms).toEqual([]);
     });
   });
+
+  describe('getUserPlatforms', () => {
+    const userId = 'user-123';
+
+    it('should return unique platforms ordered by most recent', async () => {
+      mockSupabaseFrom.mockImplementation((table: string) => {
+        if (table === 'deadlines') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({
+                data: [{ id: 'rd-123' }, { id: 'rd-124' }],
+                error: null,
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_tracking') {
+          return {
+            select: jest.fn().mockReturnValue({
+              in: jest.fn().mockResolvedValue({
+                data: [{ id: 'rt-123' }, { id: 'rt-124' }],
+                error: null,
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_platforms') {
+          return {
+            select: jest.fn().mockReturnValue({
+              in: jest.fn().mockReturnValue({
+                order: jest.fn().mockResolvedValue({
+                  data: [
+                    { platform_name: 'NetGalley', created_at: '2025-10-15' },
+                    { platform_name: 'Goodreads', created_at: '2025-10-14' },
+                    { platform_name: 'Blog: https://myblog.com', created_at: '2025-10-13' },
+                    { platform_name: 'NetGalley', created_at: '2025-10-12' },
+                    { platform_name: 'Instagram', created_at: '2025-10-11' },
+                  ],
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+
+        return {};
+      });
+
+      const result = await reviewTrackingService.getUserPlatforms(userId);
+
+      expect(result).toEqual([
+        'NetGalley',
+        'Goodreads',
+        'Blog: https://myblog.com',
+        'Instagram',
+      ]);
+    });
+
+    it('should return empty array when user has no platforms', async () => {
+      mockSupabaseFrom.mockImplementation((table: string) => {
+        if (table === 'deadlines') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({
+                data: [],
+                error: null,
+              }),
+            }),
+          };
+        }
+
+        return {};
+      });
+
+      const result = await reviewTrackingService.getUserPlatforms(userId);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array when query fails', async () => {
+      const dbError = new Error('Database error');
+      mockSupabaseFrom.mockImplementation((table: string) => {
+        if (table === 'deadlines') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({
+                data: [{ id: 'rd-123' }],
+                error: null,
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_tracking') {
+          return {
+            select: jest.fn().mockReturnValue({
+              in: jest.fn().mockResolvedValue({
+                data: [{ id: 'rt-123' }],
+                error: null,
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_platforms') {
+          return {
+            select: jest.fn().mockReturnValue({
+              in: jest.fn().mockReturnValue({
+                order: jest.fn().mockResolvedValue({
+                  data: null,
+                  error: dbError,
+                }),
+              }),
+            }),
+          };
+        }
+
+        return {};
+      });
+
+      const result = await reviewTrackingService.getUserPlatforms(userId);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should handle null data response', async () => {
+      mockSupabaseFrom.mockImplementation((table: string) => {
+        if (table === 'deadlines') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({
+                data: [{ id: 'rd-123' }],
+                error: null,
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_tracking') {
+          return {
+            select: jest.fn().mockReturnValue({
+              in: jest.fn().mockResolvedValue({
+                data: [{ id: 'rt-123' }],
+                error: null,
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_platforms') {
+          return {
+            select: jest.fn().mockReturnValue({
+              in: jest.fn().mockReturnValue({
+                order: jest.fn().mockResolvedValue({
+                  data: null,
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+
+        return {};
+      });
+
+      const result = await reviewTrackingService.getUserPlatforms(userId);
+
+      expect(result).toEqual([]);
+    });
+  });
 });

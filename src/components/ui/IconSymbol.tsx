@@ -43,8 +43,10 @@ const MAPPING = {
   'pause.circle.fill': 'pause-circle-filled',
   'play.circle.fill': 'play-circle-filled',
   'circle.grid.2x2.fill': 'category',
+  'square.and.pencil': 'edit-square',
   'checkmark': 'check',
   'note.text': 'note',
+  'pencil.and.scribble': 'edit-note' 
 } as IconMapping;
 
 /**
