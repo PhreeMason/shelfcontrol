@@ -451,7 +451,22 @@ describe('ReviewTrackingService', () => {
 
         if (table === 'review_platforms') {
           platformCallCount++;
-          if (platformCallCount <= 2) {
+          // Calls alternate: select(1), update(2), select(3), update(4), select(5)
+          if (platformCallCount === 1 || platformCallCount === 3) {
+            // Fetch current state for each platform
+            return {
+              select: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { posted: false, posted_date: null },
+                    error: null,
+                  }),
+                }),
+              }),
+            };
+          }
+          if (platformCallCount === 2 || platformCallCount === 4) {
+            // Update each platform
             return {
               update: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
@@ -463,6 +478,7 @@ describe('ReviewTrackingService', () => {
               }),
             };
           }
+          // Final call: fetch all platforms for completion calculation
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({
@@ -523,7 +539,22 @@ describe('ReviewTrackingService', () => {
 
         if (table === 'review_platforms') {
           platformCallCount++;
-          if (platformCallCount <= 2) {
+          // Calls alternate: select(1), update(2), select(3), update(4), select(5)
+          if (platformCallCount === 1 || platformCallCount === 3) {
+            // Fetch current state for each platform
+            return {
+              select: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { posted: false, posted_date: null },
+                    error: null,
+                  }),
+                }),
+              }),
+            };
+          }
+          if (platformCallCount === 2 || platformCallCount === 4) {
+            // Update each platform
             return {
               update: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
@@ -535,6 +566,7 @@ describe('ReviewTrackingService', () => {
               }),
             };
           }
+          // Final call: fetch all platforms for completion calculation
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({
@@ -656,7 +688,22 @@ describe('ReviewTrackingService', () => {
 
         if (table === 'review_platforms') {
           platformCallCount++;
-          if (platformCallCount <= 2) {
+          // Calls alternate: select(1), update(2), select(3), update(4), select(5)
+          if (platformCallCount === 1 || platformCallCount === 3) {
+            // Fetch current state for each platform
+            return {
+              select: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { posted: false, posted_date: null },
+                    error: null,
+                  }),
+                }),
+              }),
+            };
+          }
+          if (platformCallCount === 2 || platformCallCount === 4) {
+            // Update each platform
             return {
               update: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
@@ -668,6 +715,7 @@ describe('ReviewTrackingService', () => {
               }),
             };
           }
+          // Final call: fetch all platforms for completion calculation (empty)
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({
@@ -688,6 +736,178 @@ describe('ReviewTrackingService', () => {
       );
 
       expect(result.completion_percentage).toBe(0);
+    });
+
+    it('should preserve posted_date when platform is already posted', async () => {
+      const existingPostedDate = '2025-01-15T10:00:00.000Z';
+      let platformCallCount = 0;
+
+      mockSupabaseFrom.mockImplementation((table: string) => {
+        if (table === 'review_tracking') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({
+                  data: { id: 'rt-123', deadline_id: 'rd-123' },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'deadlines') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { id: 'rd-123', user_id: userId },
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_platforms') {
+          platformCallCount++;
+          // First call: fetch current state (already posted)
+          if (platformCallCount === 1) {
+            return {
+              select: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { posted: true, posted_date: existingPostedDate },
+                    error: null,
+                  }),
+                }),
+              }),
+            };
+          }
+          // Second call: update
+          if (platformCallCount === 2) {
+            return {
+              update: jest.fn((updatePayload) => {
+                // Verify that posted_date is NOT being updated
+                expect(updatePayload.posted_date).toBeUndefined();
+                return {
+                  eq: jest.fn().mockReturnValue({
+                    single: jest.fn().mockResolvedValue({
+                      data: {},
+                      error: null,
+                    }),
+                  }),
+                };
+              }),
+            };
+          }
+          // Third call: fetch all platforms for completion calculation
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({
+                data: [{ id: 'rp-123', posted: true }],
+                error: null,
+              }),
+            }),
+          };
+        }
+
+        return {};
+      });
+
+      await reviewTrackingService.updateReviewPlatforms(
+        userId,
+        reviewTrackingId,
+        { platforms: [{ id: 'rp-123', posted: true }] }
+      );
+    });
+
+    it('should only set posted_date when changing from not posted to posted', async () => {
+      let platformCallCount = 0;
+
+      mockSupabaseFrom.mockImplementation((table: string) => {
+        if (table === 'review_tracking') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({
+                  data: { id: 'rt-123', deadline_id: 'rd-123' },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'deadlines') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { id: 'rd-123', user_id: userId },
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          };
+        }
+
+        if (table === 'review_platforms') {
+          platformCallCount++;
+          // First call: fetch current state (not posted)
+          if (platformCallCount === 1) {
+            return {
+              select: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: { posted: false, posted_date: null },
+                    error: null,
+                  }),
+                }),
+              }),
+            };
+          }
+          // Second call: update (should include posted_date)
+          if (platformCallCount === 2) {
+            return {
+              update: jest.fn((updatePayload) => {
+                // Verify that posted_date IS being set
+                expect(updatePayload.posted_date).toBeDefined();
+                expect(updatePayload.posted).toBe(true);
+                return {
+                  eq: jest.fn().mockReturnValue({
+                    single: jest.fn().mockResolvedValue({
+                      data: {},
+                      error: null,
+                    }),
+                  }),
+                };
+              }),
+            };
+          }
+          // Third call: fetch all platforms for completion calculation
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({
+                data: [{ id: 'rp-123', posted: true }],
+                error: null,
+              }),
+            }),
+          };
+        }
+
+        return {};
+      });
+
+      await reviewTrackingService.updateReviewPlatforms(
+        userId,
+        reviewTrackingId,
+        { platforms: [{ id: 'rp-123', posted: true }] }
+      );
     });
   });
 

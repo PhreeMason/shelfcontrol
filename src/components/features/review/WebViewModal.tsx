@@ -136,7 +136,7 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
           load_time: loadTime,
           url_domain: urlDomain,
         });
-      } catch (e) {
+      } catch {
         posthog.capture('review webview loaded', {
           platform_name: platformName,
           load_time: loadTime,
@@ -168,7 +168,7 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
           error_message: timeoutError,
           url_domain: urlDomain,
         });
-      } catch (e) {
+      } catch {
         posthog.capture('review webview error', {
           platform_name: platformName,
           error_type: 'timeout',
@@ -302,7 +302,7 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                       error_message: errorMsg,
                       url_domain: urlDomain,
                     });
-                  } catch (e) {
+                  } catch {
                     posthog.capture('review webview error', {
                       platform_name: platformName,
                       error_type: 'load_error',
@@ -326,7 +326,7 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                       error_message: errorMsg,
                       url_domain: urlDomain,
                     });
-                  } catch (e) {
+                  } catch {
                     posthog.capture('review webview error', {
                       platform_name: platformName,
                       error_type: 'http_error',
