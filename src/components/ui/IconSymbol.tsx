@@ -9,14 +9,15 @@ type IconMapping = Record<
   SymbolViewProps['name'],
   ComponentProps<typeof MaterialIcons>['name']
 >;
-type IconSymbolName = keyof typeof MAPPING;
+
+export type IconSymbolName = keyof typeof MAPPING;
 
 /**
  * Add your SF Symbols to Material Icons mappings here.
  * - see Material Icons in the [Icons Directory](https://icons.expo.fyi).
  * - see SF Symbols in the [SF Symbols](https://developer.apple.com/sf-symbols/) app.
  */
-const MAPPING = {
+export const MAPPING = {
   'house.fill': 'home',
   'camera.fill': 'photo-camera',
   'chevron.right': 'chevron-right',
@@ -38,6 +39,8 @@ const MAPPING = {
   'square.and.arrow.up': 'share',
   'ellipsis.circle': 'more-horiz',
   'bookmark.slash': 'bookmark-remove',
+  'arrow.clockwise': 'refresh',
+  'exclamationmark.triangle': 'warning',
   'calendar.badge.clock': 'event-note',
   'trash.fill': 'delete',
   'pause.circle.fill': 'pause-circle-filled',
@@ -46,7 +49,8 @@ const MAPPING = {
   'square.and.pencil': 'edit-square',
   'checkmark': 'check',
   'note.text': 'note',
-  'pencil.and.scribble': 'edit-note' 
+  'pencil.and.scribble': 'edit-note',
+  ellipsis: 'more-horiz'
 } as IconMapping;
 
 /**
@@ -66,6 +70,12 @@ export function IconSymbol({
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
+  if (__DEV__ && !(name in MAPPING)) {
+    throw new Error(
+      `IconSymbol: No Android mapping for "${name}". Please add it to the MAPPING object in IconSymbol.tsx`
+    );
+  }
+
   return (
     <MaterialIcons
       color={color}
