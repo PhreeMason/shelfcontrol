@@ -1,9 +1,11 @@
 import Checkbox from '@/components/shared/Checkbox';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { BorderRadius, Colors, FontFamily, Spacing } from '@/constants/Colors';
+import { posthog } from '@/lib/posthog';
 import React, { useMemo, useState } from 'react';
-import { Linking, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+import WebViewModal from './WebViewModal';
 
 interface Platform {
   id: string;
@@ -26,7 +28,15 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
   needsLinkSubmission = false,
   onUpdateUrl,
 }) => {
-  const [editingUrl, setEditingUrl] = useState<string | null>(null);
+  const [webViewModal, setWebViewModal] = useState<{
+    visible: boolean;
+    url: string;
+    platformName: string;
+  }>({
+    visible: false,
+    url: '',
+    platformName: '',
+  });
 
   const sortedPlatforms = useMemo(() => {
     return [...platforms].sort((a, b) =>
@@ -54,19 +64,39 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
     }
   };
 
-  const handleOpenUrl = async (url: string) => {
-    const canOpen = await Linking.canOpenURL(url);
-    if (canOpen) {
-      await Linking.openURL(url);
-    } else {
+  const handleOpenUrl = (url: string, platformName: string) => {
+    const hasUrl = !!url && url.trim() !== '';
+
+    posthog.capture('review link viewed', {
+      platform_name: platformName,
+      has_url: hasUrl,
+      source: 'platform_checklist',
+    });
+
+    if (!hasUrl) {
       Toast.show({
         type: 'error',
-        text1: 'Invalid URL',
-        text2: 'Unable to open the review link',
+        text1: 'No URL provided',
+        text2: 'Please add a review link first',
         position: 'top',
         visibilityTime: 2000,
       });
+      return;
     }
+
+    setWebViewModal({
+      visible: true,
+      url,
+      platformName,
+    });
+  };
+
+  const handleCloseWebView = () => {
+    setWebViewModal({
+      visible: false,
+      url: '',
+      platformName: '',
+    });
   };
 
   const formatDate = (dateString: string) => {
@@ -87,9 +117,10 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
   }
 
   return (
-    <ThemedView style={styles.container}>
-      {sortedPlatforms.map(platform => {
-        return (
+    <>
+      <ThemedView style={styles.container}>
+        {sortedPlatforms.map(platform => {
+          return (
           <View key={platform.id} style={styles.platformItem}>
             <View style={styles.platformRow}>
               <Checkbox
@@ -110,17 +141,15 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
                   style={styles.urlInput}
                   placeholder="Paste review URL (optional)"
                   placeholderTextColor={Colors.light.textMuted}
-                  value={editingUrl === platform.id ? undefined : (platform.review_url || '')}
+                  value={platform.review_url || ''}
                   onChangeText={(text) => handleUrlChange(platform.id, text)}
-                  onFocus={() => setEditingUrl(platform.id)}
-                  onBlur={() => setEditingUrl(null)}
                   keyboardType="url"
                   autoCapitalize="none"
                   autoCorrect={false}
                 />
                 {platform.review_url && (
                   <Pressable
-                    onPress={() => handleOpenUrl(platform.review_url!)}
+                    onPress={() => handleOpenUrl(platform.review_url!, platform.platform_name)}
                     style={styles.viewReviewLink}
                   >
                     <ThemedText style={styles.viewReviewText}>
@@ -131,9 +160,17 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
               </View>
             )}
           </View>
-        );
-      })}
-    </ThemedView>
+          );
+        })}
+      </ThemedView>
+
+      <WebViewModal
+        visible={webViewModal.visible}
+        url={webViewModal.url}
+        platformName={webViewModal.platformName}
+        onClose={handleCloseWebView}
+      />
+    </>
   );
 };
 
