@@ -83,7 +83,10 @@ export function DeadlineCard({
 const styles = StyleSheet.create({
   cardContainer: {
     backgroundColor: 'white',
-    borderRadius: 16,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 5,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
     padding: 0,
     borderWidth: 1,
     flexDirection: 'row',
