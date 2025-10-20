@@ -112,7 +112,7 @@ export function getCompletionStatusLabel(
 ): string {
   const statusMap: Record<string, string> = {
     complete: 'Finished Reading',
-    to_review: 'Ready to Review',
+    to_review: 'Finished Reading',
     did_not_finish: 'Did Not Finish',
   };
 
