@@ -3,6 +3,7 @@ import {
   ReadingDeadlineStatus,
   ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
+import { normalizeServerDate } from '@/utils/dateNormalization';
 import { useMemo } from 'react';
 
 export interface DeadlineCardState {
@@ -46,8 +47,8 @@ export function useDeadlineCardState(
       deadline.status && deadline.status.length > 0
         ? [...deadline.status].sort(
             (a, b) =>
-              new Date(a.created_at).getTime() -
-              new Date(b.created_at).getTime()
+              normalizeServerDate(a.created_at).valueOf() -
+              normalizeServerDate(b.created_at).valueOf()
           )
         : [];
 

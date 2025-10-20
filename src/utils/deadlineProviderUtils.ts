@@ -7,6 +7,7 @@ import {
   getPaceEstimate,
   getReadingEstimate,
 } from '@/utils/deadlineCalculations';
+import { normalizeServerDate } from '@/utils/dateNormalization';
 import {
   calculateDaysLeft,
   calculateProgress,
@@ -56,8 +57,8 @@ export function getDeadlineStatus(
 
   if (deadline.status && deadline.status.length > 0) {
     const sortedStatuses = [...deadline.status].sort((a, b) => {
-      const dateA = new Date(a.created_at || 0).getTime();
-      const dateB = new Date(b.created_at || 0).getTime();
+      const dateA = normalizeServerDate(a.created_at || '1970-01-01').valueOf();
+      const dateB = normalizeServerDate(b.created_at || '1970-01-01').valueOf();
       return dateB - dateA;
     });
     latestStatus = sortedStatuses[0].status ?? 'reading';
@@ -152,17 +153,17 @@ export function calculateProgressAsOfStartOfDay(
 
   // Filter progress entries to only include those from before or at the start of today
   const progressBeforeToday = deadline.progress.filter(progress => {
-    const progressDate = new Date(progress.created_at || '');
-    return progressDate <= startOfToday;
+    const progressDate = normalizeServerDate(progress.created_at || '1970-01-01');
+    return progressDate.isBefore(startOfToday) || progressDate.isSame(startOfToday);
   });
 
   if (progressBeforeToday.length === 0) return 0;
 
   // Find the most recent progress entry before or at the start of today
   const latestProgress = progressBeforeToday.reduce((latest, current) => {
-    const currentDate = new Date(current.created_at || '');
-    const latestDate = new Date(latest.created_at || '');
-    return currentDate > latestDate ? current : latest;
+    const currentDate = normalizeServerDate(current.created_at || '1970-01-01');
+    const latestDate = normalizeServerDate(latest.created_at || '1970-01-01');
+    return currentDate.isAfter(latestDate) ? current : latest;
   });
 
   return latestProgress.current_progress || 0;

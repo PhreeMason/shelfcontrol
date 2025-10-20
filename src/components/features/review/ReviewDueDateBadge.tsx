@@ -1,6 +1,7 @@
 import StatsSummaryCard from '@/components/stats/StatsSummaryCard';
 import { ThemedText } from '@/components/themed';
 import { BorderRadius, Colors, FontFamily, Spacing } from '@/constants/Colors';
+import { calculateLocalDaysLeft } from '@/utils/dateNormalization';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -17,15 +18,13 @@ const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({
 }) => {
   if (!reviewDueDate) return null;
 
-  const dueDate = new Date(reviewDueDate);
-  const today = new Date();
-  const daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  const daysUntilDue = calculateLocalDaysLeft(reviewDueDate);
 
   const isOverdue = daysUntilDue < 0;
   const percentage = totalCount > 0 ? Math.round((postedCount / totalCount) * 100) : 0;
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
   const label = isOverdue ? 'REVIEW OVERDUE' : 'REVIEW DEADLINE';
@@ -36,7 +35,7 @@ const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({
   return (
     <StatsSummaryCard
       label={label}
-      dateText={formatDate(dueDate)}
+      dateText={formatDate(reviewDueDate)}
       subtitle={subtitle}
     >
       <View style={styles.progressSection}>

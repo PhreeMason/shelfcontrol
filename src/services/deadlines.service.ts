@@ -7,6 +7,7 @@ import {
   ReadingDeadlineProgressInsert,
   ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
+import { normalizeServerDate } from '@/utils/dateNormalization';
 import { activityService } from './activity.service';
 import { booksService } from './books.service';
 
@@ -14,8 +15,8 @@ const sortByCreatedAtAsc = <T extends { created_at?: string | null }>(
   array: T[]
 ): T[] => {
   return [...array].sort((a, b) => {
-    const dateA = new Date(a.created_at || 0).getTime();
-    const dateB = new Date(b.created_at || 0).getTime();
+    const dateA = normalizeServerDate(a.created_at || '1970-01-01').valueOf();
+    const dateB = normalizeServerDate(b.created_at || '1970-01-01').valueOf();
     return dateA - dateB;
   });
 };
