@@ -72,7 +72,7 @@ class ReviewTrackingService {
    *
    * @remarks
    * - If review_notes provided, fetches current progress from deadline_progress table
-   *   and stores it in deadline_notes.deadline_progress field as a numeric snapshot
+   *   and stores it in deadline_notes.deadline_progress field as a percentage (0-100)
    * - All platforms treated equally for completion tracking (no required/optional)
    * - Creates unique review_tracking record per deadline (enforced by DB constraint)
    */
@@ -94,7 +94,7 @@ class ReviewTrackingService {
 
     const { data: deadline, error: deadlineError } = await supabase
       .from(DB_TABLES.DEADLINES)
-      .select('id, user_id')
+      .select('id, user_id, total_quantity')
       .eq('id', deadline_id)
       .eq('user_id', userId)
       .single();
@@ -154,6 +154,9 @@ class ReviewTrackingService {
         .single();
 
       const currentProgress = progressData?.current_progress || 0;
+      const progressPercentage = deadline.total_quantity
+        ? Math.round((currentProgress / deadline.total_quantity) * 100)
+        : 0;
 
       const { error: noteError } = await supabase
         .from(DB_TABLES.DEADLINE_NOTES)
@@ -161,7 +164,7 @@ class ReviewTrackingService {
           id: generateId('note'),
           deadline_id,
           note_text: review_notes,
-          deadline_progress: currentProgress,
+          deadline_progress: progressPercentage,
           user_id: userId,
         })
         .select()
