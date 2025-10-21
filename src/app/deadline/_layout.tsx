@@ -16,7 +16,6 @@ export default function DeadlineLayout() {
         name="[id]/completion-flow"
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="[id]/review-form" options={{ headerShown: false }} />
       <Stack.Screen
         name="[id]/notes"
         options={{ headerShown: false, presentation: 'modal' }}
