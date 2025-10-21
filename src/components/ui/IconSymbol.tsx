@@ -52,6 +52,7 @@ export const MAPPING = {
   'pencil.and.scribble': 'edit-note',
   ellipsis: 'more-horiz',
   book: 'menu-book',
+  'doc.on.clipboard': 'content-copy',
 } as IconMapping;
 
 /**

@@ -1,7 +1,9 @@
 import Checkbox from '@/components/shared/Checkbox';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { BorderRadius, Colors, FontFamily, Spacing } from '@/constants/Colors';
 import { posthog } from '@/lib/posthog';
+import * as Clipboard from 'expo-clipboard';
 import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -20,6 +22,7 @@ interface PlatformChecklistProps {
   onToggle: (id: string, posted: boolean) => void;
   needsLinkSubmission?: boolean;
   onUpdateUrl?: (id: string, url: string) => void;
+  readOnly?: boolean;
 }
 
 const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
@@ -27,6 +30,7 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
   onToggle,
   needsLinkSubmission = false,
   onUpdateUrl,
+  readOnly = false,
 }) => {
   const [webViewModal, setWebViewModal] = useState<{
     visible: boolean;
@@ -99,6 +103,33 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
     });
   };
 
+  const handleCopyUrl = async (url: string, platformName: string) => {
+    try {
+      await Clipboard.setStringAsync(url);
+
+      posthog.capture('review link copied', {
+        platform_name: platformName,
+        source: 'platform_checklist',
+      });
+
+      Toast.show({
+        type: 'success',
+        text1: 'Link copied!',
+        text2: 'Review URL copied to clipboard',
+        position: 'top',
+        visibilityTime: 1000,
+      });
+    } catch {
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to copy',
+        text2: 'Please try again',
+        position: 'top',
+        visibilityTime: 2000,
+      });
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -127,6 +158,7 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
                   checked={platform.posted}
                   onToggle={() => handleToggle(platform)}
                   label={platform.platform_name}
+                  disabled={readOnly}
                 />
                 {platform.posted && platform.posted_date && (
                   <ThemedText style={styles.postedDate}>
@@ -137,16 +169,33 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
 
               {needsLinkSubmission && platform.posted && (
                 <View style={styles.urlInputContainer}>
-                  <TextInput
-                    style={styles.urlInput}
-                    placeholder="Paste review URL (optional)"
-                    placeholderTextColor={Colors.light.textMuted}
-                    value={platform.review_url || ''}
-                    onChangeText={text => handleUrlChange(platform.id, text)}
-                    keyboardType="url"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
+                  <View style={styles.inputRow}>
+                    <TextInput
+                      style={styles.urlInput}
+                      placeholder="Paste review URL (optional)"
+                      placeholderTextColor={Colors.light.textMuted}
+                      value={platform.review_url || ''}
+                      onChangeText={text => handleUrlChange(platform.id, text)}
+                      keyboardType="url"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      editable={!readOnly}
+                    />
+                    {platform.review_url && (
+                      <ThemedIconButton
+                        icon="doc.on.clipboard"
+                        onPress={() =>
+                          handleCopyUrl(
+                            platform.review_url!,
+                            platform.platform_name
+                          )
+                        }
+                        variant="ghost"
+                        size="sm"
+                        hapticsOnPress
+                      />
+                    )}
+                  </View>
                   {platform.review_url && (
                     <Pressable
                       onPress={() =>
@@ -200,7 +249,13 @@ const styles = StyleSheet.create({
     marginLeft: 36,
     gap: Spacing.xs,
   },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
   urlInput: {
+    flex: 1,
     backgroundColor: Colors.light.background,
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.sm,

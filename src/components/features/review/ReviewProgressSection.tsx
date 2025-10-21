@@ -27,13 +27,11 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
 
   const { reviewTracking, platforms, isLoading } = useReviewTrackingData(
     deadline.id,
-    isToReview
+    true
   );
 
   const { updatePlatforms } = useReviewTrackingMutation(deadline.id);
   const { completeDeadline, didNotFinishDeadline } = useDeadlines();
-
-  if (!isToReview) return null;
 
   if (isLoading) {
     return (
@@ -117,18 +115,23 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
           onToggle={handleTogglePlatform}
           needsLinkSubmission={reviewTracking.needs_link_submission}
           onUpdateUrl={handleUpdateUrl}
+          readOnly={!isToReview}
         />
 
-        <ThemedText style={styles.reminderText}>
-          Reminder: Submit review links to publisher if required
-        </ThemedText>
+        {isToReview && (
+          <>
+            <ThemedText style={styles.reminderText}>
+              Reminder: Submit review links to publisher if required
+            </ThemedText>
 
-        <ThemedButton
-          title="Mark All Complete"
-          variant="primary"
-          onPress={() => setShowMarkCompleteDialog(true)}
-          style={styles.actionButton}
-        />
+            <ThemedButton
+              title="Mark All Complete"
+              variant="primary"
+              onPress={() => setShowMarkCompleteDialog(true)}
+              style={styles.actionButton}
+            />
+          </>
+        )}
       </View>
 
       <MarkCompleteDialog
