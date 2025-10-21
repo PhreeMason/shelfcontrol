@@ -33,10 +33,7 @@ describe('DeadlineCountdownDisplay', () => {
   describe('Complete status', () => {
     it('should display trophy emoji and done label', () => {
       const { getByText } = render(
-        <DeadlineCountdownDisplay
-          {...defaultProps}
-          latestStatus="complete"
-        />
+        <DeadlineCountdownDisplay {...defaultProps} latestStatus="complete" />
       );
 
       expect(getByText('🏆')).toBeTruthy();
@@ -60,10 +57,7 @@ describe('DeadlineCountdownDisplay', () => {
   describe('To review status', () => {
     it('should display emoji and review label when no review data provided', () => {
       const { getByText } = render(
-        <DeadlineCountdownDisplay
-          {...defaultProps}
-          latestStatus="to_review"
-        />
+        <DeadlineCountdownDisplay {...defaultProps} latestStatus="to_review" />
       );
 
       expect(getByText('📝')).toBeTruthy();

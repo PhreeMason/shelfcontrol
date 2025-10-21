@@ -60,7 +60,7 @@ jest.mock('@/components/features/completion/ReviewTimelineSection', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
   return {
-    ReviewTimelineSection: ({ control, watch, setValue }: any) =>
+    ReviewTimelineSection: () =>
       React.createElement(View, { testID: 'review-timeline-section' }, [
         React.createElement(Text, { key: 'text' }, 'Review Timeline Section'),
       ]),
@@ -86,7 +86,7 @@ jest.mock('@/components/features/completion/LinkSubmissionSection', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
   return {
-    LinkSubmissionSection: ({ watch, setValue }: any) =>
+    LinkSubmissionSection: () =>
       React.createElement(View, { testID: 'link-submission-section' }, [
         React.createElement(Text, { key: 'text' }, 'Link Submission Section'),
       ]),
@@ -97,7 +97,7 @@ jest.mock('@/components/features/completion/ReviewNotesSection', () => {
   const React = require('react');
   const { View, Text } = require('react-native');
   return {
-    ReviewNotesSection: ({ control }: any) =>
+    ReviewNotesSection: () =>
       React.createElement(View, { testID: 'review-notes-section' }, [
         React.createElement(Text, { key: 'text' }, 'Review Notes Section'),
       ]),
@@ -348,10 +348,10 @@ describe('CompletionFormStep3', () => {
 
     it('should create review tracking with selected platforms', async () => {
       mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads', 'Amazon']);
-      mockCreateReviewTracking.mockImplementation((params, callbacks) => {
+      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
         callbacks.onSuccess();
       });
-      mockUpdateToReview.mockImplementation((id, callbacks) => {
+      mockUpdateToReview.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -373,10 +373,10 @@ describe('CompletionFormStep3', () => {
 
     it('should update deadline to to_review status on success', async () => {
       mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads']);
-      mockCreateReviewTracking.mockImplementation((params, callbacks) => {
+      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
         callbacks.onSuccess();
       });
-      mockUpdateToReview.mockImplementation((id, callbacks) => {
+      mockUpdateToReview.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -394,10 +394,10 @@ describe('CompletionFormStep3', () => {
 
     it('should show success toast and navigate on completion', async () => {
       mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads']);
-      mockCreateReviewTracking.mockImplementation((params, callbacks) => {
+      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
         callbacks.onSuccess();
       });
-      mockUpdateToReview.mockImplementation((id, callbacks) => {
+      mockUpdateToReview.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -416,10 +416,10 @@ describe('CompletionFormStep3', () => {
 
     it('should handle updateToReview error gracefully', async () => {
       mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads']);
-      mockCreateReviewTracking.mockImplementation((params, callbacks) => {
+      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
         callbacks.onSuccess();
       });
-      mockUpdateToReview.mockImplementation((id, callbacks) => {
+      mockUpdateToReview.mockImplementation((_id, callbacks) => {
         callbacks.onError(new Error('Update failed'));
       });
 
@@ -438,7 +438,7 @@ describe('CompletionFormStep3', () => {
 
     it('should show error toast on createReviewTracking failure', async () => {
       mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads']);
-      mockCreateReviewTracking.mockImplementation((params, callbacks) => {
+      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
         callbacks.onError(new Error('Network error'));
       });
 
@@ -473,10 +473,10 @@ describe('CompletionFormStep3', () => {
 
     it('should disable buttons while submitting', async () => {
       mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads']);
-      mockCreateReviewTracking.mockImplementation((params, callbacks) => {
+      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
         setTimeout(() => callbacks.onSuccess(), 100);
       });
-      mockUpdateToReview.mockImplementation((id, callbacks) => {
+      mockUpdateToReview.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -497,7 +497,7 @@ describe('CompletionFormStep3', () => {
 
   describe('Skip Flow', () => {
     it('should call completeDeadline for non-DNF when skip pressed', async () => {
-      mockCompleteDeadline.mockImplementation((id, callbacks) => {
+      mockCompleteDeadline.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -515,7 +515,7 @@ describe('CompletionFormStep3', () => {
     });
 
     it('should call didNotFinishDeadline for DNF when skip pressed', async () => {
-      mockDidNotFinishDeadline.mockImplementation((id, callbacks) => {
+      mockDidNotFinishDeadline.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -533,7 +533,7 @@ describe('CompletionFormStep3', () => {
     });
 
     it('should show success toast and navigate home on skip success', async () => {
-      mockCompleteDeadline.mockImplementation((id, callbacks) => {
+      mockCompleteDeadline.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -551,7 +551,7 @@ describe('CompletionFormStep3', () => {
     });
 
     it('should show error toast on skip failure', async () => {
-      mockCompleteDeadline.mockImplementation((id, callbacks) => {
+      mockCompleteDeadline.mockImplementation((_id, callbacks) => {
         callbacks.onError(new Error('Update failed'));
       });
 
@@ -624,7 +624,7 @@ describe('CompletionFormStep3', () => {
     });
 
     it('should accept isDNF true', async () => {
-      mockDidNotFinishDeadline.mockImplementation((id, callbacks) => {
+      mockDidNotFinishDeadline.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -638,7 +638,7 @@ describe('CompletionFormStep3', () => {
     });
 
     it('should accept isDNF false explicitly', async () => {
-      mockCompleteDeadline.mockImplementation((id, callbacks) => {
+      mockCompleteDeadline.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -661,13 +661,13 @@ describe('CompletionFormStep3', () => {
         source: 'NetGalley',
       };
 
-      mockCreateReviewTracking.mockImplementation((params, callbacks) => {
-        expect(params.review_due_date).toBeDefined();
-        expect(typeof params.review_due_date).toBe('string');
+      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
+        expect(_params.review_due_date).toBeDefined();
+        expect(typeof _params.review_due_date).toBe('string');
         callbacks.onSuccess();
       });
 
-      mockUpdateToReview.mockImplementation((id, callbacks) => {
+      mockUpdateToReview.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -683,12 +683,12 @@ describe('CompletionFormStep3', () => {
     it('should not include review due date when hasReviewDeadline is false', async () => {
       mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads']);
 
-      mockCreateReviewTracking.mockImplementation((params, callbacks) => {
-        expect(params.review_due_date).toBeUndefined();
+      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
+        expect(_params.review_due_date).toBeUndefined();
         callbacks.onSuccess();
       });
 
-      mockUpdateToReview.mockImplementation((id, callbacks) => {
+      mockUpdateToReview.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -709,14 +709,14 @@ describe('CompletionFormStep3', () => {
     it('should include review notes when provided', async () => {
       mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads']);
 
-      mockCreateReviewTracking.mockImplementation((params, callbacks) => {
-        if (params.review_notes) {
-          expect(params.review_notes).toBe('Test review notes');
+      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
+        if (_params.review_notes) {
+          expect(_params.review_notes).toBe('Test review notes');
         }
         callbacks.onSuccess();
       });
 
-      mockUpdateToReview.mockImplementation((id, callbacks) => {
+      mockUpdateToReview.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -739,12 +739,12 @@ describe('CompletionFormStep3', () => {
     it('should not include review notes when empty', async () => {
       mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads']);
 
-      mockCreateReviewTracking.mockImplementation((params, callbacks) => {
-        expect(params.review_notes).toBeUndefined();
+      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
+        expect(_params.review_notes).toBeUndefined();
         callbacks.onSuccess();
       });
 
-      mockUpdateToReview.mockImplementation((id, callbacks) => {
+      mockUpdateToReview.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -765,12 +765,12 @@ describe('CompletionFormStep3', () => {
     it('should include needs_link_submission in params', async () => {
       mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads']);
 
-      mockCreateReviewTracking.mockImplementation((params, callbacks) => {
-        expect(params.needs_link_submission).toBe(false);
+      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
+        expect(_params.needs_link_submission).toBe(false);
         callbacks.onSuccess();
       });
 
-      mockUpdateToReview.mockImplementation((id, callbacks) => {
+      mockUpdateToReview.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -790,8 +790,8 @@ describe('CompletionFormStep3', () => {
         'Blog: example.com',
       ]);
 
-      mockCreateReviewTracking.mockImplementation((params, callbacks) => {
-        expect(params.platforms).toEqual([
+      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
+        expect(_params.platforms).toEqual([
           { name: 'Goodreads' },
           { name: 'Amazon' },
           { name: 'Blog: example.com' },
@@ -799,7 +799,7 @@ describe('CompletionFormStep3', () => {
         callbacks.onSuccess();
       });
 
-      mockUpdateToReview.mockImplementation((id, callbacks) => {
+      mockUpdateToReview.mockImplementation((_id, callbacks) => {
         callbacks.onSuccess();
       });
 

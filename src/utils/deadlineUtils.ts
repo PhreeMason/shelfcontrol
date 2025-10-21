@@ -33,6 +33,7 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   const toReview: ReadingDeadlineWithProgress[] = [];
   const didNotFinish: ReadingDeadlineWithProgress[] = [];
   const pending: ReadingDeadlineWithProgress[] = [];
+  const paused: ReadingDeadlineWithProgress[] = [];
 
   const today = dayjs().startOf('day');
 
@@ -56,6 +57,8 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
       didNotFinish.push(deadline);
     } else if (latestStatus === 'pending') {
       pending.push(deadline);
+    } else if (latestStatus === 'paused') {
+      paused.push(deadline);
     } else if (deadlineDate.isBefore(today)) {
       overdue.push(deadline);
     } else {
@@ -69,6 +72,7 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   toReview.sort(sortByStatusDate);
   didNotFinish.sort(sortByStatusDate);
   pending.sort(sortDeadlines);
+  paused.sort(sortDeadlines);
 
   return {
     active,
@@ -77,6 +81,7 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
     toReview,
     didNotFinish,
     pending,
+    paused,
   };
 };
 

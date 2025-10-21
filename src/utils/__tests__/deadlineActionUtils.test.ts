@@ -80,6 +80,7 @@ describe('deadlineActionUtils', () => {
         isToReview: false,
         isActive: false,
         isPending: false,
+        isPaused: false,
       });
     });
 
@@ -90,6 +91,7 @@ describe('deadlineActionUtils', () => {
         isToReview: true,
         isActive: false,
         isPending: false,
+        isPaused: false,
       });
     });
 
@@ -100,6 +102,7 @@ describe('deadlineActionUtils', () => {
         isToReview: false,
         isActive: true,
         isPending: false,
+        isPaused: false,
       });
     });
 
@@ -110,6 +113,7 @@ describe('deadlineActionUtils', () => {
         isToReview: false,
         isActive: false,
         isPending: true,
+        isPaused: false,
       });
     });
 
@@ -120,6 +124,7 @@ describe('deadlineActionUtils', () => {
         isToReview: false,
         isActive: false,
         isPending: false,
+        isPaused: false,
       });
     });
   });

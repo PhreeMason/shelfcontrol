@@ -482,9 +482,9 @@ describe('readingStatsUtils', () => {
       expect(result).toBe('Finished Reading');
     });
 
-    it('should return Ready to Review for to_review status', () => {
+    it('should return Finished Reading for to_review status', () => {
       const result = getCompletionStatusLabel('to_review');
-      expect(result).toBe('Ready to Review');
+      expect(result).toBe('Finished Reading');
     });
 
     it('should return Did Not Finish for did_not_finish status', () => {

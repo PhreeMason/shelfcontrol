@@ -23,6 +23,7 @@ export interface StatusFlags {
   isToReview: boolean;
   isActive: boolean;
   isPending: boolean;
+  isPaused: boolean;
 }
 
 export const getStatusFlags = (status: string): StatusFlags => {
@@ -31,6 +32,7 @@ export const getStatusFlags = (status: string): StatusFlags => {
     isToReview: status === DEADLINE_STATUS.TO_REVIEW,
     isActive: status === DEADLINE_STATUS.READING,
     isPending: status === DEADLINE_STATUS.PENDING,
+    isPaused: status === DEADLINE_STATUS.PAUSED,
   };
 };
 

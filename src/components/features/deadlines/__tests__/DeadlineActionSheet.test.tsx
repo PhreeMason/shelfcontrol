@@ -37,20 +37,12 @@ jest.mock('../modals/UpdateDeadlineDateModal', () => ({
   UpdateDeadlineDateModal: () => null,
 }));
 
-jest.mock('../modals/CompleteDeadlineModal', () => ({
-  CompleteDeadlineModal: () => null,
-}));
-
 jest.mock('../modals/DeleteDeadlineModal', () => ({
   DeleteDeadlineModal: () => null,
 }));
 
-jest.mock('../modals/DidNotFinishDeadlineModal', () => ({
-  DidNotFinishDeadlineModal: () => null,
-}));
-
-jest.mock('../modals/ChangeReadingStatusModal', () => ({
-  ChangeReadingStatusModal: () => null,
+jest.mock('../modals/ProgressCheckModal', () => ({
+  ProgressCheckModal: () => null,
 }));
 
 jest.mock('../../review/PostReviewModal', () => ({
@@ -190,7 +182,7 @@ describe('DeadlineActionSheet', () => {
       />
     );
 
-    expect(queryByText('Mark as Completed')).toBeNull();
+    expect(queryByText("I'm done reading")).toBeNull();
   });
 
   it('should always show delete action', () => {
@@ -567,8 +559,9 @@ describe('DeadlineActionSheet', () => {
         />
       );
 
+      expect(getByText("I'm done reading")).toBeTruthy();
       expect(getByText('Update Deadline Date')).toBeTruthy();
-      expect(getByText('Change Reading Status')).toBeTruthy();
+      expect(getByText('Edit Deadline Details')).toBeTruthy();
       expect(getByText('Delete This Book')).toBeTruthy();
     });
 
@@ -619,7 +612,9 @@ describe('DeadlineActionSheet', () => {
         />
       );
 
-      expect(queryByText('Change Reading Status')).toBeNull();
+      expect(queryByText("I'm done reading")).toBeNull();
+      expect(queryByText('Update Deadline Date')).toBeNull();
+      expect(queryByText('Edit Deadline Details')).toBeNull();
       expect(getByText('Delete This Book')).toBeTruthy();
     });
   });

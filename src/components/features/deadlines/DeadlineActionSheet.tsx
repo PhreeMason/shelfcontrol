@@ -43,14 +43,15 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const translateY = useSharedValue(500);
-  const { startReadingDeadline } = useDeadlines();
+  const { startReadingDeadline, pauseDeadline, resumeDeadline } =
+    useDeadlines();
   const [showUpdateDateModal, setShowUpdateDateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPostReviewModal, setShowPostReviewModal] = useState(false);
   const [showProgressCheckModal, setShowProgressCheckModal] = useState(false);
 
   const latestStatus = getDeadlineStatus(deadline);
-  const { isCompleted, isToReview, isActive, isPending } =
+  const { isCompleted, isToReview, isActive, isPending, isPaused } =
     getStatusFlags(latestStatus);
 
   const { reviewTracking, platforms } = useReviewTrackingData(
@@ -76,6 +77,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const getStatusBadge = () => {
     if (isPending) return { label: 'Pending', color: colors.secondary };
     if (isActive) return { label: 'Active', color: colors.primary };
+    if (isPaused) return { label: 'Paused', color: colors.textSecondary };
     if (isToReview) return { label: 'To Review', color: colors.approaching };
     if (isCompleted) return { label: 'Completed', color: colors.good };
     if (latestStatus === 'did_not_finish')
@@ -126,15 +128,33 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
       };
     }
 
+    if (isPaused) {
+      return {
+        label: 'Resume Book',
+        icon: 'play.fill' as const,
+        onPress: () => {
+          resumeDeadline(
+            deadline.id,
+            () => {
+              onClose();
+            },
+            error => {
+              console.error('Failed to resume reading:', error);
+            }
+          );
+        },
+      };
+    }
+
     if (isActive || isToReview) {
       return {
         label: isToReview ? "I'm done reviewing" : "I'm done reading",
         icon: 'checkmark.circle.fill' as const,
         onPress: () => {
-           onClose();
+          onClose();
           setShowProgressCheckModal(true);
         },
-      }
+      };
     }
 
     return null;
@@ -176,6 +196,26 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
         },
       }
     );
+
+    if (isActive || isToReview) {
+      actions.push({
+        label: 'Pause Book',
+        icon: 'pause.fill',
+        iconColor: colors.textSecondary,
+        showChevron: true,
+        onPress: () => {
+          pauseDeadline(
+            deadline.id,
+            () => {
+              onClose();
+            },
+            error => {
+              console.error('Failed to pause:', error);
+            }
+          );
+        },
+      });
+    }
 
     if (isToReview) {
       actions.push({
