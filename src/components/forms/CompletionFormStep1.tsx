@@ -2,14 +2,15 @@ import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { Colors } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
-import { useCompletionFlow } from '@/providers/CompletionFlowProvider';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, StyleSheet, View } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 
-interface CelebrationScreenProps {
+interface CompletionFormStep1Props {
+  deadline: ReadingDeadlineWithProgress;
   onContinue: () => void;
 }
 
@@ -28,10 +29,12 @@ const congratsQuotes = [
   'book completed! you are on fire!',
 ];
 
-const CelebrationScreen: React.FC<CelebrationScreenProps> = ({ onContinue }) => {
-  const { flowState } = useCompletionFlow();
+const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
+  deadline,
+  onContinue,
+}) => {
   const { colors } = useTheme();
-  const { data: fetchedBook } = useFetchBookById(flowState?.bookData.bookId || '');
+  const { data: fetchedBook } = useFetchBookById(deadline.book_id || '');
   const confettiRef = useRef<any>(null);
   const [showContent, setShowContent] = useState(false);
 
@@ -86,15 +89,24 @@ const CelebrationScreen: React.FC<CelebrationScreenProps> = ({ onContinue }) => 
       delay: 800,
       useNativeDriver: true,
     }).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!flowState) return null;
-
-  const { bookData } = flowState;
   const screenHeight = Dimensions.get('window').height;
   const coverHeight = screenHeight * 0.4;
 
-  const startDate = new Date(bookData.startDate);
+  const latestProgress =
+    deadline.progress && deadline.progress.length > 0
+      ? deadline.progress[deadline.progress.length - 1]
+      : null;
+  const currentProgress = latestProgress?.current_progress || 0;
+  const firstProgress =
+    deadline.progress && deadline.progress.length > 0
+      ? deadline.progress[0]
+      : null;
+  const startDate = firstProgress?.created_at
+    ? new Date(firstProgress.created_at)
+    : new Date();
   const finishDate = new Date();
   const duration = Math.ceil(
     (finishDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
@@ -104,7 +116,8 @@ const CelebrationScreen: React.FC<CelebrationScreenProps> = ({ onContinue }) => 
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  const randomQuote = congratsQuotes[Math.floor(Math.random() * congratsQuotes.length)];
+  const randomQuote =
+    congratsQuotes[Math.floor(Math.random() * congratsQuotes.length)];
 
   return (
     <LinearGradient
@@ -112,6 +125,7 @@ const CelebrationScreen: React.FC<CelebrationScreenProps> = ({ onContinue }) => 
       start={{ x: 1, y: 1 }}
       end={{ x: 0, y: 0 }}
       style={styles.container}
+      testID="celebration-container"
     >
       <ConfettiCannon
         ref={confettiRef}
@@ -124,7 +138,7 @@ const CelebrationScreen: React.FC<CelebrationScreenProps> = ({ onContinue }) => 
 
       {showContent && (
         <>
-          <Animated.View style={{ opacity: titleOpacity, }}>
+          <Animated.View style={{ opacity: titleOpacity }}>
             <ThemedText variant="headline" style={styles.headline}>
               You finished!
             </ThemedText>
@@ -156,29 +170,36 @@ const CelebrationScreen: React.FC<CelebrationScreenProps> = ({ onContinue }) => 
                 </View>
               </View>
             ) : (
-              <ThemedView style={[styles.coverPlaceholder, { height: coverHeight }]}>
+              <ThemedView
+                style={[styles.coverPlaceholder, { height: coverHeight }]}
+              >
                 <ThemedText style={styles.coverPlaceholderText}>📖</ThemedText>
               </ThemedView>
             )}
           </Animated.View>
 
-          <Animated.View style={[styles.statsContainer, { opacity: statsOpacity }]}>
+          <Animated.View
+            style={[styles.statsContainer, { opacity: statsOpacity }]}
+          >
             <ThemedText variant="secondary" style={styles.statsText}>
               {formatDate(startDate)} → {formatDate(finishDate)}
             </ThemedText>
             <ThemedText variant="secondary" style={styles.statsText}>
-              {duration} {duration === 1 ? 'day' : 'days'} •{' '}
-              {bookData.currentProgress}/{bookData.totalPages} pages read
+              {duration} {duration === 1 ? 'day' : 'days'} • {currentProgress}/
+              {deadline.total_quantity || 0} pages read
             </ThemedText>
           </Animated.View>
 
-          <Animated.View style={[styles.buttonContainer, { opacity: buttonOpacity }]}>
+          <Animated.View
+            style={[styles.buttonContainer, { opacity: buttonOpacity }]}
+          >
             <ThemedButton
               title="Continue →"
               variant="primary"
               onPress={onContinue}
               style={styles.button}
               hapticsOnPress
+              testID="continue-button"
             />
           </Animated.View>
         </>
@@ -282,4 +303,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CelebrationScreen;
+export default CompletionFormStep1;

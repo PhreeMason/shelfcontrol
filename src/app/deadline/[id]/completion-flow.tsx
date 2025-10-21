@@ -1,99 +1,63 @@
-import CelebrationScreen from '@/components/features/completion/CelebrationScreen';
-import ReviewQuestionScreen from '@/components/features/completion/ReviewQuestionScreen';
+import CompletionFormContainer from '@/components/forms/CompletionFormContainer';
+import { ThemedText, ThemedView } from '@/components/themed';
 import { ROUTES } from '@/constants/routes';
-import { useCompletionFlow } from '@/providers/CompletionFlowProvider';
+import { useGetDeadlineById } from '@/hooks/useDeadlines';
+import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect } from 'react';
-import Toast from 'react-native-toast-message';
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CompletionFlowPage() {
-  const { id, skipToReview } = useLocalSearchParams<{ id: string; skipToReview?: string }>();
-  const { flowState, initializeFlow, updateStep, setNeedsReview, resetFlow } =
-    useCompletionFlow();
-  const { deadlines, completeDeadline, didNotFinishDeadline } = useDeadlines();
+  const { id, skipToReview } = useLocalSearchParams<{
+    id: string;
+    skipToReview?: string;
+  }>();
+  const { deadlines } = useDeadlines();
+  const { colors } = useTheme();
 
-  const deadline = deadlines.find(d => d.id === id);
+  let deadline = deadlines.find(d => d.id === id);
+  const {
+    data: fallbackDeadline,
+    isLoading: isFallbackLoading,
+    error: fallbackError,
+  } = useGetDeadlineById(deadline ? undefined : id);
 
-  useEffect(() => {
-    if (!deadline) {
-      router.replace(ROUTES.HOME);
-      return;
-    }
+  if (!deadline && fallbackDeadline) {
+    deadline = fallbackDeadline;
+  }
 
-    if (!flowState) {
-      const isDNF = skipToReview === 'true';
-      initializeFlow(deadline, isDNF);
-    }
-  }, [deadline, flowState, initializeFlow, skipToReview]);
+  if (!deadline && isFallbackLoading) {
+    return (
+      <SafeAreaView
+        edges={['right', 'bottom', 'left']}
+        style={{ flex: 1, backgroundColor: colors.background }}
+      >
+        <ThemedView
+          style={[
+            styles.container,
+            { padding: 20, justifyContent: 'center', alignItems: 'center' },
+          ]}
+        >
+          <ThemedText>Loading...</ThemedText>
+        </ThemedView>
+      </SafeAreaView>
+    );
+  }
 
-  if (!flowState || !deadline) {
+  if (!deadline || fallbackError) {
+    router.replace(ROUTES.HOME);
     return null;
   }
 
-  const handleCelebrationContinue = () => {
-    updateStep('review_question');
-  };
+  const isDNF = skipToReview === 'true';
 
-  const handleReviewQuestion = (needsReview: boolean) => {
-    setNeedsReview(needsReview);
-
-    if (needsReview) {
-      router.push(`/deadline/${id}/review-form`);
-    } else {
-      const finalStatus = flowState.isDNF ? 'did_not_finish' : 'complete';
-
-      if (finalStatus === 'did_not_finish') {
-        didNotFinishDeadline(
-          deadline.id,
-          () => {
-            Toast.show({
-              type: 'success',
-              text1: 'All done!',
-              text2: `"${deadline.book_title}" moved to DNF`,
-            });
-            resetFlow();
-            router.replace(ROUTES.HOME);
-          },
-          error => {
-            Toast.show({
-              type: 'error',
-              text1: 'Failed to update status',
-              text2: error.message || 'Please try again',
-            });
-          }
-        );
-      } else {
-        completeDeadline(
-          deadline.id,
-          () => {
-            Toast.show({
-              type: 'success',
-              text1: 'All done!',
-              text2: `"${deadline.book_title}" moved to complete`,
-            });
-            resetFlow();
-            router.replace(ROUTES.HOME);
-          },
-          error => {
-            Toast.show({
-              type: 'error',
-              text1: 'Failed to complete deadline',
-              text2: error.message || 'Please try again',
-            });
-          }
-        );
-      }
-    }
-  };
-
-  if (flowState.currentStep === 'celebration') {
-    return <CelebrationScreen onContinue={handleCelebrationContinue} />;
-  }
-
-  if (flowState.currentStep === 'review_question') {
-    return <ReviewQuestionScreen onContinue={handleReviewQuestion} />;
-  }
-
-  return null;
+  return <CompletionFormContainer deadline={deadline} isDNF={isDNF} />;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

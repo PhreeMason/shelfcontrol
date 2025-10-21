@@ -121,45 +121,50 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
       <ThemedView style={styles.container}>
         {sortedPlatforms.map(platform => {
           return (
-          <View key={platform.id} style={styles.platformItem}>
-            <View style={styles.platformRow}>
-              <Checkbox
-                checked={platform.posted}
-                onToggle={() => handleToggle(platform)}
-                label={platform.platform_name}
-              />
-              {platform.posted && platform.posted_date && (
-                <ThemedText style={styles.postedDate}>
-                  {formatDate(platform.posted_date)}
-                </ThemedText>
-              )}
-            </View>
-
-            {needsLinkSubmission && platform.posted && (
-              <View style={styles.urlInputContainer}>
-                <TextInput
-                  style={styles.urlInput}
-                  placeholder="Paste review URL (optional)"
-                  placeholderTextColor={Colors.light.textMuted}
-                  value={platform.review_url || ''}
-                  onChangeText={(text) => handleUrlChange(platform.id, text)}
-                  keyboardType="url"
-                  autoCapitalize="none"
-                  autoCorrect={false}
+            <View key={platform.id} style={styles.platformItem}>
+              <View style={styles.platformRow}>
+                <Checkbox
+                  checked={platform.posted}
+                  onToggle={() => handleToggle(platform)}
+                  label={platform.platform_name}
                 />
-                {platform.review_url && (
-                  <Pressable
-                    onPress={() => handleOpenUrl(platform.review_url!, platform.platform_name)}
-                    style={styles.viewReviewLink}
-                  >
-                    <ThemedText style={styles.viewReviewText}>
-                      View Review →
-                    </ThemedText>
-                  </Pressable>
+                {platform.posted && platform.posted_date && (
+                  <ThemedText style={styles.postedDate}>
+                    {formatDate(platform.posted_date)}
+                  </ThemedText>
                 )}
               </View>
-            )}
-          </View>
+
+              {needsLinkSubmission && platform.posted && (
+                <View style={styles.urlInputContainer}>
+                  <TextInput
+                    style={styles.urlInput}
+                    placeholder="Paste review URL (optional)"
+                    placeholderTextColor={Colors.light.textMuted}
+                    value={platform.review_url || ''}
+                    onChangeText={text => handleUrlChange(platform.id, text)}
+                    keyboardType="url"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                  {platform.review_url && (
+                    <Pressable
+                      onPress={() =>
+                        handleOpenUrl(
+                          platform.review_url!,
+                          platform.platform_name
+                        )
+                      }
+                      style={styles.viewReviewLink}
+                    >
+                      <ThemedText style={styles.viewReviewText}>
+                        View Review →
+                      </ThemedText>
+                    </Pressable>
+                  )}
+                </View>
+              )}
+            </View>
           );
         })}
       </ThemedView>

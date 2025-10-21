@@ -2,25 +2,24 @@ import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useTheme';
-import { useCompletionFlow } from '@/providers/CompletionFlowProvider';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-interface ReviewQuestionScreenProps {
+interface CompletionFormStep2Props {
+  deadline: ReadingDeadlineWithProgress;
   onContinue: (needsReview: boolean) => void;
 }
 
-const ReviewQuestionScreen: React.FC<ReviewQuestionScreenProps> = ({
+const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
+  deadline,
   onContinue,
 }) => {
-  const { flowState } = useCompletionFlow();
-  const { data: fetchedBook } = useFetchBookById(flowState?.bookData.bookId || '');
+  const { data: fetchedBook } = useFetchBookById(deadline.book_id || '');
   const [needsReview, setNeedsReview] = useState<boolean | null>(null);
   const { colors, typography } = useTheme();
-
-  if (!flowState) return null;
 
   const handleContinue = () => {
     if (needsReview !== null) {
@@ -34,6 +33,7 @@ const ReviewQuestionScreen: React.FC<ReviewQuestionScreenProps> = ({
       start={{ x: 1, y: 1 }}
       end={{ x: 0, y: 0 }}
       style={styles.container}
+      testID="review-question-container"
     >
       <View style={styles.content}>
         <View style={[styles.bookInfo, styles.mediumShadow]}>
@@ -49,7 +49,10 @@ const ReviewQuestionScreen: React.FC<ReviewQuestionScreenProps> = ({
             </ThemedView>
           )}
         </View>
-        <ThemedText variant="title" style={[styles.title, { ...typography.headlineMedium }]}>
+        <ThemedText
+          variant="title"
+          style={[styles.title, { ...typography.headlineMedium }]}
+        >
           Need to post reviews?
         </ThemedText>
         <View style={styles.buttonContainer}>
@@ -59,6 +62,7 @@ const ReviewQuestionScreen: React.FC<ReviewQuestionScreenProps> = ({
               styles.selectionButton,
               needsReview === true && styles.selectionButtonSelected,
             ]}
+            testID="yes-button"
           >
             <ThemedText
               style={[
@@ -76,6 +80,7 @@ const ReviewQuestionScreen: React.FC<ReviewQuestionScreenProps> = ({
               styles.selectionButton,
               needsReview === false && styles.selectionButtonSelected,
             ]}
+            testID="no-button"
           >
             <ThemedText
               style={[
@@ -99,6 +104,7 @@ const ReviewQuestionScreen: React.FC<ReviewQuestionScreenProps> = ({
               variant="primary"
               onPress={handleContinue}
               style={styles.button}
+              testID="continue-button"
             />
           </View>
         )}
@@ -117,7 +123,6 @@ const styles = StyleSheet.create({
     padding: Spacing.xl,
     justifyContent: 'center',
     gap: Spacing.lg,
-    
   },
   title: {
     textAlign: 'center',
@@ -188,4 +193,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReviewQuestionScreen;
+export default CompletionFormStep2;

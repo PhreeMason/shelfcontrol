@@ -1,7 +1,6 @@
 import { toastConfig } from '@/components/ui/ToastConfig';
 import { posthog } from '@/lib/posthog';
 import AuthProvider from '@/providers/AuthProvider';
-import { CompletionFlowProvider } from '@/providers/CompletionFlowProvider';
 import { DeadlineProvider } from '@/providers/DeadlineProvider';
 import PreferencesProvider from '@/providers/PreferencesProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -36,20 +35,18 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <PreferencesProvider>
             <DeadlineProvider>
-              <CompletionFlowProvider>
-                <Stack>
-                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                  <Stack.Screen
-                    name="(authenticated)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="deadline"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen name="+not-found" />
-                </Stack>
-              </CompletionFlowProvider>
+              <Stack>
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="(authenticated)"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="deadline"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen name="+not-found" />
+              </Stack>
             </DeadlineProvider>
           </PreferencesProvider>
           <Toast config={toastConfig} />

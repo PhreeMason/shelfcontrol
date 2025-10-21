@@ -28,48 +28,75 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
   const allPosted = unpostedPlatforms.length === 0;
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onCancel}
+    >
       {/* Outer Pressable closes modal on backdrop click, inner Pressable prevents dialog content clicks from bubbling up */}
       <Pressable style={styles.backdrop} onPress={onCancel}>
-        <Pressable onPress={(e) => e.stopPropagation()}>
+        <Pressable onPress={e => e.stopPropagation()}>
           <ThemedView style={styles.dialog}>
-          {allPosted ? (
-            <>
-              <ThemedText variant="title" style={styles.title}>
-                All reviews posted!
-              </ThemedText>
-              <ThemedText variant="secondary" style={styles.message}>
-                Move this book to Completed?
-              </ThemedText>
-              <View style={styles.buttonContainer}>
-                <ThemedButton title="Not Yet" variant="outline" onPress={onCancel} />
-                <ThemedButton title="Yes, Complete It →" variant="primary" onPress={onComplete} />
-              </View>
-            </>
-          ) : (
-            <>
-              <ThemedText variant="title" style={styles.title}>
-                Just checking
-              </ThemedText>
-              <ThemedText variant="secondary" style={styles.message}>
-                These platforms don't{'\n'}have checkmarks yet:
-              </ThemedText>
-              <View style={styles.platformList}>
-                {unpostedPlatforms.map(platform => (
-                  <ThemedView key={platform.id} style={styles.platformCard}>
-                    <ThemedText style={styles.platformItem}>
-                      {platform.platform_name}
-                    </ThemedText>
-                  </ThemedView>
-                ))}
-              </View>
-              <View style={styles.buttonContainer}>
-                <ThemedButton title="Go back and finish these" textStyle={{ fontWeight: '700' }} style={{ borderWidth: 1.5, borderColor: Colors.light.primary }} variant="outline" onPress={onCancel} />
-                <ThemedButton title="That's okay, mark complete" textStyle={{ fontWeight: '700' }} variant="primary" onPress={onComplete} />
-              </View>
-            </>
-          )}
-        </ThemedView>
+            {allPosted ? (
+              <>
+                <ThemedText variant="title" style={styles.title}>
+                  All reviews posted!
+                </ThemedText>
+                <ThemedText variant="secondary" style={styles.message}>
+                  Move this book to Completed?
+                </ThemedText>
+                <View style={styles.buttonContainer}>
+                  <ThemedButton
+                    title="Not Yet"
+                    variant="outline"
+                    onPress={onCancel}
+                  />
+                  <ThemedButton
+                    title="Yes, Complete It →"
+                    variant="primary"
+                    onPress={onComplete}
+                  />
+                </View>
+              </>
+            ) : (
+              <>
+                <ThemedText variant="title" style={styles.title}>
+                  Just checking
+                </ThemedText>
+                <ThemedText variant="secondary" style={styles.message}>
+                  These platforms don't{'\n'}have checkmarks yet:
+                </ThemedText>
+                <View style={styles.platformList}>
+                  {unpostedPlatforms.map(platform => (
+                    <ThemedView key={platform.id} style={styles.platformCard}>
+                      <ThemedText style={styles.platformItem}>
+                        {platform.platform_name}
+                      </ThemedText>
+                    </ThemedView>
+                  ))}
+                </View>
+                <View style={styles.buttonContainer}>
+                  <ThemedButton
+                    title="Go back and finish these"
+                    textStyle={{ fontWeight: '700' }}
+                    style={{
+                      borderWidth: 1.5,
+                      borderColor: Colors.light.primary,
+                    }}
+                    variant="outline"
+                    onPress={onCancel}
+                  />
+                  <ThemedButton
+                    title="That's okay, mark complete"
+                    textStyle={{ fontWeight: '700' }}
+                    variant="primary"
+                    onPress={onComplete}
+                  />
+                </View>
+              </>
+            )}
+          </ThemedView>
         </Pressable>
       </Pressable>
     </Modal>
