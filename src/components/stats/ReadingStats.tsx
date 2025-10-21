@@ -1,7 +1,6 @@
-import ProgressBar from '@/components/progress/ProgressBar';
 import StatsSummaryCard from '@/components/stats/StatsSummaryCard';
 import { ThemedText, ThemedView } from '@/components/themed';
-import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
+import { BorderRadius, Colors, FontFamily, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { formatDisplayDate } from '@/utils/dateUtils';
@@ -39,6 +38,10 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
       ? deadline.progress[deadline.progress.length - 1].current_progress
       : deadline.total_quantity;
 
+  const progressPercentage = deadline.total_quantity > 0
+    ? Math.round((currentProgress / deadline.total_quantity) * 100)
+    : 0;
+
   const formattedCompletionDate = completionDate
     ? formatDisplayDate(completionDate, 'MMM D, YYYY')
     : 'N/A';
@@ -49,9 +52,9 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
 
   const daysText =
     daysToComplete === 1
-      ? '1 day to complete'
+      ? '1 day total'
       : daysToComplete
-        ? `${daysToComplete} days to complete`
+        ? `${daysToComplete} days total`
         : 'Duration unknown';
 
   return (
@@ -60,22 +63,27 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
         label={statusLabel}
         dateText={formattedCompletionDate}
         subtitle={daysText}
-      />
+      >
+        <View style={styles.progressSection}>
+          <View style={styles.progressLabelContainer}>
+            <ThemedText style={styles.progressLabel}>Pages Read</ThemedText>
+            <ThemedText style={styles.progressFraction}>
+              {currentProgress}/{deadline.total_quantity}
+            </ThemedText>
+          </View>
 
-      <ThemedView style={styles.progressSection}>
-        <View style={styles.progressHeader}>
-          <ThemedText style={styles.sectionLabel}>Pages Read</ThemedText>
-          <ThemedText style={styles.progressFraction}>
-            {currentProgress}/{deadline.total_quantity}
-          </ThemedText>
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressFill,
+                {
+                  width: `${progressPercentage}%`,
+                },
+              ]}
+            />
+          </View>
         </View>
-        <ProgressBar
-          progressPercentage={100}
-          deadlineDate={deadline.deadline_date}
-          urgencyLevel="good"
-          startDate={deadline.created_at}
-        />
-      </ThemedView>
+      </StatsSummaryCard>
 
       <ThemedView style={styles.statsGrid}>
         <View style={[styles.statCard, { borderColor: colors.border }]}>
@@ -135,21 +143,45 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    gap: 20,
+    backgroundColor: Colors.light.background,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.sm,
+    gap: Spacing.md,
   },
   progressSection: {
-    gap: 12,
+    width: '100%',
+    marginTop: Spacing.md,
+    gap: Spacing.xs,
   },
-  progressHeader: {
+  progressLabelContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  progressLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: FontFamily.regular,
+    color: Colors.light.textSecondary,
+  },
   progressFraction: {
     fontSize: 14,
     fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     color: Colors.light.primary,
+  },
+  progressTrack: {
+    height: 10,
+    backgroundColor: Colors.light.border,
+    borderRadius: BorderRadius.full,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: Colors.light.primary,
+    borderRadius: BorderRadius.full,
   },
   sectionLabel: {
     fontSize: 16,
@@ -164,16 +196,15 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: Spacing.lg,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.md,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.md,
     borderWidth: 2,
   },
   statNumber: {
-    fontSize: 32,
+    fontSize: 34,
     lineHeight: 40,
     fontWeight: 'bold',
-    marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
