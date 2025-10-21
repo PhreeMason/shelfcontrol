@@ -84,8 +84,8 @@ export default function HomeScreen() {
       prevSelectedFilterRef.current !== selectedFilter
     ) {
       setTimeRangeFilter('all');
-      setSelectedFormats(['physical', 'eBook', 'audio']);
-      setSelectedPageRanges(['under300', '300to500', 'over500']);
+      setSelectedFormats([]);
+      setSelectedPageRanges([]);
       setSelectedSources([]);
     }
     prevSelectedFilterRef.current = selectedFilter;
