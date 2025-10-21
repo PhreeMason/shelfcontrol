@@ -47,15 +47,23 @@ export const DeadlineFormStep1 = ({
     error: searchError,
   } = useSearchBooksList(debouncedQuery);
 
-  const { data: fullBookData } = useFetchBookData(selectedApiId || '');
   const [selectedBook, setSelectedBook] = useState<BookSearchResult | null>(
     null
   );
+
+  const bookIdentifier = selectedBook
+    ? selectedBook.google_volume_id
+      ? { google_volume_id: selectedBook.google_volume_id }
+      : { api_id: selectedBook.api_id }
+    : '';
+
+  const { data: fullBookData } = useFetchBookData(bookIdentifier);
+
   const handleBookSelection = useCallback(async (book: BookSearchResult) => {
     if (!book.api_id) return;
 
     setSelectedApiId(book.api_id);
-    setSelectedBook(book); // Store the full book object to access api_source
+    setSelectedBook(book);
     setIsLoadingBookDetails(true);
   }, []);
 

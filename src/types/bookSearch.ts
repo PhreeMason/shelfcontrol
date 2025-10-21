@@ -13,6 +13,7 @@ export interface BookSearchResultMetadata {
 
 export interface BookSearchResult {
   api_id: string;
+  google_volume_id?: string;
   api_source: string;
   bookUrl: string;
   cover_image_url: string | null;

@@ -1,6 +1,6 @@
+import { DB_TABLES } from '@/constants/database';
 import { supabase } from '@/lib/supabase';
 import { FullBookData, SearchBooksResponse } from '@/types/bookSearch';
-import { DB_TABLES } from '@/constants/database';
 import { activityService } from './activity.service';
 
 class BooksService {
@@ -10,13 +10,13 @@ class BooksService {
   async searchBooks(query: string): Promise<SearchBooksResponse> {
     if (!query.trim()) return { bookList: [] };
 
-    const { data, error } = await supabase.functions.invoke('search-books', {
+    const { data, error } = await supabase.functions.invoke('search-books-v2', {
       body: { query },
     });
 
     if (error) throw error;
 
-    activityService.trackUserActivity('book_search', { query });
+    activityService.trackUserActivity('book_search_v2', { query });
 
     return data;
   }

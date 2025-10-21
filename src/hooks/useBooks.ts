@@ -9,8 +9,10 @@ export const searchBookList = async (
   return booksService.searchBooks(query);
 };
 
-export const fetchBookData = async (api_id: string): Promise<FullBookData> => {
-  return booksService.fetchBookData(api_id);
+export const fetchBookData = async (
+  identifier: string | { api_id?: string; isbn?: string; google_volume_id?: string }
+): Promise<FullBookData> => {
+  return booksService.fetchBookData(identifier);
 };
 
 export const fetchBookById = async (book_id: string) => {
@@ -26,11 +28,20 @@ export const useSearchBooksList = (query: string) => {
   });
 };
 
-export const useFetchBookData = (api_id: string) => {
+export const useFetchBookData = (
+  identifier: string | { api_id?: string; isbn?: string; google_volume_id?: string }
+) => {
+  const queryKey = typeof identifier === 'string'
+    ? QUERY_KEYS.BOOKS.BY_API_ID(identifier)
+    : QUERY_KEYS.BOOKS.BY_API_ID(
+        identifier.google_volume_id || identifier.isbn || identifier.api_id || ''
+      );
+
   return useQuery({
-    queryKey: QUERY_KEYS.BOOKS.BY_API_ID(api_id),
-    queryFn: async () => fetchBookData(api_id),
+    queryKey,
+    queryFn: async () => fetchBookData(identifier),
     staleTime: 1000 * 60 * 30,
+    enabled: typeof identifier === 'string' ? !!identifier : !!(identifier.api_id || identifier.isbn || identifier.google_volume_id),
   });
 };
 

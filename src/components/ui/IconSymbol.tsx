@@ -51,6 +51,7 @@ export const MAPPING = {
   'note.text': 'note',
   'pencil.and.scribble': 'edit-note',
   ellipsis: 'more-horiz',
+  book: 'menu-book',
 } as IconMapping;
 
 /**

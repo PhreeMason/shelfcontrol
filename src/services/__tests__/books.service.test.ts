@@ -45,7 +45,7 @@ describe('BooksService', () => {
 
       const result = await booksService.searchBooks('Harry Potter');
 
-      expect(supabase.functions.invoke).toHaveBeenCalledWith('search-books', {
+      expect(supabase.functions.invoke).toHaveBeenCalledWith('search-books-v2', {
         body: { query: 'Harry Potter' },
       });
       expect(result).toEqual({ bookList: [{ id: '1', title: 'Test Book' }] });
@@ -62,7 +62,7 @@ describe('BooksService', () => {
         'Search failed'
       );
 
-      expect(supabase.functions.invoke).toHaveBeenCalledWith('search-books', {
+      expect(supabase.functions.invoke).toHaveBeenCalledWith('search-books-v2', {
         body: { query: 'test' },
       });
     });
