@@ -163,6 +163,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         visible={showFilterSheet}
         onClose={() => setShowFilterSheet(false)}
         deadlines={baseDeadlines}
+        selectedFilter={selectedFilter}
         timeRangeFilter={timeRangeFilter}
         onTimeRangeChange={onTimeRangeChange}
         selectedFormats={selectedFormats}

@@ -29,6 +29,8 @@ interface FilterSheetProps {
   onClose: () => void;
   deadlines: ReadingDeadlineWithProgress[];
 
+  selectedFilter: string;
+
   timeRangeFilter: TimeRangeFilter;
   onTimeRangeChange: (filter: TimeRangeFilter) => void;
 
@@ -48,6 +50,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   visible,
   onClose,
   deadlines,
+  selectedFilter,
   timeRangeFilter,
   onTimeRangeChange,
   selectedFormats,
@@ -61,6 +64,20 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const translateY = useSharedValue(1000);
+
+  const getFilterDisplayName = (filter: string): string => {
+    const displayNames: Record<string, string> = {
+      pending: 'Pending',
+      active: 'Active',
+      paused: 'Paused',
+      overdue: 'Overdue',
+      toReview: 'To Review',
+      completed: 'Completed',
+      didNotFinish: 'DNF',
+      all: 'All',
+    };
+    return displayNames[filter] || 'All';
+  };
 
   useEffect(() => {
     if (visible) {
@@ -237,7 +254,9 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.header}>
-              <ThemedText style={styles.title}>Filters</ThemedText>
+              <ThemedText style={styles.title}>
+                Filter {getFilterDisplayName(selectedFilter)}
+              </ThemedText>
               <View style={styles.headerActions}>
                 {hasActiveFilters && (
                   <TouchableOpacity

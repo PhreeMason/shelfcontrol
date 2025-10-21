@@ -124,6 +124,7 @@ describe('FilterSheet', () => {
     visible: true,
     onClose: jest.fn(),
     deadlines: mockDeadlines,
+    selectedFilter: 'active',
     timeRangeFilter: 'all' as 'all',
     onTimeRangeChange: jest.fn(),
     selectedFormats: [] as ('physical' | 'eBook' | 'audio')[],
@@ -146,7 +147,7 @@ describe('FilterSheet', () => {
     it('should render modal when visible', () => {
       render(<FilterSheet {...defaultProps} />);
 
-      expect(screen.getByText('Filters')).toBeTruthy();
+      expect(screen.getByText('Filter Active')).toBeTruthy();
     });
 
     it('should render all filter sections', () => {
@@ -304,6 +305,7 @@ describe('FilterSheet', () => {
           visible={true}
           onClose={jest.fn()}
           deadlines={mockDeadlines}
+          selectedFilter="active"
           timeRangeFilter="all"
           onTimeRangeChange={jest.fn()}
           selectedFormats={[]}
@@ -374,6 +376,7 @@ describe('FilterSheet', () => {
           visible={true}
           onClose={jest.fn()}
           deadlines={mockDeadlines}
+          selectedFilter="active"
           timeRangeFilter="all"
           onTimeRangeChange={jest.fn()}
           selectedFormats={['physical']}
@@ -430,6 +433,7 @@ describe('FilterSheet', () => {
           visible={true}
           onClose={jest.fn()}
           deadlines={[]}
+          selectedFilter="active"
           timeRangeFilter="all"
           onTimeRangeChange={jest.fn()}
           selectedFormats={[]}
@@ -451,6 +455,7 @@ describe('FilterSheet', () => {
           visible={true}
           onClose={jest.fn()}
           deadlines={mockDeadlines}
+          selectedFilter="active"
           timeRangeFilter="all"
           onTimeRangeChange={jest.fn()}
           selectedFormats={[]}
