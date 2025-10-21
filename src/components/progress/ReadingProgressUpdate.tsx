@@ -78,7 +78,8 @@ const ReadingProgressUpdate = ({
         {
           text: "I'm done reading",
           style: 'default',
-          onPress: () => router.push(`/deadline/${deadline.id}/completion-flow`),
+          onPress: () =>
+            router.push(`/deadline/${deadline.id}/completion-flow`),
         },
       ]);
     },
