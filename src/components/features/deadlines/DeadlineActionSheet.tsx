@@ -24,8 +24,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PostReviewModal from '../review/PostReviewModal';
-import { ChangeReadingStatusModal } from './modals/ChangeReadingStatusModal';
 import { DeleteDeadlineModal } from './modals/DeleteDeadlineModal';
+import { ProgressCheckModal } from './modals/ProgressCheckModal';
 import { UpdateDeadlineDateModal } from './modals/UpdateDeadlineDateModal';
 
 interface DeadlineActionSheetProps {
@@ -46,8 +46,8 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const { startReadingDeadline } = useDeadlines();
   const [showUpdateDateModal, setShowUpdateDateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showChangeStatusModal, setShowChangeStatusModal] = useState(false);
   const [showPostReviewModal, setShowPostReviewModal] = useState(false);
+  const [showProgressCheckModal, setShowProgressCheckModal] = useState(false);
 
   const latestStatus = getDeadlineStatus(deadline);
   const { isCompleted, isToReview, isActive, isPending } =
@@ -126,6 +126,17 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
       };
     }
 
+    if (isActive || isToReview) {
+      return {
+        label: isToReview ? "I'm done reviewing" : "I'm done reading",
+        icon: 'checkmark.circle.fill' as const,
+        onPress: () => {
+           onClose();
+          setShowProgressCheckModal(true);
+        },
+      }
+    }
+
     return null;
   };
 
@@ -153,15 +164,6 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
         showChevron: true,
         onPress: () => {
           setShowUpdateDateModal(true);
-        },
-      },
-      {
-        label: 'Change Reading Status',
-        icon: 'circle.grid.2x2.fill',
-        iconColor: colors.approaching,
-        showChevron: true,
-        onPress: () => {
-          setShowChangeStatusModal(true);
         },
       },
       {
@@ -342,16 +344,16 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
         onClose={() => setShowUpdateDateModal(false)}
       />
 
-      <ChangeReadingStatusModal
-        deadline={deadline}
-        visible={showChangeStatusModal}
-        onClose={() => setShowChangeStatusModal(false)}
-      />
-
       <DeleteDeadlineModal
         deadline={deadline}
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
+      />
+
+      <ProgressCheckModal
+        deadline={deadline}
+        visible={showProgressCheckModal}
+        onClose={() => setShowProgressCheckModal(false)}
       />
 
       {isToReview && (
