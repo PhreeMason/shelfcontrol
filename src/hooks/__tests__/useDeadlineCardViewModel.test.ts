@@ -134,33 +134,25 @@ describe('useDeadlineCardViewModel', () => {
 
   describe('Hook Integration', () => {
     it('should call useDeadlines hook', () => {
-      renderHook(() =>
-        useDeadlineCardViewModel({ deadline: mockDeadline })
-      );
+      renderHook(() => useDeadlineCardViewModel({ deadline: mockDeadline }));
 
       expect(useDeadlines).toHaveBeenCalled();
     });
 
     it('should call useRouter hook', () => {
-      renderHook(() =>
-        useDeadlineCardViewModel({ deadline: mockDeadline })
-      );
+      renderHook(() => useDeadlineCardViewModel({ deadline: mockDeadline }));
 
       expect(useRouter).toHaveBeenCalled();
     });
 
     it('should call useFetchBookById with deadline book_id', () => {
-      renderHook(() =>
-        useDeadlineCardViewModel({ deadline: mockDeadline })
-      );
+      renderHook(() => useDeadlineCardViewModel({ deadline: mockDeadline }));
 
       expect(useFetchBookById).toHaveBeenCalledWith('book-123');
     });
 
     it('should call getDeadlineCalculations with deadline', () => {
-      renderHook(() =>
-        useDeadlineCardViewModel({ deadline: mockDeadline })
-      );
+      renderHook(() => useDeadlineCardViewModel({ deadline: mockDeadline }));
 
       expect(mockDeadlines.getDeadlineCalculations).toHaveBeenCalledWith(
         mockDeadline
@@ -168,17 +160,13 @@ describe('useDeadlineCardViewModel', () => {
     });
 
     it('should call useDeadlineCardState with deadline and urgencyLevel', () => {
-      renderHook(() =>
-        useDeadlineCardViewModel({ deadline: mockDeadline })
-      );
+      renderHook(() => useDeadlineCardViewModel({ deadline: mockDeadline }));
 
       expect(useDeadlineCardState).toHaveBeenCalledWith(mockDeadline, 'good');
     });
 
     it('should call formatUnitsPerDayForDisplay with correct params', () => {
-      renderHook(() =>
-        useDeadlineCardViewModel({ deadline: mockDeadline })
-      );
+      renderHook(() => useDeadlineCardViewModel({ deadline: mockDeadline }));
 
       expect(mockDeadlines.formatUnitsPerDayForDisplay).toHaveBeenCalledWith(
         30,
@@ -189,9 +177,7 @@ describe('useDeadlineCardViewModel', () => {
     });
 
     it('should call formatCapacityMessage with base message and isNotReading', () => {
-      renderHook(() =>
-        useDeadlineCardViewModel({ deadline: mockDeadline })
-      );
+      renderHook(() => useDeadlineCardViewModel({ deadline: mockDeadline }));
 
       expect(formatCapacityMessage).toHaveBeenCalledWith('30 pages/day', false);
     });
@@ -269,7 +255,9 @@ describe('useDeadlineCardViewModel', () => {
         useDeadlineCardViewModel({ deadline: mockDeadline })
       );
 
-      expect(result.current.display.secondaryText).toBe('Archived: Jan 15, 2024');
+      expect(result.current.display.secondaryText).toBe(
+        'Archived: Jan 15, 2024'
+      );
     });
 
     it('should return N/A when no status record for archived deadline', () => {

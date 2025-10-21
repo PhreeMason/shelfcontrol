@@ -14,7 +14,9 @@ jest.mock('@/providers/AuthProvider', () => ({
 }));
 
 const mockUseQuery = useQuery as jest.Mock;
-const mockReviewTrackingService = reviewTrackingService as jest.Mocked<typeof reviewTrackingService>;
+const mockReviewTrackingService = reviewTrackingService as jest.Mocked<
+  typeof reviewTrackingService
+>;
 
 describe('useReviewTrackingData', () => {
   beforeEach(() => {
@@ -114,10 +116,12 @@ describe('useReviewTrackingData', () => {
         completion_percentage: 50,
       };
 
-      mockReviewTrackingService.getReviewTrackingByDeadline = jest.fn().mockResolvedValue(mockData);
+      mockReviewTrackingService.getReviewTrackingByDeadline = jest
+        .fn()
+        .mockResolvedValue(mockData);
 
       let queryFn: any;
-      mockUseQuery.mockImplementation((config) => {
+      mockUseQuery.mockImplementation(config => {
         queryFn = config.queryFn;
         return {
           data: mockData,
@@ -131,7 +135,9 @@ describe('useReviewTrackingData', () => {
 
       await queryFn();
 
-      expect(mockReviewTrackingService.getReviewTrackingByDeadline).toHaveBeenCalledWith('user-123', 'rd-123');
+      expect(
+        mockReviewTrackingService.getReviewTrackingByDeadline
+      ).toHaveBeenCalledWith('user-123', 'rd-123');
     });
 
     it('should call service with correct parameters from queryFn', async () => {
@@ -148,10 +154,12 @@ describe('useReviewTrackingData', () => {
         completion_percentage: 0,
       };
 
-      mockReviewTrackingService.getReviewTrackingByDeadline = jest.fn().mockResolvedValue(mockData);
+      mockReviewTrackingService.getReviewTrackingByDeadline = jest
+        .fn()
+        .mockResolvedValue(mockData);
 
       let queryFn: any;
-      mockUseQuery.mockImplementation((config) => {
+      mockUseQuery.mockImplementation(config => {
         queryFn = config.queryFn;
         return {
           data: mockData,
@@ -165,7 +173,9 @@ describe('useReviewTrackingData', () => {
 
       const result = await queryFn();
 
-      expect(mockReviewTrackingService.getReviewTrackingByDeadline).toHaveBeenCalledWith('user-123', 'rd-123');
+      expect(
+        mockReviewTrackingService.getReviewTrackingByDeadline
+      ).toHaveBeenCalledWith('user-123', 'rd-123');
       expect(result).toEqual(mockData);
     });
   });

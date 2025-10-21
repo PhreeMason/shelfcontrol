@@ -2,7 +2,10 @@ import Checkbox from '@/components/shared/Checkbox';
 import { ThemedButton, ThemedText } from '@/components/themed';
 import { Colors, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
-import { initializeModalState, prepareModalUpdates } from '@/utils/postReviewModalUtils';
+import {
+  initializeModalState,
+  prepareModalUpdates,
+} from '@/utils/postReviewModalUtils';
 import React, { useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import Animated, {
@@ -24,7 +27,9 @@ interface PostReviewModalProps {
   visible: boolean;
   platforms: Platform[];
   onClose: () => void;
-  onSave: (updates: { id: string; posted: boolean; review_url?: string }[]) => void;
+  onSave: (
+    updates: { id: string; posted: boolean; review_url?: string }[]
+  ) => void;
 }
 
 const PostReviewModal: React.FC<PostReviewModalProps> = ({
@@ -36,7 +41,9 @@ const PostReviewModal: React.FC<PostReviewModalProps> = ({
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const translateY = useSharedValue(500);
-  const [selectedPlatformIds, setSelectedPlatformIds] = useState<Set<string>>(new Set());
+  const [selectedPlatformIds, setSelectedPlatformIds] = useState<Set<string>>(
+    new Set()
+  );
 
   useEffect(() => {
     if (visible) {
@@ -85,7 +92,12 @@ const PostReviewModal: React.FC<PostReviewModalProps> = ({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={handleClose}
+    >
       <Pressable
         style={styles.backdrop}
         onPress={handleClose}

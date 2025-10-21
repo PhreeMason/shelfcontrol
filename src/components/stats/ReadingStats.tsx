@@ -38,9 +38,10 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
       ? deadline.progress[deadline.progress.length - 1].current_progress
       : deadline.total_quantity;
 
-  const progressPercentage = deadline.total_quantity > 0
-    ? Math.round((currentProgress / deadline.total_quantity) * 100)
-    : 0;
+  const progressPercentage =
+    deadline.total_quantity > 0
+      ? Math.round((currentProgress / deadline.total_quantity) * 100)
+      : 0;
 
   const formattedCompletionDate = completionDate
     ? formatDisplayDate(completionDate, 'MMM D, YYYY')
@@ -87,15 +88,19 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
 
       <ThemedView style={styles.statsGrid}>
         <View style={[styles.statCard, { borderColor: colors.border }]}>
-          <ThemedText style={[styles.statNumber, {color: colors.primary}]}>
+          <ThemedText style={[styles.statNumber, { color: colors.primary }]}>
             {averagePace ?? 'N/A'}
           </ThemedText>
           <ThemedText variant="default" style={styles.statLabel}>
-            {averagePace ? formatAveragePace(averagePace, deadline.format).split(' ')[1] : 'avg pace'}
+            {averagePace
+              ? formatAveragePace(averagePace, deadline.format).split(' ')[1]
+              : 'avg pace'}
           </ThemedText>
         </View>
         <View style={[styles.statCard, { borderColor: colors.border }]}>
-          <ThemedText style={[styles.statNumber, {color: colors.primary}]}>{sessionCount}</ThemedText>
+          <ThemedText style={[styles.statNumber, { color: colors.primary }]}>
+            {sessionCount}
+          </ThemedText>
           <ThemedText variant="default" style={styles.statLabel}>
             reading sessions
           </ThemedText>

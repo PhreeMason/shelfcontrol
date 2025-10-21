@@ -36,11 +36,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
         ]}
       >
         {checked && (
-          <IconSymbol
-            name="checkmark"
-            size={18}
-            color={colors.textOnPrimary}
-          />
+          <IconSymbol name="checkmark" size={18} color={colors.textOnPrimary} />
         )}
       </View>
       <ThemedText style={[styles.label, disabled && { opacity: 0.5 }]}>

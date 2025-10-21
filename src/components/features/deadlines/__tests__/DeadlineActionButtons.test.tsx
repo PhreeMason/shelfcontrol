@@ -345,7 +345,7 @@ describe('DeadlineActionButtons', () => {
   });
 
   describe('Button Interactions - Complete', () => {
-    it('should navigate directly to completion-flow when I\'m Done Reading button is pressed', () => {
+    it("should navigate directly to completion-flow when I'm Done Reading button is pressed", () => {
       render(<DeadlineActionButtons deadline={baseDeadline} />);
 
       fireEvent.press(screen.getByTestId("button-i'm-done-reading"));
@@ -525,7 +525,7 @@ describe('DeadlineActionButtons', () => {
       ],
     };
 
-    it('should show Resume Reading and I\'m Done Reading buttons for to_review status', () => {
+    it("should show Resume Reading and I'm Done Reading buttons for to_review status", () => {
       render(<DeadlineActionButtons deadline={toReviewDeadline} />);
 
       expect(screen.getByTestId('button-resume-reading')).toBeTruthy();
@@ -591,7 +591,9 @@ describe('DeadlineActionButtons', () => {
       const updateButton = mockAlert.mock.calls[0][2]?.[1];
       updateButton?.onPress?.();
 
-      expect(mockRouter.push).toHaveBeenCalledWith('/deadline/deadline-123/edit?page=3');
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        '/deadline/deadline-123/edit?page=3'
+      );
     });
 
     it('should handle reactivate error', () => {

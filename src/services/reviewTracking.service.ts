@@ -240,12 +240,20 @@ class ReviewTrackingService {
     }
 
     for (const platform of params.platforms) {
+      // Fetch current state of the platform to check if already posted
+      const { data: currentPlatform } = await supabase
+        .from(DB_TABLES.REVIEW_PLATFORMS)
+        .select('posted, posted_date')
+        .eq('id', platform.id)
+        .single();
+
       const updatePayload: any = {
         posted: platform.posted,
         updated_at: new Date().toISOString(),
       };
 
-      if (platform.posted) {
+      // Only set posted_date when changing from false to true
+      if (platform.posted && currentPlatform && !currentPlatform.posted) {
         updatePayload.posted_date = new Date().toISOString();
       }
 
@@ -272,7 +280,9 @@ class ReviewTrackingService {
     const totalPlatforms = allPlatforms?.length || 0;
     const postedPlatforms = allPlatforms?.filter(p => p.posted).length || 0;
     const completion_percentage =
-      totalPlatforms > 0 ? Math.round((postedPlatforms / totalPlatforms) * 100) : 0;
+      totalPlatforms > 0
+        ? Math.round((postedPlatforms / totalPlatforms) * 100)
+        : 0;
 
     return { completion_percentage };
   }
@@ -412,7 +422,9 @@ class ReviewTrackingService {
     const totalPlatforms = platforms?.length || 0;
     const postedPlatforms = platforms?.filter(p => p.posted).length || 0;
     const completion_percentage =
-      totalPlatforms > 0 ? Math.round((postedPlatforms / totalPlatforms) * 100) : 0;
+      totalPlatforms > 0
+        ? Math.round((postedPlatforms / totalPlatforms) * 100)
+        : 0;
 
     return {
       review_tracking: {

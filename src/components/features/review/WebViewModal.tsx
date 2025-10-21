@@ -62,7 +62,9 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
 
       // Track modal open
       try {
-        const urlDomain = normalizedUrl ? new URL(normalizedUrl).hostname : 'unknown';
+        const urlDomain = normalizedUrl
+          ? new URL(normalizedUrl).hostname
+          : 'unknown';
         posthog.capture('review webview opened', {
           platform_name: platformName,
           url_domain: urlDomain,
@@ -93,7 +95,9 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
 
     // Track refresh action
     try {
-      const urlDomain = normalizedUrl ? new URL(normalizedUrl).hostname : 'unknown';
+      const urlDomain = normalizedUrl
+        ? new URL(normalizedUrl).hostname
+        : 'unknown';
       posthog.capture('review webview refresh', {
         platform_name: platformName,
         trigger: error ? 'error_retry' : 'manual_refresh',
@@ -130,7 +134,9 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
     if (loadStartTimeRef.current > 0) {
       const loadTime = Date.now() - loadStartTimeRef.current;
       try {
-        const urlDomain = normalizedUrl ? new URL(normalizedUrl).hostname : 'unknown';
+        const urlDomain = normalizedUrl
+          ? new URL(normalizedUrl).hostname
+          : 'unknown';
         posthog.capture('review webview loaded', {
           platform_name: platformName,
           load_time: loadTime,
@@ -156,12 +162,15 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
     }
     loadingTimeoutRef.current = setTimeout(() => {
       setIsLoading(false);
-      const timeoutError = 'Page took too long to load. Please check your connection and try again.';
+      const timeoutError =
+        'Page took too long to load. Please check your connection and try again.';
       setError(timeoutError);
 
       // Track timeout error
       try {
-        const urlDomain = normalizedUrl ? new URL(normalizedUrl).hostname : 'unknown';
+        const urlDomain = normalizedUrl
+          ? new URL(normalizedUrl).hostname
+          : 'unknown';
         posthog.capture('review webview error', {
           platform_name: platformName,
           error_type: 'timeout',
@@ -246,11 +255,7 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                 style={styles.headerButton}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <IconSymbol
-                  name="xmark"
-                  size={24}
-                  color={colors.text}
-                />
+                <IconSymbol name="xmark" size={24} color={colors.text} />
               </Pressable>
             </View>
           </View>
@@ -267,11 +272,12 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
               <ThemedText style={styles.errorTitle}>
                 Unable to Load Page
               </ThemedText>
-              <ThemedText style={styles.errorMessage}>
-                {error}
-              </ThemedText>
+              <ThemedText style={styles.errorMessage}>{error}</ThemedText>
               <Pressable
-                style={[styles.retryButton, { backgroundColor: colors.primary }]}
+                style={[
+                  styles.retryButton,
+                  { backgroundColor: colors.primary },
+                ]}
                 onPress={handleRefresh}
               >
                 <ThemedText style={styles.retryButtonText}>
@@ -287,15 +293,18 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                 style={styles.webView}
                 onLoadStart={handleLoadStart}
                 onLoadEnd={handleLoadEnd}
-                onError={(syntheticEvent) => {
+                onError={syntheticEvent => {
                   const { nativeEvent } = syntheticEvent;
                   setIsLoading(false);
-                  const errorMsg = nativeEvent.description || 'Failed to load page';
+                  const errorMsg =
+                    nativeEvent.description || 'Failed to load page';
                   setError(errorMsg);
 
                   // Track load error
                   try {
-                    const urlDomain = normalizedUrl ? new URL(normalizedUrl).hostname : 'unknown';
+                    const urlDomain = normalizedUrl
+                      ? new URL(normalizedUrl).hostname
+                      : 'unknown';
                     posthog.capture('review webview error', {
                       platform_name: platformName,
                       error_type: 'load_error',
@@ -311,7 +320,7 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                     });
                   }
                 }}
-                onHttpError={(syntheticEvent) => {
+                onHttpError={syntheticEvent => {
                   const { nativeEvent } = syntheticEvent;
                   setIsLoading(false);
                   const errorMsg = `HTTP Error: ${nativeEvent.statusCode}`;
@@ -319,7 +328,9 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
 
                   // Track HTTP error
                   try {
-                    const urlDomain = normalizedUrl ? new URL(normalizedUrl).hostname : 'unknown';
+                    const urlDomain = normalizedUrl
+                      ? new URL(normalizedUrl).hostname
+                      : 'unknown';
                     posthog.capture('review webview error', {
                       platform_name: platformName,
                       error_type: 'http_error',
@@ -338,7 +349,9 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                 allowsBackForwardNavigationGestures
                 sharedCookiesEnabled
                 pullToRefreshEnabled
-                onContentProcessDidTerminate={() => webViewRef.current?.reload()}
+                onContentProcessDidTerminate={() =>
+                  webViewRef.current?.reload()
+                }
                 javaScriptEnabled={true}
                 domStorageEnabled={true}
                 scalesPageToFit={true}

@@ -35,11 +35,13 @@ const RadioGroup = <T extends FieldValues>({
           {label && (
             <ThemedText variant="default" style={styles.label}>
               {label}{' '}
-              {required && <ThemedText style={{ color: colors.danger }}>*</ThemedText>}
+              {required && (
+                <ThemedText style={{ color: colors.danger }}>*</ThemedText>
+              )}
             </ThemedText>
           )}
           <View style={styles.optionsContainer}>
-            {options.map((option) => (
+            {options.map(option => (
               <TouchableOpacity
                 key={option.value}
                 style={styles.radioOption}
@@ -65,7 +67,9 @@ const RadioGroup = <T extends FieldValues>({
                     />
                   )}
                 </View>
-                <ThemedText style={styles.radioLabel}>{option.label}</ThemedText>
+                <ThemedText style={styles.radioLabel}>
+                  {option.label}
+                </ThemedText>
               </TouchableOpacity>
             ))}
           </View>

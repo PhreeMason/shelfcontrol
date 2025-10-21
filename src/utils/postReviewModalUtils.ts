@@ -24,9 +24,7 @@ export const initializeModalState = (
     return null;
   }
 
-  const postedPlatformIds = platforms
-    .filter(p => p.posted)
-    .map(p => p.id);
+  const postedPlatformIds = platforms.filter(p => p.posted).map(p => p.id);
 
   return {
     selectedPlatformIds: new Set(postedPlatformIds),

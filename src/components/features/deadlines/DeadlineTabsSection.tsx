@@ -13,17 +13,16 @@ interface DeadlineTabsSectionProps {
 
 type TabType = 'stats' | 'reviews';
 
-const DeadlineTabsSection: React.FC<DeadlineTabsSectionProps> = ({ deadline }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('stats');
+const DeadlineTabsSection: React.FC<DeadlineTabsSectionProps> = ({
+  deadline,
+}) => {
+  const [activeTab, setActiveTab] = useState<TabType>('reviews');
 
   return (
     <ThemedView style={styles.container}>
       <View style={styles.tabsContainer}>
         <Pressable
-          style={[
-            styles.tab,
-            activeTab === 'stats' && styles.activeTab,
-          ]}
+          style={[styles.tab, activeTab === 'stats' && styles.activeTab]}
           onPress={() => setActiveTab('stats')}
           testID="stats-tab"
         >
@@ -38,10 +37,7 @@ const DeadlineTabsSection: React.FC<DeadlineTabsSectionProps> = ({ deadline }) =
         </Pressable>
 
         <Pressable
-          style={[
-            styles.tab,
-            activeTab === 'reviews' && styles.activeTab,
-          ]}
+          style={[styles.tab, activeTab === 'reviews' && styles.activeTab]}
           onPress={() => setActiveTab('reviews')}
           testID="reviews-tab"
         >

@@ -47,10 +47,10 @@ export const MAPPING = {
   'play.circle.fill': 'play-circle-filled',
   'circle.grid.2x2.fill': 'category',
   'square.and.pencil': 'edit-square',
-  'checkmark': 'check',
+  checkmark: 'check',
   'note.text': 'note',
   'pencil.and.scribble': 'edit-note',
-  ellipsis: 'more-horiz'
+  ellipsis: 'more-horiz',
 } as IconMapping;
 
 /**

@@ -1,10 +1,16 @@
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { useAuth } from '@/providers/AuthProvider';
-import { reviewTrackingService, CreateReviewTrackingParams } from '@/services/reviewTracking.service';
+import {
+  reviewTrackingService,
+  CreateReviewTrackingParams,
+} from '@/services/reviewTracking.service';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-export const useReviewTracking = (deadlineId: string, enabled: boolean = true) => {
+export const useReviewTracking = (
+  deadlineId: string,
+  enabled: boolean = true
+) => {
   const { session } = useAuth();
   const userId = session?.user?.id;
 
@@ -14,7 +20,10 @@ export const useReviewTracking = (deadlineId: string, enabled: boolean = true) =
       : ['review_tracking', 'null', deadlineId],
     queryFn: async () => {
       if (!userId) throw new Error('User not authenticated');
-      return reviewTrackingService.getReviewTrackingByDeadline(userId, deadlineId);
+      return reviewTrackingService.getReviewTrackingByDeadline(
+        userId,
+        deadlineId
+      );
     },
     staleTime: 1000 * 60 * 5,
     enabled: enabled && !!userId && !!deadlineId,
@@ -58,14 +67,17 @@ export const useCreateReviewTracking = () => {
     onSuccess: (_data, variables) => {
       if (userId) {
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.REVIEW_TRACKING.BY_DEADLINE(userId, variables.deadline_id),
+          queryKey: QUERY_KEYS.REVIEW_TRACKING.BY_DEADLINE(
+            userId,
+            variables.deadline_id
+          ),
         });
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
         });
       }
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Error creating review tracking:', error);
     },
   });

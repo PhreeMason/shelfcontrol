@@ -105,7 +105,12 @@ export const DeleteDeadlineModal: React.FC<DeleteDeadlineModalProps> = ({
           onStartShouldSetResponder={() => true}
         >
           <View style={styles.content}>
-            <View style={[styles.iconContainer, { backgroundColor: colors.error + '20' }]}>
+            <View
+              style={[
+                styles.iconContainer,
+                { backgroundColor: colors.error + '20' },
+              ]}
+            >
               <IconSymbol
                 name="exclamationmark.triangle"
                 size={36}

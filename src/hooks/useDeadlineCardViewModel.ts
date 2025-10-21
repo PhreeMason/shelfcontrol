@@ -5,6 +5,7 @@ import { dayjs } from '@/lib/dayjs';
 import { posthog } from '@/lib/posthog';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { calculateLocalDaysLeft } from '@/utils/dateNormalization';
 import {
   formatCapacityMessage,
   formatRemainingDisplay,
@@ -86,10 +87,12 @@ export function useDeadlineCardViewModel({
     countdownColor,
   } = useDeadlineCardState(deadline, urgencyLevel);
 
-  const { reviewDueDate, unpostedCount, totalPlatformCount } = useReviewTracking(
-    deadline.id,
-    latestStatus === 'to_review'
+  const isToReview = useMemo(
+    () => latestStatus === 'to_review',
+    [latestStatus]
   );
+  const { reviewDueDate, unpostedCount, totalPlatformCount } =
+    useReviewTracking(deadline.id, isToReview);
 
   const shadowStyle = useMemo(
     () =>
@@ -154,11 +157,19 @@ export function useDeadlineCardViewModel({
     }
 
     return capacityMessage;
-  }, [urgencyLevel, remaining, deadline.format, capacityMessage, latestStatus, totalPlatformCount, unpostedCount]);
+  }, [
+    urgencyLevel,
+    remaining,
+    deadline.format,
+    capacityMessage,
+    latestStatus,
+    totalPlatformCount,
+    unpostedCount,
+  ]);
 
   const reviewDaysLeft = useMemo(() => {
     if (latestStatus === 'to_review' && reviewDueDate) {
-      return dayjs(reviewDueDate).diff(dayjs(), 'day');
+      return calculateLocalDaysLeft(reviewDueDate);
     }
     return undefined;
   }, [latestStatus, reviewDueDate]);
@@ -175,7 +186,13 @@ export function useDeadlineCardViewModel({
       return `Review by: ${dayjs(reviewDueDate).format('MMM D, YYYY')}`;
     }
     return `Due: ${dayjs(deadline.deadline_date).format('MMM D, YYYY')}`;
-  }, [isArchived, latestStatus, latestStatusRecord, deadline.deadline_date, reviewDueDate]);
+  }, [
+    isArchived,
+    latestStatus,
+    latestStatusRecord,
+    deadline.deadline_date,
+    reviewDueDate,
+  ]);
 
   const cardContainerStyle = useMemo(
     () => ({
@@ -210,7 +227,9 @@ export function useDeadlineCardViewModel({
         countdownColor,
         borderColor,
         ...(reviewDaysLeft !== undefined && { reviewDaysLeft }),
-        ...(unpostedCount !== undefined && { unpostedPlatformCount: unpostedCount }),
+        ...(unpostedCount !== undefined && {
+          unpostedPlatformCount: unpostedCount,
+        }),
       },
       actionSheet: {
         deadline,

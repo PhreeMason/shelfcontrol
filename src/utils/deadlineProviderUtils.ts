@@ -153,8 +153,12 @@ export function calculateProgressAsOfStartOfDay(
 
   // Filter progress entries to only include those from before or at the start of today
   const progressBeforeToday = deadline.progress.filter(progress => {
-    const progressDate = normalizeServerDate(progress.created_at || '1970-01-01');
-    return progressDate.isBefore(startOfToday) || progressDate.isSame(startOfToday);
+    const progressDate = normalizeServerDate(
+      progress.created_at || '1970-01-01'
+    );
+    return (
+      progressDate.isBefore(startOfToday) || progressDate.isSame(startOfToday)
+    );
   });
 
   if (progressBeforeToday.length === 0) return 0;
@@ -179,7 +183,10 @@ export function calculateProgressForToday(
   return Math.max(0, currentProgress - progressAtStartOfDay);
 }
 
-export function formatLowFrequency(daysPerUnit: number, unitName: string): string {
+export function formatLowFrequency(
+  daysPerUnit: number,
+  unitName: string
+): string {
   if (daysPerUnit === 7) {
     return `1 ${unitName}/week`;
   }

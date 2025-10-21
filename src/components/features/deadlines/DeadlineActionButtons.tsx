@@ -26,8 +26,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   const [isStartingReading, setIsStartingReading] = useState(false);
 
   const latestStatus = getDeadlineStatus(deadline);
-  const { isCompleted, isActive, isPending } =
-    getStatusFlags(latestStatus);
+  const { isCompleted, isActive, isPending } = getStatusFlags(latestStatus);
   const handleComplete = () => {
     if (onComplete) {
       onComplete();

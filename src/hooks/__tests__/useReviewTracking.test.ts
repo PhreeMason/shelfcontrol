@@ -80,7 +80,9 @@ describe('useReviewTracking', () => {
       error: null,
     });
 
-    const { result } = renderHook(() => useReviewTracking(mockDeadlineId, true));
+    const { result } = renderHook(() =>
+      useReviewTracking(mockDeadlineId, true)
+    );
 
     expect(result.current.reviewDueDate).toBe('2025-10-20');
     expect(result.current.unpostedCount).toBe(2);
@@ -95,7 +97,9 @@ describe('useReviewTracking', () => {
       error: null,
     });
 
-    const { result } = renderHook(() => useReviewTracking(mockDeadlineId, true));
+    const { result } = renderHook(() =>
+      useReviewTracking(mockDeadlineId, true)
+    );
 
     expect(result.current.reviewDueDate).toBe(null);
     expect(result.current.unpostedCount).toBe(0);
@@ -137,7 +141,9 @@ describe('useReviewTracking', () => {
       error: null,
     });
 
-    const { result } = renderHook(() => useReviewTracking(mockDeadlineId, true));
+    const { result } = renderHook(() =>
+      useReviewTracking(mockDeadlineId, true)
+    );
 
     expect(result.current.unpostedCount).toBe(0);
     expect(result.current.totalPlatformCount).toBe(2);
@@ -150,7 +156,9 @@ describe('useReviewTracking', () => {
       error: null,
     });
 
-    const { result } = renderHook(() => useReviewTracking(mockDeadlineId, true));
+    const { result } = renderHook(() =>
+      useReviewTracking(mockDeadlineId, true)
+    );
 
     expect(result.current.isLoading).toBe(true);
   });
@@ -182,7 +190,9 @@ describe('useReviewTracking', () => {
       error: null,
     });
 
-    const { result } = renderHook(() => useReviewTracking(mockDeadlineId, true));
+    const { result } = renderHook(() =>
+      useReviewTracking(mockDeadlineId, true)
+    );
 
     expect(result.current.reviewDueDate).toBe(null);
     expect(result.current.unpostedCount).toBe(1);

@@ -28,8 +28,17 @@ export function useDeadlineCardState(
   const { colors } = useTheme();
 
   return useMemo(() => {
-    const { good, approaching, urgent, overdue, impossible, complete, toReview, pending, didNotFinish } =
-      colors;
+    const {
+      good,
+      approaching,
+      urgent,
+      overdue,
+      impossible,
+      complete,
+      toReview,
+      pending,
+      didNotFinish,
+    } = colors;
 
     const urgencyTextColorMap: UrgencyColorMap = {
       complete,

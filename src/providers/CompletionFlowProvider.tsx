@@ -22,20 +22,25 @@ export interface CompletionFlowState {
 
 interface CompletionFlowContextType {
   flowState: CompletionFlowState | null;
-  initializeFlow: (deadline: ReadingDeadlineWithProgress, isDNF?: boolean) => void;
+  initializeFlow: (
+    deadline: ReadingDeadlineWithProgress,
+    isDNF?: boolean
+  ) => void;
   updateStep: (step: CompletionFlowStep) => void;
   setNeedsReview: (needsReview: boolean) => void;
   resetFlow: () => void;
 }
 
-const CompletionFlowContext = createContext<CompletionFlowContextType | undefined>(
-  undefined
-);
+const CompletionFlowContext = createContext<
+  CompletionFlowContextType | undefined
+>(undefined);
 
 export const useCompletionFlow = () => {
   const context = useContext(CompletionFlowContext);
   if (!context) {
-    throw new Error('useCompletionFlow must be used within CompletionFlowProvider');
+    throw new Error(
+      'useCompletionFlow must be used within CompletionFlowProvider'
+    );
   }
   return context;
 };
@@ -49,7 +54,10 @@ export const CompletionFlowProvider: React.FC<CompletionFlowProviderProps> = ({
 }) => {
   const [flowState, setFlowState] = useState<CompletionFlowState | null>(null);
 
-  const initializeFlow = (deadline: ReadingDeadlineWithProgress, isDNF = false) => {
+  const initializeFlow = (
+    deadline: ReadingDeadlineWithProgress,
+    isDNF = false
+  ) => {
     const totalPages = deadline.total_quantity || 0;
     const latestProgress =
       deadline.progress && deadline.progress.length > 0
@@ -57,7 +65,9 @@ export const CompletionFlowProvider: React.FC<CompletionFlowProviderProps> = ({
         : null;
     const currentProgress = latestProgress?.current_progress || 0;
     const firstProgress =
-      deadline.progress && deadline.progress.length > 0 ? deadline.progress[0] : null;
+      deadline.progress && deadline.progress.length > 0
+        ? deadline.progress[0]
+        : null;
     const startDate = firstProgress?.created_at || new Date().toISOString();
 
     setFlowState({

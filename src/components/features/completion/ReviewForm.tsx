@@ -10,11 +10,18 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
 import { ROUTES } from '@/constants/routes';
 import { useFetchBookById } from '@/hooks/useBooks';
-import { useCompleteDeadline, useDidNotFinishDeadline, useToReviewDeadline } from '@/hooks/useDeadlines';
-import { useCreateReviewTracking, useUserPlatforms } from '@/hooks/useReviewTracking';
+import {
+  useCompleteDeadline,
+  useDidNotFinishDeadline,
+  useToReviewDeadline,
+} from '@/hooks/useDeadlines';
+import {
+  useCreateReviewTracking,
+  useUserPlatforms,
+} from '@/hooks/useReviewTracking';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
-import { useCompletionFlow } from '@/providers/CompletionFlowProvider';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { ReviewFormData, reviewFormSchema } from '@/utils/reviewFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -33,6 +40,11 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
+interface ReviewFormProps {
+  deadline: ReadingDeadlineWithProgress;
+  isDNF?: boolean;
+}
+
 const PRESET_PLATFORMS = [
   'NetGalley',
   'Goodreads',
@@ -44,9 +56,8 @@ const PRESET_PLATFORMS = [
   'YouTube',
 ];
 
-const ReviewForm: React.FC = () => {
+const ReviewForm: React.FC<ReviewFormProps> = ({ deadline, isDNF = false }) => {
   const { colors } = useTheme();
-  const { flowState, resetFlow } = useCompletionFlow();
   const { session } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -57,13 +68,15 @@ const ReviewForm: React.FC = () => {
   const { mutate: completeDeadline } = useCompleteDeadline();
   const { mutate: didNotFinishDeadline } = useDidNotFinishDeadline();
 
-  const [selectedPlatforms, setSelectedPlatforms] = useState<Set<string>>(new Set());
+  const [selectedPlatforms, setSelectedPlatforms] = useState<Set<string>>(
+    new Set()
+  );
   const [hasBlog, setHasBlog] = useState(false);
   const [blogUrl, setBlogUrl] = useState('');
   const [customPlatforms, setCustomPlatforms] = useState<string[]>([]);
   const [newCustomPlatform, setNewCustomPlatform] = useState('');
 
-  const { data: bookData } = useFetchBookById(flowState?.bookData.bookId || null);
+  const { data: bookData } = useFetchBookById(deadline.book_id || null);
   const { data: userPlatforms = [] } = useUserPlatforms();
 
   const categorizedPlatforms = useMemo(() => {
@@ -88,7 +101,9 @@ const ReviewForm: React.FC = () => {
       }
     });
 
-    const unusedPresets = PRESET_PLATFORMS.filter(p => !usedPresets.includes(p));
+    const unusedPresets = PRESET_PLATFORMS.filter(
+      p => !usedPresets.includes(p)
+    );
 
     return {
       usedPresets,
@@ -112,9 +127,7 @@ const ReviewForm: React.FC = () => {
   const watchReviewDueDate = watch('reviewDueDate');
 
   useEffect(() => {
-    if (!flowState) return;
-
-    const source = flowState.bookData.source;
+    const source = deadline.source;
     const defaultPlatforms = new Set<string>();
 
     if (source === 'NetGalley') {
@@ -133,7 +146,7 @@ const ReviewForm: React.FC = () => {
     }
 
     setSelectedPlatforms(defaultPlatforms);
-  }, [flowState, setValue]);
+  }, [deadline.source, setValue]);
 
   useEffect(() => {
     if (watchHasDeadline && !watchReviewDueDate) {
@@ -152,7 +165,7 @@ const ReviewForm: React.FC = () => {
   }, [hasBlog, blogUrl, categorizedPlatforms.blogs]);
 
   const togglePlatform = (platform: string) => {
-    setSelectedPlatforms((prev) => {
+    setSelectedPlatforms(prev => {
       const newSet = new Set(prev);
       if (newSet.has(platform)) {
         newSet.delete(platform);
@@ -165,13 +178,13 @@ const ReviewForm: React.FC = () => {
 
   const addCustomPlatform = () => {
     if (newCustomPlatform.trim()) {
-      setCustomPlatforms((prev) => [...prev, newCustomPlatform.trim()]);
+      setCustomPlatforms(prev => [...prev, newCustomPlatform.trim()]);
       setNewCustomPlatform('');
     }
   };
 
   const removeCustomPlatform = (index: number) => {
-    setCustomPlatforms((prev) => prev.filter((_, i) => i !== index));
+    setCustomPlatforms(prev => prev.filter((_, i) => i !== index));
   };
 
   const getAllSelectedPlatforms = (): string[] => {
@@ -184,7 +197,7 @@ const ReviewForm: React.FC = () => {
   };
 
   const handleSaveAndFinish = (data: ReviewFormData) => {
-    if (!flowState || !session?.user?.id) return;
+    if (!session?.user?.id) return;
 
     const allPlatforms = getAllSelectedPlatforms();
 
@@ -200,9 +213,9 @@ const ReviewForm: React.FC = () => {
     setIsSubmitting(true);
 
     const params: any = {
-      deadline_id: flowState.deadlineId,
+      deadline_id: deadline.id,
       needs_link_submission: data.needsLinkSubmission,
-      platforms: allPlatforms.map((name) => ({ name })),
+      platforms: allPlatforms.map(name => ({ name })),
     };
 
     if (data.hasReviewDeadline && data.reviewDueDate) {
@@ -215,27 +228,30 @@ const ReviewForm: React.FC = () => {
 
     createReviewTracking(params, {
       onSuccess: () => {
-        updateToReview(flowState.deadlineId, {
+        updateToReview(deadline.id, {
           onSuccess: () => {
             Toast.show({
               type: 'success',
               text1: 'Review tracking set up!',
             });
             setIsSubmitting(false);
-            router.replace(`/deadline/${flowState.deadlineId}`);
+            router.replace(`/deadline/${deadline.id}`);
           },
-          onError: (error) => {
-            console.warn('Could not update status to to_review:', error.message);
+          onError: error => {
+            console.warn(
+              'Could not update status to to_review:',
+              error.message
+            );
             Toast.show({
               type: 'success',
               text1: 'Review tracking set up!',
             });
             setIsSubmitting(false);
-            router.replace(`/deadline/${flowState.deadlineId}`);
+            router.replace(`/deadline/${deadline.id}`);
           },
         });
       },
-      onError: (error) => {
+      onError: error => {
         console.error('Error setting up review tracking:', error);
         Toast.show({
           type: 'error',
@@ -248,25 +264,27 @@ const ReviewForm: React.FC = () => {
   };
 
   const handleSkip = () => {
-    if (!flowState || !session?.user?.id) return;
+    if (!session?.user?.id) return;
 
-    const finalStatus = flowState.isDNF ? 'did_not_finish' : 'complete';
+    const finalStatus = isDNF ? 'did_not_finish' : 'complete';
 
     setIsSubmitting(true);
 
-    const statusMutation = finalStatus === 'did_not_finish' ? didNotFinishDeadline : completeDeadline;
+    const statusMutation =
+      finalStatus === 'did_not_finish'
+        ? didNotFinishDeadline
+        : completeDeadline;
 
-    statusMutation(flowState.deadlineId, {
+    statusMutation(deadline.id, {
       onSuccess: () => {
         Toast.show({
           type: 'success',
           text1: 'All done!',
         });
         setIsSubmitting(false);
-        resetFlow();
         router.replace(ROUTES.HOME);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('Error updating deadline status:', error);
         Toast.show({
           type: 'error',
@@ -285,16 +303,21 @@ const ReviewForm: React.FC = () => {
     }
   };
 
-  if (!flowState) return null;
-
-  const isPastDate = watchReviewDueDate && watchReviewDueDate < new Date(new Date().setHours(0, 0, 0, 0));
+  const isPastDate =
+    watchReviewDueDate &&
+    watchReviewDueDate < new Date(new Date().setHours(0, 0, 0, 0));
 
   return (
-    <ThemedView style={[styles.container, {
-      paddingBottom: insets.bottom,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-    }]}>
+    <ThemedView
+      style={[
+        styles.container,
+        {
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        },
+      ]}
+    >
       <LinearGradient
         colors={[colors.accent, colors.primary]}
         start={{ x: 0, y: 0 }}
@@ -318,10 +341,10 @@ const ReviewForm: React.FC = () => {
             )}
             <View style={styles.bookInfoText}>
               <ThemedText variant="default" style={styles.bookTitle}>
-                {flowState.bookData.title}
+                {deadline.book_title}
               </ThemedText>
               <ThemedText variant="secondary" style={styles.bookAuthor}>
-                by {flowState.bookData.author}
+                by {deadline.author || 'Unknown Author'}
               </ThemedText>
             </View>
           </View>
@@ -334,7 +357,12 @@ const ReviewForm: React.FC = () => {
         keyboardShouldPersistTaps="handled"
       >
         <ThemedView style={styles.content}>
-          <ThemedView style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <ThemedView
+            style={[
+              styles.card,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
             <ThemedView style={styles.section}>
               <ThemedText variant="title" style={styles.sectionHeader}>
                 Review Timeline
@@ -371,7 +399,9 @@ const ReviewForm: React.FC = () => {
                       />
                     )}
                   </View>
-                  <ThemedText style={styles.radioLabel}>Yes, I have a review deadline</ThemedText>
+                  <ThemedText style={styles.radioLabel}>
+                    Yes, I have a review deadline
+                  </ThemedText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
@@ -404,7 +434,9 @@ const ReviewForm: React.FC = () => {
                       />
                     )}
                   </View>
-                  <ThemedText style={styles.radioLabel}>No deadline, review when I can</ThemedText>
+                  <ThemedText style={styles.radioLabel}>
+                    No deadline, review when I can
+                  </ThemedText>
                 </TouchableOpacity>
               </ThemedView>
               {watchHasDeadline && watchReviewDueDate && (
@@ -447,7 +479,12 @@ const ReviewForm: React.FC = () => {
             </ThemedView>
           </ThemedView>
 
-          <ThemedView style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <ThemedView
+            style={[
+              styles.card,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
             <ThemedView style={styles.section}>
               <ThemedText variant="title" style={styles.sectionHeader}>
                 Where to Post Reviews
@@ -455,102 +492,113 @@ const ReviewForm: React.FC = () => {
               <ThemedText variant="secondary" style={styles.sectionSubtext}>
                 Select all that apply:
               </ThemedText>
-            <ThemedView style={styles.platformsList}>
-              <ThemedView style={styles.platformsGrid}>
-                {categorizedPlatforms.usedPresets.map((platform) => (
-                  <ThemedView key={platform} style={styles.platformItem}>
-                    <Checkbox
-                      label={platform}
-                      checked={selectedPlatforms.has(platform)}
-                      onToggle={() => togglePlatform(platform)}
-                    />
-                  </ThemedView>
-                ))}
-                {categorizedPlatforms.custom.map((platform) => (
-                  <ThemedView key={`history-${platform}`} style={styles.platformItem}>
-                    <Checkbox
-                      label={platform}
-                      checked={selectedPlatforms.has(platform)}
-                      onToggle={() => togglePlatform(platform)}
-                    />
-                  </ThemedView>
-                ))}
-                {categorizedPlatforms.unusedPresets.map((platform) => (
-                  <ThemedView key={platform} style={styles.platformItem}>
-                    <Checkbox
-                      label={platform}
-                      checked={selectedPlatforms.has(platform)}
-                      onToggle={() => togglePlatform(platform)}
-                    />
-                  </ThemedView>
-                ))}
-                {customPlatforms.map((platform, index) => (
-                  <ThemedView key={`custom-${index}`} style={styles.platformItem}>
-                    <Checkbox
-                      label={platform}
-                      checked={true}
-                      onToggle={() => removeCustomPlatform(index)}
-                    />
-                  </ThemedView>
-                ))}
-              </ThemedView>
+              <ThemedView style={styles.platformsList}>
+                <ThemedView style={styles.platformsGrid}>
+                  {categorizedPlatforms.usedPresets.map(platform => (
+                    <ThemedView key={platform} style={styles.platformItem}>
+                      <Checkbox
+                        label={platform}
+                        checked={selectedPlatforms.has(platform)}
+                        onToggle={() => togglePlatform(platform)}
+                      />
+                    </ThemedView>
+                  ))}
+                  {categorizedPlatforms.custom.map(platform => (
+                    <ThemedView
+                      key={`history-${platform}`}
+                      style={styles.platformItem}
+                    >
+                      <Checkbox
+                        label={platform}
+                        checked={selectedPlatforms.has(platform)}
+                        onToggle={() => togglePlatform(platform)}
+                      />
+                    </ThemedView>
+                  ))}
+                  {categorizedPlatforms.unusedPresets.map(platform => (
+                    <ThemedView key={platform} style={styles.platformItem}>
+                      <Checkbox
+                        label={platform}
+                        checked={selectedPlatforms.has(platform)}
+                        onToggle={() => togglePlatform(platform)}
+                      />
+                    </ThemedView>
+                  ))}
+                  {customPlatforms.map((platform, index) => (
+                    <ThemedView
+                      key={`custom-${index}`}
+                      style={styles.platformItem}
+                    >
+                      <Checkbox
+                        label={platform}
+                        checked={true}
+                        onToggle={() => removeCustomPlatform(index)}
+                      />
+                    </ThemedView>
+                  ))}
+                </ThemedView>
 
-              <Checkbox
-                label="My blog"
-                checked={hasBlog}
-                onToggle={() => setHasBlog(!hasBlog)}
-              />
-              {hasBlog && (
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      backgroundColor: colors.surface,
-                      borderColor: colors.border,
-                      color: colors.text,
-                    },
-                  ]}
-                  value={blogUrl}
-                  onChangeText={setBlogUrl}
-                  placeholder="Enter blog URL..."
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                  placeholderTextColor={colors.textMuted}
+                <Checkbox
+                  label="My blog"
+                  checked={hasBlog}
+                  onToggle={() => setHasBlog(!hasBlog)}
                 />
-              )}
+                {hasBlog && (
+                  <TextInput
+                    style={[
+                      styles.input,
+                      {
+                        backgroundColor: colors.surface,
+                        borderColor: colors.border,
+                        color: colors.text,
+                      },
+                    ]}
+                    value={blogUrl}
+                    onChangeText={setBlogUrl}
+                    placeholder="Enter blog URL..."
+                    autoCorrect={false}
+                    autoCapitalize="none"
+                    placeholderTextColor={colors.textMuted}
+                  />
+                )}
 
-              <ThemedView style={styles.addCustomContainer}>
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      backgroundColor: colors.surface,
-                      borderColor: colors.border,
-                      color: colors.text,
-                      flex: 1,
-                    },
-                  ]}
-                  value={newCustomPlatform}
-                  onChangeText={setNewCustomPlatform}
-                  placeholder="Enter platform name..."
-                  placeholderTextColor={colors.textMuted}
-                  onSubmitEditing={addCustomPlatform}
-                />
-                <TouchableOpacity
-                  style={[styles.addButton, { borderColor: colors.primary }]}
-                  onPress={addCustomPlatform}
-                >
-                  <IconSymbol name="plus" size={16} color={colors.primary} />
-                  <ThemedText color="primary" style={styles.addButtonText}>
-                    Add
-                  </ThemedText>
-                </TouchableOpacity>
+                <ThemedView style={styles.addCustomContainer}>
+                  <TextInput
+                    style={[
+                      styles.input,
+                      {
+                        backgroundColor: colors.surface,
+                        borderColor: colors.border,
+                        color: colors.text,
+                        flex: 1,
+                      },
+                    ]}
+                    value={newCustomPlatform}
+                    onChangeText={setNewCustomPlatform}
+                    placeholder="Enter platform name..."
+                    placeholderTextColor={colors.textMuted}
+                    onSubmitEditing={addCustomPlatform}
+                  />
+                  <TouchableOpacity
+                    style={[styles.addButton, { borderColor: colors.primary }]}
+                    onPress={addCustomPlatform}
+                  >
+                    <IconSymbol name="plus" size={16} color={colors.primary} />
+                    <ThemedText color="primary" style={styles.addButtonText}>
+                      Add
+                    </ThemedText>
+                  </TouchableOpacity>
+                </ThemedView>
               </ThemedView>
-            </ThemedView>
             </ThemedView>
           </ThemedView>
 
-          <ThemedView style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <ThemedView
+            style={[
+              styles.card,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
             <ThemedView style={styles.section}>
               <ThemedText variant="title" style={styles.sectionHeader}>
                 Do you need to submit review links?
@@ -587,7 +635,9 @@ const ReviewForm: React.FC = () => {
                       />
                     )}
                   </View>
-                  <ThemedText style={styles.radioLabel}>Yes, I'll need to share review URLs</ThemedText>
+                  <ThemedText style={styles.radioLabel}>
+                    Yes, I'll need to share review URLs
+                  </ThemedText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
@@ -620,13 +670,20 @@ const ReviewForm: React.FC = () => {
                       />
                     )}
                   </View>
-                  <ThemedText style={styles.radioLabel}>No link submission needed</ThemedText>
+                  <ThemedText style={styles.radioLabel}>
+                    No link submission needed
+                  </ThemedText>
                 </TouchableOpacity>
               </ThemedView>
             </ThemedView>
           </ThemedView>
 
-          <ThemedView style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <ThemedView
+            style={[
+              styles.card,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
             <ThemedView style={styles.section}>
               <ThemedText variant="title" style={styles.sectionHeader}>
                 Quick Review Thoughts (Optional)

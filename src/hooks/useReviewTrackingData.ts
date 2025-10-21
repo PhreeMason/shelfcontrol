@@ -1,9 +1,15 @@
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { useAuth } from '@/providers/AuthProvider';
-import { reviewTrackingService, ReviewTrackingResponse } from '@/services/reviewTracking.service';
+import {
+  reviewTrackingService,
+  ReviewTrackingResponse,
+} from '@/services/reviewTracking.service';
 import { useQuery } from '@tanstack/react-query';
 
-export const useReviewTrackingData = (deadlineId: string, enabled: boolean = true) => {
+export const useReviewTrackingData = (
+  deadlineId: string,
+  enabled: boolean = true
+) => {
   const { session } = useAuth();
   const userId = session?.user?.id;
 
@@ -13,7 +19,10 @@ export const useReviewTrackingData = (deadlineId: string, enabled: boolean = tru
       : ['review_tracking', 'null', deadlineId],
     queryFn: async () => {
       if (!userId) throw new Error('User not authenticated');
-      return reviewTrackingService.getReviewTrackingByDeadline(userId, deadlineId);
+      return reviewTrackingService.getReviewTrackingByDeadline(
+        userId,
+        deadlineId
+      );
     },
     staleTime: 1000 * 60 * 5,
     enabled: enabled && !!userId && !!deadlineId,

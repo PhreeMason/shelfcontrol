@@ -2,6 +2,7 @@ import { DB_TABLES } from '@/constants/database';
 import { DEADLINE_STATUS } from '@/constants/status';
 import { dayjs } from '@/lib/dayjs';
 import { generateId, supabase } from '@/lib/supabase';
+import { Database } from '@/types/database.types';
 import {
   ReadingDeadlineInsert,
   ReadingDeadlineProgressInsert,
@@ -35,14 +36,26 @@ export interface AddDeadlineParams {
   deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
   progressDetails: ReadingDeadlineProgressInsert;
   status?: string;
-  bookData?: { api_id: string; book_id?: string };
+  bookData?: {
+    api_id: string;
+    book_id?: string;
+    api_source?: string;
+    google_volume_id?: string;
+    isbn?: string;
+  };
 }
 
 export interface UpdateDeadlineParams {
   deadlineDetails: ReadingDeadlineInsert;
   progressDetails: ReadingDeadlineProgressInsert;
   status?: string;
-  bookData?: { api_id: string; book_id?: string };
+  bookData?: {
+    api_id: string;
+    book_id?: string;
+    api_source?: string;
+    google_volume_id?: string;
+    isbn?: string;
+  };
 }
 
 export interface UpdateProgressParams {
@@ -80,9 +93,30 @@ class DeadlinesService {
       } else {
         // Need to fetch and insert book data
         try {
-          const bookResponse = await booksService.fetchBookData(
-            bookData.api_id
-          );
+          let bookResponse;
+
+          // Use appropriate identifier based on api_source
+          if (bookData.api_source === 'google_books') {
+            // For Google Books, use google_volume_id or isbn
+            if (bookData.isbn) {
+              bookResponse = await booksService.fetchBookData({
+                isbn: bookData.isbn,
+              });
+            } else if (bookData.google_volume_id) {
+              bookResponse = await booksService.fetchBookData({
+                google_volume_id: bookData.google_volume_id,
+              });
+            } else {
+              // Fallback to api_id for Google Books
+              bookResponse = await booksService.fetchBookData({
+                google_volume_id: bookData.api_id,
+              });
+            }
+          } else {
+            // For Goodreads or legacy sources, use api_id
+            bookResponse = await booksService.fetchBookData(bookData.api_id);
+          }
+
           if (bookResponse) {
             const finalNewBookId = generateId('book');
             await booksService.insertBook(finalNewBookId, bookResponse);
@@ -452,17 +486,17 @@ class DeadlinesService {
    * - Latest status determined by most recent created_at timestamp
    * - Status and progress arrays ordered by created_at asc (oldest first, newest last, last index is current)
    * - Overdue is NOT a status - it's a runtime calculation: `status = 'reading' AND deadline_date < CURRENT_DATE`
-   * - 'paused' status was removed from the system and migrated to 'reading'
    * - Logs activity event for status changes
    */
   async updateDeadlineStatus(
     userId: string,
     deadlineId: string,
-    status: 'complete' | 'to_review' | 'reading' | 'did_not_finish' | 'pending'
+    status: Database['public']['Enums']['deadline_status_enum']
   ) {
     const validTransitions: Record<string, string[]> = {
       pending: ['reading'],
-      reading: ['to_review', 'complete', 'did_not_finish'],
+      reading: ['paused', 'to_review', 'complete', 'did_not_finish'],
+      paused: ['reading', 'complete', 'did_not_finish'],
       to_review: ['complete', 'did_not_finish'],
       complete: [],
       did_not_finish: [],
@@ -484,7 +518,10 @@ class DeadlinesService {
       throw new Error('Deadline not found or access denied');
     }
 
-    const deadlineData = deadline as unknown as { id: string; status: { status: string }[] };
+    const deadlineData = deadline as unknown as {
+      id: string;
+      status: { status: string }[];
+    };
     const currentStatusArray = deadlineData.status;
     const currentStatusData =
       currentStatusArray && currentStatusArray.length > 0
@@ -493,7 +530,8 @@ class DeadlinesService {
 
     if (currentStatusData && currentStatusData.status) {
       const currentStatus = currentStatusData.status;
-      const allowedTransitions = validTransitions[currentStatus as string] || [];
+      const allowedTransitions =
+        validTransitions[currentStatus as string] || [];
 
       if (!allowedTransitions.includes(status) && currentStatus !== status) {
         throw new Error(
@@ -533,7 +571,9 @@ class DeadlinesService {
       .eq('user_id', userId)
       .single();
 
-    return sortDeadlineArrays(updatedDeadline as unknown as ReadingDeadlineWithProgress);
+    return sortDeadlineArrays(
+      updatedDeadline as unknown as ReadingDeadlineWithProgress
+    );
   }
 
   /**

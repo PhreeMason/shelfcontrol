@@ -152,12 +152,11 @@ export const calculateDaysSpent = (
   }
 
   const firstDate = normalizeServerDate(validProgress[0].created_at);
-  const lastDate = normalizeServerDate(validProgress[validProgress.length - 1].created_at);
-
-  const daysBetween = Math.max(
-    1,
-    lastDate.diff(firstDate, 'day') + 1
+  const lastDate = normalizeServerDate(
+    validProgress[validProgress.length - 1].created_at
   );
+
+  const daysBetween = Math.max(1, lastDate.diff(firstDate, 'day') + 1);
 
   return daysBetween;
 };

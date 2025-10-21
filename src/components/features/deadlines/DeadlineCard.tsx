@@ -58,24 +58,28 @@ export function DeadlineCard({
           </View>
           <DeadlineCountdownDisplay {...viewModel.componentProps.countdown} />
 
-          {!disableNavigation && <Pressable
-            onPress={viewModel.handlers.onMorePress}
-            hitSlop={8}
-            style={styles.moreButton}
-          >
-            <IconSymbol
-              name="ellipsis.circle"
-              size={24}
-              color={colors.textMuted}
-            />
-          </Pressable>}
+          {!disableNavigation && (
+            <Pressable
+              onPress={viewModel.handlers.onMorePress}
+              hitSlop={8}
+              style={styles.moreButton}
+            >
+              <IconSymbol
+                name="ellipsis.circle"
+                size={24}
+                color={colors.textMuted}
+              />
+            </Pressable>
+          )}
         </View>
       </Pressable>
 
-      {!disableNavigation && <DeadlineActionSheet
-        {...viewModel.componentProps.actionSheet}
-        onClose={() => viewModel.state.setShowActionSheet(false)}
-      />}
+      {!disableNavigation && (
+        <DeadlineActionSheet
+          {...viewModel.componentProps.actionSheet}
+          onClose={() => viewModel.state.setShowActionSheet(false)}
+        />
+      )}
     </>
   );
 }

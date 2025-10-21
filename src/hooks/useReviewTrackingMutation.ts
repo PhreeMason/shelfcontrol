@@ -3,7 +3,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import {
   reviewTrackingService,
   ReviewTrackingResponse,
-  UpdateReviewPlatformsParams
+  UpdateReviewPlatformsParams,
 } from '@/services/reviewTracking.service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
@@ -22,16 +22,24 @@ export const useReviewTrackingMutation = (deadlineId: string) => {
       params: UpdateReviewPlatformsParams;
     }) => {
       if (!userId) throw new Error('User not authenticated');
-      return reviewTrackingService.updateReviewPlatforms(userId, reviewTrackingId, params);
+      return reviewTrackingService.updateReviewPlatforms(
+        userId,
+        reviewTrackingId,
+        params
+      );
     },
     onMutate: async ({ params }) => {
       if (!userId) return;
 
-      const queryKey = QUERY_KEYS.REVIEW_TRACKING.BY_DEADLINE(userId, deadlineId);
+      const queryKey = QUERY_KEYS.REVIEW_TRACKING.BY_DEADLINE(
+        userId,
+        deadlineId
+      );
 
       await queryClient.cancelQueries({ queryKey });
 
-      const previousData = queryClient.getQueryData<ReviewTrackingResponse | null>(queryKey);
+      const previousData =
+        queryClient.getQueryData<ReviewTrackingResponse | null>(queryKey);
 
       if (previousData) {
         const updatedPlatforms = previousData.platforms.map(platform => {
@@ -41,7 +49,11 @@ export const useReviewTrackingMutation = (deadlineId: string) => {
               ...platform,
               posted: update.posted,
               review_url: update.review_url ?? platform.review_url,
-              posted_date: update.posted ? new Date().toISOString() : platform.posted_date,
+              // Only set new posted_date when changing from false to true
+              posted_date:
+                update.posted && !platform.posted
+                  ? new Date().toISOString()
+                  : platform.posted_date,
             };
           }
           return platform;
@@ -49,7 +61,8 @@ export const useReviewTrackingMutation = (deadlineId: string) => {
 
         const postedCount = updatedPlatforms.filter(p => p.posted).length;
         const totalCount = updatedPlatforms.length;
-        const newPercentage = totalCount > 0 ? Math.round((postedCount / totalCount) * 100) : 0;
+        const newPercentage =
+          totalCount > 0 ? Math.round((postedCount / totalCount) * 100) : 0;
 
         queryClient.setQueryData<ReviewTrackingResponse>(queryKey, {
           ...previousData,

@@ -1,4 +1,7 @@
-import { initializeModalState, prepareModalUpdates } from '../postReviewModalUtils';
+import {
+  initializeModalState,
+  prepareModalUpdates,
+} from '../postReviewModalUtils';
 
 describe('postReviewModalUtils', () => {
   describe('initializeModalState', () => {

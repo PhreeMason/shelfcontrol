@@ -6,6 +6,7 @@ import {
   deadlinesService,
   UpdateDeadlineParams,
 } from '@/services';
+import { Database } from '@/types/database.types';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -145,23 +146,23 @@ export const useUpdateDeadlineProgress = () => {
       }
       return deadlinesService.updateDeadlineProgress(progressDetails);
     },
-    onMutate: async (progressDetails) => {
+    onMutate: async progressDetails => {
       if (!userId) return;
 
       await queryClient.cancelQueries({
         queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
       });
 
-      const previousDeadlines = queryClient.getQueryData<ReadingDeadlineWithProgress[]>(
-        QUERY_KEYS.DEADLINES.ALL(userId)
-      );
+      const previousDeadlines = queryClient.getQueryData<
+        ReadingDeadlineWithProgress[]
+      >(QUERY_KEYS.DEADLINES.ALL(userId));
 
       queryClient.setQueryData<ReadingDeadlineWithProgress[]>(
         QUERY_KEYS.DEADLINES.ALL(userId),
-        (old) => {
+        old => {
           if (!old) return old;
 
-          return old.map((deadline) => {
+          return old.map(deadline => {
             if (deadline.id === progressDetails.deadlineId) {
               return {
                 ...deadline,
@@ -174,7 +175,8 @@ export const useUpdateDeadlineProgress = () => {
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
                     ignore_in_calcs: false,
-                    time_spent_reading: progressDetails.timeSpentReading || null,
+                    time_spent_reading:
+                      progressDetails.timeSpentReading || null,
                   },
                 ],
               };
@@ -223,7 +225,7 @@ export const useGetDeadlines = () => {
 };
 
 const useUpdateDeadlineStatus = (
-  status: 'complete' | 'to_review' | 'reading' | 'did_not_finish'
+  status: Database['public']['Enums']['deadline_status_enum']
 ) => {
   const { session } = useAuth();
   const userId = session?.user?.id;
@@ -237,6 +239,8 @@ const useUpdateDeadlineStatus = (
         return 'marking as did not finish';
       case DEADLINE_STATUS.READING:
         return 'reactivating';
+      case DEADLINE_STATUS.PAUSED:
+        return 'pausing';
       default:
         return 'updating';
     }
@@ -321,6 +325,12 @@ export const useDidNotFinishDeadline = () =>
 
 export const useToReviewDeadline = () =>
   useUpdateDeadlineStatus(DEADLINE_STATUS.TO_REVIEW);
+
+export const usePauseDeadline = () =>
+  useUpdateDeadlineStatus(DEADLINE_STATUS.PAUSED);
+
+export const useResumeDeadline = () =>
+  useUpdateDeadlineStatus(DEADLINE_STATUS.READING);
 
 export const useGetDeadlineById = (deadlineId: string | undefined) => {
   const { session } = useAuth();

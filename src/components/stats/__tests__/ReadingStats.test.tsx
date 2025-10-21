@@ -22,15 +22,11 @@ jest.mock('@/components/stats/StatsSummaryCard', () => {
   return function MockStatsSummaryCard({ label, dateText, subtitle }: any) {
     const React = require('react');
     const { View, Text } = require('react-native');
-    return React.createElement(
-      View,
-      { testID: 'stats-summary-card' },
-      [
-        React.createElement(Text, { key: 'label' }, label),
-        React.createElement(Text, { key: 'date' }, dateText),
-        React.createElement(Text, { key: 'subtitle' }, subtitle),
-      ]
-    );
+    return React.createElement(View, { testID: 'stats-summary-card' }, [
+      React.createElement(Text, { key: 'label' }, label),
+      React.createElement(Text, { key: 'date' }, dateText),
+      React.createElement(Text, { key: 'subtitle' }, subtitle),
+    ]);
   };
 });
 
@@ -38,7 +34,11 @@ jest.mock('@/components/themed', () => ({
   ThemedView: ({ children, ...props }: any) => {
     const React = require('react');
     const { View } = require('react-native');
-    return React.createElement(View, { ...props, testID: 'themed-view' }, children);
+    return React.createElement(
+      View,
+      { ...props, testID: 'themed-view' },
+      children
+    );
   },
   ThemedText: ({ children, variant, ...props }: any) => {
     const React = require('react');
@@ -182,7 +182,9 @@ describe('ReadingStats', () => {
 
       const progressBar = screen.getByTestId('progress-bar');
       expect(progressBar).toBeTruthy();
-      expect(progressBar.props.children).toContain('ProgressBar: 100% urgency=good');
+      expect(progressBar.props.children).toContain(
+        'ProgressBar: 100% urgency=good'
+      );
     });
   });
 
@@ -481,7 +483,11 @@ describe('ReadingStats', () => {
 
     it('should handle very large session count', () => {
       const progress = Array.from({ length: 100 }, (_, i) =>
-        createProgressRecord(i * 3, `2025-01-${String((i % 30) + 1).padStart(2, '0')}T00:00:00Z`, false)
+        createProgressRecord(
+          i * 3,
+          `2025-01-${String((i % 30) + 1).padStart(2, '0')}T00:00:00Z`,
+          false
+        )
       );
 
       const deadline = createMockDeadline({

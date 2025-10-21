@@ -8,8 +8,12 @@ interface ReviewProgressBarProps {
   totalCount: number;
 }
 
-const ReviewProgressBar: React.FC<ReviewProgressBarProps> = ({ postedCount, totalCount }) => {
-  const percentage = totalCount > 0 ? Math.round((postedCount / totalCount) * 100) : 0;
+const ReviewProgressBar: React.FC<ReviewProgressBarProps> = ({
+  postedCount,
+  totalCount,
+}) => {
+  const percentage =
+    totalCount > 0 ? Math.round((postedCount / totalCount) * 100) : 0;
 
   return (
     <View style={styles.container}>

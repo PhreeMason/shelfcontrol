@@ -404,7 +404,11 @@ describe('readingStatsUtils', () => {
 
     it('should handle large number of sessions', () => {
       const progress = Array.from({ length: 50 }, (_, i) =>
-        createProgressRecord(i * 10, `2025-01-${String(i + 1).padStart(2, '0')}T00:00:00Z`, false)
+        createProgressRecord(
+          i * 10,
+          `2025-01-${String(i + 1).padStart(2, '0')}T00:00:00Z`,
+          false
+        )
       );
 
       const deadline = createMockDeadline({ progress });

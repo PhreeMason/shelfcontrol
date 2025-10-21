@@ -1,5 +1,6 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
+import { formatProgressDisplay } from '@/utils/deadlineUtils';
 import React, { useState } from 'react';
 import { Modal, Pressable, StyleSheet } from 'react-native';
 
@@ -7,6 +8,7 @@ interface ProgressCheckDialogProps {
   visible: boolean;
   totalPages: number;
   currentProgress: number;
+  format: 'physical' | 'eBook' | 'audio';
   onMarkAllPages: () => void;
   onDidNotFinish: () => void;
   onClose: () => void;
@@ -16,11 +18,15 @@ const ProgressCheckDialog: React.FC<ProgressCheckDialogProps> = ({
   visible,
   totalPages,
   currentProgress,
+  format,
   onMarkAllPages,
   onDidNotFinish,
   onClose,
 }) => {
-  const [selectedOption, setSelectedOption] = useState<'finished' | 'dnf' | null>(null);
+  const [selectedOption, setSelectedOption] = useState<
+    'finished' | 'dnf' | null
+  >(null);
+  const isAudiobook = format === 'audio';
 
   const handleConfirm = () => {
     if (selectedOption === 'finished') {
@@ -38,63 +44,74 @@ const ProgressCheckDialog: React.FC<ProgressCheckDialogProps> = ({
       onRequestClose={onClose}
     >
       <Pressable style={styles.backdrop} onPress={onClose}>
-        <Pressable onPress={(e) => e.stopPropagation()}>
+        <Pressable onPress={e => e.stopPropagation()}>
           <ThemedView style={styles.dialog}>
-          <ThemedText variant="title" style={styles.title}>
-            Did you finish all {totalPages} pages?
-          </ThemedText>
+            <ThemedText variant="title" style={styles.title}>
+              Did you finish all {formatProgressDisplay(format, totalPages)}?
+            </ThemedText>
 
-          <ThemedText variant="default" style={styles.subtitle}>
-            You're currently at {currentProgress}/{totalPages} pages.
-          </ThemedText>
+            <ThemedText variant="default" style={styles.subtitle}>
+              You're currently at{' '}
+              {formatProgressDisplay(format, currentProgress)}/
+              {formatProgressDisplay(format, totalPages)}.
+            </ThemedText>
 
-          <ThemedView style={styles.buttonContainer}>
-            <Pressable
-              onPress={() => setSelectedOption('finished')}
-              style={[
-                styles.selectionButton,
-                selectedOption === 'finished' && styles.selectionButtonSelected,
-              ]}
-            >
-              <ThemedText
+            <ThemedView style={styles.buttonContainer}>
+              <Pressable
+                onPress={() => setSelectedOption('finished')}
                 style={[
-                  styles.selectionButtonText,
-                  selectedOption === 'finished' && styles.selectionButtonTextSelected,
+                  styles.selectionButton,
+                  selectedOption === 'finished' &&
+                    styles.selectionButtonSelected,
                 ]}
               >
-                Yes, mark all pages as read
-              </ThemedText>
-            </Pressable>
+                <ThemedText
+                  style={[
+                    styles.selectionButtonText,
+                    selectedOption === 'finished' &&
+                      styles.selectionButtonTextSelected,
+                  ]}
+                >
+                  {isAudiobook
+                    ? 'Yes, mark all time as listened'
+                    : 'Yes, mark all pages as read'}
+                </ThemedText>
+              </Pressable>
 
-            <Pressable
-              onPress={() => setSelectedOption('dnf')}
-              style={[
-                styles.selectionButton,
-                selectedOption === 'dnf' && styles.selectionButtonSelected,
-              ]}
-            >
-              <ThemedText
+              <Pressable
+                onPress={() => setSelectedOption('dnf')}
                 style={[
-                  styles.selectionButtonText,
-                  selectedOption === 'dnf' && styles.selectionButtonTextSelected,
+                  styles.selectionButton,
+                  selectedOption === 'dnf' && styles.selectionButtonSelected,
                 ]}
               >
-                No, I didn't finish everything
-              </ThemedText>
-            </Pressable>
-          </ThemedView>
-
-          {selectedOption && (
-            <ThemedView style={styles.confirmationContainer}>
-              <ThemedButton
-                title={selectedOption === 'finished' ? 'Mark Complete' : 'Mark as DNF'}
-                variant="primary"
-                onPress={handleConfirm}
-                style={styles.button}
-              />
+                <ThemedText
+                  style={[
+                    styles.selectionButtonText,
+                    selectedOption === 'dnf' &&
+                      styles.selectionButtonTextSelected,
+                  ]}
+                >
+                  No, I didn't finish everything
+                </ThemedText>
+              </Pressable>
             </ThemedView>
-          )}
-        </ThemedView>
+
+            {selectedOption && (
+              <ThemedView style={styles.confirmationContainer}>
+                <ThemedButton
+                  title={
+                    selectedOption === 'finished'
+                      ? 'Mark Complete'
+                      : 'Mark as DNF'
+                  }
+                  variant="primary"
+                  onPress={handleConfirm}
+                  style={styles.button}
+                />
+              </ThemedView>
+            )}
+          </ThemedView>
         </Pressable>
       </Pressable>
     </Modal>

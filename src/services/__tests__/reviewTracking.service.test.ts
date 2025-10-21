@@ -413,7 +413,11 @@ describe('ReviewTrackingService', () => {
     const reviewTrackingId = 'rt-123';
     const mockUpdateParams = {
       platforms: [
-        { id: 'rp-123', posted: true, review_url: 'https://netgalley.com/review/123' },
+        {
+          id: 'rp-123',
+          posted: true,
+          review_url: 'https://netgalley.com/review/123',
+        },
         { id: 'rp-124', posted: true },
       ],
     };
@@ -789,7 +793,7 @@ describe('ReviewTrackingService', () => {
           // Second call: update
           if (platformCallCount === 2) {
             return {
-              update: jest.fn((updatePayload) => {
+              update: jest.fn(updatePayload => {
                 // Verify that posted_date is NOT being updated
                 expect(updatePayload.posted_date).toBeUndefined();
                 return {
@@ -874,7 +878,7 @@ describe('ReviewTrackingService', () => {
           // Second call: update (should include posted_date)
           if (platformCallCount === 2) {
             return {
-              update: jest.fn((updatePayload) => {
+              update: jest.fn(updatePayload => {
                 // Verify that posted_date IS being set
                 expect(updatePayload.posted_date).toBeDefined();
                 expect(updatePayload.posted).toBe(true);
@@ -980,11 +984,10 @@ describe('ReviewTrackingService', () => {
         return {};
       });
 
-      const result =
-        await reviewTrackingService.getReviewTrackingByDeadline(
-          userId,
-          deadlineId
-        );
+      const result = await reviewTrackingService.getReviewTrackingByDeadline(
+        userId,
+        deadlineId
+      );
 
       expect(result).toEqual({
         review_tracking: {
@@ -1047,11 +1050,10 @@ describe('ReviewTrackingService', () => {
         return {};
       });
 
-      const result =
-        await reviewTrackingService.getReviewTrackingByDeadline(
-          userId,
-          deadlineId
-        );
+      const result = await reviewTrackingService.getReviewTrackingByDeadline(
+        userId,
+        deadlineId
+      );
 
       expect(result).toBeNull();
     });
@@ -1164,11 +1166,10 @@ describe('ReviewTrackingService', () => {
         return {};
       });
 
-      const result =
-        await reviewTrackingService.getReviewTrackingByDeadline(
-          userId,
-          deadlineId
-        );
+      const result = await reviewTrackingService.getReviewTrackingByDeadline(
+        userId,
+        deadlineId
+      );
 
       expect(result?.completion_percentage).toBe(0);
       expect(result?.platforms).toEqual([]);
@@ -1210,7 +1211,10 @@ describe('ReviewTrackingService', () => {
                   data: [
                     { platform_name: 'NetGalley', created_at: '2025-10-15' },
                     { platform_name: 'Goodreads', created_at: '2025-10-14' },
-                    { platform_name: 'Blog: https://myblog.com', created_at: '2025-10-13' },
+                    {
+                      platform_name: 'Blog: https://myblog.com',
+                      created_at: '2025-10-13',
+                    },
                     { platform_name: 'NetGalley', created_at: '2025-10-12' },
                     { platform_name: 'Instagram', created_at: '2025-10-11' },
                   ],

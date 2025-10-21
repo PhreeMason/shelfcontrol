@@ -17,7 +17,9 @@ interface ReviewProgressSectionProps {
   deadline: ReadingDeadlineWithProgress;
 }
 
-const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({ deadline }) => {
+const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
+  deadline,
+}) => {
   const latestStatus = getDeadlineStatus(deadline);
   const isToReview = latestStatus === 'to_review';
 
@@ -103,7 +105,6 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({ deadline 
 
   return (
     <ThemedView style={styles.container}>
-
       <View style={styles.content}>
         <ReviewDueDateBadge
           reviewDueDate={reviewTracking.review_due_date}

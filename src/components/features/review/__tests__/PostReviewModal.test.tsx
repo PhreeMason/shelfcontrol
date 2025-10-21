@@ -10,10 +10,10 @@ jest.mock('react-native-reanimated', () => {
       View: View,
     },
     useSharedValue: jest.fn(() => ({ value: 0 })),
-    useAnimatedStyle: jest.fn((callback) => {
+    useAnimatedStyle: jest.fn(callback => {
       return callback();
     }),
-    withSpring: jest.fn((value) => value),
+    withSpring: jest.fn(value => value),
   };
 });
 
@@ -342,9 +342,7 @@ describe('PostReviewModal', () => {
       fireEvent.press(saveButton);
 
       expect(mockOnSave).toHaveBeenCalledWith(
-        expect.not.arrayContaining([
-          expect.objectContaining({ id: '1' }),
-        ])
+        expect.not.arrayContaining([expect.objectContaining({ id: '1' })])
       );
     });
   });
@@ -368,6 +366,5 @@ describe('PostReviewModal', () => {
       expect(amazon.length).toBeGreaterThan(0);
       expect(storyGraph.length).toBeGreaterThan(0);
     });
-
   });
 });

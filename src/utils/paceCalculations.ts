@@ -81,10 +81,13 @@ export const calculateCutoffTime = (
 
   const allProgressUpdatesSorted = allProgressUpdates.sort(
     (a, b) =>
-      normalizeServerDate(b.created_at!).valueOf() - normalizeServerDate(a.created_at!).valueOf()
+      normalizeServerDate(b.created_at!).valueOf() -
+      normalizeServerDate(a.created_at!).valueOf()
   );
 
-  const cutoffDate = normalizeServerDate(allProgressUpdatesSorted[0].created_at);
+  const cutoffDate = normalizeServerDate(
+    allProgressUpdatesSorted[0].created_at
+  );
   return cutoffDate.subtract(DAYS_TO_CONSIDER_FOR_PACE, 'day').valueOf();
 };
 
@@ -103,7 +106,8 @@ export const processBookProgress = (
     .slice()
     .sort(
       (a, b) =>
-        normalizeServerDate(a.created_at!).valueOf() - normalizeServerDate(b.created_at!).valueOf()
+        normalizeServerDate(a.created_at!).valueOf() -
+        normalizeServerDate(b.created_at!).valueOf()
     );
 
   if (sortedProgress.length === 0) return;
@@ -453,7 +457,8 @@ export const minimumUnitsPerDayFromDeadline = (
     .filter(p => !p.ignore_in_calcs)
     .sort(
       (a, b) =>
-        normalizeServerDate(a.created_at).valueOf() - normalizeServerDate(b.created_at).valueOf()
+        normalizeServerDate(a.created_at).valueOf() -
+        normalizeServerDate(b.created_at).valueOf()
     );
 
   // Filter progress entries to only include those before today
@@ -466,7 +471,9 @@ export const minimumUnitsPerDayFromDeadline = (
   const progressByDate = new Map<string, (typeof progressBeforeToday)[0]>();
 
   for (const progress of progressBeforeToday) {
-    const dateKey = normalizeServerDate(progress.created_at).format('YYYY-MM-DD');
+    const dateKey = normalizeServerDate(progress.created_at).format(
+      'YYYY-MM-DD'
+    );
     const existing = progressByDate.get(dateKey);
 
     // Keep the progress entry with the latest timestamp for each date
@@ -482,7 +489,8 @@ export const minimumUnitsPerDayFromDeadline = (
   // Convert back to array and sort by date
   const uniqueProgress = Array.from(progressByDate.values()).sort(
     (a, b) =>
-      normalizeServerDate(a.created_at).valueOf() - normalizeServerDate(b.created_at).valueOf()
+      normalizeServerDate(a.created_at).valueOf() -
+      normalizeServerDate(b.created_at).valueOf()
   );
 
   for (const progress of uniqueProgress) {
