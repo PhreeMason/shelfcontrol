@@ -10,7 +10,11 @@ jest.mock('@/components/stats/ReadingStats', () => {
   return function MockReadingStats() {
     const React = require('react');
     const { Text } = require('react-native');
-    return React.createElement(Text, { testID: 'reading-stats' }, 'ReadingStats Component');
+    return React.createElement(
+      Text,
+      { testID: 'reading-stats' },
+      'ReadingStats Component'
+    );
   };
 });
 
@@ -18,7 +22,11 @@ jest.mock('@/components/charts/DailyReadingChart', () => {
   return function MockDailyReadingChart() {
     const React = require('react');
     const { Text } = require('react-native');
-    return React.createElement(Text, { testID: 'daily-reading-chart' }, 'DailyReadingChart Component');
+    return React.createElement(
+      Text,
+      { testID: 'daily-reading-chart' },
+      'DailyReadingChart Component'
+    );
   };
 });
 
@@ -26,7 +34,11 @@ jest.mock('@/components/features/review/ReviewProgressSection', () => {
   return function MockReviewProgressSection() {
     const React = require('react');
     const { Text } = require('react-native');
-    return React.createElement(Text, { testID: 'review-progress-section' }, 'ReviewProgressSection Component');
+    return React.createElement(
+      Text,
+      { testID: 'review-progress-section' },
+      'ReviewProgressSection Component'
+    );
   };
 });
 
@@ -34,7 +46,11 @@ jest.mock('@/components/themed', () => ({
   ThemedView: ({ children, ...props }: any) => {
     const React = require('react');
     const { View } = require('react-native');
-    return React.createElement(View, { ...props, testID: 'themed-view' }, children);
+    return React.createElement(
+      View,
+      { ...props, testID: 'themed-view' },
+      children
+    );
   },
 }));
 
@@ -100,46 +116,26 @@ describe('DeadlineTabsSection', () => {
   });
 
   describe('Tab Default State', () => {
-    it('should default to stats tab', () => {
+    it('should default to reviews tab', () => {
       const deadline = createMockDeadline({
         status: [createStatusRecord('to_review', '2025-01-15T00:00:00Z')],
       });
 
       render(<DeadlineTabsSection deadline={deadline} />);
-
-      expect(screen.getByTestId('reading-stats')).toBeTruthy();
-      expect(screen.getByTestId('daily-reading-chart')).toBeTruthy();
-      expect(screen.queryByTestId('review-progress-section')).toBeNull();
-    });
-  });
-
-  describe('Tab Switching', () => {
-    it('should switch to reviews tab when clicked', () => {
-      const deadline = createMockDeadline({
-        status: [createStatusRecord('to_review', '2025-01-15T00:00:00Z')],
-      });
-
-      render(<DeadlineTabsSection deadline={deadline} />);
-
-      const reviewsTab = screen.getByTestId('reviews-tab');
-      fireEvent.press(reviewsTab);
 
       expect(screen.getByTestId('review-progress-section')).toBeTruthy();
       expect(screen.queryByTestId('reading-stats')).toBeNull();
       expect(screen.queryByTestId('daily-reading-chart')).toBeNull();
     });
+  });
 
-    it('should switch back to stats tab when clicked', () => {
+  describe('Tab Switching', () => {
+    it('should switch to stats tab when clicked', () => {
       const deadline = createMockDeadline({
         status: [createStatusRecord('to_review', '2025-01-15T00:00:00Z')],
       });
 
       render(<DeadlineTabsSection deadline={deadline} />);
-
-      const reviewsTab = screen.getByTestId('reviews-tab');
-      fireEvent.press(reviewsTab);
-
-      expect(screen.getByTestId('review-progress-section')).toBeTruthy();
 
       const statsTab = screen.getByTestId('stats-tab');
       fireEvent.press(statsTab);
@@ -147,6 +143,26 @@ describe('DeadlineTabsSection', () => {
       expect(screen.getByTestId('reading-stats')).toBeTruthy();
       expect(screen.getByTestId('daily-reading-chart')).toBeTruthy();
       expect(screen.queryByTestId('review-progress-section')).toBeNull();
+    });
+
+    it('should switch back to reviews tab when clicked', () => {
+      const deadline = createMockDeadline({
+        status: [createStatusRecord('to_review', '2025-01-15T00:00:00Z')],
+      });
+
+      render(<DeadlineTabsSection deadline={deadline} />);
+
+      const statsTab = screen.getByTestId('stats-tab');
+      fireEvent.press(statsTab);
+
+      expect(screen.getByTestId('reading-stats')).toBeTruthy();
+
+      const reviewsTab = screen.getByTestId('reviews-tab');
+      fireEvent.press(reviewsTab);
+
+      expect(screen.getByTestId('review-progress-section')).toBeTruthy();
+      expect(screen.queryByTestId('reading-stats')).toBeNull();
+      expect(screen.queryByTestId('daily-reading-chart')).toBeNull();
     });
   });
 
@@ -157,6 +173,9 @@ describe('DeadlineTabsSection', () => {
       });
 
       render(<DeadlineTabsSection deadline={deadline} />);
+
+      const statsTab = screen.getByTestId('stats-tab');
+      fireEvent.press(statsTab);
 
       expect(screen.getByTestId('reading-stats')).toBeTruthy();
       expect(screen.getByText('ReadingStats Component')).toBeTruthy();

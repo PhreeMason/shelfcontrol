@@ -24,11 +24,7 @@ describe('PreferencesProvider', () => {
 
       expect(result.current.selectedFilter).toBe('active');
       expect(result.current.timeRangeFilter).toBe('all');
-      expect(result.current.selectedFormats).toEqual([
-        'physical',
-        'eBook',
-        'audio',
-      ]);
+      expect(result.current.selectedFormats).toEqual([]);
       expect(result.current.selectedSources).toEqual([]);
       expect(result.current.isLoading).toBe(true);
     });
@@ -343,11 +339,7 @@ describe('PreferencesProvider', () => {
 
       expect(result.current.selectedFilter).toBe('active');
       expect(result.current.timeRangeFilter).toBe('all');
-      expect(result.current.selectedFormats).toEqual([
-        'physical',
-        'eBook',
-        'audio',
-      ]);
+      expect(result.current.selectedFormats).toEqual([]);
 
       consoleSpy.mockRestore();
     });

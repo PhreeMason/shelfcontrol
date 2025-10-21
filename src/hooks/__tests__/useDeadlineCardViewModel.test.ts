@@ -36,20 +36,33 @@ jest.mock('@/lib/posthog', () => ({
     capture: jest.fn(),
   },
 }));
-jest.mock('@/lib/dayjs', () => ({
-  dayjs: jest.fn((date?: string) => ({
-    format: jest.fn(() => {
-      if (!date) return 'Jan 15, 2024';
-      if (date === '2024-02-01') return 'Feb 1, 2024';
-      if (date === '2024-01-15T00:00:00Z') return 'Jan 15, 2024';
-      return 'Jan 15, 2024';
-    }),
-    diff: jest.fn(() => {
-      if (date === '2025-10-25') return 9;
-      return 5;
-    }),
-  })),
-}));
+jest.mock('@/lib/dayjs', () => {
+  const createMockDayjs = (date?: string): any => {
+    const mockInstance: any = {
+      format: jest.fn(() => {
+        if (!date) return 'Jan 15, 2024';
+        if (date === '2024-02-01') return 'Feb 1, 2024';
+        if (date === '2024-01-15T00:00:00Z') return 'Jan 15, 2024';
+        return 'Jan 15, 2024';
+      }),
+      diff: jest.fn(() => {
+        if (date === '2025-10-25') return 9;
+        return 5;
+      }),
+      isValid: jest.fn(() => true),
+      startOf: jest.fn(() => mockInstance),
+      local: jest.fn(() => mockInstance),
+    };
+    return mockInstance;
+  };
+
+  const mockDayjs: any = jest.fn((date?: string) => createMockDayjs(date));
+  mockDayjs.utc = jest.fn((date?: string) => createMockDayjs(date));
+
+  return {
+    dayjs: mockDayjs,
+  };
+});
 
 describe('useDeadlineCardViewModel', () => {
   const mockRouter = {

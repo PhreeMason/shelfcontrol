@@ -19,13 +19,14 @@ jest.mock('@/components/progress/ProgressBar', () => {
 });
 
 jest.mock('@/components/stats/StatsSummaryCard', () => {
-  return function MockStatsSummaryCard({ label, dateText, subtitle }: any) {
+  return function MockStatsSummaryCard({ label, dateText, subtitle, children }: any) {
     const React = require('react');
     const { View, Text } = require('react-native');
     return React.createElement(View, { testID: 'stats-summary-card' }, [
       React.createElement(Text, { key: 'label' }, label),
       React.createElement(Text, { key: 'date' }, dateText),
       React.createElement(Text, { key: 'subtitle' }, subtitle),
+      children,
     ]);
   };
 });
@@ -169,23 +170,6 @@ describe('ReadingStats', () => {
       render(<ReadingStats deadline={deadline} />);
       expect(screen.getByText('250/300')).toBeTruthy();
     });
-
-    it('should render ProgressBar with 100% completion and good urgency', () => {
-      const deadline = createMockDeadline({
-        status: [
-          createStatusRecord('reading', '2025-01-05T00:00:00Z'),
-          createStatusRecord('complete', '2025-01-15T00:00:00Z'),
-        ],
-      });
-
-      render(<ReadingStats deadline={deadline} />);
-
-      const progressBar = screen.getByTestId('progress-bar');
-      expect(progressBar).toBeTruthy();
-      expect(progressBar.props.children).toContain(
-        'ProgressBar: 100% urgency=good'
-      );
-    });
   });
 
   describe('Status Labels', () => {
@@ -201,7 +185,7 @@ describe('ReadingStats', () => {
       expect(screen.getByText('Finished Reading')).toBeTruthy();
     });
 
-    it('should display Ready to Review for to_review status', () => {
+    it('should display Finished Reading for to_review status', () => {
       const deadline = createMockDeadline({
         status: [
           createStatusRecord('reading', '2025-01-05T00:00:00Z'),
@@ -210,7 +194,7 @@ describe('ReadingStats', () => {
       });
 
       render(<ReadingStats deadline={deadline} />);
-      expect(screen.getByText('Ready to Review')).toBeTruthy();
+      expect(screen.getByText('Finished Reading')).toBeTruthy();
     });
 
     it('should display Did Not Finish for did_not_finish status', () => {
@@ -260,7 +244,7 @@ describe('ReadingStats', () => {
       });
 
       render(<ReadingStats deadline={deadline} />);
-      expect(screen.getByText('1 day to complete')).toBeTruthy();
+      expect(screen.getByText('1 day total')).toBeTruthy();
     });
 
     it('should display plural days when completed in multiple days', () => {
@@ -272,7 +256,7 @@ describe('ReadingStats', () => {
       });
 
       render(<ReadingStats deadline={deadline} />);
-      expect(screen.getByText('10 days to complete')).toBeTruthy();
+      expect(screen.getByText('10 days total')).toBeTruthy();
     });
 
     it('should display Duration unknown when days cannot be calculated', () => {

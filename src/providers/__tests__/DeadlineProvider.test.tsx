@@ -25,6 +25,8 @@ jest.mock('@/hooks/useDeadlines', () => ({
   useReactivateDeadline: () => ({ mutate: mockMutate }),
   useStartReadingDeadline: () => ({ mutate: mockMutate }),
   useDidNotFinishDeadline: () => ({ mutate: mockMutate }),
+  usePauseDeadline: () => ({ mutate: mockMutate }),
+  useResumeDeadline: () => ({ mutate: mockMutate }),
 }));
 
 // Mock utility functions
@@ -304,7 +306,6 @@ describe('DeadlineProvider', () => {
         onError: expect.any(Function),
       });
     });
-
 
     it('should call updateDeadlineDate mutation', () => {
       const { result } = renderHook(() => useDeadlines(), { wrapper });

@@ -149,7 +149,7 @@ describe('DeadlinesService', () => {
         api_id: 'new-book-api-123',
         title: 'New Book',
         author: 'New Author',
-        api_source: 'google',
+        api_source: 'google_books',
         cover_image_url: null,
         description: null,
         edition: null,
@@ -1049,7 +1049,7 @@ describe('DeadlinesService', () => {
         deadline_id: 'rd-123',
         status: [
           { status: 'reading', created_at: '2025-01-01T00:00:00Z' },
-          { status: 'complete', created_at: '2025-01-15T00:00:00Z' }
+          { status: 'complete', created_at: '2025-01-15T00:00:00Z' },
         ],
         progress: [],
       };
@@ -1061,12 +1061,10 @@ describe('DeadlinesService', () => {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            single: jest
-              .fn()
-              .mockResolvedValue({
-                data: mockDeadlineWithStatus,
-                error: null,
-              }),
+            single: jest.fn().mockResolvedValue({
+              data: mockDeadlineWithStatus,
+              error: null,
+            }),
           };
         } else if (callCount === 2) {
           return {
@@ -1096,8 +1094,8 @@ describe('DeadlinesService', () => {
           id: 'rd-123',
           status: expect.arrayContaining([
             expect.objectContaining({ status: 'reading' }),
-            expect.objectContaining({ status: 'complete' })
-          ])
+            expect.objectContaining({ status: 'complete' }),
+          ]),
         })
       );
     });
@@ -1113,7 +1111,7 @@ describe('DeadlinesService', () => {
         book_title: 'Test Book',
         status: [
           { status: 'reading', created_at: '2025-01-01T00:00:00Z' },
-          { status: 'to_review', created_at: '2025-01-15T00:00:00Z' }
+          { status: 'to_review', created_at: '2025-01-15T00:00:00Z' },
         ],
         progress: [],
       };
@@ -1125,12 +1123,10 @@ describe('DeadlinesService', () => {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            single: jest
-              .fn()
-              .mockResolvedValue({
-                data: mockDeadlineWithStatus,
-                error: null,
-              }),
+            single: jest.fn().mockResolvedValue({
+              data: mockDeadlineWithStatus,
+              error: null,
+            }),
           };
         } else if (callCount === 2) {
           return {
@@ -1159,8 +1155,8 @@ describe('DeadlinesService', () => {
         expect.objectContaining({
           status: expect.arrayContaining([
             expect.objectContaining({ status: 'reading' }),
-            expect.objectContaining({ status: 'to_review' })
-          ])
+            expect.objectContaining({ status: 'to_review' }),
+          ]),
         })
       );
     });
@@ -1179,12 +1175,10 @@ describe('DeadlinesService', () => {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            single: jest
-              .fn()
-              .mockResolvedValue({
-                data: mockDeadlineWithStatus,
-                error: null,
-              }),
+            single: jest.fn().mockResolvedValue({
+              data: mockDeadlineWithStatus,
+              error: null,
+            }),
           };
         } else {
           return {
@@ -1198,7 +1192,11 @@ describe('DeadlinesService', () => {
       });
 
       await expect(
-        deadlinesService.updateDeadlineStatus('user-123', deadlineId, 'complete')
+        deadlinesService.updateDeadlineStatus(
+          'user-123',
+          deadlineId,
+          'complete'
+        )
       ).rejects.toThrow('Status insert failed');
     });
 
@@ -1212,17 +1210,19 @@ describe('DeadlinesService', () => {
         return {
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
-          single: jest
-            .fn()
-            .mockResolvedValue({
-              data: mockDeadlineWithStatus,
-              error: null,
-            }),
+          single: jest.fn().mockResolvedValue({
+            data: mockDeadlineWithStatus,
+            error: null,
+          }),
         };
       });
 
       await expect(
-        deadlinesService.updateDeadlineStatus('user-123', deadlineId, 'to_review')
+        deadlinesService.updateDeadlineStatus(
+          'user-123',
+          deadlineId,
+          'to_review'
+        )
       ).rejects.toThrow('Invalid status transition from pending to to_review');
     });
 
@@ -1236,12 +1236,10 @@ describe('DeadlinesService', () => {
         return {
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
-          single: jest
-            .fn()
-            .mockResolvedValue({
-              data: mockDeadlineWithStatus,
-              error: null,
-            }),
+          single: jest.fn().mockResolvedValue({
+            data: mockDeadlineWithStatus,
+            error: null,
+          }),
         };
       });
 
@@ -1261,7 +1259,7 @@ describe('DeadlinesService', () => {
         book_title: 'Test Book',
         status: [
           { status: 'reading', created_at: '2025-01-01T00:00:00Z' },
-          { status: 'to_review', created_at: '2025-01-15T00:00:00Z' }
+          { status: 'to_review', created_at: '2025-01-15T00:00:00Z' },
         ],
         progress: [],
       };
@@ -1273,12 +1271,10 @@ describe('DeadlinesService', () => {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            single: jest
-              .fn()
-              .mockResolvedValue({
-                data: mockDeadlineWithStatus,
-                error: null,
-              }),
+            single: jest.fn().mockResolvedValue({
+              data: mockDeadlineWithStatus,
+              error: null,
+            }),
           };
         } else if (callCount === 2) {
           return {
@@ -1307,8 +1303,8 @@ describe('DeadlinesService', () => {
         expect.objectContaining({
           status: expect.arrayContaining([
             expect.objectContaining({ status: 'reading' }),
-            expect.objectContaining({ status: 'to_review' })
-          ])
+            expect.objectContaining({ status: 'to_review' }),
+          ]),
         })
       );
       expect(result).toBeDefined();

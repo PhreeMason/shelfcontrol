@@ -1,13 +1,21 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react-native';
 import { Alert } from 'react-native';
-import ReadingProgressUpdate from '../ReadingProgressUpdate';
 import {
   useUpdateDeadlineProgress,
   useDeleteFutureProgress,
 } from '@/hooks/useDeadlines';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import Toast from 'react-native-toast-message';
+import { router } from 'expo-router';
+
+import ReadingProgressUpdate from '../ReadingProgressUpdate';
+
+jest.mock('expo-router', () => ({
+  router: {
+    push: jest.fn(),
+  },
+}));
 
 // Mock all the hooks and external dependencies
 jest.mock('@/hooks/useDeadlines', () => ({
@@ -581,29 +589,25 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           fn => () => fn({ currentProgress: 300 })
         );
 
-        // Mock alert to simulate "Mark Complete" button press
+        // Mock alert to simulate "I'm done reading" button press
         mockAlert.mockImplementation((_title, _message, buttons) => {
           const completeButton = buttons.find(
-            (b: any) => b.text === 'Mark Complete'
+            (b: any) => b.text === "I'm done reading"
           );
           if (completeButton && completeButton.onPress) {
             completeButton.onPress();
           }
         });
 
-        const mockCompleteDeadline = jest
-          .fn()
-          .mockImplementation((_id, onSuccess) => onSuccess());
         (useDeadlines as jest.Mock).mockReturnValue({
           ...mockDeadlineContext,
           getDeadlineCalculations: jest.fn().mockReturnValue({
             urgencyLevel: 'good',
-            currentProgress: 150, // Keep current at 150 for form logic
+            currentProgress: 150,
             totalQuantity: 300,
             remaining: 150,
             progressPercentage: 50,
           }),
-          completeDeadline: mockCompleteDeadline,
         });
 
         const mockUpdateMutation = {
@@ -626,8 +630,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
         const button = screen.getByText('Update Progress');
         fireEvent.press(button);
 
-        expect(mockCompleteDeadline).toHaveBeenCalled();
-        expect(onProgressSubmitted).toHaveBeenCalled();
+        expect(router.push).toHaveBeenCalledWith('/deadline/deadline-1/completion-flow');
       });
 
       it('should handle backward progress deletion success', () => {
