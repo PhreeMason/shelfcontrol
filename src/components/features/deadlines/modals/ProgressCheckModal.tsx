@@ -5,6 +5,7 @@ import { useUpdateDeadlineProgress } from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
+import { formatProgressDisplay } from '@/utils/deadlineUtils';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -39,10 +40,12 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
   const router = useRouter();
   const translateY = useSharedValue(500);
   const { mutate: updateProgress } = useUpdateDeadlineProgress();
-  const [selectedOption, setSelectedOption] = useState<'finished' | 'dnf' | null>(null);
+  const [selectedOption, setSelectedOption] = useState<
+    'finished' | 'dnf' | null
+  >(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const totalPages = deadline.total_quantity || 0;
+  const totalQuantity = deadline.total_quantity || 0;
   const latestProgress =
     deadline.progress && deadline.progress.length > 0
       ? deadline.progress[deadline.progress.length - 1]
@@ -51,6 +54,8 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
 
   const deadlineStatus = getDeadlineStatus(deadline);
   const isToReview = deadlineStatus?.isToReview || false;
+
+  const isAudiobook = deadline.format === 'audio';
 
   useEffect(() => {
     if (visible) {
@@ -70,7 +75,7 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
     updateProgress(
       {
         deadlineId: deadline.id,
-        currentProgress: totalPages,
+        currentProgress: totalQuantity,
       },
       {
         onSuccess: () => {
@@ -130,12 +135,16 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
             <ThemedText style={styles.title}>
               {isToReview
                 ? 'Ready to complete this book?'
-                : `Did you finish all ${totalPages} pages?`}
+                : `Did you finish all ${formatProgressDisplay(deadline.format, totalQuantity)}?`}
             </ThemedText>
 
             {!isToReview && (
-              <ThemedText style={[styles.subtitle, { color: colors.text + '80' }]}>
-                You're currently at {currentProgress}/{totalPages} pages.
+              <ThemedText
+                style={[styles.subtitle, { color: colors.text + '80' }]}
+              >
+                You're currently at{' '}
+                {formatProgressDisplay(deadline.format, currentProgress)}/
+                {formatProgressDisplay(deadline.format, totalQuantity)}.
               </ThemedText>
             )}
 
@@ -153,7 +162,12 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
                 disabled={isUpdating}
               >
                 <View style={styles.optionContent}>
-                  <View style={[styles.iconContainer, { backgroundColor: colors.good + '20' }]}>
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      { backgroundColor: colors.good + '20' },
+                    ]}
+                  >
                     <IconSymbol
                       name="checkmark.circle.fill"
                       size={28}
@@ -164,7 +178,9 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
                     <ThemedText
                       style={[
                         styles.optionTitle,
-                        selectedOption === 'finished' && { color: colors.primary }
+                        selectedOption === 'finished' && {
+                          color: colors.primary,
+                        },
                       ]}
                     >
                       {isToReview ? 'Yes, all done' : 'Yes, I finished'}
@@ -172,12 +188,14 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
                     <ThemedText
                       style={[
                         styles.optionDescription,
-                        { color: colors.text + '60' }
+                        { color: colors.text + '60' },
                       ]}
                     >
                       {isToReview
                         ? 'Mark this book as completed'
-                        : 'Mark all pages as read and complete the book'}
+                        : isAudiobook
+                          ? 'Mark all time as listened and complete the book'
+                          : 'Mark all pages as read and complete the book'}
                     </ThemedText>
                   </View>
                 </View>
@@ -196,7 +214,12 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
                 disabled={isUpdating}
               >
                 <View style={styles.optionContent}>
-                  <View style={[styles.iconContainer, { backgroundColor: colors.approaching + '20' }]}>
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      { backgroundColor: colors.approaching + '20' },
+                    ]}
+                  >
                     <IconSymbol
                       name="book.fill"
                       size={28}
@@ -207,7 +230,9 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
                     <ThemedText
                       style={[
                         styles.optionTitle,
-                        selectedOption === 'dnf' && { color: colors.approaching }
+                        selectedOption === 'dnf' && {
+                          color: colors.approaching,
+                        },
                       ]}
                     >
                       {isToReview ? 'Not finishing' : 'Not quite'}
@@ -215,7 +240,7 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
                     <ThemedText
                       style={[
                         styles.optionDescription,
-                        { color: colors.text + '60' }
+                        { color: colors.text + '60' },
                       ]}
                     >
                       {isToReview
