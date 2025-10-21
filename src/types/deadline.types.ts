@@ -14,6 +14,9 @@ export type ReadingDeadlineStatusInsert = TablesInsert<'deadline_status'>;
 export type ReadingDeadlineWithProgress = ReadingDeadline & {
   progress: ReadingDeadlineProgress[];
   status?: ReadingDeadlineStatus[];
+  books?: {
+    publisher: string | null;
+  } | null;
 };
 
 export type ReadingDeadlineInsertWithProgress = ReadingDeadlineInsert & {

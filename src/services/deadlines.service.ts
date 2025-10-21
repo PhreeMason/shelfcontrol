@@ -381,7 +381,8 @@ class DeadlinesService {
         `
         *,
         progress:deadline_progress(*),
-        status:deadline_status(*)
+        status:deadline_status(*),
+        books(publisher)
       ` as any
       )
       .eq('user_id', userId)

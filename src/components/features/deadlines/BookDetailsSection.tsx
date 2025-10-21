@@ -29,6 +29,16 @@ const BookDetailsSection = ({
             {deadline.author || 'Unknown'}
           </ThemedText>
         </ThemedView>
+        {deadline.books?.publisher && (
+          <ThemedView style={styles.detailRow}>
+            <ThemedText variant="secondary" style={styles.detailLabel}>
+              Publisher
+            </ThemedText>
+            <ThemedText style={styles.detailsValue}>
+              {deadline.books.publisher}
+            </ThemedText>
+          </ThemedView>
+        )}
         <ThemedView style={styles.detailRow}>
           <ThemedText variant="secondary" style={styles.detailLabel}>
             Format
