@@ -3,6 +3,7 @@ import { ThemedText } from '@/components/themed/ThemedText';
 import { useTheme } from '@/hooks/useThemeColor';
 import {
   BookFormat,
+  PageRangeFilter,
   ReadingDeadlineWithProgress,
   TimeRangeFilter,
 } from '@/types/deadline.types';
@@ -34,6 +35,9 @@ interface FilterSheetProps {
   selectedFormats: BookFormat[];
   onFormatsChange: (formats: BookFormat[]) => void;
 
+  selectedPageRanges: PageRangeFilter[];
+  onPageRangesChange: (ranges: PageRangeFilter[]) => void;
+
   selectedSources: string[];
   onSourcesChange: (sources: string[]) => void;
 
@@ -48,6 +52,8 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   onTimeRangeChange,
   selectedFormats,
   onFormatsChange,
+  selectedPageRanges,
+  onPageRangesChange,
   selectedSources,
   onSourcesChange,
   availableSources,
@@ -76,6 +82,14 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     }
   };
 
+  const togglePageRange = (range: PageRangeFilter) => {
+    if (selectedPageRanges.includes(range)) {
+      onPageRangesChange(selectedPageRanges.filter(r => r !== range));
+    } else {
+      onPageRangesChange([...selectedPageRanges, range]);
+    }
+  };
+
   const toggleSource = (source: string) => {
     if (selectedSources.includes(source)) {
       onSourcesChange(selectedSources.filter(s => s !== source));
@@ -90,6 +104,17 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
 
   const getSourceCount = (source: string): number => {
     return deadlines.filter(d => d.source === source).length;
+  };
+
+  const getPageRangeCount = (range: PageRangeFilter): number => {
+    return deadlines.filter(d => {
+      if (d.format === 'audio') return false;
+      const pages = d.total_quantity;
+      if (range === 'under300') return pages < 300;
+      if (range === '300to500') return pages >= 300 && pages <= 500;
+      if (range === 'over500') return pages > 500;
+      return false;
+    }).length;
   };
 
   const getTimeRangeCount = (range: TimeRangeFilter): number => {
@@ -126,10 +151,23 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
       });
     }
 
-    if (selectedFormats.length > 0 && selectedFormats.length < 3) {
+    if (selectedFormats.length > 0) {
       filtered = filtered.filter(deadline =>
         selectedFormats.includes(deadline.format as BookFormat)
       );
+    }
+
+    if (selectedPageRanges.length > 0) {
+      filtered = filtered.filter(deadline => {
+        if (deadline.format === 'audio') return true;
+        const pages = deadline.total_quantity;
+        return selectedPageRanges.some(range => {
+          if (range === 'under300') return pages < 300;
+          if (range === '300to500') return pages >= 300 && pages <= 500;
+          if (range === 'over500') return pages > 500;
+          return false;
+        });
+      });
     }
 
     if (selectedSources.length > 0) {
@@ -147,12 +185,14 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
 
   const hasActiveFilters =
     timeRangeFilter !== 'all' ||
-    selectedFormats.length < 3 ||
+    selectedFormats.length > 0 ||
+    selectedPageRanges.length > 0 ||
     selectedSources.length > 0;
 
   const clearAllFilters = () => {
     onTimeRangeChange('all');
-    onFormatsChange(['physical', 'eBook', 'audio']);
+    onFormatsChange([]);
+    onPageRangesChange([]);
     onSourcesChange([]);
   };
 
@@ -160,6 +200,12 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     physical: 'Physical',
     eBook: 'eBook',
     audio: 'Audio',
+  };
+
+  const pageRangeLabels: Record<PageRangeFilter, string> = {
+    under300: '<300 pages',
+    '300to500': '300-500 pages',
+    over500: '500+ pages',
   };
 
   return (
@@ -242,6 +288,12 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             <View style={styles.section}>
               <ThemedText style={styles.sectionTitle}>Format</ThemedText>
               <View style={styles.filterRow}>
+                <ThemedButton
+                  title={`All ${deadlines.length}`}
+                  style={styles.filterPill}
+                  variant={selectedFormats.length === 0 ? 'primary' : 'outline'}
+                  onPress={() => onFormatsChange([])}
+                />
                 {(['physical', 'eBook', 'audio'] as BookFormat[]).map(
                   format => {
                     const count = getFormatCount(format);
@@ -264,8 +316,46 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             </View>
 
             <View style={styles.section}>
+              <ThemedText style={styles.sectionTitle}>Page Count</ThemedText>
+              <View style={styles.filterRow}>
+                <ThemedButton
+                  title={`All ${deadlines.length}`}
+                  style={styles.filterPill}
+                  variant={
+                    selectedPageRanges.length === 0 ? 'primary' : 'outline'
+                  }
+                  onPress={() => onPageRangesChange([])}
+                />
+                {(['under300', '300to500', 'over500'] as PageRangeFilter[]).map(
+                  range => {
+                    const count = getPageRangeCount(range);
+                    return (
+                      <ThemedButton
+                        key={range}
+                        title={`${pageRangeLabels[range]} ${count}`}
+                        style={styles.filterPill}
+                        variant={
+                          selectedPageRanges.includes(range)
+                            ? 'primary'
+                            : 'outline'
+                        }
+                        onPress={() => togglePageRange(range)}
+                      />
+                    );
+                  }
+                )}
+              </View>
+            </View>
+
+            <View style={styles.section}>
               <ThemedText style={styles.sectionTitle}>Source</ThemedText>
               <View style={styles.filterRow}>
+                <ThemedButton
+                  title={`All ${deadlines.length}`}
+                  style={styles.filterPill}
+                  variant={selectedSources.length === 0 ? 'primary' : 'outline'}
+                  onPress={() => onSourcesChange([])}
+                />
                 {availableSources.map(source => {
                   const count = getSourceCount(source);
                   if (count === 0) return null;
@@ -286,6 +376,12 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
           </ScrollView>
 
           <View style={[styles.footer, { borderTopColor: colors.border }]}>
+            <ThemedButton
+              title="CANCEL"
+              variant="dangerOutline"
+              style={styles.cancelButton}
+              onPress={onClose}
+            />
             <ThemedButton
               title={`SHOW ${getFilteredCount()} DEADLINES`}
               variant="primary"
@@ -365,9 +461,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 16,
     borderTopWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 12,
+  },
+  cancelButton: {
+    paddingVertical: 16,
+    flex: 0.35,
   },
   applyButton: {
-    width: '100%',
     paddingVertical: 16,
+    flex: 0.65,
   },
 });

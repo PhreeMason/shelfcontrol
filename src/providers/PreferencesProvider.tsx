@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   BookFormat,
   FilterType,
+  PageRangeFilter,
   TimeRangeFilter,
 } from '@/types/deadline.types';
 import {
@@ -19,6 +20,8 @@ interface PreferencesContextType {
   setTimeRangeFilter: (filter: TimeRangeFilter) => void;
   selectedFormats: BookFormat[];
   setSelectedFormats: (formats: BookFormat[]) => void;
+  selectedPageRanges: PageRangeFilter[];
+  setSelectedPageRanges: (ranges: PageRangeFilter[]) => void;
   selectedSources: string[];
   setSelectedSources: (sources: string[]) => void;
   isLoading: boolean;
@@ -29,8 +32,10 @@ const PreferencesContext = createContext<PreferencesContextType>({
   setSelectedFilter: () => {},
   timeRangeFilter: 'all',
   setTimeRangeFilter: () => {},
-  selectedFormats: ['physical', 'eBook', 'audio'],
+  selectedFormats: [],
   setSelectedFormats: () => {},
+  selectedPageRanges: [],
+  setSelectedPageRanges: () => {},
   selectedSources: [],
   setSelectedSources: () => {},
   isLoading: true,
@@ -40,6 +45,7 @@ const STORAGE_KEYS = {
   SELECTED_FILTER: '@preferences/selectedFilter',
   TIME_RANGE_FILTER: '@preferences/timeRangeFilter',
   SELECTED_FORMATS: '@preferences/selectedFormats',
+  SELECTED_PAGE_RANGES: '@preferences/selectedPageRanges',
   SELECTED_SOURCES: '@preferences/selectedSources',
 };
 
@@ -48,24 +54,29 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     useState<FilterType>('active');
   const [timeRangeFilter, setTimeRangeFilterState] =
     useState<TimeRangeFilter>('all');
-  const [selectedFormats, setSelectedFormatsState] = useState<BookFormat[]>([
-    'physical',
-    'eBook',
-    'audio',
-  ]);
+  const [selectedFormats, setSelectedFormatsState] = useState<BookFormat[]>([]);
+  const [selectedPageRanges, setSelectedPageRangesState] = useState<
+    PageRangeFilter[]
+  >([]);
   const [selectedSources, setSelectedSourcesState] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadPreferences = async () => {
       try {
-        const [savedFilter, savedTimeRange, savedFormats, savedSources] =
-          await Promise.all([
-            AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FILTER),
-            AsyncStorage.getItem(STORAGE_KEYS.TIME_RANGE_FILTER),
-            AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FORMATS),
-            AsyncStorage.getItem(STORAGE_KEYS.SELECTED_SOURCES),
-          ]);
+        const [
+          savedFilter,
+          savedTimeRange,
+          savedFormats,
+          savedPageRanges,
+          savedSources,
+        ] = await Promise.all([
+          AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FILTER),
+          AsyncStorage.getItem(STORAGE_KEYS.TIME_RANGE_FILTER),
+          AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FORMATS),
+          AsyncStorage.getItem(STORAGE_KEYS.SELECTED_PAGE_RANGES),
+          AsyncStorage.getItem(STORAGE_KEYS.SELECTED_SOURCES),
+        ]);
 
         if (savedFilter) {
           setSelectedFilterState(savedFilter as FilterType);
@@ -75,6 +86,11 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
         }
         if (savedFormats) {
           setSelectedFormatsState(JSON.parse(savedFormats) as BookFormat[]);
+        }
+        if (savedPageRanges) {
+          setSelectedPageRangesState(
+            JSON.parse(savedPageRanges) as PageRangeFilter[]
+          );
         }
         if (savedSources) {
           setSelectedSourcesState(JSON.parse(savedSources) as string[]);
@@ -119,6 +135,18 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     }
   };
 
+  const setSelectedPageRanges = async (ranges: PageRangeFilter[]) => {
+    try {
+      setSelectedPageRangesState(ranges);
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.SELECTED_PAGE_RANGES,
+        JSON.stringify(ranges)
+      );
+    } catch (error) {
+      console.error('Error saving page range filter preference:', error);
+    }
+  };
+
   const setSelectedSources = async (sources: string[]) => {
     try {
       setSelectedSourcesState(sources);
@@ -138,6 +166,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     setTimeRangeFilter,
     selectedFormats,
     setSelectedFormats,
+    selectedPageRanges,
+    setSelectedPageRanges,
     selectedSources,
     setSelectedSources,
     isLoading,

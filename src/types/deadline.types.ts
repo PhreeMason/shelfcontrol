@@ -24,11 +24,14 @@ export type FilterType =
   | 'active'
   | 'overdue'
   | 'pending'
+  | 'paused'
   | 'toReview'
   | 'completed'
   | 'didNotFinish'
   | 'all';
 
 export type TimeRangeFilter = 'all' | 'thisWeek' | 'thisMonth';
+
+export type PageRangeFilter = 'under300' | '300to500' | 'over500';
 
 export type BookFormat = 'physical' | 'eBook' | 'audio';

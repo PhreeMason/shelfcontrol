@@ -120,6 +120,21 @@ describe('FilterSheet', () => {
     },
   ];
 
+  const defaultProps = {
+    visible: true,
+    onClose: jest.fn(),
+    deadlines: mockDeadlines,
+    timeRangeFilter: 'all' as 'all',
+    onTimeRangeChange: jest.fn(),
+    selectedFormats: [] as ('physical' | 'eBook' | 'audio')[],
+    onFormatsChange: jest.fn(),
+    selectedPageRanges: [] as ('under300' | '300to500' | 'over500')[],
+    onPageRangesChange: jest.fn(),
+    selectedSources: [] as string[],
+    onSourcesChange: jest.fn(),
+    availableSources: ['Library', 'Amazon'],
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
     (useTheme as jest.Mock).mockReturnValue(mockTheme);
@@ -129,39 +144,13 @@ describe('FilterSheet', () => {
 
   describe('Component Structure', () => {
     it('should render modal when visible', () => {
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} />);
 
       expect(screen.getByText('Filters')).toBeTruthy();
     });
 
     it('should render all filter sections', () => {
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} />);
 
       expect(screen.getByText('Time Range')).toBeTruthy();
       expect(screen.getByText('Format')).toBeTruthy();
@@ -169,20 +158,7 @@ describe('FilterSheet', () => {
     });
 
     it('should render Done button', () => {
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} />);
 
       expect(screen.getByText('Done')).toBeTruthy();
     });
@@ -190,20 +166,7 @@ describe('FilterSheet', () => {
 
   describe('Time Range Filter', () => {
     it('should render all time range options with counts', () => {
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} />);
 
       expect(screen.getByText('All Time 3')).toBeTruthy();
       expect(screen.getByText(/This Week/)).toBeTruthy();
@@ -214,18 +177,7 @@ describe('FilterSheet', () => {
       const onTimeRangeChange = jest.fn();
 
       render(
-        <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={onTimeRangeChange}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
+        <FilterSheet {...defaultProps} onTimeRangeChange={onTimeRangeChange} />
       );
 
       fireEvent.press(screen.getByText(/This Week/));
@@ -238,20 +190,7 @@ describe('FilterSheet', () => {
         return date === '2024-01-15';
       });
 
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} />);
 
       expect(screen.getByText('This Week 1')).toBeTruthy();
     });
@@ -259,24 +198,18 @@ describe('FilterSheet', () => {
 
   describe('Format Filter', () => {
     it('should render all format options with counts', () => {
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} />);
 
       expect(screen.getByText('Physical 1')).toBeTruthy();
       expect(screen.getByText('eBook 1')).toBeTruthy();
       expect(screen.getByText('Audio 1')).toBeTruthy();
+    });
+
+    it('should render All button', () => {
+      render(<FilterSheet {...defaultProps} />);
+
+      const allButtons = screen.getAllByText('All 3');
+      expect(allButtons.length).toBeGreaterThan(0);
     });
 
     it('should toggle format selection', () => {
@@ -284,16 +217,9 @@ describe('FilterSheet', () => {
 
       render(
         <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
+          {...defaultProps}
           selectedFormats={['physical', 'eBook', 'audio']}
           onFormatsChange={onFormatsChange}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
         />
       );
 
@@ -307,16 +233,9 @@ describe('FilterSheet', () => {
 
       render(
         <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
+          {...defaultProps}
           selectedFormats={['physical']}
           onFormatsChange={onFormatsChange}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
         />
       );
 
@@ -324,24 +243,28 @@ describe('FilterSheet', () => {
 
       expect(onFormatsChange).toHaveBeenCalledWith(['physical', 'eBook']);
     });
+
+    it('should set formats to empty array when All is clicked', () => {
+      const onFormatsChange = jest.fn();
+
+      render(
+        <FilterSheet
+          {...defaultProps}
+          selectedFormats={['physical']}
+          onFormatsChange={onFormatsChange}
+        />
+      );
+
+      const allButtons = screen.getAllByText('All 3');
+      fireEvent.press(allButtons[0]);
+
+      expect(onFormatsChange).toHaveBeenCalledWith([]);
+    });
   });
 
   describe('Source Filter', () => {
     it('should render source options with counts', () => {
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} />);
 
       expect(screen.getByText('Library 2')).toBeTruthy();
       expect(screen.getByText('Amazon 1')).toBeTruthy();
@@ -352,16 +275,9 @@ describe('FilterSheet', () => {
 
       render(
         <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
+          {...defaultProps}
           selectedSources={['Library']}
           onSourcesChange={onSourcesChange}
-          availableSources={['Library', 'Amazon']}
         />
       );
 
@@ -374,18 +290,7 @@ describe('FilterSheet', () => {
       const onSourcesChange = jest.fn();
 
       render(
-        <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={onSourcesChange}
-          availableSources={['Library', 'Amazon']}
-        />
+        <FilterSheet {...defaultProps} onSourcesChange={onSourcesChange} />
       );
 
       fireEvent.press(screen.getByText('Amazon 1'));
@@ -401,11 +306,13 @@ describe('FilterSheet', () => {
           deadlines={mockDeadlines}
           timeRangeFilter="all"
           onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
+          selectedFormats={[]}
           onFormatsChange={jest.fn()}
           selectedSources={[]}
           onSourcesChange={jest.fn()}
           availableSources={['Library', 'Amazon', 'Bookstore']}
+          selectedPageRanges={[]}
+          onPageRangesChange={jest.fn()}
         />
       );
 
@@ -415,39 +322,13 @@ describe('FilterSheet', () => {
 
   describe('Clear All Filters', () => {
     it('should show Clear All button when filters are active', () => {
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="thisWeek"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} timeRangeFilter="thisWeek" />);
 
       expect(screen.getByText('Clear All')).toBeTruthy();
     });
 
     it('should not show Clear All button when no filters are active', () => {
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} />);
 
       expect(screen.queryByText('Clear All')).toBeNull();
     });
@@ -455,51 +336,34 @@ describe('FilterSheet', () => {
     it('should reset all filters when Clear All is pressed', () => {
       const onTimeRangeChange = jest.fn();
       const onFormatsChange = jest.fn();
+      const onPageRangesChange = jest.fn();
       const onSourcesChange = jest.fn();
 
       render(
         <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
+          {...defaultProps}
           timeRangeFilter="thisWeek"
           onTimeRangeChange={onTimeRangeChange}
           selectedFormats={['physical']}
           onFormatsChange={onFormatsChange}
+          onPageRangesChange={onPageRangesChange}
           selectedSources={['Library']}
           onSourcesChange={onSourcesChange}
-          availableSources={['Library', 'Amazon']}
         />
       );
 
       fireEvent.press(screen.getByText('Clear All'));
 
       expect(onTimeRangeChange).toHaveBeenCalledWith('all');
-      expect(onFormatsChange).toHaveBeenCalledWith([
-        'physical',
-        'eBook',
-        'audio',
-      ]);
+      expect(onFormatsChange).toHaveBeenCalledWith([]);
+      expect(onPageRangesChange).toHaveBeenCalledWith([]);
       expect(onSourcesChange).toHaveBeenCalledWith([]);
     });
   });
 
   describe('Filtered Count Display', () => {
     it('should display correct filtered deadline count', () => {
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={jest.fn()}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} />);
 
       expect(screen.getByText('SHOW 3 DEADLINES')).toBeTruthy();
     });
@@ -517,6 +381,8 @@ describe('FilterSheet', () => {
           selectedSources={[]}
           onSourcesChange={jest.fn()}
           availableSources={['Library', 'Amazon']}
+          selectedPageRanges={[]}
+          onPageRangesChange={jest.fn()}
         />
       );
 
@@ -528,20 +394,7 @@ describe('FilterSheet', () => {
     it('should call onClose when Done is pressed', () => {
       const onClose = jest.fn();
 
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={onClose}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} onClose={onClose} />);
 
       fireEvent.press(screen.getByText('Done'));
 
@@ -551,20 +404,7 @@ describe('FilterSheet', () => {
     it('should call onClose when backdrop is pressed', () => {
       const onClose = jest.fn();
 
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={onClose}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} onClose={onClose} />);
 
       const backdrop = screen.getByLabelText('Close filter sheet');
       fireEvent.press(backdrop);
@@ -575,20 +415,7 @@ describe('FilterSheet', () => {
     it('should call onClose when apply button is pressed', () => {
       const onClose = jest.fn();
 
-      render(
-        <FilterSheet
-          visible={true}
-          onClose={onClose}
-          deadlines={mockDeadlines}
-          timeRangeFilter="all"
-          onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
-          onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={['Library', 'Amazon']}
-        />
-      );
+      render(<FilterSheet {...defaultProps} onClose={onClose} />);
 
       fireEvent.press(screen.getByText('SHOW 3 DEADLINES'));
 
@@ -605,11 +432,13 @@ describe('FilterSheet', () => {
           deadlines={[]}
           timeRangeFilter="all"
           onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
+          selectedFormats={[]}
           onFormatsChange={jest.fn()}
           selectedSources={[]}
           onSourcesChange={jest.fn()}
           availableSources={[]}
+          selectedPageRanges={[]}
+          onPageRangesChange={jest.fn()}
         />
       );
 
@@ -624,11 +453,13 @@ describe('FilterSheet', () => {
           deadlines={mockDeadlines}
           timeRangeFilter="all"
           onTimeRangeChange={jest.fn()}
-          selectedFormats={['physical', 'eBook', 'audio']}
+          selectedFormats={[]}
           onFormatsChange={jest.fn()}
           selectedSources={[]}
           onSourcesChange={jest.fn()}
           availableSources={[]}
+          selectedPageRanges={[]}
+          onPageRangesChange={jest.fn()}
         />
       );
 

@@ -29,6 +29,8 @@ export default function HomeScreen() {
     setTimeRangeFilter,
     selectedFormats,
     setSelectedFormats,
+    selectedPageRanges,
+    setSelectedPageRanges,
     selectedSources,
     setSelectedSources,
   } = usePreferences();
@@ -83,6 +85,7 @@ export default function HomeScreen() {
     ) {
       setTimeRangeFilter('all');
       setSelectedFormats(['physical', 'eBook', 'audio']);
+      setSelectedPageRanges(['under300', '300to500', 'over500']);
       setSelectedSources([]);
     }
     prevSelectedFilterRef.current = selectedFilter;
@@ -90,6 +93,7 @@ export default function HomeScreen() {
     selectedFilter,
     setTimeRangeFilter,
     setSelectedFormats,
+    setSelectedPageRanges,
     setSelectedSources,
   ]);
 
@@ -117,6 +121,8 @@ export default function HomeScreen() {
         onTimeRangeChange={setTimeRangeFilter}
         selectedFormats={selectedFormats}
         onFormatsChange={setSelectedFormats}
+        selectedPageRanges={selectedPageRanges}
+        onPageRangesChange={setSelectedPageRanges}
         selectedSources={selectedSources}
         onSourcesChange={setSelectedSources}
         availableSources={availableSources}
@@ -143,6 +149,8 @@ export default function HomeScreen() {
           onTimeRangeChange={setTimeRangeFilter}
           selectedFormats={selectedFormats}
           onFormatsChange={setSelectedFormats}
+          selectedPageRanges={selectedPageRanges}
+          onPageRangesChange={setSelectedPageRanges}
           selectedSources={selectedSources}
           onSourcesChange={setSelectedSources}
           availableSources={availableSources}
@@ -154,6 +162,7 @@ export default function HomeScreen() {
           selectedFilter={selectedFilter}
           timeRangeFilter={timeRangeFilter}
           selectedFormats={selectedFormats}
+          selectedPageRanges={selectedPageRanges}
           selectedSources={selectedSources}
         />
       </Animated.ScrollView>
