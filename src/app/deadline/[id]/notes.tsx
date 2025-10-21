@@ -72,10 +72,8 @@ const Notes = () => {
       edges={['right', 'bottom', 'left']}
       style={[styles.container, { backgroundColor: colors.background }]}
     >
-      <AppHeader
-        title="Notes" onBack={() => router.back()} />
+      <AppHeader title="Notes" onBack={() => router.back()} />
       <View style={styles.header}>
-
         <ThemedText style={styles.headerTitle}>
           {deadline?.book_title || 'Deadline'}
         </ThemedText>
