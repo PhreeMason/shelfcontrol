@@ -15,6 +15,7 @@ import {
   processBookProgress,
   UserPaceData,
 } from '../paceCalculations';
+import { dayjs } from '@/lib/dayjs';
 
 const createMockDeadline = (
   id: string,
@@ -25,7 +26,7 @@ const createMockDeadline = (
     updated_at?: string;
     ignore_in_calcs?: boolean;
   }[] = [],
-  createdAt = '2024-01-01T00:00:00Z'
+  createdAt = '2024-01-01'
 ): ReadingDeadlineWithProgress => ({
   id,
   user_id: 'user-123',
@@ -67,33 +68,31 @@ describe('paceCalculations', () => {
     it('should calculate cutoff time based on most recent progress', () => {
       const deadlines = [
         createMockDeadline('1', 'physical', [
-          { current_progress: 50, created_at: '2024-01-10T00:00:00Z' },
-          { current_progress: 100, created_at: '2024-01-15T00:00:00Z' },
+          { current_progress: 50, created_at: '2024-01-10' },
+          { current_progress: 100, created_at: '2024-01-15' },
         ]),
       ];
 
       const result = calculateCutoffTime(deadlines);
-      const expectedDate = new Date('2024-01-15T00:00:00Z');
-      expectedDate.setDate(expectedDate.getDate() - 21);
+      const expectedDate = dayjs('2024-01-15').subtract(21, 'day');
 
-      expect(result).toBe(expectedDate.getTime());
+      expect(result).toBe(expectedDate.valueOf());
     });
 
     it('should use most recent progress across multiple deadlines', () => {
       const deadlines = [
         createMockDeadline('1', 'physical', [
-          { current_progress: 50, created_at: '2024-01-10T00:00:00Z' },
+          { current_progress: 50, created_at: '2024-01-10' },
         ]),
         createMockDeadline('2', 'physical', [
-          { current_progress: 75, created_at: '2024-01-20T00:00:00Z' },
+          { current_progress: 75, created_at: '2024-01-20' },
         ]),
       ];
 
       const result = calculateCutoffTime(deadlines);
-      const expectedDate = new Date('2024-01-20T00:00:00Z');
-      expectedDate.setDate(expectedDate.getDate() - 21);
+      const expectedDate = dayjs('2024-01-20').subtract(21, 'day');
 
-      expect(result).toBe(expectedDate.getTime());
+      expect(result).toBe(expectedDate.valueOf());
     });
   });
 
@@ -121,7 +120,7 @@ describe('paceCalculations', () => {
 
     it('should skip progress entries before cutoff time', () => {
       const book = createMockDeadline('1', 'physical', [
-        { current_progress: 50, created_at: '2023-12-01T00:00:00Z' },
+        { current_progress: 50, created_at: '2023-12-01' },
       ]);
       const dailyProgress: { [date: string]: number } = {};
       const cutoffTime = new Date('2024-01-01').getTime();
@@ -136,10 +135,10 @@ describe('paceCalculations', () => {
         '1',
         'physical',
         [
-          { current_progress: 50, created_at: '2024-01-05T00:00:00Z' },
-          { current_progress: 100, created_at: '2024-01-10T00:00:00Z' },
+          { current_progress: 50, created_at: '2024-01-05' },
+          { current_progress: 100, created_at: '2024-01-10' },
         ],
-        '2024-01-01T00:00:00Z'
+        '2024-01-01'
       );
       const dailyProgress: { [date: string]: number } = {};
       const cutoffTime = new Date('2024-01-03').getTime();
@@ -151,13 +150,13 @@ describe('paceCalculations', () => {
     });
 
     it('should handle baseline progress from deadline creation', () => {
-      const createdAt = '2024-01-01T00:00:00Z';
+      const createdAt = '2024-01-01';
       const book = createMockDeadline(
         '1',
         'physical',
         [
           { current_progress: 20, created_at: createdAt },
-          { current_progress: 70, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 70, created_at: '2024-01-05' },
         ],
         createdAt
       );
@@ -171,10 +170,10 @@ describe('paceCalculations', () => {
 
     it('should accumulate progress for same date', () => {
       const book1 = createMockDeadline('1', 'physical', [
-        { current_progress: 30, created_at: '2024-01-05T00:00:00Z' },
+        { current_progress: 30, created_at: '2024-01-05' },
       ]);
       const book2 = createMockDeadline('2', 'physical', [
-        { current_progress: 20, created_at: '2024-01-05T00:00:00Z' },
+        { current_progress: 20, created_at: '2024-01-05' },
       ]);
       const dailyProgress: { [date: string]: number } = {};
       const cutoffTime = new Date('2024-01-01').getTime();
@@ -186,7 +185,7 @@ describe('paceCalculations', () => {
     });
 
     it('should ignore progress entries with ignore_in_calcs set to true', () => {
-      const createdAt = '2024-01-01T00:00:00Z';
+      const createdAt = '2024-01-01';
       const book = createMockDeadline(
         '1',
         'physical',
@@ -196,8 +195,8 @@ describe('paceCalculations', () => {
             created_at: createdAt,
             ignore_in_calcs: true,
           },
-          { current_progress: 100, created_at: '2024-01-05T00:00:00Z' },
-          { current_progress: 150, created_at: '2024-01-10T00:00:00Z' },
+          { current_progress: 100, created_at: '2024-01-05' },
+          { current_progress: 150, created_at: '2024-01-10' },
         ],
         createdAt
       );
@@ -212,7 +211,7 @@ describe('paceCalculations', () => {
     });
 
     it('should exclude baseline progress when it has ignore_in_calcs true', () => {
-      const createdAt = '2024-01-01T00:00:00Z';
+      const createdAt = '2024-01-01';
       const book = createMockDeadline(
         '1',
         'physical',
@@ -222,7 +221,7 @@ describe('paceCalculations', () => {
             created_at: createdAt,
             ignore_in_calcs: true,
           },
-          { current_progress: 100, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 100, created_at: '2024-01-05' },
         ],
         createdAt
       );
@@ -239,21 +238,21 @@ describe('paceCalculations', () => {
         '1',
         'physical',
         [
-          { current_progress: 25, created_at: '2024-01-03T00:00:00Z' },
+          { current_progress: 25, created_at: '2024-01-03' },
           {
             current_progress: 50,
-            created_at: '2024-01-05T00:00:00Z',
+            created_at: '2024-01-05',
             ignore_in_calcs: true,
           },
-          { current_progress: 100, created_at: '2024-01-08T00:00:00Z' },
+          { current_progress: 100, created_at: '2024-01-08' },
           {
             current_progress: 125,
-            created_at: '2024-01-10T00:00:00Z',
+            created_at: '2024-01-10',
             ignore_in_calcs: true,
           },
-          { current_progress: 150, created_at: '2024-01-12T00:00:00Z' },
+          { current_progress: 150, created_at: '2024-01-12' },
         ],
-        '2024-01-01T00:00:00Z'
+        '2024-01-01'
       );
       const dailyProgress: { [date: string]: number } = {};
       const cutoffTime = new Date('2024-01-01').getTime();
@@ -277,7 +276,7 @@ describe('paceCalculations', () => {
     it('should filter out audio deadlines', () => {
       const deadlines = [
         createMockDeadline('1', 'audio', [
-          { current_progress: 60, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 60, created_at: '2024-01-05' },
         ]),
       ];
 
@@ -288,10 +287,10 @@ describe('paceCalculations', () => {
     it('should process physical and eBook deadlines', () => {
       const deadlines = [
         createMockDeadline('1', 'physical', [
-          { current_progress: 50, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 50, created_at: '2024-01-05' },
         ]),
         createMockDeadline('2', 'eBook', [
-          { current_progress: 30, created_at: '2024-01-06T00:00:00Z' },
+          { current_progress: 30, created_at: '2024-01-06' },
         ]),
       ];
 
@@ -308,8 +307,8 @@ describe('paceCalculations', () => {
     it('should sort reading days by date', () => {
       const deadlines = [
         createMockDeadline('1', 'physical', [
-          { current_progress: 50, created_at: '2024-01-10T00:00:00Z' },
-          { current_progress: 100, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 50, created_at: '2024-01-10' },
+          { current_progress: 100, created_at: '2024-01-05' },
         ]),
       ];
 
@@ -336,7 +335,7 @@ describe('paceCalculations', () => {
     it('should calculate pace for single day', () => {
       const deadlines = [
         createMockDeadline('1', 'physical', [
-          { current_progress: 50, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 50, created_at: '2024-01-05' },
         ]),
       ];
 
@@ -351,8 +350,8 @@ describe('paceCalculations', () => {
     it('should calculate pace across multiple days', () => {
       const deadlines = [
         createMockDeadline('1', 'physical', [
-          { current_progress: 40, created_at: '2024-01-01T00:00:00Z' },
-          { current_progress: 80, created_at: '2024-01-03T00:00:00Z' },
+          { current_progress: 40, created_at: '2024-01-01' },
+          { current_progress: 80, created_at: '2024-01-03' },
         ]),
       ];
 
@@ -371,10 +370,10 @@ describe('paceCalculations', () => {
           '1',
           'physical',
           [
-            { current_progress: 50, created_at: '2024-01-05T00:00:00Z' },
-            { current_progress: 100, created_at: '2024-01-06T00:00:00Z' },
+            { current_progress: 50, created_at: '2024-01-05' },
+            { current_progress: 100, created_at: '2024-01-06' },
           ],
-          '2024-01-01T00:00:00Z'
+          '2024-01-01'
         ),
       ];
 
@@ -391,7 +390,7 @@ describe('paceCalculations', () => {
           '1',
           'physical',
           [{ current_progress: 75, created_at: '2024-01-05T12:00:00Z' }],
-          '2024-01-01T00:00:00Z'
+          '2024-01-01'
         ),
       ];
 
@@ -411,13 +410,13 @@ describe('paceCalculations', () => {
             { current_progress: 30, created_at: '2024-01-05T10:00:00Z' },
             { current_progress: 80, created_at: '2024-01-05T18:00:00Z' },
           ],
-          '2024-01-01T00:00:00Z'
+          '2024-01-01'
         ),
         createMockDeadline(
           '3',
           'physical',
           [{ current_progress: 40, created_at: '2024-01-05T10:00:00Z' }],
-          '2024-01-01T00:00:00Z'
+          '2024-01-01'
         ),
       ];
 
@@ -438,7 +437,7 @@ describe('paceCalculations', () => {
             { current_progress: 50, created_at: '2024-01-05T14:00:00Z' },
             { current_progress: 90, created_at: '2024-01-05T20:00:00Z' },
           ],
-          '2024-01-01T00:00:00Z'
+          '2024-01-01'
         ),
       ];
 
@@ -676,7 +675,7 @@ describe('paceCalculations', () => {
     it('should filter out non-audio deadlines', () => {
       const deadlines = [
         createMockDeadline('1', 'physical', [
-          { current_progress: 50, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 50, created_at: '2024-01-05' },
         ]),
       ];
 
@@ -687,7 +686,7 @@ describe('paceCalculations', () => {
     it('should process audio deadlines', () => {
       const deadlines = [
         createMockDeadline('1', 'audio', [
-          { current_progress: 60, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 60, created_at: '2024-01-05' },
         ]),
       ];
 
@@ -715,7 +714,7 @@ describe('paceCalculations', () => {
     it('should calculate listening pace', () => {
       const deadlines = [
         createMockDeadline('1', 'audio', [
-          { current_progress: 60, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 60, created_at: '2024-01-05' },
         ]),
       ];
 
@@ -781,7 +780,7 @@ describe('paceCalculations', () => {
 
     it('should handle zero days left', () => {
       const deadline = createMockDeadline('1', 'physical', [
-        { current_progress: 100, created_at: '2024-01-10T00:00:00Z' },
+        { current_progress: 100, created_at: '2024-01-10' },
       ]);
       deadline.deadline_date = '2024-01-05';
       deadline.total_quantity = 300;

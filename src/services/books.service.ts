@@ -23,14 +23,37 @@ class BooksService {
 
   /**
    * Fetch full book data using the edge function
+   * Supports multiple identifier types: api_id, isbn, or google_volume_id
    */
-  async fetchBookData(apiId: string): Promise<FullBookData> {
+  async fetchBookData(
+    identifier:
+      | string
+      | { api_id?: string; isbn?: string; google_volume_id?: string }
+  ): Promise<FullBookData> {
+    // Handle legacy string parameter (assumed to be api_id)
+    const body =
+      typeof identifier === 'string' ? { api_id: identifier } : identifier;
+
     const { data, error } = await supabase.functions.invoke('book-data', {
-      body: { api_id: apiId },
+      body,
     });
 
     if (error) throw error;
     return data;
+  }
+
+  /**
+   * Fetch book data by ISBN
+   */
+  async fetchBookDataByISBN(isbn: string): Promise<FullBookData> {
+    return this.fetchBookData({ isbn });
+  }
+
+  /**
+   * Fetch book data by Google Volume ID
+   */
+  async fetchBookDataByGoogleVolumeId(volumeId: string): Promise<FullBookData> {
+    return this.fetchBookData({ google_volume_id: volumeId });
   }
 
   /**

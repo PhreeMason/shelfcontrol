@@ -1,23 +1,23 @@
 import deadlinesMockData from '@/__fixtures__/deadlines.mock.json';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
-    buildPaceStatusResult,
-    calculateDeadlinePaceStatus,
-    calculateProgressAsOfStartOfDay,
-    calculateProgressForToday,
-    calculateUnitsPerDay,
-    createArchivedPaceData,
-    createDeadlineCalculationResult,
-    determineUserPace,
-    formatAudioUnitsPerDay,
-    formatBookUnitsPerDay,
-    formatLowFrequency,
-    formatTimeDisplay,
-    formatUnitsPerDay,
-    formatUnitsPerDayForDisplay,
-    getDeadlineStatus,
-    mapPaceColorToUrgencyColor,
-    mapPaceToUrgency,
+  buildPaceStatusResult,
+  calculateDeadlinePaceStatus,
+  calculateProgressAsOfStartOfDay,
+  calculateProgressForToday,
+  calculateUnitsPerDay,
+  createArchivedPaceData,
+  createDeadlineCalculationResult,
+  determineUserPace,
+  formatAudioUnitsPerDay,
+  formatBookUnitsPerDay,
+  formatLowFrequency,
+  formatTimeDisplay,
+  formatUnitsPerDay,
+  formatUnitsPerDayForDisplay,
+  getDeadlineStatus,
+  mapPaceColorToUrgencyColor,
+  mapPaceToUrgency,
 } from '../deadlineProviderUtils';
 
 // Mock dependencies
@@ -125,9 +125,27 @@ describe('deadlineProviderUtils', () => {
       const deadlineWithMultipleStatuses = {
         ...mockDeadlines[0],
         status: [
-          { id: 'status-1', deadline_id: 'rd-123', status: 'pending' as const, created_at: '2025-01-01T00:00:00Z', updated_at: '2025-01-01T00:00:00Z' },
-          { id: 'status-2', deadline_id: 'rd-123', status: 'reading' as const, created_at: '2025-01-05T00:00:00Z', updated_at: '2025-01-05T00:00:00Z' },
-          { id: 'status-3', deadline_id: 'rd-123', status: 'to_review' as const, created_at: '2025-01-15T00:00:00Z', updated_at: '2025-01-15T00:00:00Z' },
+          {
+            id: 'status-1',
+            deadline_id: 'rd-123',
+            status: 'pending' as const,
+            created_at: '2025-01-01T00:00:00Z',
+            updated_at: '2025-01-01T00:00:00Z',
+          },
+          {
+            id: 'status-2',
+            deadline_id: 'rd-123',
+            status: 'reading' as const,
+            created_at: '2025-01-05T00:00:00Z',
+            updated_at: '2025-01-05T00:00:00Z',
+          },
+          {
+            id: 'status-3',
+            deadline_id: 'rd-123',
+            status: 'to_review' as const,
+            created_at: '2025-01-15T00:00:00Z',
+            updated_at: '2025-01-15T00:00:00Z',
+          },
         ],
       };
 
@@ -143,9 +161,27 @@ describe('deadlineProviderUtils', () => {
       const deadlineWithUnsortedStatuses = {
         ...mockDeadlines[0],
         status: [
-          { id: 'status-3', deadline_id: 'rd-123', status: 'complete' as const, created_at: '2025-01-15T00:00:00Z', updated_at: '2025-01-15T00:00:00Z' },
-          { id: 'status-1', deadline_id: 'rd-123', status: 'pending' as const, created_at: '2025-01-01T00:00:00Z', updated_at: '2025-01-01T00:00:00Z' },
-          { id: 'status-2', deadline_id: 'rd-123', status: 'reading' as const, created_at: '2025-01-05T00:00:00Z', updated_at: '2025-01-05T00:00:00Z' },
+          {
+            id: 'status-3',
+            deadline_id: 'rd-123',
+            status: 'complete' as const,
+            created_at: '2025-01-15T00:00:00Z',
+            updated_at: '2025-01-15T00:00:00Z',
+          },
+          {
+            id: 'status-1',
+            deadline_id: 'rd-123',
+            status: 'pending' as const,
+            created_at: '2025-01-01T00:00:00Z',
+            updated_at: '2025-01-01T00:00:00Z',
+          },
+          {
+            id: 'status-2',
+            deadline_id: 'rd-123',
+            status: 'reading' as const,
+            created_at: '2025-01-05T00:00:00Z',
+            updated_at: '2025-01-05T00:00:00Z',
+          },
         ],
       };
 
@@ -161,9 +197,27 @@ describe('deadlineProviderUtils', () => {
       const deadlineWithCompleteHistory = {
         ...mockDeadlines[0],
         status: [
-          { id: 'status-1', deadline_id: 'rd-123', status: 'reading' as const, created_at: '2025-01-01T00:00:00Z', updated_at: '2025-01-01T00:00:00Z' },
-          { id: 'status-2', deadline_id: 'rd-123', status: 'to_review' as const, created_at: '2025-01-10T00:00:00Z', updated_at: '2025-01-10T00:00:00Z' },
-          { id: 'status-3', deadline_id: 'rd-123', status: 'complete' as const, created_at: '2025-01-20T00:00:00Z', updated_at: '2025-01-20T00:00:00Z' },
+          {
+            id: 'status-1',
+            deadline_id: 'rd-123',
+            status: 'reading' as const,
+            created_at: '2025-01-01T00:00:00Z',
+            updated_at: '2025-01-01T00:00:00Z',
+          },
+          {
+            id: 'status-2',
+            deadline_id: 'rd-123',
+            status: 'to_review' as const,
+            created_at: '2025-01-10T00:00:00Z',
+            updated_at: '2025-01-10T00:00:00Z',
+          },
+          {
+            id: 'status-3',
+            deadline_id: 'rd-123',
+            status: 'complete' as const,
+            created_at: '2025-01-20T00:00:00Z',
+            updated_at: '2025-01-20T00:00:00Z',
+          },
         ],
       };
 
@@ -562,7 +616,7 @@ describe('deadlineProviderUtils', () => {
     });
 
     it('should format less than 1 minute per day as 3 weeks', () => {
-      const result = formatAudioUnitsPerDay(1, 1/21, 21);
+      const result = formatAudioUnitsPerDay(1, 1 / 21, 21);
       expect(result).toBe('1 minute/3 weeks');
     });
 
@@ -572,12 +626,12 @@ describe('deadlineProviderUtils', () => {
     });
 
     it('should format less than 1 minute per day as custom weeks (4 weeks)', () => {
-      const result = formatAudioUnitsPerDay(1, 1/28, 28);
+      const result = formatAudioUnitsPerDay(1, 1 / 28, 28);
       expect(result).toBe('1 minute/month');
     });
 
     it('should format less than 1 minute per day as custom weeks (5 weeks)', () => {
-      const result = formatAudioUnitsPerDay(1, 1/35, 35);
+      const result = formatAudioUnitsPerDay(1, 1 / 35, 35);
       expect(result).toBe('1 minute/5 weeks');
     });
 
@@ -604,22 +658,22 @@ describe('deadlineProviderUtils', () => {
     });
 
     it('should format less than 1 page per day as bi-weekly', () => {
-      const result = formatBookUnitsPerDay(1, 1/14, 14, 'physical');
+      const result = formatBookUnitsPerDay(1, 1 / 14, 14, 'physical');
       expect(result).toBe('1 page/2 weeks');
     });
 
     it('should format less than 1 page per day as 3 weeks', () => {
-      const result = formatBookUnitsPerDay(1, 1/21, 21, 'eBook');
+      const result = formatBookUnitsPerDay(1, 1 / 21, 21, 'eBook');
       expect(result).toBe('1 page/3 weeks');
     });
 
     it('should format less than 1 page per day as monthly', () => {
-      const result = formatBookUnitsPerDay(1, 1/28, 28, 'physical');
+      const result = formatBookUnitsPerDay(1, 1 / 28, 28, 'physical');
       expect(result).toBe('1 page/month');
     });
 
     it('should format less than 1 page per day as custom weeks (6 weeks)', () => {
-      const result = formatBookUnitsPerDay(1, 1/42, 42, 'eBook');
+      const result = formatBookUnitsPerDay(1, 1 / 42, 42, 'eBook');
       expect(result).toBe('1 page/6 weeks');
     });
 

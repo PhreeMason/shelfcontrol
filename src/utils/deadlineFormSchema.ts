@@ -47,6 +47,9 @@ export const deadlineFormSchema = z.object({
   // Optional book linking fields
   book_id: z.string().optional(), // Links to books table
   api_id: z.string().optional(), // External API ID for book fetching
+  api_source: z.string().optional(), // Source of the API ID (goodreads, google_books, etc.)
+  google_volume_id: z.string().optional(), // Google Books volume ID
+  isbn: z.string().optional(), // ISBN for book fetching
   ignoreInCalcs: z.boolean().optional(),
 });
 

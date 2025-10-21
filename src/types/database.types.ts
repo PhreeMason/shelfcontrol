@@ -82,6 +82,7 @@ export type Database = {
           edition: Json | null;
           format: Database['public']['Enums']['book_format_enum'] | null;
           genres: string[] | null;
+          google_volume_id: string | null;
           id: string;
           isbn10: string | null;
           isbn13: string | null;
@@ -105,6 +106,7 @@ export type Database = {
           edition?: Json | null;
           format?: Database['public']['Enums']['book_format_enum'] | null;
           genres?: string[] | null;
+          google_volume_id?: string | null;
           id: string;
           isbn10?: string | null;
           isbn13?: string | null;
@@ -128,6 +130,7 @@ export type Database = {
           edition?: Json | null;
           format?: Database['public']['Enums']['book_format_enum'] | null;
           genres?: string[] | null;
+          google_volume_id?: string | null;
           id?: string;
           isbn10?: string | null;
           isbn13?: string | null;
@@ -509,6 +512,7 @@ export type Database = {
           id: string;
           query: string;
           result_count: number;
+          search_source: string | null;
           updated_at: string | null;
           user_id: string;
         };
@@ -517,6 +521,7 @@ export type Database = {
           id?: string;
           query: string;
           result_count: number;
+          search_source?: string | null;
           updated_at?: string | null;
           user_id: string;
         };
@@ -525,6 +530,7 @@ export type Database = {
           id?: string;
           query?: string;
           result_count?: number;
+          search_source?: string | null;
           updated_at?: string | null;
           user_id?: string;
         };
@@ -588,6 +594,7 @@ export type Database = {
       deadline_status_enum:
         | 'pending'
         | 'reading'
+        | 'paused'
         | 'to_review'
         | 'complete'
         | 'did_not_finish';
@@ -727,6 +734,7 @@ export const Constants = {
       deadline_status_enum: [
         'pending',
         'reading',
+        'paused',
         'to_review',
         'complete',
         'did_not_finish',
