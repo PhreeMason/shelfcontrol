@@ -6,6 +6,11 @@ import {
   TimeRangeFilter,
 } from '@/types/deadline.types';
 import {
+  DEFAULT_PROGRESS_INPUT_MODES,
+  ProgressInputMode,
+  ProgressInputModePreferences,
+} from '@/types/progressInput.types';
+import {
   PropsWithChildren,
   createContext,
   useContext,
@@ -24,6 +29,9 @@ interface PreferencesContextType {
   setSelectedPageRanges: (ranges: PageRangeFilter[]) => void;
   selectedSources: string[];
   setSelectedSources: (sources: string[]) => void;
+  progressInputModes: ProgressInputModePreferences;
+  getProgressInputMode: (format: BookFormat) => ProgressInputMode;
+  setProgressInputMode: (format: BookFormat, mode: ProgressInputMode) => void;
   isLoading: boolean;
 }
 
@@ -38,6 +46,9 @@ const PreferencesContext = createContext<PreferencesContextType>({
   setSelectedPageRanges: () => {},
   selectedSources: [],
   setSelectedSources: () => {},
+  progressInputModes: DEFAULT_PROGRESS_INPUT_MODES,
+  getProgressInputMode: () => 'direct',
+  setProgressInputMode: () => {},
   isLoading: true,
 });
 
@@ -47,6 +58,7 @@ const STORAGE_KEYS = {
   SELECTED_FORMATS: '@preferences/selectedFormats',
   SELECTED_PAGE_RANGES: '@preferences/selectedPageRanges',
   SELECTED_SOURCES: '@preferences/selectedSources',
+  PROGRESS_INPUT_MODES: '@preferences/progressInputModes',
 };
 
 export default function PreferencesProvider({ children }: PropsWithChildren) {
@@ -59,6 +71,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     PageRangeFilter[]
   >([]);
   const [selectedSources, setSelectedSourcesState] = useState<string[]>([]);
+  const [progressInputModes, setProgressInputModesState] =
+    useState<ProgressInputModePreferences>(DEFAULT_PROGRESS_INPUT_MODES);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -70,12 +84,14 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           savedFormats,
           savedPageRanges,
           savedSources,
+          savedProgressInputModes,
         ] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FILTER),
           AsyncStorage.getItem(STORAGE_KEYS.TIME_RANGE_FILTER),
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FORMATS),
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_PAGE_RANGES),
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_SOURCES),
+          AsyncStorage.getItem(STORAGE_KEYS.PROGRESS_INPUT_MODES),
         ]);
 
         if (savedFilter) {
@@ -94,6 +110,11 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
         }
         if (savedSources) {
           setSelectedSourcesState(JSON.parse(savedSources) as string[]);
+        }
+        if (savedProgressInputModes) {
+          setProgressInputModesState(
+            JSON.parse(savedProgressInputModes) as ProgressInputModePreferences
+          );
         }
       } catch (error) {
         console.error('Error loading preferences:', error);
@@ -159,6 +180,26 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     }
   };
 
+  const getProgressInputMode = (format: BookFormat): ProgressInputMode => {
+    return progressInputModes[format] || 'direct';
+  };
+
+  const setProgressInputMode = async (
+    format: BookFormat,
+    mode: ProgressInputMode
+  ) => {
+    try {
+      const updatedModes = { ...progressInputModes, [format]: mode };
+      setProgressInputModesState(updatedModes);
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.PROGRESS_INPUT_MODES,
+        JSON.stringify(updatedModes)
+      );
+    } catch (error) {
+      console.error('Error saving progress input mode preference:', error);
+    }
+  };
+
   const value = {
     selectedFilter,
     setSelectedFilter,
@@ -170,6 +211,9 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     setSelectedPageRanges,
     selectedSources,
     setSelectedSources,
+    progressInputModes,
+    getProgressInputMode,
+    setProgressInputMode,
     isLoading,
   };
 
