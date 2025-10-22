@@ -10,8 +10,10 @@ import {
   formatBookFormat,
   getCompletionDate,
   getCompletionStatusLabel,
+  getProgressLabel,
   getReadingSessionCount,
   getReadingStartDate,
+  getTotalLabel,
 } from '../readingStatsUtils';
 
 const createMockDeadline = (
@@ -270,7 +272,7 @@ describe('readingStatsUtils', () => {
   });
 
   describe('calculateAveragePace', () => {
-    it('should calculate average pace for physical book', () => {
+    it('should calculate average pace based on current progress, not total quantity', () => {
       const deadline = createMockDeadline({
         total_quantity: 300,
         format: 'physical',
@@ -280,8 +282,22 @@ describe('readingStatsUtils', () => {
         ],
       });
 
-      const result = calculateAveragePace(deadline);
+      const result = calculateAveragePace(deadline, 300);
       expect(result).toBe(30);
+    });
+
+    it('should calculate average pace for partial progress', () => {
+      const deadline = createMockDeadline({
+        total_quantity: 300,
+        format: 'physical',
+        status: [
+          createStatusRecord('reading', '2025-01-05T00:00:00Z'),
+          createStatusRecord('complete', '2025-01-15T00:00:00Z'),
+        ],
+      });
+
+      const result = calculateAveragePace(deadline, 100);
+      expect(result).toBe(10);
     });
 
     it('should calculate average pace for audio book', () => {
@@ -294,8 +310,22 @@ describe('readingStatsUtils', () => {
         ],
       });
 
-      const result = calculateAveragePace(deadline);
+      const result = calculateAveragePace(deadline, 600);
       expect(result).toBe(60);
+    });
+
+    it('should calculate average pace for audio book with partial progress', () => {
+      const deadline = createMockDeadline({
+        total_quantity: 600,
+        format: 'audio',
+        status: [
+          createStatusRecord('reading', '2025-01-05T00:00:00Z'),
+          createStatusRecord('complete', '2025-01-15T00:00:00Z'),
+        ],
+      });
+
+      const result = calculateAveragePace(deadline, 200);
+      expect(result).toBe(20);
     });
 
     it('should round average pace to nearest integer', () => {
@@ -308,7 +338,7 @@ describe('readingStatsUtils', () => {
         ],
       });
 
-      const result = calculateAveragePace(deadline);
+      const result = calculateAveragePace(deadline, 250);
       expect(result).toBe(36);
     });
 
@@ -318,7 +348,7 @@ describe('readingStatsUtils', () => {
         status: [],
       });
 
-      const result = calculateAveragePace(deadline);
+      const result = calculateAveragePace(deadline, 300);
       expect(result).toBeNull();
     });
 
@@ -331,7 +361,7 @@ describe('readingStatsUtils', () => {
         ],
       });
 
-      const result = calculateAveragePace(deadline);
+      const result = calculateAveragePace(deadline, 300);
       expect(result).toBe(300);
     });
 
@@ -345,7 +375,7 @@ describe('readingStatsUtils', () => {
         ],
       });
 
-      const result = calculateAveragePace(deadline);
+      const result = calculateAveragePace(deadline, 1000);
       expect(result).toBe(33);
     });
   });
@@ -477,24 +507,40 @@ describe('readingStatsUtils', () => {
   });
 
   describe('getCompletionStatusLabel', () => {
-    it('should return Finished Reading for complete status', () => {
-      const result = getCompletionStatusLabel('complete');
+    it('should return Finished Reading for complete status (physical book)', () => {
+      const result = getCompletionStatusLabel('complete', 'physical');
       expect(result).toBe('Finished Reading');
     });
 
-    it('should return Finished Reading for to_review status', () => {
-      const result = getCompletionStatusLabel('to_review');
+    it('should return Finished Reading for to_review status (eBook)', () => {
+      const result = getCompletionStatusLabel('to_review', 'eBook');
       expect(result).toBe('Finished Reading');
     });
 
-    it('should return Did Not Finish for did_not_finish status', () => {
-      const result = getCompletionStatusLabel('did_not_finish');
-      expect(result).toBe('Did Not Finish');
+    it('should return Finished Listening for complete status (audiobook)', () => {
+      const result = getCompletionStatusLabel('complete', 'audio');
+      expect(result).toBe('Finished Listening');
     });
 
-    it('should return Finished Reading for null status', () => {
+    it('should return Finished Listening for to_review status (audiobook)', () => {
+      const result = getCompletionStatusLabel('to_review', 'audio');
+      expect(result).toBe('Finished Listening');
+    });
+
+    it('should return Did Not Finish for did_not_finish status (any format)', () => {
+      expect(getCompletionStatusLabel('did_not_finish', 'physical')).toBe('Did Not Finish');
+      expect(getCompletionStatusLabel('did_not_finish', 'eBook')).toBe('Did Not Finish');
+      expect(getCompletionStatusLabel('did_not_finish', 'audio')).toBe('Did Not Finish');
+    });
+
+    it('should return Finished Reading for null status without format', () => {
       const result = getCompletionStatusLabel(null);
       expect(result).toBe('Finished Reading');
+    });
+
+    it('should return Finished Listening for null status with audio format', () => {
+      const result = getCompletionStatusLabel(null, 'audio');
+      expect(result).toBe('Finished Listening');
     });
 
     it('should return Finished Reading for undefined status', () => {
@@ -503,8 +549,47 @@ describe('readingStatsUtils', () => {
     });
 
     it('should return Finished Reading for unknown status', () => {
-      const result = getCompletionStatusLabel('unknown');
+      const result = getCompletionStatusLabel('unknown', 'physical');
       expect(result).toBe('Finished Reading');
+    });
+
+    it('should return Finished Listening for unknown status with audio format', () => {
+      const result = getCompletionStatusLabel('unknown', 'audio');
+      expect(result).toBe('Finished Listening');
+    });
+  });
+
+  describe('getProgressLabel', () => {
+    it('should return Pages Read for physical books', () => {
+      const result = getProgressLabel('physical');
+      expect(result).toBe('Pages Read');
+    });
+
+    it('should return Pages Read for eBooks', () => {
+      const result = getProgressLabel('eBook');
+      expect(result).toBe('Pages Read');
+    });
+
+    it('should return Time Listened for audiobooks', () => {
+      const result = getProgressLabel('audio');
+      expect(result).toBe('Time Listened');
+    });
+  });
+
+  describe('getTotalLabel', () => {
+    it('should return Total Pages for physical books', () => {
+      const result = getTotalLabel('physical');
+      expect(result).toBe('Total Pages');
+    });
+
+    it('should return Total Pages for eBooks', () => {
+      const result = getTotalLabel('eBook');
+      expect(result).toBe('Total Pages');
+    });
+
+    it('should return Total Duration for audiobooks', () => {
+      const result = getTotalLabel('audio');
+      expect(result).toBe('Total Duration');
     });
   });
 });

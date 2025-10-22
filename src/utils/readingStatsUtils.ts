@@ -53,7 +53,8 @@ export function calculateDaysToComplete(
 }
 
 export function calculateAveragePace(
-  deadline: ReadingDeadlineWithProgress
+  deadline: ReadingDeadlineWithProgress,
+  currentProgress: number
 ): number | null {
   const daysToComplete = calculateDaysToComplete(deadline);
 
@@ -61,7 +62,7 @@ export function calculateAveragePace(
     return null;
   }
 
-  return Math.round(deadline.total_quantity / daysToComplete);
+  return Math.round(currentProgress / daysToComplete);
 }
 
 export function getReadingSessionCount(
@@ -108,13 +109,24 @@ export function formatAveragePace(
 }
 
 export function getCompletionStatusLabel(
-  status: string | null | undefined
+  status: string | null | undefined,
+  format?: 'physical' | 'eBook' | 'audio'
 ): string {
+  const isAudio = format === 'audio';
+
   const statusMap: Record<string, string> = {
-    complete: 'Finished Reading',
-    to_review: 'Finished Reading',
+    complete: isAudio ? 'Finished Listening' : 'Finished Reading',
+    to_review: isAudio ? 'Finished Listening' : 'Finished Reading',
     did_not_finish: 'Did Not Finish',
   };
 
-  return statusMap[status ?? ''] || 'Finished Reading';
+  return statusMap[status ?? ''] || (isAudio ? 'Finished Listening' : 'Finished Reading');
+}
+
+export function getProgressLabel(format: 'physical' | 'eBook' | 'audio'): string {
+  return format === 'audio' ? 'Time Listened' : 'Pages Read';
+}
+
+export function getTotalLabel(format: 'physical' | 'eBook' | 'audio'): string {
+  return format === 'audio' ? 'Total Duration' : 'Total Pages';
 }
