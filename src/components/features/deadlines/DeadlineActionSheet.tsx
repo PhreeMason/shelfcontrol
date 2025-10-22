@@ -145,9 +145,9 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
       };
     }
 
-    if (isActive || isToReview) {
+    if (isActive) {
       return {
-        label: isToReview ? "I'm done reviewing" : "I'm done reading",
+        label: "I'm done reading",
         icon: 'checkmark.circle.fill' as const,
         onPress: () => {
           onClose();

@@ -5,6 +5,7 @@ import { useReviewTrackingMutation } from '@/hooks/useReviewTrackingMutation';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getDeadlineStatus } from '@/utils/deadlineActionUtils';
+import { calculateProgress } from '@/utils/deadlineUtils';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
@@ -71,10 +72,11 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
   };
 
   const handleMarkComplete = () => {
-    const finalStatus = deadline.status?.[0];
-    const wasDNF = finalStatus?.status === 'did_not_finish';
+    const currentProgress = calculateProgress(deadline);
+    const totalQuantity = deadline.total_quantity || 0;
 
-    const completeMethod = wasDNF ? didNotFinishDeadline : completeDeadline;
+    const wasCompleted = currentProgress >= totalQuantity;
+    const completeMethod = wasCompleted ? completeDeadline : didNotFinishDeadline;
 
     completeMethod(
       deadline.id,
