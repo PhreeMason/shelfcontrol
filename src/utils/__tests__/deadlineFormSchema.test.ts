@@ -6,7 +6,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Valid Book Title',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -21,7 +21,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: '',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -38,7 +38,7 @@ describe('deadlineFormSchema', () => {
     it('should reject missing book title', () => {
       const data = {
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -56,7 +56,7 @@ describe('deadlineFormSchema', () => {
         bookTitle: 'Test Book',
         bookAuthor: 'Test Author',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -74,7 +74,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -90,7 +90,7 @@ describe('deadlineFormSchema', () => {
         bookTitle: 'Test Book',
         bookAuthor: '',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -110,7 +110,7 @@ describe('deadlineFormSchema', () => {
         const data = {
           bookTitle: 'Test Book',
           format,
-          source: 'Library',
+          deadline_type: 'Library',
           deadline: new Date(),
           totalQuantity: 300,
           flexibility: 'flexible',
@@ -129,7 +129,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'invalid',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -146,7 +146,7 @@ describe('deadlineFormSchema', () => {
     it('should reject missing format', () => {
       const data = {
         bookTitle: 'Test Book',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -163,7 +163,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -178,7 +178,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: '',
+        deadline_type: '',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -207,6 +207,265 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
     });
+
+    it('should reject source exceeding 30 characters', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: 'This is a very long source name that exceeds thirty characters',
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe(
+          'Source cannot exceed 30 characters'
+        );
+      }
+    });
+
+    it('should accept source at exactly 30 characters', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: '123456789012345678901234567890',
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('acquisition_source validation', () => {
+    it('should accept valid acquisition_source', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: 'Library',
+        acquisition_source: 'NetGalley',
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.acquisition_source).toBe('NetGalley');
+      }
+    });
+
+    it('should accept undefined acquisition_source', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: 'Library',
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.acquisition_source).toBeUndefined();
+      }
+    });
+
+    it('should reject acquisition_source exceeding 30 characters', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: 'Library',
+        acquisition_source:
+          'This is a very long acquisition source that exceeds thirty characters',
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe(
+          'Acquisition source cannot exceed 30 characters'
+        );
+      }
+    });
+
+    it('should accept acquisition_source at exactly 30 characters', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: 'Library',
+        acquisition_source: '123456789012345678901234567890',
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('publishers validation', () => {
+    it('should accept valid publishers array', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: 'Library',
+        publishers: ['Penguin Random House', 'HarperCollins'],
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.publishers).toEqual([
+          'Penguin Random House',
+          'HarperCollins',
+        ]);
+      }
+    });
+
+    it('should accept undefined publishers', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: 'Library',
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.publishers).toBeUndefined();
+      }
+    });
+
+    it('should accept empty publishers array', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: 'Library',
+        publishers: [],
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept publishers array with exactly 5 items', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: 'Library',
+        publishers: [
+          'Publisher 1',
+          'Publisher 2',
+          'Publisher 3',
+          'Publisher 4',
+          'Publisher 5',
+        ],
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+    });
+
+    it('should reject publishers array exceeding 5 items', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: 'Library',
+        publishers: [
+          'Publisher 1',
+          'Publisher 2',
+          'Publisher 3',
+          'Publisher 4',
+          'Publisher 5',
+          'Publisher 6',
+        ],
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe(
+          'Maximum 5 publishers allowed'
+        );
+      }
+    });
+
+    it('should reject publisher name exceeding 30 characters', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: 'Library',
+        publishers: [
+          'This is a very long publisher name that exceeds thirty characters',
+        ],
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe(
+          'Publisher name cannot exceed 30 characters'
+        );
+      }
+    });
+
+    it('should accept publisher name at exactly 30 characters', () => {
+      const data = {
+        bookTitle: 'Test Book',
+        format: 'eBook',
+        deadline_type: 'Library',
+        publishers: ['123456789012345678901234567890'],
+        deadline: new Date(),
+        totalQuantity: 300,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+    });
   });
 
   describe('deadline validation', () => {
@@ -214,7 +473,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date('2024-12-01'),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -229,7 +488,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: 'invalid-date',
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -244,7 +503,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         totalQuantity: 300,
         flexibility: 'flexible',
         status: 'active',
@@ -263,7 +522,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -278,7 +537,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: '300',
         flexibility: 'flexible',
@@ -297,7 +556,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300.5,
         flexibility: 'flexible',
@@ -317,7 +576,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 0,
         flexibility: 'flexible',
@@ -337,7 +596,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: -100,
         flexibility: 'flexible',
@@ -357,7 +616,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 'not-a-number',
         flexibility: 'flexible',
@@ -377,7 +636,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         flexibility: 'flexible',
         status: 'active',
@@ -398,7 +657,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         totalMinutes: 30,
@@ -414,7 +673,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         totalMinutes: 0,
@@ -430,7 +689,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         totalMinutes: '30',
@@ -450,7 +709,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         totalMinutes: -5,
@@ -471,7 +730,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         totalMinutes: 30.5,
@@ -492,7 +751,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -509,7 +768,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         currentMinutes: 15,
@@ -525,7 +784,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         currentMinutes: 0,
@@ -541,7 +800,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         currentMinutes: -5,
@@ -562,7 +821,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         currentMinutes: 15.5,
@@ -585,7 +844,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         currentProgress: 150,
@@ -601,7 +860,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         currentProgress: 0,
@@ -617,7 +876,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         currentProgress: '150',
@@ -637,7 +896,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         currentProgress: -50,
@@ -658,7 +917,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         currentProgress: 150.5,
@@ -679,7 +938,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -699,7 +958,7 @@ describe('deadlineFormSchema', () => {
         const data = {
           bookTitle: 'Test Book',
           format: 'eBook',
-          source: 'Library',
+          deadline_type: 'Library',
           deadline: new Date(),
           totalQuantity: 300,
           flexibility,
@@ -718,7 +977,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'invalid',
@@ -738,7 +997,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         status: 'active',
@@ -757,7 +1016,7 @@ describe('deadlineFormSchema', () => {
         const data = {
           bookTitle: 'Test Book',
           format: 'eBook',
-          source: 'Library',
+          deadline_type: 'Library',
           deadline: new Date(),
           totalQuantity: 300,
           flexibility: 'flexible',
@@ -776,7 +1035,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -794,7 +1053,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -810,7 +1069,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -829,7 +1088,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -848,7 +1107,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -869,7 +1128,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -888,7 +1147,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -907,7 +1166,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -925,7 +1184,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -944,7 +1203,7 @@ describe('deadlineFormSchema', () => {
         bookTitle: 'The Great Gatsby',
         bookAuthor: 'F. Scott Fitzgerald',
         format: 'physical',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline: new Date('2024-12-01'),
         totalQuantity: 180,
         totalMinutes: 0,
@@ -969,7 +1228,7 @@ describe('deadlineFormSchema', () => {
         bookTitle: 'Audio Book Title',
         bookAuthor: 'Audio Author',
         format: 'audio',
-        source: 'Audible',
+        deadline_type: 'Audible',
         deadline: new Date('2024-12-01'),
         totalQuantity: 12,
         totalMinutes: 30,
@@ -995,7 +1254,7 @@ describe('deadlineFormSchema', () => {
       const minimalData = {
         bookTitle: 'Minimal Book',
         format: 'eBook',
-        source: 'Store',
+        deadline_type: 'Store',
         deadline: new Date(),
         totalQuantity: 100,
         flexibility: 'flexible',

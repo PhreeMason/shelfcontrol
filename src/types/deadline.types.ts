@@ -17,6 +17,7 @@ export type ReadingDeadlineWithProgress = ReadingDeadline & {
   books?: {
     publisher: string | null;
   } | null;
+  publishers?: string[] | null;
 };
 
 export type ReadingDeadlineInsertWithProgress = ReadingDeadlineInsert & {

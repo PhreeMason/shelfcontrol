@@ -44,6 +44,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { DeadlineFormStep1 } from './DeadlineFormStep1';
 import { DeadlineFormStep2 } from './DeadlineFormStep2';
 import { DeadlineFormStep3 } from './DeadlineFormStep3';
+import { DeadlineFormStep4 } from './DeadlineFormStep4';
 import { StepIndicators } from './StepIndicators';
 
 interface DeadlineFormContainerProps {
@@ -62,8 +63,8 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
   // Determine steps and initial step
   const formSteps =
     mode === 'new'
-      ? ['Find Book', 'Book Details', 'Set Deadline']
-      : ['Book Details', 'Set Deadline'];
+      ? ['Find Book', 'Book Details', 'Additional Details', 'Set Deadline']
+      : ['Book Details', 'Additional Details', 'Set Deadline'];
   const totalSteps = formSteps.length;
 
   const initialStep = getInitialStepFromSearchParams(params, {
@@ -350,14 +351,17 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
             <DeadlineFormStep2
               control={control}
               selectedFormat={selectedFormat}
-              onFormatChange={mode === 'new' ? handleFormatChange : () => {}} // No format change in edit mode
+              onFormatChange={mode === 'new' ? handleFormatChange : () => {}}
               selectedStatus={selectedStatus}
               onStatusChange={setSelectedStatus}
               setValue={setValue}
               isEditMode={mode === 'edit'}
             />
+          ) : (mode === 'new' && currentStep === 3) ||
+            (mode === 'edit' && currentStep === 2) ? (
+            <DeadlineFormStep3 control={control} setValue={setValue} />
           ) : (
-            <DeadlineFormStep3
+            <DeadlineFormStep4
               control={control}
               selectedFormat={selectedFormat}
               selectedPriority={selectedPriority}

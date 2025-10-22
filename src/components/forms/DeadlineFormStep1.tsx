@@ -78,12 +78,17 @@ export const DeadlineFormStep1 = ({
         total_pages: fullBookData.total_pages || undefined,
         total_duration: fullBookData.total_duration || null,
         publication_date: fullBookData.publication_date,
+        publisher: fullBookData.publisher || null,
       };
 
       setValue('bookTitle', selectedBookData.title);
       setValue('bookAuthor', selectedBookData.author || '');
       setValue('book_id', selectedBookData.id);
       setValue('api_id', selectedBookData.api_id);
+
+      if (selectedBookData.publisher) {
+        setValue('publishers', [selectedBookData.publisher]);
+      }
 
       // Set additional identifiers from search results
       if (selectedBook) {

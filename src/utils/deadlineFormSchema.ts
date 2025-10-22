@@ -6,7 +6,19 @@ export const deadlineFormSchema = z.object({
   format: z.enum(['physical', 'eBook', 'audio'], {
     errorMap: () => ({ message: 'Please select a format' }),
   }),
-  source: z.string().min(1, 'Please select or enter a source'),
+  deadline_type: z
+    .string()
+    .min(1, 'Please select or enter a source')
+    .max(30, 'Source cannot exceed 30 characters'),
+  acquisition_source: z
+    .string()
+    .max(30, 'Acquisition source cannot exceed 30 characters')
+    .optional(),
+  publishers: z
+    .array(z.string().max(99, 'Publisher name cannot exceed 99 characters'))
+    .max(5, 'Maximum 5 publishers allowed')
+    .optional(),
+  isPublisherAutofilled: z.boolean().optional(),
   deadline: z.date({
     required_error: 'Deadline is required',
   }),

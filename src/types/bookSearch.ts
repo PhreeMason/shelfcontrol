@@ -76,4 +76,5 @@ export interface SelectedBook {
   total_pages?: number | undefined;
   total_duration?: number | null;
   publication_date?: string | null;
+  publisher?: string | null;
 }

@@ -1,22 +1,20 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react-native';
-import { DeadlineFormStep3 } from '../DeadlineFormStep3';
 import { useTheme } from '@/hooks/useThemeColor';
+import { fireEvent, render, screen } from '@testing-library/react-native';
+import React from 'react';
+import { DeadlineFormStep3 } from '../DeadlineFormStep3';
 
-// Mock hooks
 jest.mock('@/hooks/useThemeColor', () => ({
   useTheme: jest.fn(),
 }));
 
-// Mock react-hook-form (minimal approach following proven pattern)
 jest.mock('react-hook-form', () => ({
-  Controller: ({ render }: any) => {
-    // Let the component handle the field value from props
-    return render({ field: { value: new Date('2024-12-31') } });
+  useWatch: ({ name }: any) => {
+    if (name === 'book_id') return undefined;
+    if (name === 'publishers') return [];
+    return undefined;
   },
 }));
 
-// Mock child components to isolate testing
 jest.mock('@/components/shared/CustomInput', () => {
   const React = require('react');
   return function MockCustomInput(props: any) {
@@ -26,53 +24,21 @@ jest.mock('@/components/shared/CustomInput', () => {
         testID: props.testID || `input-${props.name}`,
         'data-name': props.name,
         'data-placeholder': props.placeholder,
-        'data-keyboard': props.keyboardType,
-        'data-input-type': props.inputType,
       },
       null
     );
   };
 });
 
-jest.mock('@/components/forms/PrioritySelector', () => ({
-  PrioritySelector: ({ selectedPriority, onSelectPriority }: any) => {
-    const React = require('react');
-    return React.createElement(
-      'View',
-      {
-        testID: 'priority-selector',
-        'data-selected': selectedPriority,
-        onPress: () => onSelectPriority && onSelectPriority('strict'),
-      },
-      null
-    );
-  },
-}));
-
-jest.mock('@/components/forms/PaceEstimateBox', () => ({
-  PaceEstimateBox: ({ paceEstimate }: any) => {
-    const React = require('react');
-    return React.createElement(
-      'View',
-      {
-        testID: 'pace-estimate-box',
-        'data-pace': paceEstimate,
-      },
-      paceEstimate
-    );
-  },
-}));
-
-jest.mock('@react-native-community/datetimepicker', () => {
+jest.mock('@/components/shared/SourceTypeaheadInput', () => {
   const React = require('react');
-  return function MockDateTimePicker(props: any) {
+  return function MockSourceTypeaheadInput(props: any) {
     return React.createElement(
       'View',
       {
-        testID: props.testID,
-        'data-value': props.value?.toISOString(),
-        'data-mode': props.mode,
-        'data-display': props.display,
+        testID: props.testID || `input-${props.name}`,
+        'data-name': props.name,
+        'data-placeholder': props.placeholder,
       },
       null
     );
@@ -80,17 +46,16 @@ jest.mock('@react-native-community/datetimepicker', () => {
 });
 
 jest.mock('@/components/themed', () => ({
-  ThemedText: ({ children, color, variant }: any) => {
+  ThemedText: ({ children }: any) => {
     const React = require('react');
-    return React.createElement(
-      'Text',
-      {
-        testID: 'themed-text',
-        'data-color': color,
-        'data-variant': variant,
-      },
-      children
-    );
+    return React.createElement('Text', null, children);
+  },
+}));
+
+jest.mock('@/components/ui/IconSymbol', () => ({
+  IconSymbol: ({ name }: any) => {
+    const React = require('react');
+    return React.createElement('View', { testID: `icon-${name}` }, null);
   },
 }));
 
@@ -99,34 +64,16 @@ describe('DeadlineFormStep3', () => {
     primary: '#007AFF',
     surface: '#FFFFFF',
     border: '#E5E5E7',
-    text: '#000000',
     textMuted: '#8E8E93',
-    good: '#34C759',
-    inputBlurBackground: '#F2F2F7',
+    danger: '#FF3B30',
   };
 
   const mockControl = {} as any;
   const mockSetValue = jest.fn();
-  const mockOnPriorityChange = jest.fn();
-  const mockOnDatePickerToggle = jest.fn();
-  const mockOnDateChange = jest.fn();
 
   const defaultProps = {
     control: mockControl,
-    selectedFormat: 'physical' as const,
-    selectedPriority: 'flexible' as const,
-    onPriorityChange: mockOnPriorityChange,
-    showDatePicker: false,
-    onDatePickerToggle: mockOnDatePickerToggle,
-    onDateChange: mockOnDateChange,
-    deadline: new Date('2024-12-31'),
-    paceEstimate: '5 pages per day',
-    watchedValues: {
-      bookTitle: 'Test Book',
-      deadline: new Date('2024-12-31'),
-    },
     setValue: mockSetValue,
-    deadlineFromPublicationDate: false,
   };
 
   beforeEach(() => {
@@ -135,107 +82,50 @@ describe('DeadlineFormStep3', () => {
   });
 
   describe('Component Structure', () => {
-    it('should render main description text', () => {
+    it('should render description text', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
       expect(
-        screen.getByText(/When do you need to finish\? We'll calculate/)
+        screen.getByText(/Add additional details about the book source/i)
       ).toBeTruthy();
     });
 
-    it('should render "Deadline Date *" label and date picker button', () => {
+    it('should render Book Type field with required indicator', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      // Check that deadline date label exists (split across multiple text components)
-      expect(screen.getByText('Deadline Date', { exact: false })).toBeTruthy();
-      expect(screen.getByTestId('date-picker-button')).toBeTruthy();
+      expect(screen.getByText('Book Type', { exact: false })).toBeTruthy();
+      expect(screen.getByText('*')).toBeTruthy();
+      expect(screen.getByTestId('input-deadline-type')).toBeTruthy();
     });
 
-    it('should render progress label for physical format', () => {
+    it('should render Source field without required indicator', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByText('Pages Already Read')).toBeTruthy();
+      expect(screen.getByText('Source')).toBeTruthy();
+      expect(screen.getByTestId('input-acquisition-source')).toBeTruthy();
     });
 
-    it('should render progress input field', () => {
+    it('should render Publishers section', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByTestId('input-currentProgress')).toBeTruthy();
+      expect(screen.getByText('Publishers')).toBeTruthy();
     });
 
-    it('should render "Deadline Flexibility" label and PrioritySelector', () => {
+    it('should render Source field placeholder text', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByText('Deadline Flexibility')).toBeTruthy();
-      expect(screen.getByTestId('priority-selector')).toBeTruthy();
-    });
-
-    it('should render PaceEstimateBox', () => {
-      render(<DeadlineFormStep3 {...defaultProps} />);
-
-      expect(screen.getByTestId('pace-estimate-box')).toBeTruthy();
-    });
-
-    it('should render summary card with "✓ Ready to Add"', () => {
-      render(<DeadlineFormStep3 {...defaultProps} />);
-
-      expect(screen.getByText('✓ Ready to Add')).toBeTruthy();
-    });
-
-    it('should render helper text for date picker', () => {
-      render(<DeadlineFormStep3 {...defaultProps} />);
-
-      expect(
-        screen.getByText('Past dates will be marked as overdue')
-      ).toBeTruthy();
-    });
-
-    it('should render helper text for progress input when progress exists', () => {
-      const watchedValues = {
-        ...defaultProps.watchedValues,
-        currentProgress: 50,
-      };
-      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
-
-      expect(
-        screen.getByText("Exclude from today's reading progress")
-      ).toBeTruthy();
-    });
-
-    it('should render helper text for priority selector', () => {
-      render(<DeadlineFormStep3 {...defaultProps} />);
-
-      expect(
-        screen.getByText('Can this deadline be adjusted if needed?')
-      ).toBeTruthy();
-    });
-
-    it('should render auto-filled indicator when deadlineFromPublicationDate=true', () => {
-      render(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, deadlineFromPublicationDate: true }}
-        />
+      const input = screen.getByTestId('input-acquisition-source');
+      expect(input.props['data-placeholder']).toBe(
+        '(e.g., NetGalley, Edelweiss, Direct, etc.)'
       );
-
-      expect(screen.getByText('✓ Set to book publication date')).toBeTruthy();
     });
 
-    it('should hide auto-filled indicator when deadlineFromPublicationDate=false', () => {
+    it('should render helper text for Publishers field', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.queryByText('✓ Set to book publication date')).toBeNull();
-    });
-
-    it('should render without errors with all props', () => {
-      expect(() => {
-        render(<DeadlineFormStep3 {...defaultProps} />);
-      }).not.toThrow();
-    });
-
-    it('should display formatted date in date picker button', () => {
-      render(<DeadlineFormStep3 {...defaultProps} />);
-
-      expect(screen.getByText(/December 30, 2024/)).toBeTruthy();
+      expect(
+        screen.getByText(/Add up to 5 publishers for this book/i)
+      ).toBeTruthy();
     });
   });
 
@@ -246,651 +136,574 @@ describe('DeadlineFormStep3', () => {
       expect(useTheme).toHaveBeenCalled();
     });
 
-    it('should pass control prop to Controller', () => {
+    it('should pass control prop to SourceTypeaheadInput', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByTestId('date-picker-button')).toBeTruthy();
+      expect(screen.getByTestId('input-deadline-type')).toBeTruthy();
     });
 
-    it('should pass control prop to CustomInput components', () => {
+    it('should pass control prop to CustomInput for acquisition_source', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByTestId('input-currentProgress')).toBeTruthy();
-    });
-
-    it('should handle Controller field value correctly', () => {
-      render(<DeadlineFormStep3 {...defaultProps} />);
-
-      expect(screen.getByText(/December 30, 2024/)).toBeTruthy();
+      expect(screen.getByTestId('input-acquisition-source')).toBeTruthy();
     });
   });
 
-  describe('Format-Based Conditional Rendering', () => {
-    it('should show "Pages Already Read" label for physical format', () => {
-      render(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, selectedFormat: 'physical' }}
-        />
-      );
+  describe('Publishers Array - Empty State', () => {
+    it('should show "Add Publisher" button when no publishers', () => {
+      render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByText('Pages Already Read')).toBeTruthy();
-      expect(screen.queryByText('Time Already Listened')).toBeNull();
+      expect(screen.getByTestId('add-publisher-button')).toBeTruthy();
+      expect(screen.getByText('Add Publisher')).toBeTruthy();
     });
 
-    it('should show "Pages Already Read" label for eBook format', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'eBook' }} />
-      );
+    it('should show plus icon in add button', () => {
+      render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByText('Pages Already Read')).toBeTruthy();
-      expect(screen.queryByText('Time Already Listened')).toBeNull();
+      expect(screen.getByTestId('icon-plus')).toBeTruthy();
     });
 
-    it('should show "Time Already Listened" label for audio format', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
-      );
+    it('should call setValue when add button pressed', () => {
+      render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByText('Time Already Listened')).toBeTruthy();
-      expect(screen.queryByText('Pages Already Read')).toBeNull();
-    });
+      const addButton = screen.getByTestId('add-publisher-button');
+      fireEvent.press(addButton);
 
-    it('should show single progress input for physical format', () => {
-      render(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, selectedFormat: 'physical' }}
-        />
-      );
-
-      expect(screen.getByTestId('input-currentProgress')).toBeTruthy();
-      expect(screen.queryByTestId('input-currentMinutes')).toBeNull();
-    });
-
-    it('should show single progress input for eBook format', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'eBook' }} />
-      );
-
-      expect(screen.getByTestId('input-currentProgress')).toBeTruthy();
-      expect(screen.queryByTestId('input-currentMinutes')).toBeNull();
-    });
-
-    it('should show dual progress inputs for audio format', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
-      );
-
-      expect(screen.getByTestId('input-currentProgress')).toBeTruthy();
-      expect(screen.getByTestId('input-currentMinutes')).toBeTruthy();
-    });
-
-    it('should update labels when format changes from physical to audio', () => {
-      const { rerender } = render(<DeadlineFormStep3 {...defaultProps} />);
-
-      expect(screen.getByText('Pages Already Read')).toBeTruthy();
-
-      rerender(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
-      );
-
-      expect(screen.queryByText('Pages Already Read')).toBeNull();
-      expect(screen.getByText('Time Already Listened')).toBeTruthy();
-    });
-
-    it('should update input visibility when format changes to audio', () => {
-      const { rerender } = render(<DeadlineFormStep3 {...defaultProps} />);
-
-      expect(screen.queryByTestId('input-currentMinutes')).toBeNull();
-
-      rerender(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
-      );
-
-      expect(screen.getByTestId('input-currentMinutes')).toBeTruthy();
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', ['']);
     });
   });
 
-  describe('Date Picker Interaction', () => {
-    it('should call onDatePickerToggle when date button pressed', () => {
+  describe('Publishers Array - With Publishers', () => {
+    beforeEach(() => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'book_id') return undefined;
+          if (name === 'publishers') return ['Publisher 1'];
+          return undefined;
+        }
+      );
+    });
+
+    it('should render publisher input when publishers exist', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      const dateButton = screen.getByTestId('date-picker-button');
-      fireEvent.press(dateButton);
-
-      expect(mockOnDatePickerToggle).toHaveBeenCalled();
+      expect(screen.getByTestId('input-publisher-0')).toBeTruthy();
     });
 
-    it('should show DateTimePicker when showDatePicker=true', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, showDatePicker: true }} />
-      );
-
-      expect(screen.getByTestId('input-deadline')).toBeTruthy();
-    });
-
-    it('should hide DateTimePicker when showDatePicker=false', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, showDatePicker: false }} />
-      );
-
-      expect(screen.queryByTestId('input-deadline')).toBeNull();
-    });
-
-    it('should pass correct props to DateTimePicker when shown', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, showDatePicker: true }} />
-      );
-
-      const datePicker = screen.getByTestId('input-deadline');
-      expect(datePicker.props['data-mode']).toBe('date');
-      expect(datePicker.props['data-display']).toBe('inline');
-    });
-
-    it('should display formatted date string in button', () => {
+    it('should render remove button for each publisher', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByText(/December 30, 2024/)).toBeTruthy();
+      expect(screen.getByTestId('remove-publisher-0')).toBeTruthy();
     });
 
-    it('should handle date button press interaction', () => {
+    it('should show trash icon in remove button', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      const dateButton = screen.getByTestId('date-picker-button');
-      fireEvent.press(dateButton);
+      expect(screen.getByTestId('icon-trash')).toBeTruthy();
+    });
 
-      expect(mockOnDatePickerToggle).toHaveBeenCalledTimes(1);
+    it('should show "Add Another Publisher" button when publishers exist', () => {
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      expect(screen.getByText('Add Another Publisher')).toBeTruthy();
+    });
+
+    it('should call setValue when removing publisher', () => {
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      const removeButton = screen.getByTestId('remove-publisher-0');
+      fireEvent.press(removeButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', undefined);
+    });
+
+    it('should call setValue with remaining publishers when removing from multiple', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'book_id') return undefined;
+          if (name === 'publishers') return ['Publisher 1', 'Publisher 2'];
+          return undefined;
+        }
+      );
+
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      const removeButton = screen.getByTestId('remove-publisher-0');
+      fireEvent.press(removeButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', ['Publisher 2']);
+    });
+
+    it('should call setValue when adding another publisher', () => {
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      const addButton = screen.getByTestId('add-publisher-button');
+      fireEvent.press(addButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', [
+        'Publisher 1',
+        '',
+      ]);
+    });
+  });
+
+  describe('Multiple Publishers', () => {
+    beforeEach(() => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'book_id') return undefined;
+          if (name === 'publishers')
+            return ['Publisher 1', 'Publisher 2', 'Publisher 3'];
+          return undefined;
+        }
+      );
+    });
+
+    it('should render multiple publisher inputs', () => {
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      expect(screen.getByTestId('input-publisher-0')).toBeTruthy();
+      expect(screen.getByTestId('input-publisher-1')).toBeTruthy();
+      expect(screen.getByTestId('input-publisher-2')).toBeTruthy();
+    });
+
+    it('should render multiple remove buttons', () => {
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      expect(screen.getByTestId('remove-publisher-0')).toBeTruthy();
+      expect(screen.getByTestId('remove-publisher-1')).toBeTruthy();
+      expect(screen.getByTestId('remove-publisher-2')).toBeTruthy();
+    });
+
+    it('should remove correct publisher by index', () => {
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      const removeButton = screen.getByTestId('remove-publisher-1');
+      fireEvent.press(removeButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', [
+        'Publisher 1',
+        'Publisher 3',
+      ]);
+    });
+  });
+
+  describe('Autofilled Indicator', () => {
+    it('should show autofilled indicator for first publisher when isPublisherAutofilled is true', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return true;
+          if (name === 'publishers') return ['Penguin Random House'];
+          return undefined;
+        }
+      );
+
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      expect(screen.getByText('✓ Linked from library')).toBeTruthy();
+    });
+
+    it('should not show autofilled indicator when isPublisherAutofilled is false', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return false;
+          if (name === 'publishers') return ['Penguin Random House'];
+          return undefined;
+        }
+      );
+
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      expect(screen.queryByText('✓ Linked from library')).toBeNull();
+    });
+
+    it('should not show autofilled indicator when isPublisherAutofilled is undefined', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return undefined;
+          if (name === 'publishers') return ['Penguin Random House'];
+          return undefined;
+        }
+      );
+
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      expect(screen.queryByText('✓ Linked from library')).toBeNull();
+    });
+
+    it('should only show autofilled indicator on first publisher', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return true;
+          if (name === 'publishers') return ['Publisher 1', 'Publisher 2'];
+          return undefined;
+        }
+      );
+
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      const indicators = screen.queryAllByText('✓ Linked from library');
+      expect(indicators).toHaveLength(1);
+    });
+
+    it('should not show autofilled indicator when no publishers', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return true;
+          if (name === 'publishers') return [];
+          return undefined;
+        }
+      );
+
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      expect(screen.queryByText('✓ Linked from library')).toBeNull();
+    });
+
+    it('should clear autofilled flag when removing first publisher', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return true;
+          if (name === 'publishers') return ['Penguin Random House'];
+          return undefined;
+        }
+      );
+
+      const mockSetValue = jest.fn();
+      render(<DeadlineFormStep3 {...defaultProps} setValue={mockSetValue} />);
+
+      const removeButton = screen.getByTestId('remove-publisher-0');
+      fireEvent.press(removeButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith('isPublisherAutofilled', false);
+    });
+
+    it('should not clear autofilled flag when removing non-first publisher', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return true;
+          if (name === 'publishers')
+            return ['Publisher 1', 'Publisher 2', 'Publisher 3'];
+          return undefined;
+        }
+      );
+
+      const mockSetValue = jest.fn();
+      render(<DeadlineFormStep3 {...defaultProps} setValue={mockSetValue} />);
+
+      const removeButton = screen.getByTestId('remove-publisher-1');
+      fireEvent.press(removeButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', [
+        'Publisher 1',
+        'Publisher 3',
+      ]);
+      expect(mockSetValue).not.toHaveBeenCalledWith(
+        'isPublisherAutofilled',
+        false
+      );
+    });
+  });
+
+  describe('Input Field Configuration', () => {
+    it('should configure deadline_type input with correct props', () => {
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      const input = screen.getByTestId('input-deadline-type');
+      expect(input.props['data-name']).toBe('deadline_type');
+      expect(input.props['data-placeholder']).toBe('Enter book type');
+    });
+
+    it('should configure acquisition_source input with correct props', () => {
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      const input = screen.getByTestId('input-acquisition-source');
+      expect(input.props['data-name']).toBe('acquisition_source');
+      expect(input.props['data-placeholder']).toBe(
+        '(e.g., NetGalley, Edelweiss, Direct, etc.)'
+      );
+    });
+
+    it('should configure publisher inputs with correct props', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'book_id') return undefined;
+          if (name === 'publishers') return [''];
+          return undefined;
+        }
+      );
+
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      const input = screen.getByTestId('input-publisher-0');
+      expect(input.props['data-name']).toBe('publishers.0');
+      expect(input.props['data-placeholder']).toBe('Publisher name');
     });
   });
 
   describe('Props Handling', () => {
-    it('should pass selectedPriority to PrioritySelector', () => {
-      render(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, selectedPriority: 'strict' }}
-        />
-      );
-
-      const prioritySelector = screen.getByTestId('priority-selector');
-      expect(prioritySelector.props['data-selected']).toBe('strict');
-    });
-
-    it('should call onPriorityChange when priority selected', () => {
+    it('should pass control to all inputs', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      const prioritySelector = screen.getByTestId('priority-selector');
-      fireEvent.press(prioritySelector);
-
-      expect(mockOnPriorityChange).toHaveBeenCalledWith('strict');
-    });
-
-    it('should pass paceEstimate to PaceEstimateBox', () => {
-      const customPace = '10 pages per day';
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, paceEstimate: customPace }} />
-      );
-
-      const paceBox = screen.getByTestId('pace-estimate-box');
-      expect(paceBox.props['data-pace']).toBe(customPace);
-    });
-
-    it('should pass control to all CustomInput components', () => {
-      render(<DeadlineFormStep3 {...defaultProps} />);
-
-      expect(screen.getByTestId('input-currentProgress')).toBeTruthy();
+      expect(screen.getByTestId('input-deadline-type')).toBeTruthy();
+      expect(screen.getByTestId('input-acquisition-source')).toBeTruthy();
     });
 
     it('should pass setValue callback correctly', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByTestId('input-currentProgress')).toBeTruthy();
-    });
+      const addButton = screen.getByTestId('add-publisher-button');
+      fireEvent.press(addButton);
 
-    it('should handle deadline prop for date display', () => {
-      render(<DeadlineFormStep3 {...defaultProps} />);
-
-      expect(screen.getByText(/December 30, 2024/)).toBeTruthy();
-    });
-
-    it('should handle watchedValues for summary card', () => {
-      const watchedValues = {
-        bookTitle: 'Custom Book Title',
-        deadline: new Date('2024-08-15'),
-      };
-      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
-
-      expect(screen.getByText(/Custom Book Title/)).toBeTruthy();
-      expect(screen.getByText(/Aug 14/)).toBeTruthy();
-    });
-
-    it('should handle deadlineFromPublicationDate indicator', () => {
-      render(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, deadlineFromPublicationDate: true }}
-        />
-      );
-
-      expect(screen.getByText('✓ Set to book publication date')).toBeTruthy();
-    });
-  });
-
-  describe('Input Field Configuration', () => {
-    it('should configure currentProgress input with numeric keyboard and integer type', () => {
-      render(<DeadlineFormStep3 {...defaultProps} />);
-
-      const input = screen.getByTestId('input-currentProgress');
-      expect(input.props['data-name']).toBe('currentProgress');
-      expect(input.props['data-keyboard']).toBe('numeric');
-      expect(input.props['data-input-type']).toBe('integer');
-      expect(input.props['data-placeholder']).toBe('How many pages total?');
-    });
-
-    it('should configure currentMinutes input with numeric keyboard and integer type for audio', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
-      );
-
-      const input = screen.getByTestId('input-currentMinutes');
-      expect(input.props['data-name']).toBe('currentMinutes');
-      expect(input.props['data-keyboard']).toBe('numeric');
-      expect(input.props['data-input-type']).toBe('integer');
-      expect(input.props['data-placeholder']).toBe('Minutes');
-    });
-
-    it('should set correct placeholders for progress inputs', () => {
-      const { rerender } = render(<DeadlineFormStep3 {...defaultProps} />);
-
-      let progressInput = screen.getByTestId('input-currentProgress');
-      expect(progressInput.props['data-placeholder']).toBe(
-        'How many pages total?'
-      );
-
-      rerender(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
-      );
-
-      progressInput = screen.getByTestId('input-currentProgress');
-      expect(progressInput.props['data-placeholder']).toBe('Hours');
-
-      const minutesInput = screen.getByTestId('input-currentMinutes');
-      expect(minutesInput.props['data-placeholder']).toBe('Minutes');
-    });
-
-    it('should set correct testIDs for all inputs', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
-      );
-
-      expect(screen.getByTestId('input-currentProgress')).toBeTruthy();
-      expect(screen.getByTestId('input-currentMinutes')).toBeTruthy();
-      expect(screen.getByTestId('date-picker-button')).toBeTruthy();
-      expect(screen.getByTestId('priority-selector')).toBeTruthy();
-      expect(screen.getByTestId('pace-estimate-box')).toBeTruthy();
-    });
-
-    it('should configure input names correctly', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
-      );
-
-      const progressInput = screen.getByTestId('input-currentProgress');
-      const minutesInput = screen.getByTestId('input-currentMinutes');
-
-      expect(progressInput.props['data-name']).toBe('currentProgress');
-      expect(minutesInput.props['data-name']).toBe('currentMinutes');
-    });
-
-    it('should ensure required field indicators are present', () => {
-      render(<DeadlineFormStep3 {...defaultProps} />);
-
-      // Check that deadline date label exists (split across multiple text components)
-      expect(screen.getByText('Deadline Date', { exact: false })).toBeTruthy();
-    });
-  });
-
-  describe('Dynamic Label Tests', () => {
-    it('should return "Pages Already Read" for physical format', () => {
-      render(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, selectedFormat: 'physical' }}
-        />
-      );
-
-      expect(screen.getByText('Pages Already Read')).toBeTruthy();
-    });
-
-    it('should return "Pages Already Read" for eBook format', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'eBook' }} />
-      );
-
-      expect(screen.getByText('Pages Already Read')).toBeTruthy();
-    });
-
-    it('should return "Time Already Listened" for audio format', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
-      );
-
-      expect(screen.getByText('Time Already Listened')).toBeTruthy();
-    });
-
-    it('should update label when format prop changes', () => {
-      const { rerender } = render(<DeadlineFormStep3 {...defaultProps} />);
-
-      expect(screen.getByText('Pages Already Read')).toBeTruthy();
-
-      rerender(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
-      );
-
-      expect(screen.queryByText('Pages Already Read')).toBeNull();
-      expect(screen.getByText('Time Already Listened')).toBeTruthy();
-
-      rerender(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'eBook' }} />
-      );
-
-      expect(screen.queryByText('Time Already Listened')).toBeNull();
-      expect(screen.getByText('Pages Already Read')).toBeTruthy();
-    });
-  });
-
-  describe('Summary Card Content', () => {
-    it('should show book title and deadline when both present in watchedValues', () => {
-      const watchedValues = {
-        bookTitle: 'The Great Gatsby',
-        deadline: new Date('2024-07-04'),
-      };
-      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
-
-      expect(screen.getByText(/The Great Gatsby/)).toBeTruthy();
-      expect(screen.getByText(/Jul 3/)).toBeTruthy();
-    });
-
-    it('should show placeholder message when bookTitle missing', () => {
-      const watchedValues = {
-        bookTitle: null,
-        deadline: new Date('2024-07-04'),
-      };
-      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
-
-      expect(
-        screen.getByText("'Complete the form above to see your reading plan'")
-      ).toBeTruthy();
-    });
-
-    it('should show placeholder message when deadline missing', () => {
-      const watchedValues = {
-        bookTitle: 'Test Book',
-        deadline: null,
-      };
-      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
-
-      expect(
-        screen.getByText("'Complete the form above to see your reading plan'")
-      ).toBeTruthy();
-    });
-
-    it('should format deadline correctly in summary', () => {
-      const watchedValues = {
-        bookTitle: 'Test Book',
-        deadline: new Date('2024-12-25'),
-      };
-      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
-
-      expect(screen.getByText(/Dec 24/)).toBeTruthy();
-    });
-
-    it('should update summary when watchedValues change', () => {
-      const initialWatched = {
-        bookTitle: 'Initial Book',
-        deadline: new Date('2024-06-01'),
-      };
-      const updatedWatched = {
-        bookTitle: 'Updated Book',
-        deadline: new Date('2024-09-01'),
-      };
-
-      const { rerender } = render(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, watchedValues: initialWatched }}
-        />
-      );
-
-      expect(screen.getByText(/Initial Book/)).toBeTruthy();
-      expect(screen.getByText(/May 31/)).toBeTruthy();
-
-      rerender(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, watchedValues: updatedWatched }}
-        />
-      );
-
-      expect(screen.queryByText(/Initial Book/)).toBeNull();
-      expect(screen.getByText(/Updated Book/)).toBeTruthy();
-      expect(screen.getByText(/Aug 31/)).toBeTruthy();
-    });
-  });
-
-  describe('IgnoreInCalcs Checkbox', () => {
-    it('should show checkbox when currentProgress > 0', () => {
-      const watchedValues = {
-        ...defaultProps.watchedValues,
-        currentProgress: 50,
-      };
-      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
-
-      expect(screen.getByTestId('checkbox-ignoreInCalcs')).toBeTruthy();
-    });
-
-    it('should show checkbox when currentMinutes > 0 for audio format', () => {
-      const watchedValues = {
-        ...defaultProps.watchedValues,
-        currentMinutes: 30,
-      };
-      render(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, selectedFormat: 'audio', watchedValues }}
-        />
-      );
-
-      expect(screen.getByTestId('checkbox-ignoreInCalcs')).toBeTruthy();
-    });
-
-    it('should not show checkbox when currentProgress is 0', () => {
-      const watchedValues = {
-        ...defaultProps.watchedValues,
-        currentProgress: 0,
-      };
-      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
-
-      expect(screen.queryByTestId('checkbox-ignoreInCalcs')).toBeNull();
-    });
-
-    it('should not show checkbox when currentProgress is undefined', () => {
-      const watchedValues = {
-        ...defaultProps.watchedValues,
-        currentProgress: undefined,
-      };
-      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
-
-      expect(screen.queryByTestId('checkbox-ignoreInCalcs')).toBeNull();
-    });
-
-    it('should not show checkbox when both currentProgress and currentMinutes are 0', () => {
-      const watchedValues = {
-        ...defaultProps.watchedValues,
-        currentProgress: 0,
-        currentMinutes: 0,
-      };
-      render(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, selectedFormat: 'audio', watchedValues }}
-        />
-      );
-
-      expect(screen.queryByTestId('checkbox-ignoreInCalcs')).toBeNull();
-    });
-
-    it('should show helper text explaining the checkbox purpose', () => {
-      const watchedValues = {
-        ...defaultProps.watchedValues,
-        currentProgress: 50,
-      };
-      render(<DeadlineFormStep3 {...{ ...defaultProps, watchedValues }} />);
-
-      expect(
-        screen.getByText(/exclude from today's reading progress/i)
-      ).toBeTruthy();
-    });
-  });
-
-  describe('Integration Scenarios', () => {
-    it('should handle complete flow for physical book with all inputs', () => {
-      render(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, selectedFormat: 'physical' }}
-        />
-      );
-
-      expect(screen.getByText('Pages Already Read')).toBeTruthy();
-      expect(screen.getByTestId('input-currentProgress')).toBeTruthy();
-      expect(screen.queryByTestId('input-currentMinutes')).toBeNull();
-      expect(screen.getByTestId('date-picker-button')).toBeTruthy();
-      expect(screen.getByTestId('priority-selector')).toBeTruthy();
-      expect(screen.getByTestId('pace-estimate-box')).toBeTruthy();
-    });
-
-    it('should handle complete flow for audio book with dual inputs', () => {
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
-      );
-
-      expect(screen.getByText('Time Already Listened')).toBeTruthy();
-      expect(screen.getByTestId('input-currentProgress')).toBeTruthy();
-      expect(screen.getByTestId('input-currentMinutes')).toBeTruthy();
-      expect(screen.getByTestId('date-picker-button')).toBeTruthy();
-      expect(screen.getByTestId('priority-selector')).toBeTruthy();
-    });
-
-    it('should handle format change updating labels and input visibility', () => {
-      const { rerender } = render(<DeadlineFormStep3 {...defaultProps} />);
-
-      expect(screen.getByText('Pages Already Read')).toBeTruthy();
-      expect(screen.queryByTestId('input-currentMinutes')).toBeNull();
-
-      rerender(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'audio' }} />
-      );
-
-      expect(screen.getByText('Time Already Listened')).toBeTruthy();
-      expect(screen.getByTestId('input-currentMinutes')).toBeTruthy();
-
-      rerender(
-        <DeadlineFormStep3 {...{ ...defaultProps, selectedFormat: 'eBook' }} />
-      );
-
-      expect(screen.getByText('Pages Already Read')).toBeTruthy();
-      expect(screen.queryByTestId('input-currentMinutes')).toBeNull();
-    });
-
-    it('should handle priority selection triggering callback', () => {
-      render(<DeadlineFormStep3 {...defaultProps} />);
-
-      const prioritySelector = screen.getByTestId('priority-selector');
-      fireEvent.press(prioritySelector);
-
-      expect(mockOnPriorityChange).toHaveBeenCalledWith('strict');
-    });
-
-    it('should handle date picker interaction workflow', () => {
-      const { rerender } = render(<DeadlineFormStep3 {...defaultProps} />);
-
-      const dateButton = screen.getByTestId('date-picker-button');
-      fireEvent.press(dateButton);
-
-      expect(mockOnDatePickerToggle).toHaveBeenCalled();
-
-      rerender(
-        <DeadlineFormStep3 {...{ ...defaultProps, showDatePicker: true }} />
-      );
-
-      expect(screen.getByTestId('input-deadline')).toBeTruthy();
-    });
-
-    it('should handle auto-filled deadline from publication date', () => {
-      render(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, deadlineFromPublicationDate: true }}
-        />
-      );
-
-      expect(screen.getByText('✓ Set to book publication date')).toBeTruthy();
-      expect(screen.getByTestId('date-picker-button')).toBeTruthy();
-
-      const dateButton = screen.getByTestId('date-picker-button');
-      fireEvent.press(dateButton);
-
-      expect(mockOnDatePickerToggle).toHaveBeenCalled();
+      expect(mockSetValue).toHaveBeenCalled();
     });
   });
 
   describe('Error Handling', () => {
-    it('should handle missing watchedValues gracefully', () => {
-      const emptyWatchedValues = {};
-      render(
-        <DeadlineFormStep3
-          {...{ ...defaultProps, watchedValues: emptyWatchedValues }}
-        />
+    it('should render without errors with minimal props', () => {
+      expect(() => {
+        render(<DeadlineFormStep3 {...defaultProps} />);
+      }).not.toThrow();
+    });
+
+    it('should handle undefined publishers gracefully', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'book_id') return undefined;
+          if (name === 'publishers') return undefined;
+          return undefined;
+        }
       );
 
+      expect(() => {
+        render(<DeadlineFormStep3 {...defaultProps} />);
+      }).not.toThrow();
+    });
+
+    it('should handle null publishers gracefully', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'book_id') return undefined;
+          if (name === 'publishers') return null;
+          return undefined;
+        }
+      );
+
+      expect(() => {
+        render(<DeadlineFormStep3 {...defaultProps} />);
+      }).not.toThrow();
+    });
+  });
+
+  describe('Integration Scenarios', () => {
+    it('should handle complete flow: add, edit, remove publishers', () => {
+      const { rerender } = render(<DeadlineFormStep3 {...defaultProps} />);
+
+      const addButton = screen.getByTestId('add-publisher-button');
+      fireEvent.press(addButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', ['']);
+
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'book_id') return undefined;
+          if (name === 'publishers') return ['Publisher 1'];
+          return undefined;
+        }
+      );
+
+      rerender(<DeadlineFormStep3 {...defaultProps} />);
+
+      expect(screen.getByTestId('input-publisher-0')).toBeTruthy();
+
+      const removeButton = screen.getByTestId('remove-publisher-0');
+      fireEvent.press(removeButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', undefined);
+    });
+
+    it('should handle autofilled publisher from book selection', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return true;
+          if (name === 'publishers') return ['HarperCollins'];
+          return undefined;
+        }
+      );
+
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      expect(screen.getByTestId('input-publisher-0')).toBeTruthy();
+      expect(screen.getByText('✓ Linked from library')).toBeTruthy();
+
+      const addButton = screen.getByTestId('add-publisher-button');
+      fireEvent.press(addButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', [
+        'HarperCollins',
+        '',
+      ]);
+    });
+  });
+
+  describe('Publisher Limit (Max 5)', () => {
+    it('should allow adding publisher when less than 5', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return false;
+          if (name === 'publishers')
+            return ['Publisher 1', 'Publisher 2', 'Publisher 3'];
+          return undefined;
+        }
+      );
+
+      const mockSetValue = jest.fn();
+      render(<DeadlineFormStep3 {...defaultProps} setValue={mockSetValue} />);
+
+      const addButton = screen.getByTestId('add-publisher-button');
+      fireEvent.press(addButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', [
+        'Publisher 1',
+        'Publisher 2',
+        'Publisher 3',
+        '',
+      ]);
+    });
+
+    it('should disable add button when 5 publishers exist', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return false;
+          if (name === 'publishers')
+            return [
+              'Publisher 1',
+              'Publisher 2',
+              'Publisher 3',
+              'Publisher 4',
+              'Publisher 5',
+            ];
+          return undefined;
+        }
+      );
+
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      const addButton = screen.getByTestId('add-publisher-button');
+      expect(addButton.props.accessibilityState?.disabled).toBe(true);
+    });
+
+    it('should not add publisher when clicking disabled button at limit', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return false;
+          if (name === 'publishers')
+            return [
+              'Publisher 1',
+              'Publisher 2',
+              'Publisher 3',
+              'Publisher 4',
+              'Publisher 5',
+            ];
+          return undefined;
+        }
+      );
+
+      const mockSetValue = jest.fn();
+      render(<DeadlineFormStep3 {...defaultProps} setValue={mockSetValue} />);
+
+      const addButton = screen.getByTestId('add-publisher-button');
+      fireEvent.press(addButton);
+
+      expect(mockSetValue).not.toHaveBeenCalled();
+    });
+
+    it('should show reduced opacity on add button when at limit', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return false;
+          if (name === 'publishers')
+            return [
+              'Publisher 1',
+              'Publisher 2',
+              'Publisher 3',
+              'Publisher 4',
+              'Publisher 5',
+            ];
+          return undefined;
+        }
+      );
+
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      const addButton = screen.getByTestId('add-publisher-button');
+      expect(addButton.props.style).toEqual(
+        expect.objectContaining({ opacity: 0.5 })
+      );
+    });
+
+    it('should show "Maximum of 5 publishers reached" text when at limit', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return false;
+          if (name === 'publishers')
+            return [
+              'Publisher 1',
+              'Publisher 2',
+              'Publisher 3',
+              'Publisher 4',
+              'Publisher 5',
+            ];
+          return undefined;
+        }
+      );
+
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
+      expect(screen.getByText('Maximum of 5 publishers reached')).toBeTruthy();
+    });
+
+    it('should show "Add up to 5 publishers" text when below limit', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return false;
+          if (name === 'publishers') return ['Publisher 1', 'Publisher 2'];
+          return undefined;
+        }
+      );
+
+      render(<DeadlineFormStep3 {...defaultProps} />);
+
       expect(
-        screen.getByText("'Complete the form above to see your reading plan'")
+        screen.getByText('Add up to 5 publishers for this book')
       ).toBeTruthy();
     });
 
-    it('should handle invalid date values', () => {
-      const invalidDate = new Date('invalid');
-      render(
-        <DeadlineFormStep3 {...{ ...defaultProps, deadline: invalidDate }} />
+    it('should allow adding publisher again after removing from limit', () => {
+      (require('react-hook-form').useWatch as jest.Mock) = jest.fn(
+        ({ name }: any) => {
+          if (name === 'isPublisherAutofilled') return false;
+          if (name === 'publishers')
+            return ['Publisher 1', 'Publisher 2', 'Publisher 3', 'Publisher 4'];
+          return undefined;
+        }
       );
 
-      expect(() => {
-        screen.getByTestId('date-picker-button');
-      }).not.toThrow();
-    });
+      const mockSetValue = jest.fn();
+      render(<DeadlineFormStep3 {...defaultProps} setValue={mockSetValue} />);
 
-    it('should handle undefined callbacks without crashing', () => {
-      const propsWithUndefinedCallbacks = {
-        ...defaultProps,
-        onPriorityChange: jest.fn(),
-        onDatePickerToggle: jest.fn(),
-        onDateChange: jest.fn(),
-      };
+      const addButton = screen.getByTestId('add-publisher-button');
+      expect(addButton.props.accessibilityState?.disabled).toBe(false);
 
-      expect(() => {
-        render(<DeadlineFormStep3 {...propsWithUndefinedCallbacks} />);
-      }).not.toThrow();
-    });
+      fireEvent.press(addButton);
 
-    it('should render with minimal required props', () => {
-      const minimalProps = {
-        control: mockControl,
-        selectedFormat: 'physical' as const,
-        selectedPriority: 'flexible' as const,
-        onPriorityChange: mockOnPriorityChange,
-        showDatePicker: false,
-        onDatePickerToggle: mockOnDatePickerToggle,
-        onDateChange: mockOnDateChange,
-        deadline: new Date(),
-        paceEstimate: '',
-        watchedValues: {},
-        setValue: mockSetValue,
-      };
-
-      expect(() => {
-        render(<DeadlineFormStep3 {...minimalProps} />);
-      }).not.toThrow();
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', [
+        'Publisher 1',
+        'Publisher 2',
+        'Publisher 3',
+        'Publisher 4',
+        '',
+      ]);
     });
   });
 });

@@ -1,5 +1,4 @@
 import CustomInput from '@/components/shared/CustomInput';
-import SourceTypeaheadInput from '@/components/shared/SourceTypeaheadInput';
 import { ThemedText } from '@/components/themed';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import { toTitleCase } from '@/utils/stringUtils';
@@ -126,18 +125,6 @@ export const DeadlineFormStep2 = ({
             Format cannot be changed after creation
           </ThemedText>
         ) : null}
-      </View>
-
-      <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
-          Book Type <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
-        </ThemedText>
-        <SourceTypeaheadInput
-          control={control}
-          name="source"
-          placeholder="Enter book type"
-          testID="input-source"
-        />
       </View>
 
       <View>

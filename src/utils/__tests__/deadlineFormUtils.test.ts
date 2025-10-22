@@ -45,7 +45,7 @@ describe('deadlineFormUtils', () => {
       expect(defaults.bookTitle).toBe('');
       expect(defaults.bookAuthor).toBe('');
       expect(defaults.format).toBe('eBook');
-      expect(defaults.source).toBe('');
+      expect(defaults.deadline_type).toBe('');
       expect(defaults.status).toBe('active');
       expect(defaults.flexibility).toBe('flexible');
       expect(defaults.deadline).toBeInstanceOf(Date);
@@ -116,7 +116,7 @@ describe('deadlineFormUtils', () => {
       bookTitle: 'Test Book',
       bookAuthor: 'Test Author',
       format: 'eBook',
-      source: 'Library',
+      deadline_type: 'Library',
       deadline: new Date('2024-12-01'),
       totalQuantity: 300,
       flexibility: 'flexible',
@@ -134,7 +134,7 @@ describe('deadlineFormUtils', () => {
       expect(result.book_title).toBe('Test Book');
       expect(result.author).toBe('Test Author');
       expect(result.format).toBe('eBook');
-      expect(result.source).toBe('Library');
+      expect(result.deadline_type).toBe('Library');
       expect(result.total_quantity).toBe(300);
       expect(result.flexibility).toBe('flexible');
       expect(result.deadline_date).toBe('2024-12-01T00:00:00.000Z');
@@ -193,13 +193,93 @@ describe('deadlineFormUtils', () => {
 
       expect(result.author).toBeNull();
     });
+
+    it('should include acquisition_source when provided', () => {
+      const formDataWithSource = {
+        ...mockFormData,
+        acquisition_source: 'NetGalley',
+      };
+
+      const result = prepareDeadlineDetailsFromForm(
+        formDataWithSource,
+        'eBook',
+        'flexible'
+      );
+
+      expect(result.acquisition_source).toBe('NetGalley');
+    });
+
+    it('should set acquisition_source to null when not provided', () => {
+      const result = prepareDeadlineDetailsFromForm(
+        mockFormData,
+        'eBook',
+        'flexible'
+      );
+
+      expect(result.acquisition_source).toBeNull();
+    });
+
+    it('should include publishers when provided', () => {
+      const formDataWithPublishers = {
+        ...mockFormData,
+        publishers: ['Penguin', 'HarperCollins'],
+      };
+
+      const result = prepareDeadlineDetailsFromForm(
+        formDataWithPublishers,
+        'eBook',
+        'flexible'
+      );
+
+      expect(result.publishers).toEqual(['Penguin', 'HarperCollins']);
+    });
+
+    it('should set publishers to null when not provided', () => {
+      const result = prepareDeadlineDetailsFromForm(
+        mockFormData,
+        'eBook',
+        'flexible'
+      );
+
+      expect(result.publishers).toBeNull();
+    });
+
+    it('should filter empty strings from publishers array', () => {
+      const formDataWithEmptyPublishers = {
+        ...mockFormData,
+        publishers: ['Penguin', '', 'HarperCollins', '  ', 'Macmillan'],
+      };
+
+      const result = prepareDeadlineDetailsFromForm(
+        formDataWithEmptyPublishers,
+        'eBook',
+        'flexible'
+      );
+
+      expect(result.publishers).toEqual(['Penguin', 'HarperCollins', 'Macmillan']);
+    });
+
+    it('should set publishers to null when all strings are empty', () => {
+      const formDataWithAllEmptyPublishers = {
+        ...mockFormData,
+        publishers: ['', '  ', '   '],
+      };
+
+      const result = prepareDeadlineDetailsFromForm(
+        formDataWithAllEmptyPublishers,
+        'eBook',
+        'flexible'
+      );
+
+      expect(result.publishers).toBeNull();
+    });
   });
 
   describe('prepareProgressDetailsFromForm', () => {
     const mockFormData: DeadlineFormData = {
       bookTitle: 'Test Book',
       format: 'eBook',
-      source: 'Library',
+      deadline_type: 'Library',
       deadline: new Date(),
       totalQuantity: 300,
       currentProgress: 150,
@@ -509,11 +589,11 @@ describe('deadlineFormUtils', () => {
     });
 
     it('should populate form from deadline data', () => {
-      const deadline: Partial<ReadingDeadlineWithProgress> = {
+      const deadline: any = {
         book_title: 'Test Book',
         author: 'Test Author',
         format: 'physical',
-        source: 'Library',
+        deadline_type: 'Library',
         deadline_date: '2024-12-01T00:00:00.000Z',
         flexibility: 'strict',
         book_id: 'book-123',
@@ -837,7 +917,6 @@ describe('deadlineFormUtils', () => {
       expect(mockTrigger).toHaveBeenCalledWith([
         'bookTitle',
         'format',
-        'source',
         'totalQuantity',
       ]);
       expect(mockSetCurrentStep).toHaveBeenCalledWith(3);
@@ -860,7 +939,6 @@ describe('deadlineFormUtils', () => {
       expect(mockTrigger).toHaveBeenCalledWith([
         'bookTitle',
         'format',
-        'source',
         'totalQuantity',
         'totalMinutes',
       ]);
@@ -1072,6 +1150,121 @@ describe('deadlineFormUtils', () => {
       expect(mockSetDeadlineFromPublicationDate).toHaveBeenCalledWith(false);
       expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
     });
+
+    it('should set publishers array when book has publisher', () => {
+      const book: SelectedBook = {
+        id: 'book-1',
+        api_id: 'api-1',
+        title: 'Test Book',
+        publisher: 'Penguin Random House',
+      };
+
+      handleBookSelection(
+        book,
+        mockSetValue,
+        mockSetCurrentStep,
+        mockSetDeadlineFromPublicationDate
+      );
+
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', [
+        'Penguin Random House',
+      ]);
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
+    });
+
+    it('should not set publishers when book has no publisher', () => {
+      const book: SelectedBook = {
+        id: 'book-1',
+        api_id: 'api-1',
+        title: 'Test Book',
+      };
+
+      handleBookSelection(
+        book,
+        mockSetValue,
+        mockSetCurrentStep,
+        mockSetDeadlineFromPublicationDate
+      );
+
+      expect(mockSetValue).not.toHaveBeenCalledWith(
+        'publishers',
+        expect.anything()
+      );
+    });
+
+    it('should not set publishers when publisher is null', () => {
+      const book: SelectedBook = {
+        id: 'book-1',
+        api_id: 'api-1',
+        title: 'Test Book',
+        publisher: null,
+      };
+
+      handleBookSelection(
+        book,
+        mockSetValue,
+        mockSetCurrentStep,
+        mockSetDeadlineFromPublicationDate
+      );
+
+      expect(mockSetValue).not.toHaveBeenCalledWith(
+        'publishers',
+        expect.anything()
+      );
+    });
+
+    it('should handle both publication date and publisher together', () => {
+      const futureDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      const book: SelectedBook = {
+        id: 'book-1',
+        api_id: 'api-1',
+        title: 'Future Book',
+        publication_date: futureDate.toISOString(),
+        publisher: 'HarperCollins',
+      };
+
+      handleBookSelection(
+        book,
+        mockSetValue,
+        mockSetCurrentStep,
+        mockSetDeadlineFromPublicationDate
+      );
+
+      expect(mockSetValue).toHaveBeenCalledWith('deadline', futureDate);
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', [
+        'HarperCollins',
+      ]);
+      expect(mockSetDeadlineFromPublicationDate).toHaveBeenCalledWith(true);
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
+    });
+
+    it('should set publisher even when publication date is in the past', () => {
+      const pastDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const book: SelectedBook = {
+        id: 'book-1',
+        api_id: 'api-1',
+        title: 'Past Book',
+        publication_date: pastDate.toISOString(),
+        publisher: 'Simon & Schuster',
+      };
+
+      handleBookSelection(
+        book,
+        mockSetValue,
+        mockSetCurrentStep,
+        mockSetDeadlineFromPublicationDate
+      );
+
+      expect(mockSetValue).not.toHaveBeenCalledWith(
+        'deadline',
+        expect.anything()
+      );
+      expect(mockSetValue).toHaveBeenCalledWith('publishers', [
+        'Simon & Schuster',
+      ]);
+      expect(mockSetDeadlineFromPublicationDate).toHaveBeenCalledWith(false);
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
+    });
   });
 
   describe('createSuccessToast', () => {
@@ -1208,8 +1401,16 @@ describe('deadlineFormUtils', () => {
         expect(getFieldStep('format', 'new')).toBe(2);
       });
 
-      it('should return step 2 for source', () => {
-        expect(getFieldStep('source', 'new')).toBe(2);
+      it('should return step 3 for deadline_type', () => {
+        expect(getFieldStep('deadline_type', 'new')).toBe(3);
+      });
+
+      it('should return step 3 for acquisition_source', () => {
+        expect(getFieldStep('acquisition_source', 'new')).toBe(3);
+      });
+
+      it('should return step 3 for publishers', () => {
+        expect(getFieldStep('publishers', 'new')).toBe(3);
       });
 
       it('should return step 2 for totalQuantity', () => {
@@ -1224,20 +1425,20 @@ describe('deadlineFormUtils', () => {
         expect(getFieldStep('status', 'new')).toBe(2);
       });
 
-      it('should return step 3 for deadline', () => {
-        expect(getFieldStep('deadline', 'new')).toBe(3);
+      it('should return step 4 for deadline', () => {
+        expect(getFieldStep('deadline', 'new')).toBe(4);
       });
 
-      it('should return step 3 for flexibility', () => {
-        expect(getFieldStep('flexibility', 'new')).toBe(3);
+      it('should return step 4 for flexibility', () => {
+        expect(getFieldStep('flexibility', 'new')).toBe(4);
       });
 
-      it('should return step 3 for currentProgress', () => {
-        expect(getFieldStep('currentProgress', 'new')).toBe(3);
+      it('should return step 4 for currentProgress', () => {
+        expect(getFieldStep('currentProgress', 'new')).toBe(4);
       });
 
-      it('should return step 3 for currentMinutes', () => {
-        expect(getFieldStep('currentMinutes', 'new')).toBe(3);
+      it('should return step 4 for currentMinutes', () => {
+        expect(getFieldStep('currentMinutes', 'new')).toBe(4);
       });
     });
 
@@ -1250,28 +1451,36 @@ describe('deadlineFormUtils', () => {
         expect(getFieldStep('format', 'edit')).toBe(1);
       });
 
-      it('should return step 1 for source', () => {
-        expect(getFieldStep('source', 'edit')).toBe(1);
+      it('should return step 2 for deadline_type', () => {
+        expect(getFieldStep('deadline_type', 'edit')).toBe(2);
+      });
+
+      it('should return step 2 for acquisition_source', () => {
+        expect(getFieldStep('acquisition_source', 'edit')).toBe(2);
+      });
+
+      it('should return step 2 for publishers', () => {
+        expect(getFieldStep('publishers', 'edit')).toBe(2);
       });
 
       it('should return step 1 for totalQuantity', () => {
         expect(getFieldStep('totalQuantity', 'edit')).toBe(1);
       });
 
-      it('should return step 2 for deadline', () => {
-        expect(getFieldStep('deadline', 'edit')).toBe(2);
+      it('should return step 3 for deadline', () => {
+        expect(getFieldStep('deadline', 'edit')).toBe(3);
       });
 
-      it('should return step 2 for flexibility', () => {
-        expect(getFieldStep('flexibility', 'edit')).toBe(2);
+      it('should return step 3 for flexibility', () => {
+        expect(getFieldStep('flexibility', 'edit')).toBe(3);
       });
 
-      it('should return step 2 for api_id', () => {
-        expect(getFieldStep('api_id', 'edit')).toBe(2);
+      it('should return step 3 for api_id', () => {
+        expect(getFieldStep('api_id', 'edit')).toBe(3);
       });
 
-      it('should return step 2 for book_id', () => {
-        expect(getFieldStep('book_id', 'edit')).toBe(2);
+      it('should return step 3 for book_id', () => {
+        expect(getFieldStep('book_id', 'edit')).toBe(3);
       });
     });
   });
@@ -1285,33 +1494,33 @@ describe('deadlineFormUtils', () => {
       expect(findEarliestErrorStep(undefined as any, 'new')).toBeNull();
     });
 
-    it('should find step 2 for source error in new mode', () => {
-      const errors = { source: { message: 'Required' } };
-      expect(findEarliestErrorStep(errors, 'new')).toBe(2);
+    it('should find step 3 for deadline_type error in new mode', () => {
+      const errors = { deadline_type: { message: 'Required' } };
+      expect(findEarliestErrorStep(errors, 'new')).toBe(3);
     });
 
-    it('should find step 3 for deadline error in new mode', () => {
+    it('should find step 4 for deadline error in new mode', () => {
       const errors = { deadline: { message: 'Required' } };
-      expect(findEarliestErrorStep(errors, 'new')).toBe(3);
+      expect(findEarliestErrorStep(errors, 'new')).toBe(4);
     });
 
     it('should find earliest step with multiple errors in new mode', () => {
       const errors = {
-        source: { message: 'Required' },
+        deadline_type: { message: 'Required' },
         deadline: { message: 'Required' },
         flexibility: { message: 'Required' },
       };
-      expect(findEarliestErrorStep(errors, 'new')).toBe(2);
+      expect(findEarliestErrorStep(errors, 'new')).toBe(3);
     });
 
-    it('should find step 1 for source error in edit mode', () => {
-      const errors = { source: { message: 'Required' } };
-      expect(findEarliestErrorStep(errors, 'edit')).toBe(1);
-    });
-
-    it('should find step 2 for deadline error in edit mode', () => {
-      const errors = { deadline: { message: 'Required' } };
+    it('should find step 2 for deadline_type error in edit mode', () => {
+      const errors = { deadline_type: { message: 'Required' } };
       expect(findEarliestErrorStep(errors, 'edit')).toBe(2);
+    });
+
+    it('should find step 3 for deadline error in edit mode', () => {
+      const errors = { deadline: { message: 'Required' } };
+      expect(findEarliestErrorStep(errors, 'edit')).toBe(3);
     });
 
     it('should find earliest step with multiple errors in edit mode', () => {
@@ -1325,7 +1534,7 @@ describe('deadlineFormUtils', () => {
     it('should handle multiple errors on same step', () => {
       const errors = {
         bookTitle: { message: 'Required' },
-        source: { message: 'Required' },
+        deadline_type: { message: 'Required' },
         totalQuantity: { message: 'Required' },
       };
       expect(findEarliestErrorStep(errors, 'new')).toBe(2);
@@ -1344,11 +1553,11 @@ describe('deadlineFormUtils', () => {
       mockGetFormErrors.mockReturnValue({});
     });
 
-    it('should navigate to step 2 when on step 3 with step 2 errors in new mode', async () => {
-      const config = { currentStep: 3, totalSteps: 3, canGoBack: true };
+    it('should navigate to step 3 when on step 4 with step 3 errors in new mode', async () => {
+      const config = { currentStep: 4, totalSteps: 4, canGoBack: true };
       mockTrigger.mockResolvedValue(false);
       mockGetFormErrors.mockReturnValue({
-        source: { message: 'Required' },
+        deadline_type: { message: 'Required' },
       });
 
       const navigation = createFormNavigation(
@@ -1364,15 +1573,15 @@ describe('deadlineFormUtils', () => {
       await navigation.nextStep();
 
       expect(mockTrigger).toHaveBeenCalledWith();
-      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(3);
       expect(mockHandleSubmit).not.toHaveBeenCalled();
     });
 
     it('should stay on current step if already on earliest error step', async () => {
-      const config = { currentStep: 2, totalSteps: 3, canGoBack: true };
+      const config = { currentStep: 3, totalSteps: 4, canGoBack: true };
       mockTrigger.mockResolvedValue(false);
       mockGetFormErrors.mockReturnValue({
-        source: { message: 'Required' },
+        deadline_type: { message: 'Required' },
       });
 
       const navigation = createFormNavigation(
@@ -1392,7 +1601,7 @@ describe('deadlineFormUtils', () => {
     });
 
     it('should submit when validation passes on final step', async () => {
-      const config = { currentStep: 3, totalSteps: 3, canGoBack: true };
+      const config = { currentStep: 4, totalSteps: 4, canGoBack: true };
       mockTrigger.mockResolvedValue(true);
 
       const navigation = createFormNavigation(
@@ -1412,11 +1621,11 @@ describe('deadlineFormUtils', () => {
       expect(mockSetCurrentStep).not.toHaveBeenCalled();
     });
 
-    it('should navigate to step 1 when on step 2 with step 1 errors in edit mode', async () => {
-      const config = { currentStep: 2, totalSteps: 2, canGoBack: true };
+    it('should navigate to step 2 when on step 3 with step 2 errors in edit mode', async () => {
+      const config = { currentStep: 3, totalSteps: 3, canGoBack: true };
       mockTrigger.mockResolvedValue(false);
       mockGetFormErrors.mockReturnValue({
-        source: { message: 'Required' },
+        deadline_type: { message: 'Required' },
       });
 
       const navigation = createFormNavigation(
@@ -1432,15 +1641,15 @@ describe('deadlineFormUtils', () => {
       await navigation.nextStep();
 
       expect(mockTrigger).toHaveBeenCalledWith();
-      expect(mockSetCurrentStep).toHaveBeenCalledWith(1);
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
       expect(mockHandleSubmit).not.toHaveBeenCalled();
     });
 
     it('should handle multiple errors and navigate to earliest', async () => {
-      const config = { currentStep: 3, totalSteps: 3, canGoBack: true };
+      const config = { currentStep: 4, totalSteps: 4, canGoBack: true };
       mockTrigger.mockResolvedValue(false);
       mockGetFormErrors.mockReturnValue({
-        source: { message: 'Required' },
+        deadline_type: { message: 'Required' },
         deadline: { message: 'Required' },
         flexibility: { message: 'Required' },
       });
@@ -1457,7 +1666,7 @@ describe('deadlineFormUtils', () => {
 
       await navigation.nextStep();
 
-      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
+      expect(mockSetCurrentStep).toHaveBeenCalledWith(3);
     });
   });
 });

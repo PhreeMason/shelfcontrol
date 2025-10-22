@@ -60,7 +60,6 @@ export const createFormNavigation = (
         const fieldsToValidate: (keyof DeadlineFormData)[] = [
           'bookTitle',
           'format',
-          'source',
           'totalQuantity',
         ];
 
@@ -73,6 +72,18 @@ export const createFormNavigation = (
         if (result) {
           setCurrentStep(config.currentStep + 1);
         }
+        return;
+      }
+
+      // Step 3 -> Step 4: Validate additional details
+      if (config.currentStep === 3) {
+        const fieldsToValidate: (keyof DeadlineFormData)[] = ['deadline_type'];
+        const result = await triggerValidation(fieldsToValidate);
+
+        if (result) {
+          setCurrentStep(config.currentStep + 1);
+        }
+        return;
       }
     } else {
       const isValid = await triggerValidation();
@@ -119,9 +130,11 @@ export const getFormDefaultValues = (
     bookTitle: '',
     bookAuthor: '',
     format: 'eBook' as const,
-    source: '' as const,
+    deadline_type: '' as const,
+    acquisition_source: '' as const,
+    publishers: undefined as string[] | undefined,
     status: 'active' as const,
-    deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
+    deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
     flexibility: 'flexible' as const,
     ignoreInCalcs: true,
   };
@@ -178,13 +191,19 @@ export const prepareDeadlineDetailsFromForm = (
     data.totalMinutes
   );
 
+  const filteredPublishers = data.publishers?.filter(
+    (p) => p.trim().length > 0
+  );
+
   const baseDetails = {
     author: data.bookAuthor || null,
     book_title: data.bookTitle,
     deadline_date: data.deadline.toISOString(),
     total_quantity: finalTotalQuantity,
     format: selectedFormat,
-    source: data.source,
+    deadline_type: data.deadline_type,
+    acquisition_source: data.acquisition_source || null,
+    publishers: filteredPublishers?.length ? filteredPublishers : null,
     flexibility: selectedPriority,
     book_id: data.book_id || null,
   };
@@ -284,8 +303,11 @@ export const populateFormFromParams = (
   const bookAuthor = str(params.bookAuthor);
   if (bookAuthor) setValue('bookAuthor', bookAuthor);
 
-  const source = str(params.source);
-  if (source) setValue('source', source);
+  const deadline_type = str(params.deadline_type);
+  if (deadline_type) setValue('deadline_type', deadline_type);
+
+  const acquisition_source = str(params.acquisition_source);
+  if (acquisition_source) setValue('acquisition_source', acquisition_source);
 
   const totalQuantity = str(params.totalQuantity);
   if (totalQuantity && !isNaN(Number(totalQuantity))) {
@@ -322,7 +344,9 @@ export const populateFormFromDeadline = (
     setValue('bookTitle', deadline.book_title || '');
     setValue('bookAuthor', deadline.author || '');
     setValue('format', deadline.format || 'physical');
-    setValue('source', deadline.source || '');
+    setValue('deadline_type', (deadline as any).deadline_type || '');
+    setValue('acquisition_source', (deadline as any).acquisition_source || '');
+    setValue('publishers', (deadline as any).publishers || undefined);
     setValue(
       'deadline',
       deadline.deadline_date ? new Date(deadline.deadline_date) : new Date()
@@ -477,7 +501,6 @@ export const createValidationHandler = (
       const fieldsToValidate: (keyof DeadlineFormData)[] = [
         'bookTitle',
         'format',
-        'source',
         'totalQuantity',
       ];
 
@@ -485,6 +508,11 @@ export const createValidationHandler = (
         fieldsToValidate.push('totalMinutes');
       }
 
+      return await trigger(fieldsToValidate);
+    }
+
+    if (currentStep === 3) {
+      const fieldsToValidate: (keyof DeadlineFormData)[] = ['deadline_type'];
       return await trigger(fieldsToValidate);
     }
 
@@ -520,6 +548,12 @@ export const handleBookSelection = (
   } else {
     setDeadlineFromPublicationDate(false);
   }
+
+  if (book?.publisher) {
+    setValue('publishers', [book.publisher]);
+    setValue('isPublisherAutofilled', true);
+  }
+
   setCurrentStep(2);
 };
 
@@ -588,16 +622,19 @@ export const getFieldStep = (
       case 'bookTitle':
       case 'bookAuthor':
       case 'format':
-      case 'source':
       case 'totalQuantity':
       case 'totalMinutes':
       case 'status':
         return 2;
+      case 'deadline_type':
+      case 'acquisition_source':
+      case 'publishers':
+        return 3;
       case 'deadline':
       case 'flexibility':
       case 'currentProgress':
       case 'currentMinutes':
-        return 3;
+        return 4;
       default:
         return 1;
     }
@@ -606,18 +643,21 @@ export const getFieldStep = (
       case 'bookTitle':
       case 'bookAuthor':
       case 'format':
-      case 'source':
       case 'totalQuantity':
       case 'totalMinutes':
       case 'status':
         return 1;
+      case 'deadline_type':
+      case 'acquisition_source':
+      case 'publishers':
+        return 2;
       case 'deadline':
       case 'flexibility':
       case 'currentProgress':
       case 'currentMinutes':
       case 'api_id':
       case 'book_id':
-        return 2;
+        return 3;
       default:
         return 1;
     }
