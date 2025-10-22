@@ -5,6 +5,7 @@ import { useTheme } from '@/hooks/useThemeColor';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { formatDisplayDate } from '@/utils/dateUtils';
 import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
+import { formatProgressDisplay } from '@/utils/deadlineUtils';
 import {
   calculateAveragePace,
   calculateDaysToComplete,
@@ -12,8 +13,10 @@ import {
   formatBookFormat,
   getCompletionDate,
   getCompletionStatusLabel,
+  getProgressLabel,
   getReadingSessionCount,
   getReadingStartDate,
+  getTotalLabel,
 } from '@/utils/readingStatsUtils';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -29,14 +32,15 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
   const completionDate = getCompletionDate(deadline);
   const startDate = getReadingStartDate(deadline);
   const daysToComplete = calculateDaysToComplete(deadline);
-  const averagePace = calculateAveragePace(deadline);
-  const sessionCount = getReadingSessionCount(deadline);
-  const statusLabel = getCompletionStatusLabel(latestStatus);
 
   const currentProgress =
     deadline.progress && deadline.progress.length > 0
       ? deadline.progress[deadline.progress.length - 1].current_progress
       : deadline.total_quantity;
+
+  const averagePace = calculateAveragePace(deadline, currentProgress);
+  const sessionCount = getReadingSessionCount(deadline);
+  const statusLabel = getCompletionStatusLabel(latestStatus, deadline.format);
 
   const progressPercentage =
     deadline.total_quantity > 0
@@ -67,9 +71,13 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
       >
         <View style={styles.progressSection}>
           <View style={styles.progressLabelContainer}>
-            <ThemedText style={styles.progressLabel}>Pages Read</ThemedText>
+            <ThemedText style={styles.progressLabel}>
+              {getProgressLabel(deadline.format)}
+            </ThemedText>
             <ThemedText style={styles.progressFraction}>
-              {currentProgress}/{deadline.total_quantity}
+              {deadline.format === 'audio'
+                ? `${formatProgressDisplay(deadline.format, currentProgress)} / ${formatProgressDisplay(deadline.format, deadline.total_quantity)}`
+                : `${currentProgress}/${deadline.total_quantity}`}
             </ThemedText>
           </View>
 
@@ -89,11 +97,15 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
       <ThemedView style={styles.statsGrid}>
         <View style={[styles.statCard, { borderColor: colors.border }]}>
           <ThemedText style={[styles.statNumber, { color: colors.primary }]}>
-            {averagePace ?? 'N/A'}
+            {deadline.format === 'audio' && averagePace
+              ? formatProgressDisplay(deadline.format, averagePace)
+              : averagePace ?? 'N/A'}
           </ThemedText>
           <ThemedText variant="default" style={styles.statLabel}>
             {averagePace
-              ? formatAveragePace(averagePace, deadline.format).split(' ')[1]
+              ? deadline.format === 'audio'
+                ? 'avg listening pace'
+                : formatAveragePace(averagePace, deadline.format).split(' ').slice(1).join(' ')
               : 'avg pace'}
           </ThemedText>
         </View>
@@ -102,7 +114,7 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
             {sessionCount}
           </ThemedText>
           <ThemedText variant="default" style={styles.statLabel}>
-            reading sessions
+            {deadline.format === 'audio' ? 'listening sessions' : 'reading sessions'}
           </ThemedText>
         </View>
       </ThemedView>
@@ -127,10 +139,12 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
         </View>
         <View style={styles.timelineItem}>
           <ThemedText variant="muted" style={styles.timelineLabel}>
-            Total Pages
+            {getTotalLabel(deadline.format)}
           </ThemedText>
           <ThemedText style={styles.timelineValue}>
-            {deadline.total_quantity} pages
+            {deadline.format === 'audio'
+              ? formatProgressDisplay(deadline.format, deadline.total_quantity)
+              : `${deadline.total_quantity} pages`}
           </ThemedText>
         </View>
         <View style={styles.timelineItem}>

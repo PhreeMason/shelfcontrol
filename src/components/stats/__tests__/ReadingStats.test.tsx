@@ -292,10 +292,11 @@ describe('ReadingStats', () => {
           createStatusRecord('reading', '2025-01-05T00:00:00Z'),
           createStatusRecord('complete', '2025-01-15T00:00:00Z'),
         ],
+        progress: [createProgressRecord(600, '2025-01-15T00:00:00Z')],
       });
 
       render(<ReadingStats deadline={deadline} />);
-      expect(screen.getByText('60')).toBeTruthy();
+      expect(screen.getByText('1h 0m')).toBeTruthy();
     });
 
     it('should display N/A when pace cannot be calculated', () => {
@@ -437,11 +438,12 @@ describe('ReadingStats', () => {
           createStatusRecord('reading', '2025-01-05T00:00:00Z'),
           createStatusRecord('complete', '2025-01-15T00:00:00Z'),
         ],
+        progress: [createProgressRecord(600, '2025-01-15T00:00:00Z')],
       });
 
       render(<ReadingStats deadline={deadline} />);
       expect(screen.getByText('Audiobook')).toBeTruthy();
-      expect(screen.getByText('60')).toBeTruthy();
+      expect(screen.getByText('1h 0m')).toBeTruthy();
     });
   });
 
