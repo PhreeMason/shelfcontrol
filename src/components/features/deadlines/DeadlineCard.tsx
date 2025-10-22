@@ -65,7 +65,7 @@ export function DeadlineCard({
               style={styles.moreButton}
             >
               <IconSymbol
-                name="ellipsis.circle"
+                name="ellipsis"
                 size={24}
                 color={colors.textMuted}
               />
