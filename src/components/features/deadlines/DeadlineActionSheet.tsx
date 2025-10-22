@@ -43,8 +43,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const translateY = useSharedValue(500);
-  const { startReadingDeadline, pauseDeadline, resumeDeadline } =
-    useDeadlines();
+  const { startReadingDeadline, resumeDeadline } = useDeadlines();
   const [showUpdateDateModal, setShowUpdateDateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPostReviewModal, setShowPostReviewModal] = useState(false);
@@ -173,49 +172,41 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
     });
   };
 
+  const editingActions: ActionSheetOption[] = [];
   const actions: ActionSheetOption[] = [];
 
   if (!isArchived) {
-    actions.push(
-      {
-        label: 'Update Deadline Date',
-        icon: 'calendar.badge.clock',
-        iconColor: colors.secondary,
-        showChevron: true,
-        onPress: () => {
-          setShowUpdateDateModal(true);
-        },
+    editingActions.push({
+      label: 'Edit Details',
+      icon: 'pencil.and.scribble',
+      iconColor: colors.primary,
+      showChevron: true,
+      onPress: () => {
+        router.push(`/deadline/${deadline.id}/edit`);
       },
-      {
-        label: 'Edit Deadline Details',
-        icon: 'pencil.and.scribble',
-        iconColor: colors.primary,
-        showChevron: true,
-        onPress: () => {
-          router.push(`/deadline/${deadline.id}/edit`);
-        },
-      }
-    );
+    });
 
-    if (isActive || isToReview) {
-      actions.push({
-        label: 'Pause Book',
-        icon: 'pause.fill',
-        iconColor: colors.textSecondary,
+    if (isToReview && reviewTracking) {
+      editingActions.push({
+        label: 'Edit Reviews',
+        icon: 'square.and.pencil',
+        iconColor: colors.backupPink,
         showChevron: true,
         onPress: () => {
-          pauseDeadline(
-            deadline.id,
-            () => {
-              onClose();
-            },
-            error => {
-              console.error('Failed to pause:', error);
-            }
-          );
+          router.push(`/deadline/${deadline.id}/edit-review-tracking`);
         },
       });
     }
+
+    actions.push({
+      label: 'Update Date',
+      icon: 'calendar.badge.clock',
+      iconColor: colors.secondary,
+      showChevron: true,
+      onPress: () => {
+        setShowUpdateDateModal(true);
+      },
+    });
 
     if (isToReview) {
       actions.push({
@@ -230,26 +221,15 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
     }
   }
 
-  actions.push(
-    {
-      label: 'Add Note',
-      icon: 'square.and.pencil',
-      iconColor: colors.primary,
-      showChevron: true,
-      onPress: () => {
-        router.push(`/deadline/${deadline.id}/notes`);
-      },
+  actions.push({
+    label: 'Add Note',
+    icon: 'square.and.pencil',
+    iconColor: colors.primary,
+    showChevron: true,
+    onPress: () => {
+      router.push(`/deadline/${deadline.id}/notes`);
     },
-    {
-      label: 'Delete This Book',
-      icon: 'trash.fill',
-      iconColor: colors.error,
-      showChevron: true,
-      onPress: () => {
-        setShowDeleteModal(true);
-      },
-    }
-  );
+  });
 
   return (
     <>
@@ -321,51 +301,92 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
             )}
 
             <View style={styles.actionsContainer}>
-              {actions.map((action, index) => (
+              {editingActions.length > 0 && (
+                <View style={styles.section}>
+                  <ThemedText style={styles.sectionHeader}>EDITING</ThemedText>
+                  <View style={styles.gridRow}>
+                    {editingActions.map((action, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        testID={`editing-action-${index}`}
+                        style={[
+                          styles.gridButton,
+                          { borderColor: colors.border },
+                        ]}
+                        onPress={() => {
+                          onClose();
+                          action.onPress();
+                        }}
+                      >
+                        <IconSymbol
+                          name={action.icon as any}
+                          size={28}
+                          color={action.iconColor || colors.text}
+                        />
+                        <ThemedText style={styles.gridButtonLabel}>
+                          {action.label}
+                        </ThemedText>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {actions.length > 0 && (
+                <View style={styles.section}>
+                  <ThemedText style={styles.sectionHeader}>ACTIONS</ThemedText>
+                  <View style={styles.gridRow}>
+                    {actions.map((action, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        testID={`action-item-${index}`}
+                        style={[
+                          styles.gridButton,
+                          { borderColor: colors.border },
+                        ]}
+                        onPress={() => {
+                          onClose();
+                          action.onPress();
+                        }}
+                      >
+                        <IconSymbol
+                          name={action.icon as any}
+                          size={28}
+                          color={action.iconColor || colors.text}
+                        />
+                        <ThemedText style={styles.gridButtonLabel}>
+                          {action.label}
+                        </ThemedText>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              <View style={styles.section}>
                 <TouchableOpacity
-                  key={index}
-                  testID={`action-item-${index}`}
+                  testID="delete-action"
                   style={[
-                    styles.actionItem,
-                    {
-                      borderBottomColor: colors.border,
-                      borderBottomWidth:
-                        index < actions.length - 1
-                          ? StyleSheet.hairlineWidth
-                          : 0,
-                    },
+                    styles.deleteButton,
+                    { borderColor: colors.error },
                   ]}
                   onPress={() => {
                     onClose();
-                    action.onPress();
+                    setShowDeleteModal(true);
                   }}
                 >
-                  <View
-                    style={[
-                      styles.iconContainer,
-                      {
-                        backgroundColor:
-                          (action.iconColor || colors.text) + '20',
-                      },
-                    ]}
-                  >
-                    <IconSymbol
-                      name={action.icon as any}
-                      size={24}
-                      color={action.iconColor || colors.text}
-                    />
-                  </View>
-                  <ThemedText style={styles.actionLabel}>
-                    {action.label}
-                  </ThemedText>
                   <IconSymbol
-                    name="chevron.right"
-                    size={20}
-                    color={colors.text}
-                    style={styles.chevron}
+                    name="trash.fill"
+                    size={28}
+                    color={colors.error}
                   />
+                  <ThemedText
+                    style={[styles.deleteButtonLabel, { color: colors.error }]}
+                  >
+                    Delete This Book
+                  </ThemedText>
                 </TouchableOpacity>
-              ))}
+              </View>
             </View>
 
             <TouchableOpacity
@@ -455,41 +476,63 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 12,
     gap: 8,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   primaryActionText: {
     fontSize: 17,
     fontWeight: '600',
   },
   actionsContainer: {
-    gap: 0,
-    marginBottom: 16,
+    gap: 10,
   },
-  actionItem: {
+  section: {
+    gap: 10,
+  },
+  sectionHeader: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1,
+    opacity: 0.5,
+  },
+  gridRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 16,
-    gap: 16,
+    flexWrap: 'wrap',
+    gap: 10,
   },
-  iconContainer: {
-    width: 44,
-    height: 44,
+  gridButton: {
+    flex: 1,
+    borderWidth: 1.5,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
   },
-  actionLabel: {
-    fontSize: 17,
-    flex: 1,
+  gridButtonLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
   },
-  chevron: {
-    opacity: 0.4,
+  deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderRadius: 12,
+    paddingVertical: 16,
+    gap: 10,
+  },
+  deleteButtonLabel: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   cancelButton: {
     paddingVertical: 16,
     alignItems: 'center',
     borderWidth: 1,
     borderRadius: 8,
+    marginTop: 8,
   },
   cancelText: {
     fontSize: 16,
