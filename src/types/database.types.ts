@@ -82,6 +82,7 @@ export type Database = {
           edition: Json | null;
           format: Database['public']['Enums']['book_format_enum'] | null;
           genres: string[] | null;
+          google_volume_id: string | null;
           id: string;
           isbn10: string | null;
           isbn13: string | null;
@@ -105,6 +106,7 @@ export type Database = {
           edition?: Json | null;
           format?: Database['public']['Enums']['book_format_enum'] | null;
           genres?: string[] | null;
+          google_volume_id?: string | null;
           id: string;
           isbn10?: string | null;
           isbn13?: string | null;
@@ -128,6 +130,7 @@ export type Database = {
           edition?: Json | null;
           format?: Database['public']['Enums']['book_format_enum'] | null;
           genres?: string[] | null;
+          google_volume_id?: string | null;
           id?: string;
           isbn10?: string | null;
           isbn13?: string | null;
@@ -392,6 +395,85 @@ export type Database = {
         };
         Relationships: [];
       };
+      review_platforms: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          platform_name: string;
+          posted: boolean | null;
+          posted_date: string | null;
+          review_tracking_id: string;
+          review_url: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          platform_name: string;
+          posted?: boolean | null;
+          posted_date?: string | null;
+          review_tracking_id: string;
+          review_url?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          platform_name?: string;
+          posted?: boolean | null;
+          posted_date?: string | null;
+          review_tracking_id?: string;
+          review_url?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'review_platforms_review_tracking_id_fkey';
+            columns: ['review_tracking_id'];
+            isOneToOne: false;
+            referencedRelation: 'review_tracking';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      review_tracking: {
+        Row: {
+          all_reviews_complete: boolean | null;
+          created_at: string | null;
+          deadline_id: string;
+          id: string;
+          needs_link_submission: boolean | null;
+          review_due_date: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          all_reviews_complete?: boolean | null;
+          created_at?: string | null;
+          deadline_id: string;
+          id?: string;
+          needs_link_submission?: boolean | null;
+          review_due_date?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          all_reviews_complete?: boolean | null;
+          created_at?: string | null;
+          deadline_id?: string;
+          id?: string;
+          needs_link_submission?: boolean | null;
+          review_due_date?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'review_tracking_deadline_id_fkey';
+            columns: ['deadline_id'];
+            isOneToOne: true;
+            referencedRelation: 'deadlines';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       user_activities: {
         Row: {
           activity_data: Json | null;
@@ -430,6 +512,7 @@ export type Database = {
           id: string;
           query: string;
           result_count: number;
+          search_source: string | null;
           updated_at: string | null;
           user_id: string;
         };
@@ -438,6 +521,7 @@ export type Database = {
           id?: string;
           query: string;
           result_count: number;
+          search_source?: string | null;
           updated_at?: string | null;
           user_id: string;
         };
@@ -446,6 +530,7 @@ export type Database = {
           id?: string;
           query?: string;
           result_count?: number;
+          search_source?: string | null;
           updated_at?: string | null;
           user_id?: string;
         };
@@ -510,6 +595,7 @@ export type Database = {
         | 'pending'
         | 'reading'
         | 'paused'
+        | 'to_review'
         | 'complete'
         | 'did_not_finish';
       user_role: 'user' | 'admin' | 'super-admin';
@@ -649,6 +735,7 @@ export const Constants = {
         'pending',
         'reading',
         'paused',
+        'to_review',
         'complete',
         'did_not_finish',
       ],

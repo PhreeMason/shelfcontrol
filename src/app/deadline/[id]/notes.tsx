@@ -1,10 +1,11 @@
+import AppHeader from '@/components/shared/AppHeader';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
 import { useAddNote, useGetNotes } from '@/hooks/useNotes';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
 import { DeadlineNote } from '@/types/notes.types';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import {
   FlatList,
@@ -68,12 +69,13 @@ const Notes = () => {
 
   return (
     <SafeAreaView
-      edges={['bottom']}
+      edges={['right', 'bottom', 'left']}
       style={[styles.container, { backgroundColor: colors.background }]}
     >
+      <AppHeader title="Notes" onBack={() => router.back()} />
       <View style={styles.header}>
         <ThemedText style={styles.headerTitle}>
-          Notes for {deadline?.book_title || ''}
+          {deadline?.book_title || 'Deadline'}
         </ThemedText>
       </View>
 

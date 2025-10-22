@@ -1,9 +1,17 @@
-export const DEADLINE_STATUS = {
+import { Database } from '@/types/database.types';
+
+type DeadlineStatusEnum = Database['public']['Enums']['deadline_status_enum'];
+
+export const DEADLINE_STATUS: Record<
+  Uppercase<DeadlineStatusEnum>,
+  DeadlineStatusEnum
+> = {
   COMPLETE: 'complete',
-  PAUSED: 'paused',
   READING: 'reading',
   DID_NOT_FINISH: 'did_not_finish',
   PENDING: 'pending',
+  TO_REVIEW: 'to_review',
+  PAUSED: 'paused',
 } as const;
 
 export const ACTIVITY_STATE = {
@@ -19,8 +27,7 @@ export const PROGRESS_TYPE = {
   LISTENING: 'listening',
 } as const;
 
-export type DeadlineStatus =
-  (typeof DEADLINE_STATUS)[keyof typeof DEADLINE_STATUS];
+export type DeadlineStatus = DeadlineStatusEnum;
 export type ActivityState =
   (typeof ACTIVITY_STATE)[keyof typeof ACTIVITY_STATE];
 export type BookFormat = (typeof BOOK_FORMAT)[keyof typeof BOOK_FORMAT];

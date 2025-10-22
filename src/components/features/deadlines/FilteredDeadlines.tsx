@@ -2,6 +2,7 @@ import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
   BookFormat,
   FilterType,
+  PageRangeFilter,
   ReadingDeadlineWithProgress,
   TimeRangeFilter,
 } from '@/types/deadline.types';
@@ -13,6 +14,7 @@ interface FilteredDeadlinesProps {
   selectedFilter: FilterType;
   timeRangeFilter: TimeRangeFilter;
   selectedFormats: BookFormat[];
+  selectedPageRanges: PageRangeFilter[];
   selectedSources: string[];
 }
 
@@ -20,6 +22,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   selectedFilter,
   timeRangeFilter,
   selectedFormats,
+  selectedPageRanges,
   selectedSources,
 }) => {
   const {
@@ -27,9 +30,10 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     activeDeadlines,
     overdueDeadlines,
     completedDeadlines,
-    pausedDeadlines,
+    toReviewDeadlines,
     didNotFinishDeadlines,
     pendingDeadlines,
+    pausedDeadlines,
     isLoading,
     error,
   } = useDeadlines();
@@ -55,10 +59,23 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       });
     }
 
-    if (selectedFormats.length > 0 && selectedFormats.length < 3) {
+    if (selectedFormats.length > 0) {
       filtered = filtered.filter(deadline =>
         selectedFormats.includes(deadline.format as BookFormat)
       );
+    }
+
+    if (selectedPageRanges.length > 0) {
+      filtered = filtered.filter(deadline => {
+        if (deadline.format === 'audio') return true;
+        const pages = deadline.total_quantity;
+        return selectedPageRanges.some(range => {
+          if (range === 'under300') return pages < 300;
+          if (range === '300to500') return pages >= 300 && pages <= 500;
+          if (range === 'over500') return pages > 500;
+          return false;
+        });
+      });
     }
 
     if (selectedSources.length > 0) {
@@ -77,8 +94,9 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     deadlineMap.set('active', activeDeadlines);
     deadlineMap.set('overdue', overdueDeadlines);
     deadlineMap.set('pending', pendingDeadlines);
-    deadlineMap.set('completed', completedDeadlines);
     deadlineMap.set('paused', pausedDeadlines);
+    deadlineMap.set('completed', completedDeadlines);
+    deadlineMap.set('toReview', toReviewDeadlines);
     deadlineMap.set('didNotFinish', didNotFinishDeadlines);
     deadlineMap.set('all', deadlines);
 
@@ -95,8 +113,9 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       active: 'No active deadlines',
       overdue: 'No overdue deadlines',
       pending: 'No pending deadlines',
+      paused: 'No paused deadlines',
       completed: 'No completed deadlines',
-      paused: 'No deadlines paused',
+      toReview: 'No books waiting for reviews',
       didNotFinish: 'No deadlines marked as did not finish',
       all: 'No deadlines found',
     };

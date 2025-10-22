@@ -1,21 +1,24 @@
 import DailyReadingChart from '@/components/charts/DailyReadingChart';
 import BookDetailsSection from '@/components/features/deadlines/BookDetailsSection';
-import DeadlineActionButtons from '@/components/features/deadlines/DeadlineActionButtons';
+import { DeadlineActionSheet } from '@/components/features/deadlines/DeadlineActionSheet';
 import DeadlineHeroSection from '@/components/features/deadlines/DeadlineHeroSection';
+import DeadlineTabsSection from '@/components/features/deadlines/DeadlineTabsSection';
 import DeadlineViewHeader from '@/components/features/deadlines/DeadlineViewHeader';
-import ReadingProgress from '@/components/progress/ReadingProgressUpdate';
+import ReadingProgressUpdate from '@/components/progress/ReadingProgressUpdate';
 import {
   ThemedButton,
   ThemedScrollView,
   ThemedText,
   ThemedView,
 } from '@/components/themed';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DeadlineView = () => {
@@ -23,6 +26,7 @@ const DeadlineView = () => {
   const router = useRouter();
   const { deadlines } = useDeadlines();
   const { colors } = useTheme();
+  const [showActionSheet, setShowActionSheet] = useState(false);
 
   let deadline = deadlines.find(d => d.id === id);
   const {
@@ -71,7 +75,8 @@ const DeadlineView = () => {
     );
   }
 
-  const { isCompleted, isArchived } = getDeadlineStatus(deadline);
+  const { isCompleted, isToReview, isArchived, isPending } =
+    getDeadlineStatus(deadline);
 
   const handleEdit = () => {
     router.push(`/deadline/${id}/edit`);
@@ -86,6 +91,9 @@ const DeadlineView = () => {
     ...(isCompleted ? {} : { onEdit: handleEdit }),
   };
 
+  const shouldShowStats = isToReview || isArchived;
+  const shouldShowProgress = !shouldShowStats && !isPending;
+
   return (
     <SafeAreaView
       edges={['right', 'bottom', 'left']}
@@ -96,14 +104,33 @@ const DeadlineView = () => {
       <ThemedScrollView style={[styles.content, { backgroundColor: 'white' }]}>
         <DeadlineHeroSection deadline={deadline} />
 
-        {isArchived ? null : <ReadingProgress deadline={deadline} />}
-
-        <DailyReadingChart deadline={deadline} />
+        {shouldShowStats ? (
+          <DeadlineTabsSection deadline={deadline} />
+        ) : shouldShowProgress ? (
+          <>
+            <ReadingProgressUpdate deadline={deadline} />
+            <DailyReadingChart deadline={deadline} />
+          </>
+        ) : null}
 
         <BookDetailsSection deadline={deadline} />
-
-        <DeadlineActionButtons deadline={deadline} />
       </ThemedScrollView>
+
+      <Pressable
+        onPress={() => setShowActionSheet(true)}
+        style={({ pressed }) => [
+          styles.fab,
+          { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 },
+        ]}
+      >
+        <IconSymbol name="ellipsis" size={30} color="white" />
+      </Pressable>
+
+      <DeadlineActionSheet
+        deadline={deadline}
+        visible={showActionSheet}
+        onClose={() => setShowActionSheet(false)}
+      />
     </SafeAreaView>
   );
 };
@@ -116,7 +143,28 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 20,
     paddingHorizontal: 10,
-    marginBottom: 20,
+    marginBottom: 60,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 45,
+    right: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 100,
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  fabText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 

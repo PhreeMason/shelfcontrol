@@ -45,7 +45,7 @@ describe('BooksService', () => {
 
       const result = await booksService.searchBooks('Harry Potter');
 
-      expect(supabase.functions.invoke).toHaveBeenCalledWith('search-books', {
+      expect(supabase.functions.invoke).toHaveBeenCalledWith('search-books-v2', {
         body: { query: 'Harry Potter' },
       });
       expect(result).toEqual({ bookList: [{ id: '1', title: 'Test Book' }] });
@@ -62,7 +62,7 @@ describe('BooksService', () => {
         'Search failed'
       );
 
-      expect(supabase.functions.invoke).toHaveBeenCalledWith('search-books', {
+      expect(supabase.functions.invoke).toHaveBeenCalledWith('search-books-v2', {
         body: { query: 'test' },
       });
     });
@@ -139,6 +139,139 @@ describe('BooksService', () => {
       await expect(booksService.fetchBookData('test-123')).rejects.toThrow(
         'Network timeout'
       );
+    });
+  });
+
+  describe('fetchBookDataByISBN', () => {
+    it('should fetch book data with valid ISBN', async () => {
+      const mockBookData: FullBookData = {
+        api_id: 'google-vol-123',
+        api_source: 'google_books',
+        google_volume_id: 'google-vol-123',
+        title: 'Test Book',
+        publication_date: '2024-01-01',
+        total_pages: 300,
+        description: 'Test description',
+        cover_image_url: 'https://example.com/image.jpg',
+        format: 'physical',
+        metadata: { authors: ['Test Author'] },
+        edition: null,
+        genres: [],
+        has_user_edits: false,
+        isbn10: '1234567890',
+        isbn13: '9781234567890',
+        language: null,
+        publisher: null,
+        rating: null,
+        source: 'google_books',
+        total_duration: null,
+      };
+
+      const mockResponse = {
+        data: mockBookData,
+        error: null,
+      };
+
+      (supabase.functions.invoke as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await booksService.fetchBookDataByISBN('9781234567890');
+
+      expect(supabase.functions.invoke).toHaveBeenCalledWith('book-data', {
+        body: { isbn: '9781234567890' },
+      });
+      expect(result).toEqual(mockBookData);
+    });
+
+    it('should throw error when ISBN fetch fails', async () => {
+      const mockError = new Error('Book not found with ISBN');
+      (supabase.functions.invoke as jest.Mock).mockResolvedValue({
+        data: null,
+        error: mockError,
+      });
+
+      await expect(
+        booksService.fetchBookDataByISBN('invalid-isbn')
+      ).rejects.toThrow('Book not found with ISBN');
+
+      expect(supabase.functions.invoke).toHaveBeenCalledWith('book-data', {
+        body: { isbn: 'invalid-isbn' },
+      });
+    });
+
+    it('should handle network errors', async () => {
+      const networkError = new Error('Network timeout');
+      (supabase.functions.invoke as jest.Mock).mockRejectedValue(networkError);
+
+      await expect(
+        booksService.fetchBookDataByISBN('9781234567890')
+      ).rejects.toThrow('Network timeout');
+    });
+  });
+
+  describe('fetchBookDataByGoogleVolumeId', () => {
+    it('should fetch book data with valid Google Volume ID', async () => {
+      const mockBookData: FullBookData = {
+        api_id: 'google-vol-456',
+        api_source: 'google_books',
+        google_volume_id: 'google-vol-456',
+        title: 'Another Test Book',
+        publication_date: '2024-02-01',
+        total_pages: 250,
+        description: 'Another test description',
+        cover_image_url: 'https://example.com/image2.jpg',
+        format: 'eBook',
+        metadata: { authors: ['Another Author'] },
+        edition: null,
+        genres: ['Fiction'],
+        has_user_edits: false,
+        isbn10: null,
+        isbn13: '9789876543210',
+        language: 'en',
+        publisher: 'Test Publisher',
+        rating: 4.5,
+        source: 'google_books',
+        total_duration: null,
+      };
+
+      const mockResponse = {
+        data: mockBookData,
+        error: null,
+      };
+
+      (supabase.functions.invoke as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result =
+        await booksService.fetchBookDataByGoogleVolumeId('google-vol-456');
+
+      expect(supabase.functions.invoke).toHaveBeenCalledWith('book-data', {
+        body: { google_volume_id: 'google-vol-456' },
+      });
+      expect(result).toEqual(mockBookData);
+    });
+
+    it('should throw error when Google Volume ID fetch fails', async () => {
+      const mockError = new Error('Book not found with Google Volume ID');
+      (supabase.functions.invoke as jest.Mock).mockResolvedValue({
+        data: null,
+        error: mockError,
+      });
+
+      await expect(
+        booksService.fetchBookDataByGoogleVolumeId('invalid-volume-id')
+      ).rejects.toThrow('Book not found with Google Volume ID');
+
+      expect(supabase.functions.invoke).toHaveBeenCalledWith('book-data', {
+        body: { google_volume_id: 'invalid-volume-id' },
+      });
+    });
+
+    it('should handle network errors', async () => {
+      const networkError = new Error('API unavailable');
+      (supabase.functions.invoke as jest.Mock).mockRejectedValue(networkError);
+
+      await expect(
+        booksService.fetchBookDataByGoogleVolumeId('google-vol-456')
+      ).rejects.toThrow('API unavailable');
     });
   });
 

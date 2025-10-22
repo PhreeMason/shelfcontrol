@@ -9,6 +9,7 @@ import {
   type ColorToken,
 } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
+import * as Haptics from 'expo-haptics';
 
 export type ThemedIconButtonProps = TouchableOpacityProps & {
   icon: Parameters<typeof IconSymbol>[0]['name'];
@@ -16,6 +17,7 @@ export type ThemedIconButtonProps = TouchableOpacityProps & {
   size?: 'sm' | 'md' | 'lg';
   backgroundColor?: ColorToken;
   iconColor?: ColorToken;
+  hapticsOnPress?: boolean;
 };
 
 const ICON_SIZES = {
@@ -32,6 +34,7 @@ export function ThemedIconButton({
   backgroundColor,
   iconColor,
   disabled,
+  hapticsOnPress = false,
   ...rest
 }: ThemedIconButtonProps) {
   const { colors } = useTheme();
@@ -65,6 +68,11 @@ export function ThemedIconButton({
 
   return (
     <TouchableOpacity
+      onPressIn={() => {
+        if (hapticsOnPress) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        }
+      }}
       style={[
         buttonStyle,
         {

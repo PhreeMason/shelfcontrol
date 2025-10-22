@@ -1,29 +1,15 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Typography } from '@/constants/Colors';
-import { useFetchBookById } from '@/hooks/useBooks';
-import { useDeadlineCardState } from '@/hooks/useDeadlineCardState';
+import { useDeadlineCardViewModel } from '@/hooks/useDeadlineCardViewModel';
 import { useTheme } from '@/hooks/useThemeColor';
-import { dayjs } from '@/lib/dayjs';
-import { posthog } from '@/lib/posthog';
-import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import {
-  formatCapacityMessage,
-  formatRemainingDisplay,
-} from '@/utils/deadlineDisplayUtils';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import {
-  GestureResponderEvent,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { DeadlineActionSheet } from './DeadlineActionSheet';
 import { DeadlineBookCover } from './DeadlineBookCover';
 import { DeadlineCountdownDisplay } from './DeadlineCountdownDisplay';
+
 interface DeadlineCardProps {
   deadline: ReadingDeadlineWithProgress;
   disableNavigation?: boolean;
@@ -33,135 +19,67 @@ export function DeadlineCard({
   deadline,
   disableNavigation = false,
 }: DeadlineCardProps) {
-  const { getDeadlineCalculations, formatUnitsPerDayForDisplay } =
-    useDeadlines();
-  const router = useRouter();
   const { colors } = useTheme();
-  const [showActionSheet, setShowActionSheet] = useState(false);
-
-  const { data: bookData } = useFetchBookById(deadline.book_id);
-
-  const { daysLeft, unitsPerDay, urgencyLevel, remaining } =
-    getDeadlineCalculations(deadline);
-
-  const {
-    latestStatus,
-    latestStatusRecord,
-    isArchived,
-    isInActive,
-    borderColor,
-    countdownColor,
-  } = useDeadlineCardState(deadline, urgencyLevel);
-
-  const shadowStyle = Platform.select({
-    ios: {
-      shadowColor: 'rgba(184, 169, 217, 0.1)',
-      shadowOffset: { width: 2, height: 8 },
-      shadowOpacity: 0.25,
-      shadowRadius: 8,
-    },
-    android: {
-      elevation: 1,
-    },
-  });
-
-  const handlePress = () => {
-    if (!disableNavigation) {
-      posthog.capture('deadline card clicked', {
-        deadline_status: latestStatus,
-        deadline_format: deadline.format,
-      });
-      router.push(`/deadline/${deadline.id}`);
-    }
-  };
-
-  const handleMorePress = (e: GestureResponderEvent) => {
-    e.stopPropagation();
-    setShowActionSheet(true);
-  };
-
-  const baseCapacityMessage = formatUnitsPerDayForDisplay(
-    unitsPerDay,
-    deadline.format,
-    remaining,
-    daysLeft
-  );
-
-  const capacityMessage = formatCapacityMessage(
-    baseCapacityMessage,
-    isInActive
-  );
+  const viewModel = useDeadlineCardViewModel({ deadline, disableNavigation });
 
   return (
     <>
       <Pressable
-        onPress={handlePress}
+        onPress={viewModel.handlers.onCardPress}
         style={({ pressed }) => [
           { opacity: pressed ? 0.8 : 1, backgroundColor: 'transparent' },
         ]}
       >
         <View
-          style={[
-            styles.cardContainer,
-            isArchived && shadowStyle,
-            { borderColor },
-          ]}
+          style={[styles.cardContainer, viewModel.styling.cardContainerStyle]}
         >
           <View style={styles.bookContent}>
-            <DeadlineBookCover
-              coverImageUrl={bookData?.cover_image_url}
-              deadline={deadline}
-              daysLeft={daysLeft}
-            />
+            <DeadlineBookCover {...viewModel.componentProps.bookCover} />
             <View style={styles.bookInfo}>
               <ThemedText style={styles.bookTitle} numberOfLines={2}>
-                {deadline.book_title}
+                {viewModel.display.title}
               </ThemedText>
-              {!isArchived && (
+              {!viewModel.flags.isArchived && (
                 <ThemedText style={styles.capacityText}>
-                  {urgencyLevel === 'overdue'
-                    ? formatRemainingDisplay(remaining, deadline.format)
-                    : capacityMessage}
+                  {viewModel.display.primaryText}
                 </ThemedText>
               )}
-              {isArchived ?
+              {viewModel.flags.isArchived && (
                 <ThemedText style={styles.capacityText}>
-                  {latestStatus === 'complete'
-                    ? `Completed ${latestStatusRecord ? dayjs(latestStatusRecord.created_at).format('MMM D, YYYY') : 'N/A'}`
-                    : `Archived ${latestStatusRecord ? dayjs(latestStatusRecord.created_at).format('MMM D, YYYY') : 'N/A'}`}
+                  {viewModel.display.secondaryText}
                 </ThemedText>
-                : null}
-              <ThemedText style={styles.dueDate}>
-                {`Due: ${dayjs(deadline.deadline_date).format('MMM D, YYYY')}`}
-              </ThemedText>
+              )}
+              {!viewModel.flags.isArchived && (
+                <ThemedText style={styles.dueDate}>
+                  {viewModel.display.secondaryText}
+                </ThemedText>
+              )}
             </View>
           </View>
-          <DeadlineCountdownDisplay
-            latestStatus={latestStatus}
-            daysLeft={daysLeft}
-            countdownColor={countdownColor}
-            borderColor={borderColor}
-          />
+          <DeadlineCountdownDisplay {...viewModel.componentProps.countdown} />
 
-          <Pressable
-            onPress={handleMorePress}
-            hitSlop={8}
-            style={styles.moreButton}
-          >
-            <IconSymbol
-              name="ellipsis.circle"
-              size={24}
-              color={colors.textMuted}
-            />
-          </Pressable>
+          {!disableNavigation && (
+            <Pressable
+              onPress={viewModel.handlers.onMorePress}
+              hitSlop={8}
+              style={styles.moreButton}
+            >
+              <IconSymbol
+                name="ellipsis"
+                size={24}
+                color={colors.textMuted}
+              />
+            </Pressable>
+          )}
         </View>
       </Pressable>
 
-      <DeadlineActionSheet
-        deadline={deadline}
-        visible={showActionSheet}
-        onClose={() => setShowActionSheet(false)}
-      />
+      {!disableNavigation && (
+        <DeadlineActionSheet
+          {...viewModel.componentProps.actionSheet}
+          onClose={() => viewModel.state.setShowActionSheet(false)}
+        />
+      )}
     </>
   );
 }
@@ -169,7 +87,10 @@ export function DeadlineCard({
 const styles = StyleSheet.create({
   cardContainer: {
     backgroundColor: 'white',
-    borderRadius: 16,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 5,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
     padding: 0,
     borderWidth: 1,
     flexDirection: 'row',

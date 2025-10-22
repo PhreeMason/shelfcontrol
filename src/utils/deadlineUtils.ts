@@ -24,15 +24,16 @@ import { BOOK_FORMAT } from '@/constants/status';
  * Separation Strategy
  * -------------------
  * Uses normalized local start-of-day for comparisons.
- * Completed deadlines moved to completed bucket; set_aside deadlines moved to setAside bucket; overdue determined by deadline_date < today.
+ * Completed deadlines moved to completed bucket; to_review deadlines moved to toReview bucket; overdue determined by deadline_date < today.
  */
 export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   const active: ReadingDeadlineWithProgress[] = [];
   const overdue: ReadingDeadlineWithProgress[] = [];
   const completed: ReadingDeadlineWithProgress[] = [];
-  const paused: ReadingDeadlineWithProgress[] = [];
+  const toReview: ReadingDeadlineWithProgress[] = [];
   const didNotFinish: ReadingDeadlineWithProgress[] = [];
   const pending: ReadingDeadlineWithProgress[] = [];
+  const paused: ReadingDeadlineWithProgress[] = [];
 
   const today = dayjs().startOf('day');
 
@@ -50,12 +51,14 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
     const deadlineDate = normalizeServerDateStartOfDay(deadline.deadline_date);
     if (latestStatus === 'complete') {
       completed.push(deadline);
-    } else if (latestStatus === 'paused') {
-      paused.push(deadline);
+    } else if (latestStatus === 'to_review') {
+      toReview.push(deadline);
     } else if (latestStatus === 'did_not_finish') {
       didNotFinish.push(deadline);
     } else if (latestStatus === 'pending') {
       pending.push(deadline);
+    } else if (latestStatus === 'paused') {
+      paused.push(deadline);
     } else if (deadlineDate.isBefore(today)) {
       overdue.push(deadline);
     } else {
@@ -66,17 +69,19 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   active.sort(sortDeadlines);
   overdue.sort((a, b) => sortByPagesRemaining(a, b, calculateProgress));
   completed.sort(sortByStatusDate);
-  paused.sort(sortByStatusDate);
+  toReview.sort(sortByStatusDate);
   didNotFinish.sort(sortByStatusDate);
   pending.sort(sortDeadlines);
+  paused.sort(sortDeadlines);
 
   return {
     active,
     overdue,
     completed,
-    setAside: paused,
+    toReview,
     didNotFinish,
     pending,
+    paused,
   };
 };
 

@@ -22,10 +22,11 @@ jest.mock('@/hooks/useDeadlines', () => ({
   useUpdateDeadlineDate: () => ({ mutate: mockMutate }),
   useDeleteDeadline: () => ({ mutate: mockMutate }),
   useCompleteDeadline: () => ({ mutate: mockMutate }),
-  usePauseDeadline: () => ({ mutate: mockMutate }),
   useReactivateDeadline: () => ({ mutate: mockMutate }),
   useStartReadingDeadline: () => ({ mutate: mockMutate }),
   useDidNotFinishDeadline: () => ({ mutate: mockMutate }),
+  usePauseDeadline: () => ({ mutate: mockMutate }),
+  useResumeDeadline: () => ({ mutate: mockMutate }),
 }));
 
 // Mock utility functions
@@ -37,7 +38,7 @@ jest.mock('@/utils/deadlineUtils', () => ({
     active: deadlines.slice(0, 2),
     overdue: deadlines.slice(2, 3),
     completed: deadlines.slice(3, 4),
-    setAside: deadlines.slice(4, 5),
+    toReview: deadlines.slice(4, 5),
     didNotFinish: deadlines.slice(5, 6),
     pending: deadlines.slice(6, 7),
   })),
@@ -143,7 +144,7 @@ describe('DeadlineProvider', () => {
       expect(result.current.activeDeadlines).toBeDefined();
       expect(result.current.overdueDeadlines).toBeDefined();
       expect(result.current.completedDeadlines).toBeDefined();
-      expect(result.current.pausedDeadlines).toBeDefined();
+      expect(result.current.toReviewDeadlines).toBeDefined();
       expect(result.current.didNotFinishDeadlines).toBeDefined();
       expect(result.current.pendingDeadlines).toBeDefined();
       expect(result.current.isLoading).toBe(false);
@@ -161,8 +162,6 @@ describe('DeadlineProvider', () => {
       expect(typeof result.current.updateDeadlineDate).toBe('function');
       expect(typeof result.current.deleteDeadline).toBe('function');
       expect(typeof result.current.completeDeadline).toBe('function');
-      expect(typeof result.current.pauseDeadline).toBe('function');
-      expect(typeof result.current.reactivateDeadline).toBe('function');
       expect(typeof result.current.startReadingDeadline).toBe('function');
       expect(typeof result.current.didNotFinishDeadline).toBe('function');
 
@@ -186,7 +185,7 @@ describe('DeadlineProvider', () => {
       // Counts
       expect(typeof result.current.activeCount).toBe('number');
       expect(typeof result.current.overdueCount).toBe('number');
-      expect(typeof result.current.pausedCount).toBe('number');
+      expect(typeof result.current.toReviewCount).toBe('number');
       expect(typeof result.current.didNotFinishCount).toBe('number');
 
       // Summary calculations
@@ -201,7 +200,7 @@ describe('DeadlineProvider', () => {
 
       expect(result.current.activeCount).toBe(2);
       expect(result.current.overdueCount).toBe(1);
-      expect(result.current.pausedCount).toBe(1);
+      expect(result.current.toReviewCount).toBe(1);
       expect(result.current.didNotFinishCount).toBe(1);
     });
 
@@ -300,32 +299,6 @@ describe('DeadlineProvider', () => {
 
       act(() => {
         result.current.completeDeadline('test-id');
-      });
-
-      expect(mockMutate).toHaveBeenCalledWith('test-id', {
-        onSuccess: expect.any(Function),
-        onError: expect.any(Function),
-      });
-    });
-
-    it('should call pauseDeadline mutation', () => {
-      const { result } = renderHook(() => useDeadlines(), { wrapper });
-
-      act(() => {
-        result.current.pauseDeadline('test-id');
-      });
-
-      expect(mockMutate).toHaveBeenCalledWith('test-id', {
-        onSuccess: expect.any(Function),
-        onError: expect.any(Function),
-      });
-    });
-
-    it('should call reactivateDeadline mutation', () => {
-      const { result } = renderHook(() => useDeadlines(), { wrapper });
-
-      act(() => {
-        result.current.reactivateDeadline('test-id');
       });
 
       expect(mockMutate).toHaveBeenCalledWith('test-id', {
@@ -468,7 +441,6 @@ describe('DeadlineProvider', () => {
         useUpdateDeadline: () => ({ mutate: mockMutate }),
         useDeleteDeadline: () => ({ mutate: mockMutate }),
         useCompleteDeadline: () => ({ mutate: mockMutate }),
-        usePauseDeadline: () => ({ mutate: mockMutate }),
         useReactivateDeadline: () => ({ mutate: mockMutate }),
       }));
 
@@ -492,7 +464,6 @@ describe('DeadlineProvider', () => {
         useUpdateDeadline: () => ({ mutate: mockMutate }),
         useDeleteDeadline: () => ({ mutate: mockMutate }),
         useCompleteDeadline: () => ({ mutate: mockMutate }),
-        usePauseDeadline: () => ({ mutate: mockMutate }),
         useReactivateDeadline: () => ({ mutate: mockMutate }),
       }));
 

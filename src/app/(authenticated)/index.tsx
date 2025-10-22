@@ -29,20 +29,12 @@ export default function HomeScreen() {
     setTimeRangeFilter,
     selectedFormats,
     setSelectedFormats,
+    selectedPageRanges,
+    setSelectedPageRanges,
     selectedSources,
     setSelectedSources,
   } = usePreferences();
-  const {
-    deadlines,
-    activeDeadlines,
-    overdueDeadlines,
-    pendingDeadlines,
-    completedDeadlines,
-    pausedDeadlines,
-    didNotFinishDeadlines,
-    refetch,
-    isRefreshing,
-  } = useDeadlines();
+  const { refetch, isRefreshing } = useDeadlines();
   const { data: availableSources = [] } = useDeadlineSources();
   const prevSelectedFilterRef = React.useRef<FilterType | null>(null);
 
@@ -86,44 +78,14 @@ export default function HomeScreen() {
     filterTop.value = event.nativeEvent.layout.y;
   };
 
-  const availableFilters = React.useMemo(() => {
-    const available: FilterType[] = [];
-
-    if (activeDeadlines.length > 0) available.push('active');
-    if (overdueDeadlines.length > 0) available.push('overdue');
-    if (pendingDeadlines.length > 0) available.push('pending');
-    if (completedDeadlines.length > 0) available.push('completed');
-    if (pausedDeadlines.length > 0) available.push('paused');
-    if (didNotFinishDeadlines.length > 0) available.push('didNotFinish');
-    if (deadlines.length > 0) available.push('all');
-
-    return available;
-  }, [
-    activeDeadlines.length,
-    overdueDeadlines.length,
-    pendingDeadlines.length,
-    completedDeadlines.length,
-    pausedDeadlines.length,
-    didNotFinishDeadlines.length,
-    deadlines.length,
-  ]);
-
-  React.useEffect(() => {
-    if (
-      availableFilters.length > 0 &&
-      !availableFilters.includes(selectedFilter)
-    ) {
-      setSelectedFilter(availableFilters[0]);
-    }
-  }, [availableFilters, selectedFilter, setSelectedFilter]);
-
   React.useEffect(() => {
     if (
       prevSelectedFilterRef.current !== null &&
       prevSelectedFilterRef.current !== selectedFilter
     ) {
       setTimeRangeFilter('all');
-      setSelectedFormats(['physical', 'eBook', 'audio']);
+      setSelectedFormats([]);
+      setSelectedPageRanges([]);
       setSelectedSources([]);
     }
     prevSelectedFilterRef.current = selectedFilter;
@@ -131,6 +93,7 @@ export default function HomeScreen() {
     selectedFilter,
     setTimeRangeFilter,
     setSelectedFormats,
+    setSelectedPageRanges,
     setSelectedSources,
   ]);
 
@@ -158,11 +121,12 @@ export default function HomeScreen() {
         onTimeRangeChange={setTimeRangeFilter}
         selectedFormats={selectedFormats}
         onFormatsChange={setSelectedFormats}
+        selectedPageRanges={selectedPageRanges}
+        onPageRangesChange={setSelectedPageRanges}
         selectedSources={selectedSources}
         onSourcesChange={setSelectedSources}
         availableSources={availableSources}
         animatedStyle={stickyFilterStyle}
-        availableFilters={availableFilters}
       />
 
       <Animated.ScrollView
@@ -185,18 +149,20 @@ export default function HomeScreen() {
           onTimeRangeChange={setTimeRangeFilter}
           selectedFormats={selectedFormats}
           onFormatsChange={setSelectedFormats}
+          selectedPageRanges={selectedPageRanges}
+          onPageRangesChange={setSelectedPageRanges}
           selectedSources={selectedSources}
           onSourcesChange={setSelectedSources}
           availableSources={availableSources}
           animatedStyle={scrollableFilterStyle}
           onLayout={handleFilterLayout}
-          availableFilters={availableFilters}
         />
 
         <FilteredDeadlines
           selectedFilter={selectedFilter}
           timeRangeFilter={timeRangeFilter}
           selectedFormats={selectedFormats}
+          selectedPageRanges={selectedPageRanges}
           selectedSources={selectedSources}
         />
       </Animated.ScrollView>

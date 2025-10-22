@@ -11,6 +11,8 @@ import {
   determineUserPace,
   formatAudioUnitsPerDay,
   formatBookUnitsPerDay,
+  formatLowFrequency,
+  formatTimeDisplay,
   formatUnitsPerDay,
   formatUnitsPerDayForDisplay,
   getDeadlineStatus,
@@ -92,17 +94,18 @@ describe('deadlineProviderUtils', () => {
 
       expect(result.latestStatus).toBe('reading');
       expect(result.isCompleted).toBe(false);
-      expect(result.isSetAside).toBe(false);
+      expect(result.isToReview).toBe(false);
       expect(result.isArchived).toBe(false);
+      expect(result.isPending).toBe(false);
     });
 
     it('should return correct status for completed deadline', () => {
       const result = getDeadlineStatus(mockDeadlines[0]);
-      // Basic test - the function should work with real mock data
       expect(result).toHaveProperty('latestStatus');
       expect(result).toHaveProperty('isCompleted');
-      expect(result).toHaveProperty('isSetAside');
+      expect(result).toHaveProperty('isToReview');
       expect(result).toHaveProperty('isArchived');
+      expect(result).toHaveProperty('isPending');
     });
 
     it('should handle deadline with no status', () => {
@@ -115,8 +118,143 @@ describe('deadlineProviderUtils', () => {
 
       expect(result.latestStatus).toBe('reading');
       expect(result.isCompleted).toBe(false);
-      expect(result.isSetAside).toBe(false);
+      expect(result.isToReview).toBe(false);
       expect(result.isArchived).toBe(false);
+      expect(result.isPending).toBe(false);
+    });
+
+    it('should return latest status from multiple status records', () => {
+      const deadlineWithMultipleStatuses = {
+        ...mockDeadlines[0],
+        status: [
+          {
+            id: 'status-1',
+            deadline_id: 'rd-123',
+            status: 'pending' as const,
+            created_at: '2025-01-01T00:00:00Z',
+            updated_at: '2025-01-01T00:00:00Z',
+          },
+          {
+            id: 'status-2',
+            deadline_id: 'rd-123',
+            status: 'reading' as const,
+            created_at: '2025-01-05T00:00:00Z',
+            updated_at: '2025-01-05T00:00:00Z',
+          },
+          {
+            id: 'status-3',
+            deadline_id: 'rd-123',
+            status: 'to_review' as const,
+            created_at: '2025-01-15T00:00:00Z',
+            updated_at: '2025-01-15T00:00:00Z',
+          },
+        ],
+      };
+
+      const result = getDeadlineStatus(deadlineWithMultipleStatuses);
+
+      expect(result.latestStatus).toBe('to_review');
+      expect(result.isCompleted).toBe(false);
+      expect(result.isToReview).toBe(true);
+      expect(result.isArchived).toBe(false);
+      expect(result.isPending).toBe(false);
+    });
+
+    it('should correctly sort status records by created_at timestamp', () => {
+      const deadlineWithUnsortedStatuses = {
+        ...mockDeadlines[0],
+        status: [
+          {
+            id: 'status-3',
+            deadline_id: 'rd-123',
+            status: 'complete' as const,
+            created_at: '2025-01-15T00:00:00Z',
+            updated_at: '2025-01-15T00:00:00Z',
+          },
+          {
+            id: 'status-1',
+            deadline_id: 'rd-123',
+            status: 'pending' as const,
+            created_at: '2025-01-01T00:00:00Z',
+            updated_at: '2025-01-01T00:00:00Z',
+          },
+          {
+            id: 'status-2',
+            deadline_id: 'rd-123',
+            status: 'reading' as const,
+            created_at: '2025-01-05T00:00:00Z',
+            updated_at: '2025-01-05T00:00:00Z',
+          },
+        ],
+      };
+
+      const result = getDeadlineStatus(deadlineWithUnsortedStatuses);
+
+      expect(result.latestStatus).toBe('complete');
+      expect(result.isCompleted).toBe(true);
+      expect(result.isToReview).toBe(false);
+      expect(result.isArchived).toBe(true);
+      expect(result.isPending).toBe(false);
+    });
+
+    it('should handle status history with reading -> to_review -> complete transition', () => {
+      const deadlineWithCompleteHistory = {
+        ...mockDeadlines[0],
+        status: [
+          {
+            id: 'status-1',
+            deadline_id: 'rd-123',
+            status: 'reading' as const,
+            created_at: '2025-01-01T00:00:00Z',
+            updated_at: '2025-01-01T00:00:00Z',
+          },
+          {
+            id: 'status-2',
+            deadline_id: 'rd-123',
+            status: 'to_review' as const,
+            created_at: '2025-01-10T00:00:00Z',
+            updated_at: '2025-01-10T00:00:00Z',
+          },
+          {
+            id: 'status-3',
+            deadline_id: 'rd-123',
+            status: 'complete' as const,
+            created_at: '2025-01-20T00:00:00Z',
+            updated_at: '2025-01-20T00:00:00Z',
+          },
+        ],
+      };
+
+      const result = getDeadlineStatus(deadlineWithCompleteHistory);
+
+      expect(result.latestStatus).toBe('complete');
+      expect(result.isCompleted).toBe(true);
+      expect(result.isToReview).toBe(false);
+      expect(result.isArchived).toBe(true);
+      expect(result.isPending).toBe(false);
+    });
+
+    it('should return correct status for pending deadline', () => {
+      const deadlineWithPendingStatus = {
+        ...mockDeadlines[0],
+        status: [
+          {
+            id: 'status-1',
+            deadline_id: 'rd-123',
+            status: 'pending' as const,
+            created_at: '2025-01-01T00:00:00Z',
+            updated_at: '2025-01-01T00:00:00Z',
+          },
+        ],
+      };
+
+      const result = getDeadlineStatus(deadlineWithPendingStatus);
+
+      expect(result.latestStatus).toBe('pending');
+      expect(result.isCompleted).toBe(false);
+      expect(result.isToReview).toBe(false);
+      expect(result.isArchived).toBe(false);
+      expect(result.isPending).toBe(true);
     });
   });
 
@@ -400,6 +538,85 @@ describe('deadlineProviderUtils', () => {
     });
   });
 
+  describe('formatLowFrequency', () => {
+    it('should format weekly frequency', () => {
+      const result = formatLowFrequency(7, 'page');
+      expect(result).toBe('1 page/week');
+    });
+
+    it('should format bi-weekly frequency', () => {
+      const result = formatLowFrequency(14, 'minute');
+      expect(result).toBe('1 minute/2 weeks');
+    });
+
+    it('should format 3 weeks frequency', () => {
+      const result = formatLowFrequency(21, 'page');
+      expect(result).toBe('1 page/3 weeks');
+    });
+
+    it('should format monthly frequency (28 days)', () => {
+      const result = formatLowFrequency(28, 'minute');
+      expect(result).toBe('1 minute/month');
+    });
+
+    it('should format custom weekly frequency (5 weeks)', () => {
+      const result = formatLowFrequency(35, 'page');
+      expect(result).toBe('1 page/5 weeks');
+    });
+
+    it('should format custom weekly frequency (6 weeks)', () => {
+      const result = formatLowFrequency(42, 'minute');
+      expect(result).toBe('1 minute/6 weeks');
+    });
+
+    it('should format every X days for non-weekly intervals', () => {
+      const result = formatLowFrequency(10, 'page');
+      expect(result).toBe('1 page every 10 days');
+    });
+
+    it('should format every X days for 3 days', () => {
+      const result = formatLowFrequency(3, 'minute');
+      expect(result).toBe('1 minute every 3 days');
+    });
+  });
+
+  describe('formatTimeDisplay', () => {
+    it('should format hours and minutes', () => {
+      const result = formatTimeDisplay(90);
+      expect(result).toBe('1h 30m');
+    });
+
+    it('should format hours only', () => {
+      const result = formatTimeDisplay(120);
+      expect(result).toBe('2h');
+    });
+
+    it('should format single hour', () => {
+      const result = formatTimeDisplay(60);
+      expect(result).toBe('1h');
+    });
+
+    it('should format minutes with plural', () => {
+      const result = formatTimeDisplay(45);
+      expect(result).toBe('45 minutes');
+    });
+
+    it('should format single minute', () => {
+      const result = formatTimeDisplay(1);
+      expect(result).toBe('1 minute');
+    });
+
+    it('should handle zero minutes', () => {
+      const result = formatTimeDisplay(0);
+      expect(result).toBe('0 minutes');
+    });
+
+    it('should round minutes correctly', () => {
+      const result = formatTimeDisplay(75);
+      expect(result).toBe('1h 15m');
+    });
+  });
+
   describe('formatAudioUnitsPerDay', () => {
     it('should format standard audio units', () => {
       const result = formatAudioUnitsPerDay(90, 90, 5);
@@ -417,23 +634,43 @@ describe('deadlineProviderUtils', () => {
     });
 
     it('should format less than 1 minute per day as weekly', () => {
-      const result = formatAudioUnitsPerDay(1, 0.14, 7); // ~1 minute per week
+      const result = formatAudioUnitsPerDay(1, 0.14, 7);
       expect(result).toBe('1 minute/week');
     });
 
     it('should format less than 1 minute per day as bi-weekly', () => {
-      const result = formatAudioUnitsPerDay(1, 0.07, 14); // ~1 minute per 2 weeks
+      const result = formatAudioUnitsPerDay(1, 0.07, 14);
       expect(result).toBe('1 minute/2 weeks');
     });
 
+    it('should format less than 1 minute per day as 3 weeks', () => {
+      const result = formatAudioUnitsPerDay(1, 1 / 21, 21);
+      expect(result).toBe('1 minute/3 weeks');
+    });
+
     it('should format less than 1 minute per day as monthly', () => {
-      const result = formatAudioUnitsPerDay(1, 0.036, 28); // ~1 minute per month
+      const result = formatAudioUnitsPerDay(1, 0.036, 28);
       expect(result).toBe('1 minute/month');
     });
 
+    it('should format less than 1 minute per day as custom weeks (4 weeks)', () => {
+      const result = formatAudioUnitsPerDay(1, 1 / 28, 28);
+      expect(result).toBe('1 minute/month');
+    });
+
+    it('should format less than 1 minute per day as custom weeks (5 weeks)', () => {
+      const result = formatAudioUnitsPerDay(1, 1 / 35, 35);
+      expect(result).toBe('1 minute/5 weeks');
+    });
+
     it('should format less than 1 minute per day as every X days', () => {
-      const result = formatAudioUnitsPerDay(1, 0.1, 10); // ~1 minute every 10 days
+      const result = formatAudioUnitsPerDay(1, 0.1, 10);
       expect(result).toBe('1 minute every 10 days');
+    });
+
+    it('should handle zero actualUnitsPerDay (book complete)', () => {
+      const result = formatAudioUnitsPerDay(0, 0, 10);
+      expect(result).toBe('0 minutes/day needed');
     });
   });
 
@@ -444,13 +681,38 @@ describe('deadlineProviderUtils', () => {
     });
 
     it('should format less than 1 page per day as weekly', () => {
-      const result = formatBookUnitsPerDay(1, 0.14, 7, 'eBook'); // ~1 page per week
+      const result = formatBookUnitsPerDay(1, 0.14, 7, 'eBook');
       expect(result).toBe('1 page/week');
     });
 
+    it('should format less than 1 page per day as bi-weekly', () => {
+      const result = formatBookUnitsPerDay(1, 1 / 14, 14, 'physical');
+      expect(result).toBe('1 page/2 weeks');
+    });
+
+    it('should format less than 1 page per day as 3 weeks', () => {
+      const result = formatBookUnitsPerDay(1, 1 / 21, 21, 'eBook');
+      expect(result).toBe('1 page/3 weeks');
+    });
+
+    it('should format less than 1 page per day as monthly', () => {
+      const result = formatBookUnitsPerDay(1, 1 / 28, 28, 'physical');
+      expect(result).toBe('1 page/month');
+    });
+
+    it('should format less than 1 page per day as custom weeks (6 weeks)', () => {
+      const result = formatBookUnitsPerDay(1, 1 / 42, 42, 'eBook');
+      expect(result).toBe('1 page/6 weeks');
+    });
+
     it('should format less than 1 page per day as every X days', () => {
-      const result = formatBookUnitsPerDay(1, 0.1, 10, 'physical'); // ~1 page every 10 days
+      const result = formatBookUnitsPerDay(1, 0.1, 10, 'physical');
       expect(result).toBe('1 page every 10 days');
+    });
+
+    it('should handle zero actualUnitsPerDay (book complete)', () => {
+      const result = formatBookUnitsPerDay(0, 0, 10, 'eBook');
+      expect(result).toBe('0 pages/day needed');
     });
   });
 
@@ -485,6 +747,66 @@ describe('deadlineProviderUtils', () => {
     it('should use book formatting for eBook format', () => {
       const result = formatUnitsPerDayForDisplay(15, 'eBook', 75, 5);
       expect(result).toBe('15 pages/day needed');
+    });
+
+    it('should handle zero remaining pages for eBook', () => {
+      const result = formatUnitsPerDayForDisplay(0, 'eBook', 0, 12);
+      expect(result).toBe('0 pages/day needed');
+    });
+
+    it('should handle zero remaining pages for physical', () => {
+      const result = formatUnitsPerDayForDisplay(0, 'physical', 0, 12);
+      expect(result).toBe('0 pages/day needed');
+    });
+
+    it('should handle zero remaining minutes for audio', () => {
+      const result = formatUnitsPerDayForDisplay(0, 'audio', 0, 12);
+      expect(result).toBe('0 minutes/day needed');
+    });
+
+    it('should show completion message for 1 page remaining', () => {
+      const result = formatUnitsPerDayForDisplay(1, 'physical', 1, 11);
+      expect(result).toBe('Just 1 page left');
+    });
+
+    it('should show completion message for 5 pages remaining', () => {
+      const result = formatUnitsPerDayForDisplay(1, 'physical', 5, 20);
+      expect(result).toBe('Just 5 pages left');
+    });
+
+    it('should show completion message for 3 pages remaining (eBook)', () => {
+      const result = formatUnitsPerDayForDisplay(1, 'eBook', 3, 15);
+      expect(result).toBe('Just 3 pages left');
+    });
+
+    it('should use normal formatting for 6 pages remaining', () => {
+      const result = formatUnitsPerDayForDisplay(1, 'physical', 6, 5);
+      expect(result).toBe('1 pages/day needed');
+    });
+
+    it('should show completion message for 15 minutes remaining (audio)', () => {
+      const result = formatUnitsPerDayForDisplay(1, 'audio', 15, 10);
+      expect(result).toBe('Just 15 minutes left');
+    });
+
+    it('should show completion message for 30 minutes remaining (audio)', () => {
+      const result = formatUnitsPerDayForDisplay(1, 'audio', 30, 20);
+      expect(result).toBe('Just 30 minutes left');
+    });
+
+    it('should show completion message for 1 minute remaining (audio)', () => {
+      const result = formatUnitsPerDayForDisplay(1, 'audio', 1, 5);
+      expect(result).toBe('Just 1 minute left');
+    });
+
+    it('should use normal formatting for 75 minutes remaining (audio, above threshold)', () => {
+      const result = formatUnitsPerDayForDisplay(4, 'audio', 75, 20);
+      expect(result).toBe('4 minutes/day needed');
+    });
+
+    it('should use normal formatting for 60 minutes remaining (audio, above threshold)', () => {
+      const result = formatUnitsPerDayForDisplay(12, 'audio', 60, 5);
+      expect(result).toBe('12 minutes/day needed');
     });
   });
 

@@ -394,7 +394,7 @@ describe('DeadlineFormStep1', () => {
       );
       fireEvent.press(firstBookButton);
 
-      expect(useFetchBookData).toHaveBeenCalledWith('book-1');
+      expect(useFetchBookData).toHaveBeenCalledWith({ api_id: 'book-1' });
     });
 
     it('should not handle book selection when book has no api_id', () => {

@@ -1,16 +1,19 @@
 // Types that match the actual edge function outputs
 
 export interface BookSearchResultMetadata {
-  goodreads_id: string;
+  goodreads_id?: string;
+  google_books_id?: string;
   edition_count?: number | null;
   ratings_count?: number | null;
   series?: string | null;
   series_number?: number | null;
   authors: string[];
+  isbn?: string | null;
 }
 
 export interface BookSearchResult {
   api_id: string;
+  google_volume_id?: string;
   api_source: string;
   bookUrl: string;
   cover_image_url: string | null;
@@ -45,6 +48,7 @@ export interface FullBookData {
   edition: string | null;
   format: string | null;
   genres: string[];
+  google_volume_id?: string | null;
   has_user_edits: boolean;
   isbn10: string | null;
   isbn13: string | null;

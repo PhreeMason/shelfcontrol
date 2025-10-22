@@ -4,6 +4,7 @@ import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
   BookFormat,
   FilterType,
+  PageRangeFilter,
   ReadingDeadlineWithProgress,
   TimeRangeFilter,
 } from '@/types/deadline.types';
@@ -24,21 +25,23 @@ interface FilterSectionProps {
   onTimeRangeChange: (filter: TimeRangeFilter) => void;
   selectedFormats: BookFormat[];
   onFormatsChange: (formats: BookFormat[]) => void;
+  selectedPageRanges: PageRangeFilter[];
+  onPageRangesChange: (ranges: PageRangeFilter[]) => void;
   selectedSources: string[];
   onSourcesChange: (sources: string[]) => void;
   availableSources: string[];
   animatedStyle?: any;
   onLayout?: (event: LayoutChangeEvent) => void;
-  availableFilters?: FilterType[];
 }
 
 const filterOptions: FilterOption[] = [
   { key: 'pending', label: 'Pending' },
   { key: 'active', label: 'Active' },
-  { key: 'completed', label: 'Completed' },
-  { key: 'overdue', label: 'Overdue' },
   { key: 'paused', label: 'Paused' },
-  { key: 'didNotFinish', label: 'Did Not Finish' },
+  { key: 'overdue', label: 'Overdue' },
+  { key: 'toReview', label: 'To Review' },
+  { key: 'completed', label: 'Completed' },
+  { key: 'didNotFinish', label: 'DNF' },
   { key: 'all', label: 'All' },
 ];
 
@@ -49,12 +52,13 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   onTimeRangeChange,
   selectedFormats,
   onFormatsChange,
+  selectedPageRanges,
+  onPageRangesChange,
   selectedSources,
   onSourcesChange,
   availableSources,
   animatedStyle,
   onLayout,
-  availableFilters,
 }) => {
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const {
@@ -62,8 +66,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     activeDeadlines,
     overdueDeadlines,
     pendingDeadlines,
-    completedDeadlines,
     pausedDeadlines,
+    completedDeadlines,
+    toReviewDeadlines,
     didNotFinishDeadlines,
   } = useDeadlines();
 
@@ -72,8 +77,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     deadlineMap.set('active', activeDeadlines);
     deadlineMap.set('overdue', overdueDeadlines);
     deadlineMap.set('pending', pendingDeadlines);
-    deadlineMap.set('completed', completedDeadlines);
     deadlineMap.set('paused', pausedDeadlines);
+    deadlineMap.set('completed', completedDeadlines);
+    deadlineMap.set('toReview', toReviewDeadlines);
     deadlineMap.set('didNotFinish', didNotFinishDeadlines);
     deadlineMap.set('all', deadlines);
 
@@ -90,21 +96,26 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     countMap.set('active', activeDeadlines.length);
     countMap.set('overdue', overdueDeadlines.length);
     countMap.set('pending', pendingDeadlines.length);
-    countMap.set('completed', completedDeadlines.length);
     countMap.set('paused', pausedDeadlines.length);
+    countMap.set('completed', completedDeadlines.length);
+    countMap.set('toReview', toReviewDeadlines.length);
     countMap.set('didNotFinish', didNotFinishDeadlines.length);
     countMap.set('all', deadlines.length);
 
     return countMap.get(filterKey) ?? 0;
   };
 
-  const visibleOptions = availableFilters
-    ? filterOptions.filter(option => availableFilters.includes(option.key))
-    : filterOptions;
+  const visibleOptions = filterOptions.filter(option => {
+    if (option.key === 'overdue' && overdueDeadlines.length === 0) {
+      return false;
+    }
+    return true;
+  });
 
   const hasActiveFilters =
     timeRangeFilter !== 'all' ||
-    selectedFormats.length < 3 ||
+    selectedFormats.length > 0 ||
+    selectedPageRanges.length > 0 ||
     selectedSources.length > 0;
 
   return (
@@ -135,7 +146,13 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 title={`${option.label} (${count})`}
                 style={styles.filterButton}
                 variant={selectedFilter === option.key ? 'primary' : 'outline'}
-                onPress={() => onFilterChange(option.key)}
+                onPress={() => {
+                  if (selectedFilter === option.key) {
+                    setShowFilterSheet(true);
+                  } else {
+                    onFilterChange(option.key);
+                  }
+                }}
               />
             );
           })}
@@ -146,10 +163,13 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         visible={showFilterSheet}
         onClose={() => setShowFilterSheet(false)}
         deadlines={baseDeadlines}
+        selectedFilter={selectedFilter}
         timeRangeFilter={timeRangeFilter}
         onTimeRangeChange={onTimeRangeChange}
         selectedFormats={selectedFormats}
         onFormatsChange={onFormatsChange}
+        selectedPageRanges={selectedPageRanges}
+        onPageRangesChange={onPageRangesChange}
         selectedSources={selectedSources}
         onSourcesChange={onSourcesChange}
         availableSources={availableSources}

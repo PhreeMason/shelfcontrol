@@ -149,7 +149,7 @@ describe('DeadlinesService', () => {
         api_id: 'new-book-api-123',
         title: 'New Book',
         author: 'New Author',
-        api_source: 'google',
+        api_source: 'google_books',
         cover_image_url: null,
         description: null,
         edition: null,
@@ -1037,94 +1037,280 @@ describe('DeadlinesService', () => {
   describe('updateDeadlineStatus', () => {
     const deadlineId = 'rd-123';
 
-    it('should update deadline status to complete', async () => {
-      const mockStatusData = {
-        deadline_id: 'rd-123',
-        status: 'complete',
-        created_at: expect.any(String),
-        updated_at: expect.any(String),
+    it('should insert new status record for complete status', async () => {
+      const mockDeadlineWithStatus = {
+        id: 'rd-123',
+        status: [{ status: 'reading', created_at: '2025-01-01T00:00:00Z' }],
       };
 
-      const mockInsert = jest.fn().mockReturnThis();
-      const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
-        .fn()
-        .mockResolvedValue({ data: mockStatusData, error: null });
+      const mockUpdatedDeadline = {
+        id: 'rd-123',
+        book_title: 'Test Book',
+        deadline_id: 'rd-123',
+        status: [
+          { status: 'reading', created_at: '2025-01-01T00:00:00Z' },
+          { status: 'complete', created_at: '2025-01-15T00:00:00Z' },
+        ],
+        progress: [],
+      };
 
-      mockSupabaseFrom.mockReturnValue({
-        insert: mockInsert,
-        select: mockSelect,
-        single: mockSingle,
+      let callCount = 0;
+      mockSupabaseFrom.mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            single: jest.fn().mockResolvedValue({
+              data: mockDeadlineWithStatus,
+              error: null,
+            }),
+          };
+        } else if (callCount === 2) {
+          return {
+            insert: jest.fn().mockReturnThis(),
+            select: jest.fn().mockReturnThis(),
+            single: jest.fn().mockResolvedValue({ data: {}, error: null }),
+          };
+        } else {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            single: jest
+              .fn()
+              .mockResolvedValue({ data: mockUpdatedDeadline, error: null }),
+          };
+        }
       });
 
       const result = await deadlinesService.updateDeadlineStatus(
+        'user-123',
         deadlineId,
         'complete'
       );
 
-      expect(mockInsert).toHaveBeenCalledWith({
-        deadline_id: 'rd-123',
-        status: 'complete',
-        created_at: expect.any(String),
-        updated_at: expect.any(String),
-      });
       expect(result).toEqual(
         expect.objectContaining({
-          deadline_id: 'rd-123',
-          status: 'complete',
+          id: 'rd-123',
+          status: expect.arrayContaining([
+            expect.objectContaining({ status: 'reading' }),
+            expect.objectContaining({ status: 'complete' }),
+          ]),
         })
       );
     });
 
-    it('should update deadline status to set_aside', async () => {
-      const mockStatusData = {
-        deadline_id: 'rd-123',
-        status: 'paused',
+    it('should insert new status record for to_review status', async () => {
+      const mockDeadlineWithStatus = {
+        id: 'rd-123',
+        status: [{ status: 'reading', created_at: '2025-01-01T00:00:00Z' }],
       };
 
-      const mockInsert = jest.fn().mockReturnThis();
-      const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
-        .fn()
-        .mockResolvedValue({ data: mockStatusData, error: null });
+      const mockUpdatedDeadline = {
+        id: 'rd-123',
+        book_title: 'Test Book',
+        status: [
+          { status: 'reading', created_at: '2025-01-01T00:00:00Z' },
+          { status: 'to_review', created_at: '2025-01-15T00:00:00Z' },
+        ],
+        progress: [],
+      };
 
-      mockSupabaseFrom.mockReturnValue({
-        insert: mockInsert,
-        select: mockSelect,
-        single: mockSingle,
+      let callCount = 0;
+      mockSupabaseFrom.mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            single: jest.fn().mockResolvedValue({
+              data: mockDeadlineWithStatus,
+              error: null,
+            }),
+          };
+        } else if (callCount === 2) {
+          return {
+            insert: jest.fn().mockReturnThis(),
+            select: jest.fn().mockReturnThis(),
+            single: jest.fn().mockResolvedValue({ data: {}, error: null }),
+          };
+        } else {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            single: jest
+              .fn()
+              .mockResolvedValue({ data: mockUpdatedDeadline, error: null }),
+          };
+        }
       });
 
       const result = await deadlinesService.updateDeadlineStatus(
+        'user-123',
         deadlineId,
-        'paused'
+        'to_review'
       );
 
-      expect(mockInsert).toHaveBeenCalledWith(
+      expect(result).toEqual(
         expect.objectContaining({
-          status: 'paused',
+          status: expect.arrayContaining([
+            expect.objectContaining({ status: 'reading' }),
+            expect.objectContaining({ status: 'to_review' }),
+          ]),
         })
       );
-      expect(result).toEqual(mockStatusData);
     });
 
-    it('should throw error when status update fails', async () => {
-      const mockError = new Error('Status update failed');
+    it('should throw error when status insert fails', async () => {
+      const mockError = new Error('Status insert failed');
+      const mockDeadlineWithStatus = {
+        id: 'rd-123',
+        status: [{ status: 'reading' }],
+      };
 
-      const mockInsert = jest.fn().mockReturnThis();
-      const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
-        .fn()
-        .mockResolvedValue({ data: null, error: mockError });
-
-      mockSupabaseFrom.mockReturnValue({
-        insert: mockInsert,
-        select: mockSelect,
-        single: mockSingle,
+      let callCount = 0;
+      mockSupabaseFrom.mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            single: jest.fn().mockResolvedValue({
+              data: mockDeadlineWithStatus,
+              error: null,
+            }),
+          };
+        } else {
+          return {
+            insert: jest.fn().mockReturnThis(),
+            select: jest.fn().mockReturnThis(),
+            single: jest
+              .fn()
+              .mockResolvedValue({ data: null, error: mockError }),
+          };
+        }
       });
 
       await expect(
-        deadlinesService.updateDeadlineStatus(deadlineId, 'complete')
-      ).rejects.toThrow('Status update failed');
+        deadlinesService.updateDeadlineStatus(
+          'user-123',
+          deadlineId,
+          'complete'
+        )
+      ).rejects.toThrow('Status insert failed');
+    });
+
+    it('should reject invalid status transitions', async () => {
+      const mockDeadlineWithStatus = {
+        id: 'rd-123',
+        status: [{ status: 'pending' }],
+      };
+
+      mockSupabaseFrom.mockImplementation(() => {
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: jest.fn().mockResolvedValue({
+            data: mockDeadlineWithStatus,
+            error: null,
+          }),
+        };
+      });
+
+      await expect(
+        deadlinesService.updateDeadlineStatus(
+          'user-123',
+          deadlineId,
+          'to_review'
+        )
+      ).rejects.toThrow('Invalid status transition from pending to to_review');
+    });
+
+    it('should not allow transitions from complete status', async () => {
+      const mockDeadlineWithStatus = {
+        id: 'rd-123',
+        status: [{ status: 'complete' }],
+      };
+
+      mockSupabaseFrom.mockImplementation(() => {
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: jest.fn().mockResolvedValue({
+            data: mockDeadlineWithStatus,
+            error: null,
+          }),
+        };
+      });
+
+      await expect(
+        deadlinesService.updateDeadlineStatus('user-123', deadlineId, 'reading')
+      ).rejects.toThrow('Invalid status transition from complete to reading');
+    });
+
+    it('should allow valid transition from reading to to_review and maintain history', async () => {
+      const mockDeadlineWithStatus = {
+        id: 'rd-123',
+        status: [{ status: 'reading', created_at: '2025-01-01T00:00:00Z' }],
+      };
+
+      const mockUpdatedDeadline = {
+        id: 'rd-123',
+        book_title: 'Test Book',
+        status: [
+          { status: 'reading', created_at: '2025-01-01T00:00:00Z' },
+          { status: 'to_review', created_at: '2025-01-15T00:00:00Z' },
+        ],
+        progress: [],
+      };
+
+      let callCount = 0;
+      mockSupabaseFrom.mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            single: jest.fn().mockResolvedValue({
+              data: mockDeadlineWithStatus,
+              error: null,
+            }),
+          };
+        } else if (callCount === 2) {
+          return {
+            insert: jest.fn().mockReturnThis(),
+            select: jest.fn().mockReturnThis(),
+            single: jest.fn().mockResolvedValue({ data: {}, error: null }),
+          };
+        } else {
+          return {
+            select: jest.fn().mockReturnThis(),
+            eq: jest.fn().mockReturnThis(),
+            single: jest
+              .fn()
+              .mockResolvedValue({ data: mockUpdatedDeadline, error: null }),
+          };
+        }
+      });
+
+      const result = await deadlinesService.updateDeadlineStatus(
+        'user-123',
+        deadlineId,
+        'to_review'
+      );
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          status: expect.arrayContaining([
+            expect.objectContaining({ status: 'reading' }),
+            expect.objectContaining({ status: 'to_review' }),
+          ]),
+        })
+      );
+      expect(result).toBeDefined();
+      if (result && 'status' in result && Array.isArray(result.status)) {
+        expect(result.status.length).toBe(2);
+      }
     });
   });
 

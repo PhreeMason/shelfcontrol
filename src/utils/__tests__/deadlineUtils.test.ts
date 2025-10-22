@@ -24,7 +24,7 @@ const createMockDeadline = (
     updated_at?: string;
   }[] = [],
   status: {
-    status: 'reading' | 'complete' | 'paused' | 'pending' | 'did_not_finish';
+    status: 'reading' | 'complete' | 'to_review' | 'pending' | 'did_not_finish';
     created_at: string;
   }[] = []
 ): ReadingDeadlineWithProgress => ({
@@ -132,7 +132,7 @@ describe('deadlineUtils', () => {
   });
 
   describe('separateDeadlines', () => {
-    it('should separate deadlines into active, overdue, completed, setAside (paused), didNotFinish, and pending', () => {
+    it('should separate deadlines into active, overdue, completed, toReview, didNotFinish, and pending', () => {
       const activeDeadline = createMockDeadline('1', '2025-12-31');
       const overdueDeadline = createMockDeadline('2', '2023-01-01');
       const completedDeadline = createMockDeadline(
@@ -143,13 +143,13 @@ describe('deadlineUtils', () => {
         [],
         [{ status: 'complete', created_at: '2024-01-15T00:00:00Z' }]
       );
-      const pauseDeadline = createMockDeadline(
+      const toReviewDeadline = createMockDeadline(
         '4',
         '2024-12-31',
         '2024-01-01T00:00:00Z',
         undefined,
         [],
-        [{ status: 'paused', created_at: '2024-01-15T00:00:00Z' }]
+        [{ status: 'to_review', created_at: '2024-01-15T00:00:00Z' }]
       );
       const pendingDeadline = createMockDeadline(
         '5',
@@ -172,7 +172,7 @@ describe('deadlineUtils', () => {
         activeDeadline,
         overdueDeadline,
         completedDeadline,
-        pauseDeadline,
+        toReviewDeadline,
         pendingDeadline,
         didNotFinishDeadline,
       ]);
@@ -183,8 +183,8 @@ describe('deadlineUtils', () => {
       expect(result.overdue[0].id).toBe('2');
       expect(result.completed).toHaveLength(1);
       expect(result.completed[0].id).toBe('3');
-      expect(result.setAside).toHaveLength(1);
-      expect(result.setAside[0].id).toBe('4');
+      expect(result.toReview).toHaveLength(1);
+      expect(result.toReview[0].id).toBe('4');
       expect(result.pending).toHaveLength(1);
       expect(result.pending[0].id).toBe('5');
       expect(result.didNotFinish).toHaveLength(1);
@@ -207,7 +207,7 @@ describe('deadlineUtils', () => {
       const result = separateDeadlines([deadline]);
 
       expect(result.completed).toHaveLength(1);
-      expect(result.setAside).toHaveLength(0);
+      expect(result.toReview).toHaveLength(0);
       expect(result.didNotFinish).toHaveLength(0);
       expect(result.active).toHaveLength(0);
       expect(result.overdue).toHaveLength(0);
@@ -220,7 +220,7 @@ describe('deadlineUtils', () => {
 
       expect(result.active).toHaveLength(1);
       expect(result.completed).toHaveLength(0);
-      expect(result.setAside).toHaveLength(0);
+      expect(result.toReview).toHaveLength(0);
       expect(result.didNotFinish).toHaveLength(0);
       expect(result.overdue).toHaveLength(0);
     });
@@ -249,14 +249,14 @@ describe('deadlineUtils', () => {
       expect(result.completed[1].id).toBe('1');
     });
 
-    it('should sort setAside by most recently set aside status', () => {
+    it('should sort toReview by most recently set to review status', () => {
       const deadline1 = createMockDeadline(
         '1',
         '2024-12-31',
         '2024-01-01T00:00:00Z',
         '2024-01-10T00:00:00Z',
         [],
-        [{ status: 'paused', created_at: '2024-01-15T00:00:00Z' }]
+        [{ status: 'to_review', created_at: '2024-01-15T00:00:00Z' }]
       );
       const deadline2 = createMockDeadline(
         '2',
@@ -264,13 +264,13 @@ describe('deadlineUtils', () => {
         '2024-01-01T00:00:00Z',
         '2024-01-20T00:00:00Z',
         [],
-        [{ status: 'paused', created_at: '2024-01-18T00:00:00Z' }]
+        [{ status: 'to_review', created_at: '2024-01-18T00:00:00Z' }]
       );
 
       const result = separateDeadlines([deadline1, deadline2]);
 
-      expect(result.setAside[0].id).toBe('2');
-      expect(result.setAside[1].id).toBe('1');
+      expect(result.toReview[0].id).toBe('2');
+      expect(result.toReview[1].id).toBe('1');
     });
 
     it('should sort overdue deadlines by pages remaining (least remaining first)', () => {

@@ -58,7 +58,7 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
 
         let color;
         if (isPending) {
-          color = colors.paused;
+          color = colors.pending;
         } else {
           const { urgencyLevel } = getDeadlineCalculations(deadline);
           color = urgencyColorMap[urgencyLevel] || urgencyColorMap.good;
@@ -98,7 +98,7 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
     getDeadlineCalculations,
     selectedDate,
     urgencyColorMap,
-    colors.paused,
+    colors.pending,
   ]);
 
   const selectedDateDeadlines =
@@ -194,7 +194,7 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
                   const isPending = latestStatus === 'pending';
 
                   const urgencyColor = isPending
-                    ? colors.paused
+                    ? colors.pending
                     : urgencyColorMap[urgencyLevel];
 
                   return (

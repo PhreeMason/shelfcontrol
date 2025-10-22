@@ -113,6 +113,51 @@ jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
+jest.mock('posthog-react-native', () => {
+  const mockPostHogInstance = {
+    capture: jest.fn(),
+    identify: jest.fn(),
+    screen: jest.fn(),
+    group: jest.fn(),
+    alias: jest.fn(),
+    reset: jest.fn(),
+    isFeatureEnabled: jest.fn(),
+    getFeatureFlag: jest.fn(),
+    reloadFeatureFlags: jest.fn(),
+    register: jest.fn(),
+    unregister: jest.fn(),
+    getDistinctId: jest.fn(() => 'test-distinct-id'),
+    flush: jest.fn(),
+    shutdown: jest.fn(),
+  };
+
+  return {
+    __esModule: true,
+    default: jest.fn(() => mockPostHogInstance),
+    PostHog: jest.fn(() => mockPostHogInstance),
+    usePostHog: jest.fn(() => mockPostHogInstance),
+  };
+});
+
+jest.mock('@/lib/posthog', () => ({
+  posthog: {
+    capture: jest.fn(),
+    identify: jest.fn(),
+    screen: jest.fn(),
+    group: jest.fn(),
+    alias: jest.fn(),
+    reset: jest.fn(),
+    isFeatureEnabled: jest.fn(),
+    getFeatureFlag: jest.fn(),
+    reloadFeatureFlags: jest.fn(),
+    register: jest.fn(),
+    unregister: jest.fn(),
+    getDistinctId: jest.fn(() => 'test-distinct-id'),
+    flush: jest.fn(),
+    shutdown: jest.fn(),
+  },
+}));
+
 // Suppress console warnings for tests
 global.console = {
   ...console,

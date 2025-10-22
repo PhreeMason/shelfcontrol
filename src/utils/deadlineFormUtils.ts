@@ -4,6 +4,7 @@ import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { router } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { convertMinutesToHoursAndMinutes } from './audiobookTimeUtils';
+import { normalizeServerDate } from './dateNormalization';
 import {
   calculateCurrentProgressFromForm,
   calculateTotalQuantityFromForm,
@@ -226,8 +227,8 @@ export const prepareProgressDetailsFromForm = (
             .slice()
             .sort(
               (a, b) =>
-                new Date(a.created_at).getTime() -
-                new Date(b.created_at).getTime()
+                normalizeServerDate(a.created_at).valueOf() -
+                normalizeServerDate(b.created_at).valueOf()
             )[0]
         : null;
 
@@ -351,8 +352,8 @@ export const populateFormFromDeadline = (
             .slice()
             .sort(
               (a, b) =>
-                new Date(a.created_at).getTime() -
-                new Date(b.created_at).getTime()
+                normalizeServerDate(a.created_at).valueOf() -
+                normalizeServerDate(b.created_at).valueOf()
             )[0]
         : null;
 

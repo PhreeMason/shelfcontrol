@@ -14,95 +14,25 @@ import Toast from 'react-native-toast-message';
 
 interface DeadlineActionButtonsProps {
   deadline: ReadingDeadlineWithProgress;
+  onComplete?: () => void;
 }
 
 const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   deadline,
+  onComplete,
 }) => {
-  const {
-    deleteDeadline,
-    completeDeadline,
-    pauseDeadline,
-    reactivateDeadline,
-    startReadingDeadline,
-  } = useDeadlines();
+  const { deleteDeadline, startReadingDeadline } = useDeadlines();
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isCompleting, setIsCompleting] = useState(false);
-  const [isPausing, setIsPausing] = useState(false);
-  const [isReactivating, setIsReactivating] = useState(false);
   const [isStartingReading, setIsStartingReading] = useState(false);
 
   const latestStatus = getDeadlineStatus(deadline);
-  const { isCompleted, isSetAside, isActive, isPending } =
-    getStatusFlags(latestStatus);
+  const { isCompleted, isActive, isPending } = getStatusFlags(latestStatus);
   const handleComplete = () => {
-    Alert.alert(
-      'Complete Book',
-      `Are you sure you want to mark "${deadline.book_title}" as complete?`,
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Complete',
-          style: 'default',
-          onPress: () => {
-            setIsCompleting(true);
-            completeDeadline(
-              deadline.id,
-              () => {
-                setIsCompleting(false);
-                router.replace(`/deadline/${deadline.id}/completion`);
-              },
-              error => {
-                setIsCompleting(false);
-                Toast.show({
-                  swipeable: true,
-                  type: 'error',
-                  text1: 'Failed to complete deadline',
-                  text2: error.message || 'Please try again',
-                  autoHide: true,
-                  visibilityTime: 1500,
-                  position: 'top',
-                });
-              }
-            );
-          },
-        },
-      ]
-    );
-  };
-
-  const handlePause = () => {
-    setIsPausing(true);
-    pauseDeadline(
-      deadline.id,
-      () => {
-        setIsPausing(false);
-        Toast.show({
-          swipeable: true,
-          type: 'success',
-          text1: 'Book paused',
-          text2: `"${deadline.book_title}" has been paused`,
-          autoHide: true,
-          visibilityTime: 1500,
-          position: 'top',
-        });
-      },
-      error => {
-        setIsPausing(false);
-        Toast.show({
-          swipeable: true,
-          type: 'error',
-          text1: 'Failed to pause deadline',
-          text2: error.message || 'Please try again',
-          autoHide: true,
-          visibilityTime: 1500,
-          position: 'top',
-        });
-      }
-    );
+    if (onComplete) {
+      onComplete();
+    } else {
+      router.push(`/deadline/${deadline.id}/completion-flow`);
+    }
   };
 
   const handleDelete = () => {
@@ -150,59 +80,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           },
         },
       ]
-    );
-  };
-
-  const handleReactivate = () => {
-    setIsReactivating(true);
-    reactivateDeadline(
-      deadline.id,
-      () => {
-        setIsReactivating(false);
-        Toast.show({
-          swipeable: true,
-          type: 'success',
-          text1: 'Deadline reactivated!',
-          text2: `"${deadline.book_title}" is now active again`,
-          autoHide: true,
-          visibilityTime: 1500,
-          position: 'top',
-        });
-
-        if (isSetAside) {
-          setTimeout(() => {
-            Alert.alert(
-              'Update Deadline?',
-              "Would you like to update the deadline date since you're resuming this book?",
-              [
-                {
-                  text: 'Not Now',
-                  style: 'cancel',
-                },
-                {
-                  text: 'Yes, Update',
-                  onPress: () => {
-                    // @ts-ignore
-                    router.push(`/deadline/${deadline.id}/edit?page=3`);
-                  },
-                },
-              ]
-            );
-          }, 2500);
-        }
-      },
-      error => {
-        setIsReactivating(false);
-        Toast.show({
-          swipeable: true,
-          type: 'error',
-          text1: 'Failed to reactivate deadline',
-          text2: error.message || 'Please try again',
-          autoHide: true,
-          visibilityTime: 1500,
-          position: 'top',
-        });
-      }
     );
   };
 
@@ -256,7 +133,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
               {
                 text: 'Yes, Update',
                 onPress: () => {
-                  // @ts-ignore
                   router.push(`/deadline/${deadline.id}/edit?page=3`);
                 },
               },
@@ -289,62 +165,24 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
         onPress={() => router.push(`/deadline/${deadline.id}/notes`)}
       />
       {isPending && (
-        <>
-          <ThemedButton
-            hapticsOnPress
-            title={isStartingReading ? 'Starting...' : 'Start Reading'}
-            variant="primary"
-            style={styles.actionButton}
-            onPress={handleStartReading}
-            disabled={isStartingReading}
-          />
-        </>
+        <ThemedButton
+          hapticsOnPress
+          title={isStartingReading ? 'Starting...' : 'Start Reading'}
+          variant="primary"
+          style={styles.actionButton}
+          onPress={handleStartReading}
+          disabled={isStartingReading}
+        />
       )}
 
       {isActive && (
-        <>
-          <ThemedButton
-            hapticsOnPress
-            title={isCompleting ? 'Completing...' : 'Mark as Complete'}
-            variant="success"
-            style={styles.actionButton}
-            onPress={handleComplete}
-            disabled={isCompleting}
-          />
-          <ThemedButton
-            hapticsOnPress
-            title={isPausing ? 'Pausing...' : 'Pause'}
-            variant="secondary"
-            style={styles.actionButton}
-            onPress={handlePause}
-            disabled={isPausing}
-            backgroundColor="warning"
-            textColor="textInverse"
-          />
-        </>
-      )}
-
-      {isSetAside && (
-        <>
-          <ThemedButton
-            hapticsOnPress
-            title={isReactivating ? 'Reactivating...' : 'Resume Reading'}
-            variant="secondary"
-            style={styles.actionButton}
-            backgroundColor="warning"
-            textColor="textInverse"
-            onPress={handleReactivate}
-            disabled={isReactivating}
-          />
-          <ThemedButton
-            hapticsOnPress
-            title={isCompleting ? 'Completing...' : 'Mark as Complete'}
-            variant="success"
-            style={styles.actionButton}
-            onPress={handleComplete}
-            disabled={isCompleting}
-          />
-        </>
+        <ThemedButton
+          hapticsOnPress
+          title="I'm Done Reading"
+          variant="success"
+          style={styles.actionButton}
+          onPress={handleComplete}
+        />
       )}
 
       {isCompleted && (
@@ -354,7 +192,6 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
           variant="primary"
           style={styles.actionButton}
           onPress={handleReadAgain}
-          disabled={isReactivating}
         />
       )}
 

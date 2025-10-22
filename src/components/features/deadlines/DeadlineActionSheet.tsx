@@ -1,11 +1,14 @@
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ActionSheetOption } from '@/components/ui/ActionSheet';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
+import { useReviewTrackingMutation } from '@/hooks/useReviewTrackingMutation';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getDeadlineStatus, getStatusFlags } from '@/utils/deadlineActionUtils';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   Modal,
@@ -20,8 +23,9 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChangeReadingStatusModal } from './modals/ChangeReadingStatusModal';
+import PostReviewModal from '../review/PostReviewModal';
 import { DeleteDeadlineModal } from './modals/DeleteDeadlineModal';
+import { ProgressCheckModal } from './modals/ProgressCheckModal';
 import { UpdateDeadlineDateModal } from './modals/UpdateDeadlineDateModal';
 
 interface DeadlineActionSheetProps {
@@ -37,16 +41,24 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
 }) => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const translateY = useSharedValue(500);
-  const { startReadingDeadline, pauseDeadline, reactivateDeadline } =
+  const { startReadingDeadline, pauseDeadline, resumeDeadline } =
     useDeadlines();
   const [showUpdateDateModal, setShowUpdateDateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showChangeStatusModal, setShowChangeStatusModal] = useState(false);
+  const [showPostReviewModal, setShowPostReviewModal] = useState(false);
+  const [showProgressCheckModal, setShowProgressCheckModal] = useState(false);
 
   const latestStatus = getDeadlineStatus(deadline);
-  const { isCompleted, isSetAside, isActive, isPending } =
+  const { isCompleted, isToReview, isActive, isPending, isPaused } =
     getStatusFlags(latestStatus);
+
+  const { reviewTracking, platforms } = useReviewTrackingData(
+    deadline.id,
+    isToReview
+  );
+  const { updatePlatforms } = useReviewTrackingMutation(deadline.id);
 
   const isArchived = isCompleted || latestStatus === 'did_not_finish';
 
@@ -65,7 +77,8 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const getStatusBadge = () => {
     if (isPending) return { label: 'Pending', color: colors.secondary };
     if (isActive) return { label: 'Active', color: colors.primary };
-    if (isSetAside) return { label: 'Paused', color: colors.approaching };
+    if (isPaused) return { label: 'Paused', color: colors.textSecondary };
+    if (isToReview) return { label: 'To Review', color: colors.approaching };
     if (isCompleted) return { label: 'Completed', color: colors.good };
     if (latestStatus === 'did_not_finish')
       return { label: 'Did Not Finish', color: colors.error };
@@ -113,28 +126,14 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
           );
         },
       };
-    } else if (isActive) {
+    }
+
+    if (isPaused) {
       return {
-        label: 'Pause',
-        icon: 'pause.circle.fill' as const,
+        label: 'Resume Book',
+        icon: 'play.fill' as const,
         onPress: () => {
-          pauseDeadline(
-            deadline.id,
-            () => {
-              onClose();
-            },
-            error => {
-              console.error('Failed to pause deadline:', error);
-            }
-          );
-        },
-      };
-    } else if (isSetAside) {
-      return {
-        label: 'Resume Reading',
-        icon: 'play.circle.fill' as const,
-        onPress: () => {
-          reactivateDeadline(
+          resumeDeadline(
             deadline.id,
             () => {
               onClose();
@@ -147,10 +146,32 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
       };
     }
 
+    if (isActive || isToReview) {
+      return {
+        label: isToReview ? "I'm done reviewing" : "I'm done reading",
+        icon: 'checkmark.circle.fill' as const,
+        onPress: () => {
+          onClose();
+          setShowProgressCheckModal(true);
+        },
+      };
+    }
+
     return null;
   };
 
   const actionButton = getActionButton();
+
+  const handlePostReviewSave = (
+    updates: { id: string; posted: boolean; review_url?: string }[]
+  ) => {
+    if (!reviewTracking) return;
+
+    updatePlatforms({
+      reviewTrackingId: reviewTracking.id,
+      params: { platforms: updates },
+    });
+  };
 
   const actions: ActionSheetOption[] = [];
 
@@ -166,26 +187,69 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
         },
       },
       {
-        label: 'Change Reading Status',
-        icon: 'circle.grid.2x2.fill',
-        iconColor: colors.approaching,
+        label: 'Edit Deadline Details',
+        icon: 'pencil.and.scribble',
+        iconColor: colors.primary,
         showChevron: true,
         onPress: () => {
-          setShowChangeStatusModal(true);
+          router.push(`/deadline/${deadline.id}/edit`);
         },
       }
     );
+
+    if (isActive || isToReview) {
+      actions.push({
+        label: 'Pause Book',
+        icon: 'pause.fill',
+        iconColor: colors.textSecondary,
+        showChevron: true,
+        onPress: () => {
+          pauseDeadline(
+            deadline.id,
+            () => {
+              onClose();
+            },
+            error => {
+              console.error('Failed to pause:', error);
+            }
+          );
+        },
+      });
+    }
+
+    if (isToReview) {
+      actions.push({
+        label: 'Track Reviews',
+        icon: 'note.text',
+        iconColor: colors.backupPink,
+        showChevron: true,
+        onPress: () => {
+          setShowPostReviewModal(true);
+        },
+      });
+    }
   }
 
-  actions.push({
-    label: 'Delete This Book',
-    icon: 'trash.fill',
-    iconColor: colors.error,
-    showChevron: true,
-    onPress: () => {
-      setShowDeleteModal(true);
+  actions.push(
+    {
+      label: 'Add Note',
+      icon: 'square.and.pencil',
+      iconColor: colors.primary,
+      showChevron: true,
+      onPress: () => {
+        router.push(`/deadline/${deadline.id}/notes`);
+      },
     },
-  });
+    {
+      label: 'Delete This Book',
+      icon: 'trash.fill',
+      iconColor: colors.error,
+      showChevron: true,
+      onPress: () => {
+        setShowDeleteModal(true);
+      },
+    }
+  );
 
   return (
     <>
@@ -320,17 +384,26 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
         onClose={() => setShowUpdateDateModal(false)}
       />
 
-      <ChangeReadingStatusModal
-        deadline={deadline}
-        visible={showChangeStatusModal}
-        onClose={() => setShowChangeStatusModal(false)}
-      />
-
       <DeleteDeadlineModal
         deadline={deadline}
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
       />
+
+      <ProgressCheckModal
+        deadline={deadline}
+        visible={showProgressCheckModal}
+        onClose={() => setShowProgressCheckModal(false)}
+      />
+
+      {isToReview && (
+        <PostReviewModal
+          visible={showPostReviewModal}
+          platforms={platforms}
+          onClose={() => setShowPostReviewModal(false)}
+          onSave={handlePostReviewSave}
+        />
+      )}
     </>
   );
 };

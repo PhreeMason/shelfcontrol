@@ -2,26 +2,60 @@ import { DB_TABLES } from '@/constants/database';
 import { DEADLINE_STATUS } from '@/constants/status';
 import { dayjs } from '@/lib/dayjs';
 import { generateId, supabase } from '@/lib/supabase';
+import { Database } from '@/types/database.types';
 import {
   ReadingDeadlineInsert,
   ReadingDeadlineProgressInsert,
   ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
+import { normalizeServerDate } from '@/utils/dateNormalization';
 import { activityService } from './activity.service';
 import { booksService } from './books.service';
+
+const sortByCreatedAtAsc = <T extends { created_at?: string | null }>(
+  array: T[]
+): T[] => {
+  return [...array].sort((a, b) => {
+    const dateA = normalizeServerDate(a.created_at || '1970-01-01').valueOf();
+    const dateB = normalizeServerDate(b.created_at || '1970-01-01').valueOf();
+    return dateA - dateB;
+  });
+};
+
+const sortDeadlineArrays = (
+  deadline: ReadingDeadlineWithProgress
+): ReadingDeadlineWithProgress => {
+  return {
+    ...deadline,
+    progress: deadline.progress ? sortByCreatedAtAsc(deadline.progress) : [],
+    status: deadline.status ? sortByCreatedAtAsc(deadline.status) : [],
+  };
+};
 
 export interface AddDeadlineParams {
   deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
   progressDetails: ReadingDeadlineProgressInsert;
   status?: string;
-  bookData?: { api_id: string; book_id?: string };
+  bookData?: {
+    api_id: string;
+    book_id?: string;
+    api_source?: string;
+    google_volume_id?: string;
+    isbn?: string;
+  };
 }
 
 export interface UpdateDeadlineParams {
   deadlineDetails: ReadingDeadlineInsert;
   progressDetails: ReadingDeadlineProgressInsert;
   status?: string;
-  bookData?: { api_id: string; book_id?: string };
+  bookData?: {
+    api_id: string;
+    book_id?: string;
+    api_source?: string;
+    google_volume_id?: string;
+    isbn?: string;
+  };
 }
 
 export interface UpdateProgressParams {
@@ -57,15 +91,55 @@ class DeadlinesService {
       if (existingBook) {
         finalBookId = existingBook.id;
       } else {
-        // Need to fetch and insert book data
         try {
-          const bookResponse = await booksService.fetchBookData(
-            bookData.api_id
-          );
+          let bookResponse;
+
+          // Use appropriate identifier based on api_source
+          if (bookData.api_source === 'google_books') {
+            // For Google Books, use google_volume_id or isbn
+            if (bookData.isbn) {
+              bookResponse = await booksService.fetchBookData({
+                isbn: bookData.isbn,
+              });
+            } else if (bookData.google_volume_id) {
+              bookResponse = await booksService.fetchBookData({
+                google_volume_id: bookData.google_volume_id,
+              });
+            } else {
+              // Fallback to api_id for Google Books
+              bookResponse = await booksService.fetchBookData({
+                google_volume_id: bookData.api_id,
+              });
+            }
+          } else {
+            // For Goodreads or legacy sources, use api_id
+            bookResponse = await booksService.fetchBookData(bookData.api_id);
+          }
+
           if (bookResponse) {
             const finalNewBookId = generateId('book');
-            await booksService.insertBook(finalNewBookId, bookResponse);
-            finalBookId = finalNewBookId;
+            try {
+              await booksService.insertBook(finalNewBookId, bookResponse);
+              console.log('[deadlinesService.addDeadline] Created new book record:', finalNewBookId);
+              finalBookId = finalNewBookId;
+            } catch (insertError: any) {
+              if (insertError?.code === '23505' && bookData.google_volume_id) {
+                const { data: existingBookByVolumeId } = await supabase
+                  .from(DB_TABLES.BOOKS)
+                  .select('id')
+                  .eq('google_volume_id', bookData.google_volume_id)
+                  .single();
+
+                if (existingBookByVolumeId) {
+                  console.log('[deadlinesService.addDeadline] Found existing book by google_volume_id:', existingBookByVolumeId.id);
+                  finalBookId = existingBookByVolumeId.id;
+                } else {
+                  console.warn('[deadlinesService.addDeadline] Duplicate constraint but could not find existing book');
+                }
+              } else {
+                throw insertError;
+              }
+            }
           }
         } catch (bookError) {
           console.warn('Failed to fetch/insert book data:', bookError);
@@ -213,16 +287,17 @@ class DeadlinesService {
     if (status) {
       const { error: statusError } = await supabase
         .from(DB_TABLES.DEADLINE_STATUS)
-        .update({
+        .insert({
+          deadline_id: deadlineDetails.id!,
           status: status as 'reading' | 'pending',
+          created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
-        .eq('deadline_id', deadlineDetails.id!)
         .select()
         .single();
 
       if (statusError) {
-        console.warn('Failed to update status:', statusError);
+        console.warn('Failed to insert status:', statusError);
       }
     }
 
@@ -315,6 +390,8 @@ class DeadlinesService {
 
   /**
    * Get all deadlines for a user
+   *
+   * @returns Deadlines with status and progress arrays ordered by created_at asc (oldest first, newest last)
    */
   async getDeadlines(userId: string): Promise<ReadingDeadlineWithProgress[]> {
     const { data, error } = await supabase
@@ -323,14 +400,17 @@ class DeadlinesService {
         `
         *,
         progress:deadline_progress(*),
-        status:deadline_status(*)
-      `
+        status:deadline_status(*),
+        books(publisher)
+      ` as any
       )
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data as ReadingDeadlineWithProgress[];
+
+    const deadlines = data as unknown as ReadingDeadlineWithProgress[];
+    return deadlines.map(sortDeadlineArrays);
   }
 
   /**
@@ -352,6 +432,8 @@ class DeadlinesService {
 
   /**
    * Get a single deadline by ID
+   *
+   * @returns Deadline with status and progress arrays ordered by created_at asc (oldest first, newest last)
    */
   async getDeadlineById(
     userId: string,
@@ -363,8 +445,9 @@ class DeadlinesService {
         `
         *,
         progress:deadline_progress(*),
-        status:deadline_status(*)
-      `
+        status:deadline_status(*),
+        books(publisher)
+      ` as any
       )
       .eq('user_id', userId)
       .eq('id', deadlineId)
@@ -377,17 +460,108 @@ class DeadlinesService {
       throw error;
     }
 
-    return data as ReadingDeadlineWithProgress;
+    const deadline = data as unknown as ReadingDeadlineWithProgress;
+    return sortDeadlineArrays(deadline);
   }
 
   /**
-   * Update deadline status (complete, paused, reading, did_not_finish)
+   * Updates deadline status with validation of allowed transitions
+   *
+   * Status is stored in the deadline_status table (NOT on deadlines table directly).
+   * All status queries require a JOIN with deadline_status.
+   * Status changes INSERT new records to maintain complete history.
+   *
+   * Valid transitions are enforced to maintain data integrity:
+   * - pending → reading
+   * - reading → to_review | complete | did_not_finish
+   * - to_review → complete | did_not_finish
+   * - complete → (terminal, no transitions)
+   * - did_not_finish → (terminal, no transitions)
+   *
+   * @param userId - The authenticated user's ID
+   * @param deadlineId - ID of the deadline to update
+   * @param status - New status to transition to
+   *
+   * @returns Updated deadline with status and progress arrays ordered by created_at asc (oldest first, newest last)
+   *
+   * @throws {Error} "Deadline not found or access denied" - Invalid deadline or wrong user
+   * @throws {Error} "Invalid status transition from {current} to {new}" - Blocked transition
+   *
+   * @example
+   * // Valid: Move from reading to to_review
+   * const deadline = await deadlinesService.updateDeadlineStatus(
+   *   userId,
+   *   'rd_123',
+   *   'to_review'
+   * );
+   *
+   * // Invalid: Would throw error
+   * await deadlinesService.updateDeadlineStatus(userId, 'rd_123', 'pending');
+   * // Error: "Invalid status transition from to_review to pending"
+   *
+   * @remarks
+   * Critical architecture notes:
+   * - Status field lives in deadline_status table, accessed via deadline_id foreign key
+   * - Status changes INSERT new records to maintain complete history
+   * - Query pattern: `SELECT d.*, ds.status FROM deadlines d JOIN deadline_status ds ON d.id = ds.deadline_id`
+   * - Latest status determined by most recent created_at timestamp
+   * - Status and progress arrays ordered by created_at asc (oldest first, newest last, last index is current)
+   * - Overdue is NOT a status - it's a runtime calculation: `status = 'reading' AND deadline_date < CURRENT_DATE`
+   * - Logs activity event for status changes
    */
   async updateDeadlineStatus(
+    userId: string,
     deadlineId: string,
-    status: 'complete' | 'paused' | 'reading' | 'did_not_finish'
+    status: Database['public']['Enums']['deadline_status_enum']
   ) {
-    const { data, error } = await supabase
+    const validTransitions: Record<string, string[]> = {
+      pending: ['reading'],
+      reading: ['paused', 'to_review', 'complete', 'did_not_finish'],
+      paused: ['reading', 'complete', 'did_not_finish'],
+      to_review: ['complete', 'did_not_finish'],
+      complete: [],
+      did_not_finish: [],
+    };
+
+    const { data: deadline } = await supabase
+      .from(DB_TABLES.DEADLINES)
+      .select(
+        `
+        id,
+        status:deadline_status(status,created_at)
+      ` as any
+      )
+      .eq('id', deadlineId)
+      .eq('user_id', userId)
+      .single();
+
+    if (!deadline) {
+      throw new Error('Deadline not found or access denied');
+    }
+
+    const deadlineData = deadline as unknown as {
+      id: string;
+      status: { status: string }[];
+    };
+    const currentStatusArray = deadlineData.status;
+    const currentStatusData =
+      currentStatusArray && currentStatusArray.length > 0
+        ? currentStatusArray[currentStatusArray.length - 1]
+        : null;
+
+    if (currentStatusData && currentStatusData.status) {
+      const currentStatus = currentStatusData.status;
+      const allowedTransitions =
+        validTransitions[currentStatus as string] || [];
+
+      if (!allowedTransitions.includes(status) && currentStatus !== status) {
+        throw new Error(
+          `Invalid status transition from ${currentStatus} to ${status}`
+        );
+      }
+    }
+
+    const { error } = await supabase
       .from(DB_TABLES.DEADLINE_STATUS)
       .insert({
         deadline_id: deadlineId,
@@ -405,7 +579,23 @@ class DeadlinesService {
       status,
     });
 
-    return data;
+    const { data: updatedDeadline } = await supabase
+      .from(DB_TABLES.DEADLINES)
+      .select(
+        `
+        *,
+        progress:deadline_progress(*),
+        status:deadline_status(*),
+        books(publisher)
+      ` as any
+      )
+      .eq('id', deadlineId)
+      .eq('user_id', userId)
+      .single();
+
+    return sortDeadlineArrays(
+      updatedDeadline as unknown as ReadingDeadlineWithProgress
+    );
   }
 
   /**
@@ -447,7 +637,11 @@ class DeadlinesService {
     }
 
     // Now mark as complete
-    return this.updateDeadlineStatus(deadlineId, DEADLINE_STATUS.COMPLETE);
+    return this.updateDeadlineStatus(
+      userId,
+      deadlineId,
+      DEADLINE_STATUS.COMPLETE
+    );
   }
 
   /**
@@ -471,6 +665,8 @@ class DeadlinesService {
 
   /**
    * Get deadline history for calendar view
+   *
+   * @returns Deadlines with status and progress arrays ordered by created_at asc (oldest first, newest last)
    */
   async getDeadlineHistory(params: DeadlineHistoryParams) {
     const { userId, formats } = params;
@@ -499,7 +695,7 @@ class DeadlinesService {
           status,
           created_at
         )
-      `
+      ` as any
       )
       .eq('user_id', userId)
       .order('created_at', { ascending: false });

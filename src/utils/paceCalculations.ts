@@ -1,6 +1,7 @@
 import { BOOK_FORMAT } from '@/constants/status';
 import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { normalizeServerDate } from './dateNormalization';
 
 export interface ReadingDay {
   date: string;
@@ -80,12 +81,14 @@ export const calculateCutoffTime = (
 
   const allProgressUpdatesSorted = allProgressUpdates.sort(
     (a, b) =>
-      new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
+      normalizeServerDate(b.created_at!).valueOf() -
+      normalizeServerDate(a.created_at!).valueOf()
   );
 
-  const cutoffDate = new Date(allProgressUpdatesSorted[0].created_at);
-  cutoffDate.setDate(cutoffDate.getDate() - DAYS_TO_CONSIDER_FOR_PACE);
-  return cutoffDate.getTime();
+  const cutoffDate = normalizeServerDate(
+    allProgressUpdatesSorted[0].created_at
+  );
+  return cutoffDate.subtract(DAYS_TO_CONSIDER_FOR_PACE, 'day').valueOf();
 };
 
 /**
@@ -103,7 +106,8 @@ export const processBookProgress = (
     .slice()
     .sort(
       (a, b) =>
-        new Date(a.created_at!).getTime() - new Date(b.created_at!).getTime()
+        normalizeServerDate(a.created_at!).valueOf() -
+        normalizeServerDate(b.created_at!).valueOf()
     );
 
   if (sortedProgress.length === 0) return;
@@ -121,10 +125,10 @@ export const processBookProgress = (
   // to compare to (baseline was removed). The loop below calculates differences between
   // consecutive entries, so we need this to capture the first entry's progress vs baseline.
   const firstProgress = progress[0];
-  const firstDate = new Date(firstProgress.created_at);
+  const firstDate = normalizeServerDate(firstProgress.created_at);
 
-  if (firstDate.getTime() >= cutoffTime) {
-    const dateStr = firstDate.toISOString().slice(0, 10);
+  if (firstDate.valueOf() >= cutoffTime) {
+    const dateStr = firstDate.format('YYYY-MM-DD');
     const amount = firstProgress.current_progress - baselineProgress;
     if (amount > 0) {
       dailyProgress[dateStr] = (dailyProgress[dateStr] || 0) + amount;
@@ -136,7 +140,7 @@ export const processBookProgress = (
     const prev = progress[i - 1];
     const curr = progress[i];
 
-    const endDate = new Date(curr.created_at).getTime();
+    const endDate = normalizeServerDate(curr.created_at).valueOf();
 
     // Skip if the end date is before the cutoff
     if (endDate < cutoffTime) continue;
@@ -144,9 +148,8 @@ export const processBookProgress = (
     const progressDiff = curr.current_progress - prev.current_progress;
 
     // Only assign the progress to the end date (when progress was recorded)
-    const endDateObj = new Date(endDate);
-    if (endDateObj.getTime() >= cutoffTime) {
-      const dateStr = endDateObj.toISOString().slice(0, 10);
+    if (endDate >= cutoffTime) {
+      const dateStr = normalizeServerDate(curr.created_at).format('YYYY-MM-DD');
       dailyProgress[dateStr] = (dailyProgress[dateStr] || 0) + progressDiff;
     }
   }
@@ -446,7 +449,7 @@ export const minimumUnitsPerDayFromDeadline = (
   }
 
   const pacePerDay: PacePerDay[] = [];
-  const deadlineDate = new Date(deadline.deadline_date).getTime();
+  const deadlineDate = normalizeServerDate(deadline.deadline_date).valueOf();
   const total = deadline.total_quantity;
 
   // Sort progress entries by date and filter out ignored entries
@@ -454,27 +457,30 @@ export const minimumUnitsPerDayFromDeadline = (
     .filter(p => !p.ignore_in_calcs)
     .sort(
       (a, b) =>
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        normalizeServerDate(a.created_at).valueOf() -
+        normalizeServerDate(b.created_at).valueOf()
     );
 
   // Filter progress entries to only include those before today
-  const today = new Date().getTime();
+  const today = dayjs().valueOf();
   const progressBeforeToday = sortedProgress.filter(
-    p => new Date(p.created_at).getTime() <= today
+    p => normalizeServerDate(p.created_at).valueOf() <= today
   );
 
   // Group by date and keep only the latest progress for each day
   const progressByDate = new Map<string, (typeof progressBeforeToday)[0]>();
 
   for (const progress of progressBeforeToday) {
-    const dateKey = dayjs(progress.created_at).format('YYYY-MM-DD');
+    const dateKey = normalizeServerDate(progress.created_at).format(
+      'YYYY-MM-DD'
+    );
     const existing = progressByDate.get(dateKey);
 
     // Keep the progress entry with the latest timestamp for each date
     if (
       !existing ||
-      new Date(progress.created_at).getTime() >
-        new Date(existing.created_at).getTime()
+      normalizeServerDate(progress.created_at).valueOf() >
+        normalizeServerDate(existing.created_at).valueOf()
     ) {
       progressByDate.set(dateKey, progress);
     }
@@ -483,11 +489,12 @@ export const minimumUnitsPerDayFromDeadline = (
   // Convert back to array and sort by date
   const uniqueProgress = Array.from(progressByDate.values()).sort(
     (a, b) =>
-      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      normalizeServerDate(a.created_at).valueOf() -
+      normalizeServerDate(b.created_at).valueOf()
   );
 
   for (const progress of uniqueProgress) {
-    const progressDate = new Date(progress.created_at).getTime();
+    const progressDate = normalizeServerDate(progress.created_at).valueOf();
     const daysLeft = Math.ceil(
       (deadlineDate - progressDate) / (1000 * 60 * 60 * 24)
     );
@@ -498,7 +505,7 @@ export const minimumUnitsPerDayFromDeadline = (
       value = Math.ceil(remainingUnits / daysLeft);
     }
 
-    const label = dayjs(progress.created_at).format('M/D');
+    const label = normalizeServerDate(progress.created_at).format('M/D');
     pacePerDay.push({ value, label });
   }
 

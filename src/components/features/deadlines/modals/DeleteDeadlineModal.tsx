@@ -1,5 +1,6 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedText } from '@/components/themed/ThemedText';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -104,7 +105,18 @@ export const DeleteDeadlineModal: React.FC<DeleteDeadlineModalProps> = ({
           onStartShouldSetResponder={() => true}
         >
           <View style={styles.content}>
-            <ThemedText style={styles.warningIcon}>⚠️</ThemedText>
+            <View
+              style={[
+                styles.iconContainer,
+                { backgroundColor: colors.error + '20' },
+              ]}
+            >
+              <IconSymbol
+                name="exclamationmark.triangle"
+                size={36}
+                color={colors.error}
+              />
+            </View>
             <ThemedText style={styles.title}>Delete Deadline</ThemedText>
             <ThemedText style={styles.message}>
               Are you sure you want to remove{' '}
@@ -217,10 +229,13 @@ const styles = StyleSheet.create({
   content: {
     gap: 16,
   },
-  warningIcon: {
-    fontSize: 48,
-    lineHeight: 52,
-    textAlign: 'center',
+  iconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
     marginBottom: 4,
   },
   title: {

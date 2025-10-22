@@ -14,6 +14,9 @@ export type ReadingDeadlineStatusInsert = TablesInsert<'deadline_status'>;
 export type ReadingDeadlineWithProgress = ReadingDeadline & {
   progress: ReadingDeadlineProgress[];
   status?: ReadingDeadlineStatus[];
+  books?: {
+    publisher: string | null;
+  } | null;
 };
 
 export type ReadingDeadlineInsertWithProgress = ReadingDeadlineInsert & {
@@ -24,11 +27,14 @@ export type FilterType =
   | 'active'
   | 'overdue'
   | 'pending'
-  | 'completed'
   | 'paused'
+  | 'toReview'
+  | 'completed'
   | 'didNotFinish'
   | 'all';
 
 export type TimeRangeFilter = 'all' | 'thisWeek' | 'thisMonth';
+
+export type PageRangeFilter = 'under300' | '300to500' | 'over500';
 
 export type BookFormat = 'physical' | 'eBook' | 'audio';

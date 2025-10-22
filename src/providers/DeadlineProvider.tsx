@@ -5,7 +5,7 @@ import {
   useDidNotFinishDeadline,
   useGetDeadlines,
   usePauseDeadline,
-  useReactivateDeadline,
+  useResumeDeadline,
   useStartReadingDeadline,
   useUpdateDeadline,
   useUpdateDeadlineDate,
@@ -55,9 +55,10 @@ interface DeadlineContextType {
   activeDeadlines: ReadingDeadlineWithProgress[];
   overdueDeadlines: ReadingDeadlineWithProgress[];
   completedDeadlines: ReadingDeadlineWithProgress[];
-  pausedDeadlines: ReadingDeadlineWithProgress[];
+  toReviewDeadlines: ReadingDeadlineWithProgress[];
   didNotFinishDeadlines: ReadingDeadlineWithProgress[];
   pendingDeadlines: ReadingDeadlineWithProgress[];
+  pausedDeadlines: ReadingDeadlineWithProgress[];
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
@@ -100,22 +101,22 @@ interface DeadlineContextType {
     onSuccess?: () => void,
     onError?: (error: Error) => void
   ) => void;
-  pauseDeadline: (
-    deadlineId: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => void;
-  reactivateDeadline: (
-    deadlineId: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => void;
   startReadingDeadline: (
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
   ) => void;
   didNotFinishDeadline: (
+    deadlineId: string,
+    onSuccess?: () => void,
+    onError?: (error: Error) => void
+  ) => void;
+  pauseDeadline: (
+    deadlineId: string,
+    onSuccess?: () => void,
+    onError?: (error: Error) => void
+  ) => void;
+  resumeDeadline: (
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
@@ -170,7 +171,7 @@ interface DeadlineContextType {
 
   activeCount: number;
   overdueCount: number;
-  pausedCount: number;
+  toReviewCount: number;
   didNotFinishCount: number;
   calculateProgressAsOfStartOfDay: (
     deadline: ReadingDeadlineWithProgress
@@ -201,18 +202,19 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
   const { mutate: updateDeadlineDateMutation } = useUpdateDeadlineDate();
   const { mutate: deleteDeadlineMutation } = useDeleteDeadline();
   const { mutate: completeDeadlineMutation } = useCompleteDeadline();
-  const { mutate: pauseDeadlineMutation } = usePauseDeadline();
-  const { mutate: reactivateDeadlineMutation } = useReactivateDeadline();
   const { mutate: startReadingDeadlineMutation } = useStartReadingDeadline();
   const { mutate: didNotFinishDeadlineMutation } = useDidNotFinishDeadline();
+  const { mutate: pauseDeadlineMutation } = usePauseDeadline();
+  const { mutate: resumeDeadlineMutation } = useResumeDeadline();
 
   const {
     active: activeDeadlines,
     overdue: overdueDeadlines,
     completed: completedDeadlines,
-    setAside: pausedDeadlines,
+    toReview: toReviewDeadlines,
     didNotFinish: didNotFinishDeadlines,
     pending: pendingDeadlines,
+    paused: pausedDeadlines,
   } = separateDeadlines(deadlines);
 
   const userPaceData = useMemo(() => {
@@ -431,40 +433,6 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     });
   };
 
-  const pauseDeadline = (
-    deadlineId: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => {
-    pauseDeadlineMutation(deadlineId, {
-      onSuccess: () => {
-        posthog.capture('deadline paused');
-        onSuccess?.();
-      },
-      onError: (error: Error) => {
-        console.error('Error pausing deadline:', error);
-        onError?.(error);
-      },
-    });
-  };
-
-  const reactivateDeadline = (
-    deadlineId: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => {
-    reactivateDeadlineMutation(deadlineId, {
-      onSuccess: () => {
-        posthog.capture('deadline reactivated');
-        onSuccess?.();
-      },
-      onError: (error: Error) => {
-        console.error('Error reactivating deadline:', error);
-        onError?.(error);
-      },
-    });
-  };
-
   const startReadingDeadline = (
     deadlineId: string,
     onSuccess?: () => void,
@@ -499,15 +467,50 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     });
   };
 
+  const pauseDeadline = (
+    deadlineId: string,
+    onSuccess?: () => void,
+    onError?: (error: Error) => void
+  ) => {
+    pauseDeadlineMutation(deadlineId, {
+      onSuccess: () => {
+        posthog.capture('deadline paused');
+        onSuccess?.();
+      },
+      onError: (error: Error) => {
+        console.error('Error pausing deadline:', error);
+        onError?.(error);
+      },
+    });
+  };
+
+  const resumeDeadline = (
+    deadlineId: string,
+    onSuccess?: () => void,
+    onError?: (error: Error) => void
+  ) => {
+    resumeDeadlineMutation(deadlineId, {
+      onSuccess: () => {
+        posthog.capture('deadline resumed');
+        onSuccess?.();
+      },
+      onError: (error: Error) => {
+        console.error('Error resuming deadline:', error);
+        onError?.(error);
+      },
+    });
+  };
+
   const value: DeadlineContextType = {
     // Data
     deadlines,
     activeDeadlines,
     overdueDeadlines,
     completedDeadlines,
-    pausedDeadlines,
+    toReviewDeadlines,
     didNotFinishDeadlines,
     pendingDeadlines,
+    pausedDeadlines,
     isLoading,
     error,
     refetch,
@@ -520,10 +523,10 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     updateDeadlineDate,
     deleteDeadline,
     completeDeadline,
-    pauseDeadline,
-    reactivateDeadline,
     startReadingDeadline,
     didNotFinishDeadline,
+    pauseDeadline,
+    resumeDeadline,
 
     getDeadlineCalculations,
 
@@ -539,7 +542,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
 
     activeCount: activeDeadlines.length,
     overdueCount: overdueDeadlines.length,
-    pausedCount: pausedDeadlines.length,
+    toReviewCount: toReviewDeadlines.length,
     didNotFinishCount: didNotFinishDeadlines.length,
     calculateProgressAsOfStartOfDay,
     calculateProgressForToday,

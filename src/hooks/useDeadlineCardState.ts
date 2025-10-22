@@ -3,15 +3,16 @@ import {
   ReadingDeadlineStatus,
   ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
+import { normalizeServerDate } from '@/utils/dateNormalization';
 import { useMemo } from 'react';
 
 export interface DeadlineCardState {
   latestStatus: string;
   latestStatusRecord: ReadingDeadlineStatus | null;
   isPending: boolean;
-  isPaused: boolean;
+  isToReview: boolean;
   isArchived: boolean;
-  isInActive: boolean;
+  isNotReading: boolean;
   borderColor: string;
   countdownColor: string;
 }
@@ -27,32 +28,42 @@ export function useDeadlineCardState(
   const { colors } = useTheme();
 
   return useMemo(() => {
-    const { good, approaching, urgent, overdue, impossible, complete, paused } =
-      colors;
+    const {
+      good,
+      approaching,
+      urgent,
+      overdue,
+      impossible,
+      complete,
+      toReview,
+      pending,
+      didNotFinish,
+    } = colors;
 
     const urgencyTextColorMap: UrgencyColorMap = {
       complete,
-      paused,
-      did_not_finish: paused,
+      to_review: toReview,
+      did_not_finish: didNotFinish,
       overdue,
       urgent,
       good,
       approaching,
       impossible,
-      pending: paused,
+      pending,
     };
 
     const sortedStatuses =
       deadline.status && deadline.status.length > 0
         ? [...deadline.status].sort(
             (a, b) =>
-              new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+              normalizeServerDate(a.created_at).valueOf() -
+              normalizeServerDate(b.created_at).valueOf()
           )
         : [];
 
     const latestStatus =
       sortedStatuses.length > 0
-        ? sortedStatuses[sortedStatuses.length - 1].status ?? 'reading'
+        ? (sortedStatuses[sortedStatuses.length - 1].status ?? 'reading')
         : 'reading';
 
     const latestStatusRecord =
@@ -61,10 +72,10 @@ export function useDeadlineCardState(
         : null;
 
     const isPending = latestStatus === 'pending';
-    const isPaused = latestStatus === 'paused';
+    const isToReview = latestStatus === 'to_review';
     const isArchived =
       latestStatus === 'complete' || latestStatus === 'did_not_finish';
-    const isInActive = isPending || isPaused;
+    const isNotReading = isPending || isToReview;
 
     let countdownColor = urgencyTextColorMap[urgencyLevel] ?? colors.text;
     let borderColor = urgencyTextColorMap[urgencyLevel] ?? colors.text;
@@ -83,9 +94,9 @@ export function useDeadlineCardState(
       latestStatus,
       latestStatusRecord,
       isPending,
-      isPaused,
+      isToReview,
       isArchived,
-      isInActive,
+      isNotReading,
       borderColor,
       countdownColor,
     };

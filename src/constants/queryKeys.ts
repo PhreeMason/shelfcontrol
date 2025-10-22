@@ -18,6 +18,10 @@ export const QUERY_KEYS = {
   PROFILE: {
     DETAIL: (userId: string) => ['profile', userId] as const,
   },
+  REVIEW_TRACKING: {
+    BY_DEADLINE: (userId: string, deadlineId: string) =>
+      ['review_tracking', userId, deadlineId] as const,
+  },
   AVATAR: {
     URL: (userId: string) => ['avatar', 'url', userId] as const,
     SIGNED_URL: (avatarPath: string) =>
@@ -35,9 +39,7 @@ export const MUTATION_KEYS = {
     DELETE: 'deleteDeadline',
     UPDATE_PROGRESS: 'updateDeadlineProgress',
     COMPLETE: 'completeDeadline',
-    PAUSE: 'pauseDeadline',
     DID_NOT_FINISH: 'didNotFinishDeadline',
-    REACTIVATE: 'reactivateDeadline',
     UPDATE_STATUS: 'updateDeadlineStatus',
     DELETE_FUTURE_PROGRESS: 'deleteFutureProgress',
   },
