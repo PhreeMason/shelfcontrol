@@ -131,19 +131,6 @@ describe('ProgressInput', () => {
 
       expect(screen.getByTestId('audiobook-progress-input')).toBeTruthy();
     });
-
-    it('should call requiresAudiobookInput with correct format', () => {
-      const { requiresAudiobookInput } = require('@/utils/formUtils');
-      render(
-        <ProgressInput
-          format="audio"
-          control={mockControl}
-          totalQuantity={258}
-        />
-      );
-
-      expect(requiresAudiobookInput).toHaveBeenCalledWith('audio');
-    });
   });
 
   describe('when format is not audio', () => {

@@ -1,8 +1,9 @@
 import { ThemedText } from '@/components/themed';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTheme } from '@/hooks/useThemeColor';
 import { ProgressInputMode } from '@/types/progressInput.types';
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
 interface InputModeToggleProps {
   modes: { key: ProgressInputMode; label: string }[];
@@ -16,66 +17,41 @@ const InputModeToggle: React.FC<InputModeToggleProps> = ({
   onModeChange,
 }) => {
   const { colors } = useTheme();
-  const primaryColor = colors.primary;
+  const primaryColor = colors.success;
+
+  const currentIndex = modes.findIndex(mode => mode.key === selectedMode);
+  const currentLabel = modes[currentIndex]?.label || '';
+
+  const handleCycle = () => {
+    const nextIndex = (currentIndex + 1) % modes.length;
+    onModeChange(modes[nextIndex].key);
+  };
 
   return (
-    <View style={[styles.container, { borderColor: primaryColor }]}>
-      {modes.map(mode => {
-        const isSelected = selectedMode === mode.key;
-        return (
-          <TouchableOpacity
-            key={mode.key}
-            testID={`input-mode-${mode.key}`}
-            style={[
-              styles.button,
-              {
-                backgroundColor: isSelected ? primaryColor : 'transparent',
-                borderColor: primaryColor,
-              },
-              modes.length === 2 && mode.key === modes[0].key && styles.firstButton,
-              modes.length === 2 && mode.key === modes[1].key && styles.lastButton,
-              modes.length === 3 && mode.key === modes[0].key && styles.firstButton,
-              modes.length === 3 && mode.key === modes[2].key && styles.lastButton,
-            ]}
-            onPress={() => onModeChange(mode.key)}
-          >
-            <ThemedText
-              style={[
-                styles.buttonText,
-                { color: isSelected ? '#fff' : primaryColor },
-              ]}
-            >
-              {mode.label}
-            </ThemedText>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
+    <TouchableOpacity
+      testID="input-mode-toggle"
+      style={[styles.container, { borderColor: primaryColor, backgroundColor: 'transparent' }]}
+      onPress={handleCycle}
+    >
+      <ThemedText style={[styles.label, { color: primaryColor }]}>
+        {currentLabel}
+      </ThemedText>
+      <IconSymbol name="chevron.up.chevron.down" size={16} color={primaryColor} />
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: 6,
-    overflow: 'hidden',
-    borderWidth: 1,
+    borderWidth: 2,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    gap: 4,
   },
-  button: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRightWidth: 1,
-  },
-  firstButton: {
-    borderTopLeftRadius: 6,
-    borderBottomLeftRadius: 6,
-  },
-  lastButton: {
-    borderTopRightRadius: 6,
-    borderBottomRightRadius: 6,
-    borderRightWidth: 0,
-  },
-  buttonText: {
+  label: {
     fontSize: 12,
     fontWeight: '700',
   },

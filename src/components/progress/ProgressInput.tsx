@@ -1,11 +1,7 @@
-import { requiresAudiobookInput } from '@/utils/formUtils';
 import React, { useMemo } from 'react';
 import { Control, Controller } from 'react-hook-form';
 import { View, StyleSheet } from 'react-native';
-import AudiobookProgressInput from './AudiobookProgressInput';
-import PagesProgressInput from './PagesProgressInput';
-import PercentageProgressInput from './PercentageProgressInput';
-import TimeRemainingInput from './TimeRemainingInput';
+import ProgressInputBase from './ProgressInputBase';
 import InputModeToggle from './InputModeToggle';
 import { usePreferences } from '@/providers/PreferencesProvider';
 import {
@@ -42,50 +38,21 @@ const ProgressInput: React.FC<ProgressInputProps> = ({
   );
 
   const renderInput = (value: number, onChange: (v: number) => void, onBlur?: () => void) => {
-    if (selectedMode === 'percentage') {
-      return (
-        <PercentageProgressInput
-          value={value}
-          onChange={onChange}
-          {...(onBlur && { onBlur })}
-          totalQuantity={totalQuantity}
-          format={format}
-          testID="percentage-progress-input"
-        />
-      );
-    }
-
-    if (selectedMode === 'remaining' && format === 'audio') {
-      return (
-        <TimeRemainingInput
-          value={value}
-          onChange={onChange}
-          {...(onBlur && { onBlur })}
-          totalQuantity={totalQuantity}
-          testID="time-remaining-input"
-        />
-      );
-    }
-
-    if (requiresAudiobookInput(format)) {
-      return (
-        <AudiobookProgressInput
-          value={value}
-          onChange={onChange}
-          {...(onBlur && { onBlur })}
-          totalQuantity={totalQuantity}
-          testID="audiobook-progress-input"
-        />
-      );
-    }
+    const testID =
+      selectedMode === 'percentage' ? 'percentage-progress-input' :
+      selectedMode === 'remaining' && format === 'audio' ? 'time-remaining-input' :
+      format === 'audio' ? 'audiobook-progress-input' :
+      'pages-progress-input';
 
     return (
-      <PagesProgressInput
+      <ProgressInputBase
+        mode={selectedMode}
+        format={format}
         value={value}
         onChange={onChange}
         {...(onBlur && { onBlur })}
         totalQuantity={totalQuantity}
-        testID="pages-progress-input"
+        testID={testID}
       />
     );
   };

@@ -5,7 +5,7 @@ import {
 import {
   parseAudiobookTime,
   formatAudiobookTime,
-} from '../../components/progress/AudiobookProgressInput';
+} from '../timeFormatUtils';
 
 describe('audiobookTimeUtils', () => {
   describe('convertMinutesToHoursAndMinutes', () => {

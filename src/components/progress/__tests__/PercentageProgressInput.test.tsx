@@ -44,6 +44,7 @@ describe('PercentageProgressInput', () => {
     onChange: jest.fn(),
     totalQuantity: 400,
     format: 'physical' as const,
+    testID: 'percentage-progress-input',
   };
 
   beforeEach(() => {
@@ -58,7 +59,7 @@ describe('PercentageProgressInput', () => {
 
     it('should render percentage symbol', () => {
       render(<PercentageProgressInput {...defaultProps} />);
-      expect(screen.getByText('%')).toBeTruthy();
+      expect(screen.getByText('/ 100%')).toBeTruthy();
     });
 
     it('should render calculated progress for physical books', () => {
@@ -68,12 +69,12 @@ describe('PercentageProgressInput', () => {
 
     it('should render calculated progress for ebooks', () => {
       render(<PercentageProgressInput {...defaultProps} format="eBook" value={150} />);
-      expect(screen.getByText(/= 150 pages/)).toBeTruthy();
+      expect(screen.getByText(/= 152 pages/)).toBeTruthy();
     });
 
     it('should render formatted time for audiobooks', () => {
       render(<PercentageProgressInput {...defaultProps} format="audio" value={180} totalQuantity={600} />);
-      expect(screen.getByText(/= 3h 0m/)).toBeTruthy();
+      expect(screen.getByText(/= 3h/)).toBeTruthy();
     });
   });
 

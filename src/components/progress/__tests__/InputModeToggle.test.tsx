@@ -38,7 +38,19 @@ describe('InputModeToggle', () => {
   });
 
   describe('Component Structure', () => {
-    it('should render all mode options', () => {
+    it('should render a single toggle button', () => {
+      render(
+        <InputModeToggle
+          modes={twoModeOptions}
+          selectedMode="direct"
+          onModeChange={mockOnModeChange}
+        />
+      );
+
+      expect(screen.getByTestId('input-mode-toggle')).toBeTruthy();
+    });
+
+    it('should display the current mode label', () => {
       render(
         <InputModeToggle
           modes={twoModeOptions}
@@ -48,11 +60,54 @@ describe('InputModeToggle', () => {
       );
 
       expect(screen.getByText('Page')).toBeTruthy();
-      expect(screen.getByText('%')).toBeTruthy();
     });
 
-    it('should render three modes for audiobook format', () => {
+    it('should display selected mode for three-mode setup', () => {
       render(
+        <InputModeToggle
+          modes={threeModeOptions}
+          selectedMode="remaining"
+          onModeChange={mockOnModeChange}
+        />
+      );
+
+      expect(screen.getByText('Left')).toBeTruthy();
+    });
+  });
+
+  describe('Cycling Behavior', () => {
+    it('should cycle to next mode when pressed', () => {
+      render(
+        <InputModeToggle
+          modes={twoModeOptions}
+          selectedMode="direct"
+          onModeChange={mockOnModeChange}
+        />
+      );
+
+      const toggleButton = screen.getByTestId('input-mode-toggle');
+      fireEvent.press(toggleButton);
+
+      expect(mockOnModeChange).toHaveBeenCalledWith('percentage');
+    });
+
+    it('should wrap from last mode to first mode', () => {
+      render(
+        <InputModeToggle
+          modes={twoModeOptions}
+          selectedMode="percentage"
+          onModeChange={mockOnModeChange}
+        />
+      );
+
+      const toggleButton = screen.getByTestId('input-mode-toggle');
+      fireEvent.press(toggleButton);
+
+      expect(mockOnModeChange).toHaveBeenCalledWith('direct');
+    });
+
+    it('should cycle through three modes correctly', () => {
+      const { rerender } = render(
         <InputModeToggle
           modes={threeModeOptions}
           selectedMode="direct"
@@ -60,76 +115,35 @@ describe('InputModeToggle', () => {
         />
       );
 
-      expect(screen.getByText('Time')).toBeTruthy();
-      expect(screen.getByText('%')).toBeTruthy();
-      expect(screen.getByText('Left')).toBeTruthy();
-    });
+      const toggleButton = screen.getByTestId('input-mode-toggle');
 
-    it('should have testIDs for each mode button', () => {
-      render(
-        <InputModeToggle
-          modes={twoModeOptions}
-          selectedMode="direct"
-          onModeChange={mockOnModeChange}
-        />
-      );
-
-      expect(screen.getByTestId('input-mode-direct')).toBeTruthy();
-      expect(screen.getByTestId('input-mode-percentage')).toBeTruthy();
-    });
-  });
-
-  describe('Mode Selection', () => {
-    it('should highlight the selected mode', () => {
-      render(
-        <InputModeToggle
-          modes={twoModeOptions}
-          selectedMode="direct"
-          onModeChange={mockOnModeChange}
-        />
-      );
-
-      const directButton = screen.getByTestId('input-mode-direct');
-      expect(directButton.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: '#B8A9D9',
-        })
-      );
-    });
-
-    it('should not highlight non-selected modes', () => {
-      render(
-        <InputModeToggle
-          modes={twoModeOptions}
-          selectedMode="direct"
-          onModeChange={mockOnModeChange}
-        />
-      );
-
-      const percentageButton = screen.getByTestId('input-mode-percentage');
-      expect(percentageButton.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: 'transparent',
-        })
-      );
-    });
-
-    it('should call onModeChange when a mode is pressed', () => {
-      render(
-        <InputModeToggle
-          modes={twoModeOptions}
-          selectedMode="direct"
-          onModeChange={mockOnModeChange}
-        />
-      );
-
-      const percentageButton = screen.getByTestId('input-mode-percentage');
-      fireEvent.press(percentageButton);
-
+      fireEvent.press(toggleButton);
       expect(mockOnModeChange).toHaveBeenCalledWith('percentage');
+
+      rerender(
+        <InputModeToggle
+          modes={threeModeOptions}
+          selectedMode="percentage"
+          onModeChange={mockOnModeChange}
+        />
+      );
+
+      fireEvent.press(toggleButton);
+      expect(mockOnModeChange).toHaveBeenCalledWith('remaining');
+
+      rerender(
+        <InputModeToggle
+          modes={threeModeOptions}
+          selectedMode="remaining"
+          onModeChange={mockOnModeChange}
+        />
+      );
+
+      fireEvent.press(toggleButton);
+      expect(mockOnModeChange).toHaveBeenCalledWith('direct');
     });
 
-    it('should allow switching between modes', () => {
+    it('should handle rapid cycling', () => {
       const { rerender } = render(
         <InputModeToggle
           modes={twoModeOptions}
@@ -138,8 +152,10 @@ describe('InputModeToggle', () => {
         />
       );
 
-      fireEvent.press(screen.getByTestId('input-mode-percentage'));
-      expect(mockOnModeChange).toHaveBeenCalledWith('percentage');
+      const toggleButton = screen.getByTestId('input-mode-toggle');
+
+      fireEvent.press(toggleButton);
+      expect(mockOnModeChange).toHaveBeenNthCalledWith(1, 'percentage');
 
       rerender(
         <InputModeToggle
@@ -149,65 +165,26 @@ describe('InputModeToggle', () => {
         />
       );
 
-      const percentageButton = screen.getByTestId('input-mode-percentage');
-      expect(percentageButton.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: '#B8A9D9',
-        })
-      );
-    });
-  });
+      fireEvent.press(toggleButton);
+      expect(mockOnModeChange).toHaveBeenNthCalledWith(2, 'direct');
 
-  describe('Three Mode Support', () => {
-    it('should support three modes for audiobooks', () => {
-      render(
+      rerender(
         <InputModeToggle
-          modes={threeModeOptions}
+          modes={twoModeOptions}
           selectedMode="direct"
           onModeChange={mockOnModeChange}
         />
       );
 
-      expect(screen.getByTestId('input-mode-direct')).toBeTruthy();
-      expect(screen.getByTestId('input-mode-percentage')).toBeTruthy();
-      expect(screen.getByTestId('input-mode-remaining')).toBeTruthy();
-    });
+      fireEvent.press(toggleButton);
+      expect(mockOnModeChange).toHaveBeenNthCalledWith(3, 'percentage');
 
-    it('should handle selecting third mode', () => {
-      render(
-        <InputModeToggle
-          modes={threeModeOptions}
-          selectedMode="direct"
-          onModeChange={mockOnModeChange}
-        />
-      );
-
-      const remainingButton = screen.getByTestId('input-mode-remaining');
-      fireEvent.press(remainingButton);
-
-      expect(mockOnModeChange).toHaveBeenCalledWith('remaining');
-    });
-
-    it('should highlight the selected mode in three-mode setup', () => {
-      render(
-        <InputModeToggle
-          modes={threeModeOptions}
-          selectedMode="remaining"
-          onModeChange={mockOnModeChange}
-        />
-      );
-
-      const remainingButton = screen.getByTestId('input-mode-remaining');
-      expect(remainingButton.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: '#B8A9D9',
-        })
-      );
+      expect(mockOnModeChange).toHaveBeenCalledTimes(3);
     });
   });
 
-  describe('Text Color', () => {
-    it('should use white text for selected mode', () => {
+  describe('Styling', () => {
+    it('should use transparent background with primary border', () => {
       render(
         <InputModeToggle
           modes={twoModeOptions}
@@ -216,16 +193,14 @@ describe('InputModeToggle', () => {
         />
       );
 
-      const directButton = screen.getByTestId('input-mode-direct');
-      const textElement = directButton.props.children;
-      expect(textElement.props.style).toContainEqual(
-        expect.objectContaining({
-          color: '#fff',
-        })
-      );
+      const toggleButton = screen.getByTestId('input-mode-toggle');
+      expect(toggleButton.props.style).toMatchObject({
+        backgroundColor: 'transparent',
+        borderColor: '#B8A9D9',
+      });
     });
 
-    it('should use primary color for non-selected modes', () => {
+    it('should use primary color text for label', () => {
       render(
         <InputModeToggle
           modes={twoModeOptions}
@@ -234,9 +209,8 @@ describe('InputModeToggle', () => {
         />
       );
 
-      const percentageButton = screen.getByTestId('input-mode-percentage');
-      const textElement = percentageButton.props.children;
-      expect(textElement.props.style).toContainEqual(
+      const labelText = screen.getByText('Page');
+      expect(labelText.props.style).toContainEqual(
         expect.objectContaining({
           color: '#B8A9D9',
         })
@@ -244,9 +218,9 @@ describe('InputModeToggle', () => {
     });
   });
 
-  describe('Edge Cases', () => {
-    it('should handle rapid mode switching', () => {
-      render(
+  describe('Label Updates', () => {
+    it('should update label when mode changes', () => {
+      const { rerender } = render(
         <InputModeToggle
           modes={twoModeOptions}
           selectedMode="direct"
@@ -254,30 +228,17 @@ describe('InputModeToggle', () => {
         />
       );
 
-      const percentageButton = screen.getByTestId('input-mode-percentage');
-      const directButton = screen.getByTestId('input-mode-direct');
+      expect(screen.getByText('Page')).toBeTruthy();
 
-      fireEvent.press(percentageButton);
-      fireEvent.press(directButton);
-      fireEvent.press(percentageButton);
-
-      expect(mockOnModeChange).toHaveBeenCalledTimes(3);
-      expect(mockOnModeChange).toHaveBeenLastCalledWith('percentage');
-    });
-
-    it('should handle pressing the already selected mode', () => {
-      render(
+      rerender(
         <InputModeToggle
           modes={twoModeOptions}
-          selectedMode="direct"
+          selectedMode="percentage"
           onModeChange={mockOnModeChange}
         />
       );
 
-      const directButton = screen.getByTestId('input-mode-direct');
-      fireEvent.press(directButton);
-
-      expect(mockOnModeChange).toHaveBeenCalledWith('direct');
+      expect(screen.getByText('%')).toBeTruthy();
     });
   });
 });
