@@ -163,6 +163,7 @@ export default function SignInScreen() {
                   }}
                   onBlur={onBlur}
                   secureTextEntry
+                  autoCapitalize="none"
                   inputStyle={styles.input}
                   testID="password-input"
                 />

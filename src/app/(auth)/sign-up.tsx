@@ -182,6 +182,7 @@ export default function SignUpScreen() {
                   }}
                   onBlur={onBlur}
                   secureTextEntry
+                  autoCapitalize="none"
                   inputStyle={styles.input}
                   testID="password-input"
                 />
@@ -209,6 +210,7 @@ export default function SignUpScreen() {
                   }}
                   onBlur={onBlur}
                   secureTextEntry
+                  autoCapitalize="none"
                   inputStyle={styles.input}
                   testID="confirm-password-input"
                 />
