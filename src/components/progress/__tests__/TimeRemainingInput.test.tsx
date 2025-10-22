@@ -50,10 +50,16 @@ describe('TimeRemainingInput', () => {
       expect(screen.getByText(/current/)).toBeTruthy();
     });
 
+    it('should render total quantity', () => {
+      render(<TimeRemainingInput {...defaultProps} totalQuantity={600} />);
+      expect(screen.getByText(/10h/)).toBeTruthy();
+    });
+
     it('should display help text on focus with empty input', () => {
       render(<TimeRemainingInput {...defaultProps} testID="time-input" />);
 
       const input = screen.getByPlaceholderText('');
+      fireEvent.changeText(input, '');
       fireEvent(input, 'focus');
 
       expect(screen.getByText(/Use formats like/)).toBeTruthy();
@@ -181,17 +187,19 @@ describe('TimeRemainingInput', () => {
         <TimeRemainingInput {...defaultProps} value={300} totalQuantity={600} />
       );
 
-      expect(screen.getByText(/5h/)).toBeTruthy();
+      const input = screen.getByPlaceholderText('');
+      expect(input.props.value).toBe('5h');
 
       rerender(<TimeRemainingInput {...defaultProps} value={450} totalQuantity={600} />);
 
-      expect(screen.getByText(/2h/)).toBeTruthy();
+      expect(input.props.value).toBe('2h 30m');
     });
 
     it('should show tooltip on focus with empty value', () => {
       render(<TimeRemainingInput {...defaultProps} />);
 
       const input = screen.getByPlaceholderText('');
+      fireEvent.changeText(input, '');
       fireEvent(input, 'focus');
 
       expect(screen.getByText(/Use formats like/)).toBeTruthy();
@@ -262,7 +270,18 @@ describe('TimeRemainingInput', () => {
     });
 
     it('should format time on blur', () => {
-      render(<TimeRemainingInput {...defaultProps} totalQuantity={600} />);
+      const TestWrapper = () => {
+        const [value, setValue] = React.useState(0);
+        return (
+          <TimeRemainingInput
+            value={value}
+            onChange={setValue}
+            totalQuantity={600}
+          />
+        );
+      };
+
+      render(<TestWrapper />);
 
       const input = screen.getByPlaceholderText('');
       fireEvent(input, 'focus');

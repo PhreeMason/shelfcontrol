@@ -30,6 +30,7 @@ export interface DeadlineStatus {
   isCompleted: boolean;
   isToReview: boolean;
   isArchived: boolean;
+  isPending: boolean;
 }
 
 export interface DeadlineMetrics {
@@ -67,6 +68,7 @@ export function getDeadlineStatus(
   const isCompleted = latestStatus === 'complete';
   const isDnf = latestStatus === 'did_not_finish';
   const isToReview = latestStatus === 'to_review';
+  const isPending = latestStatus === 'pending';
   const isArchived = isCompleted || isDnf;
 
   return {
@@ -74,6 +76,7 @@ export function getDeadlineStatus(
     isCompleted,
     isToReview,
     isArchived,
+    isPending,
   };
 }
 

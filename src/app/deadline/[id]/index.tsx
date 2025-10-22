@@ -75,7 +75,8 @@ const DeadlineView = () => {
     );
   }
 
-  const { isCompleted, isToReview, isArchived } = getDeadlineStatus(deadline);
+  const { isCompleted, isToReview, isArchived, isPending } =
+    getDeadlineStatus(deadline);
 
   const handleEdit = () => {
     router.push(`/deadline/${id}/edit`);
@@ -91,6 +92,7 @@ const DeadlineView = () => {
   };
 
   const shouldShowStats = isToReview || isArchived;
+  const shouldShowProgress = !shouldShowStats && !isPending;
 
   return (
     <SafeAreaView
@@ -104,12 +106,12 @@ const DeadlineView = () => {
 
         {shouldShowStats ? (
           <DeadlineTabsSection deadline={deadline} />
-        ) : (
+        ) : shouldShowProgress ? (
           <>
             <ReadingProgressUpdate deadline={deadline} />
             <DailyReadingChart deadline={deadline} />
           </>
-        )}
+        ) : null}
 
         <BookDetailsSection deadline={deadline} />
       </ThemedScrollView>

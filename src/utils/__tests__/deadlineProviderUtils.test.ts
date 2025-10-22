@@ -96,15 +96,16 @@ describe('deadlineProviderUtils', () => {
       expect(result.isCompleted).toBe(false);
       expect(result.isToReview).toBe(false);
       expect(result.isArchived).toBe(false);
+      expect(result.isPending).toBe(false);
     });
 
     it('should return correct status for completed deadline', () => {
       const result = getDeadlineStatus(mockDeadlines[0]);
-      // Basic test - the function should work with real mock data
       expect(result).toHaveProperty('latestStatus');
       expect(result).toHaveProperty('isCompleted');
       expect(result).toHaveProperty('isToReview');
       expect(result).toHaveProperty('isArchived');
+      expect(result).toHaveProperty('isPending');
     });
 
     it('should handle deadline with no status', () => {
@@ -119,6 +120,7 @@ describe('deadlineProviderUtils', () => {
       expect(result.isCompleted).toBe(false);
       expect(result.isToReview).toBe(false);
       expect(result.isArchived).toBe(false);
+      expect(result.isPending).toBe(false);
     });
 
     it('should return latest status from multiple status records', () => {
@@ -155,6 +157,7 @@ describe('deadlineProviderUtils', () => {
       expect(result.isCompleted).toBe(false);
       expect(result.isToReview).toBe(true);
       expect(result.isArchived).toBe(false);
+      expect(result.isPending).toBe(false);
     });
 
     it('should correctly sort status records by created_at timestamp', () => {
@@ -191,6 +194,7 @@ describe('deadlineProviderUtils', () => {
       expect(result.isCompleted).toBe(true);
       expect(result.isToReview).toBe(false);
       expect(result.isArchived).toBe(true);
+      expect(result.isPending).toBe(false);
     });
 
     it('should handle status history with reading -> to_review -> complete transition', () => {
@@ -227,6 +231,30 @@ describe('deadlineProviderUtils', () => {
       expect(result.isCompleted).toBe(true);
       expect(result.isToReview).toBe(false);
       expect(result.isArchived).toBe(true);
+      expect(result.isPending).toBe(false);
+    });
+
+    it('should return correct status for pending deadline', () => {
+      const deadlineWithPendingStatus = {
+        ...mockDeadlines[0],
+        status: [
+          {
+            id: 'status-1',
+            deadline_id: 'rd-123',
+            status: 'pending' as const,
+            created_at: '2025-01-01T00:00:00Z',
+            updated_at: '2025-01-01T00:00:00Z',
+          },
+        ],
+      };
+
+      const result = getDeadlineStatus(deadlineWithPendingStatus);
+
+      expect(result.latestStatus).toBe('pending');
+      expect(result.isCompleted).toBe(false);
+      expect(result.isToReview).toBe(false);
+      expect(result.isArchived).toBe(false);
+      expect(result.isPending).toBe(true);
     });
   });
 

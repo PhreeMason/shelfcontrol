@@ -135,6 +135,12 @@ const TimeRemainingInput: React.FC<TimeRemainingInputProps> = ({
             },
           ]}
         />
+        <ThemedText
+          variant="default"
+          style={[styles.totalText, { color: `${colors.textOnSurface}79` }]}
+        >
+          / {formatAudiobookTime(totalQuantity)}
+        </ThemedText>
       </ThemedView>
       {(showTooltip || (!isValid && isFocused)) && (
         <ThemedText
@@ -187,6 +193,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     fontWeight: '900',
     textAlignVertical: 'center',
+  },
+  totalText: {
+    backgroundColor: 'transparent',
+    fontSize: 18,
+    fontWeight: '600',
   },
   helpText: {
     fontSize: 14,

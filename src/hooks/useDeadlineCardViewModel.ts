@@ -11,7 +11,7 @@ import {
   formatRemainingDisplay,
 } from '@/utils/deadlineDisplayUtils';
 import { useRouter } from 'expo-router';
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { GestureResponderEvent, Platform, ViewStyle } from 'react-native';
 
 interface DeadlineCardViewModel {

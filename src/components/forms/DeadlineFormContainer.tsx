@@ -216,17 +216,22 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     };
 
     if (mode === 'new') {
+      const bookData = data.api_id || data.google_volume_id || data.isbn || data.book_id
+        ? {
+            ...(data.api_id && { api_id: data.api_id }),
+            ...(data.api_source && { api_source: data.api_source }),
+            ...(data.google_volume_id && { google_volume_id: data.google_volume_id }),
+            ...(data.isbn && { isbn: data.isbn }),
+            ...(data.book_id && { book_id: data.book_id }),
+          }
+        : undefined;
+
       addDeadline(
         {
           deadlineDetails,
           progressDetails,
           status: statusValue,
-          bookData: data.api_id
-            ? {
-                api_id: data.api_id,
-                ...(data.book_id ? { book_id: data.book_id } : {}),
-              }
-            : undefined,
+          bookData,
         } as any,
         successCallback,
         errorCallback

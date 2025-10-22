@@ -104,7 +104,7 @@ const PercentageProgressInput: React.FC<PercentageProgressInputProps> = ({
           variant="default"
           style={[styles.percentText, { color: `${colors.textOnSurface}79` }]}
         >
-          %
+          / 100%
         </ThemedText>
       </ThemedView>
       <ThemedText
@@ -127,10 +127,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   label: {
-    textAlign: 'left',
+    textAlign: 'center',
     fontWeight: '900',
     fontSize: 12,
-    transform: [{ translateX: -20 }],
+    transform: [{ translateX: -20 }],  
   },
   inputRow: {
     flexDirection: 'row',
@@ -149,14 +149,14 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
   percentText: {
-    fontSize: 24,
-    lineHeight: 28,
-    fontWeight: '900',
+    fontSize: 18,
+    lineHeight: 20,
+    fontWeight: '600',
   },
   calculatedText: {
     fontSize: 14,
     fontWeight: '600',
-    transform: [{ translateX: -20 }],
+    transform: [{ translateX: -20 }],  
   },
 });
 

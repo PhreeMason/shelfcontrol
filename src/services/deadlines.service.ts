@@ -91,7 +91,6 @@ class DeadlinesService {
       if (existingBook) {
         finalBookId = existingBook.id;
       } else {
-        // Need to fetch and insert book data
         try {
           let bookResponse;
 
@@ -119,8 +118,28 @@ class DeadlinesService {
 
           if (bookResponse) {
             const finalNewBookId = generateId('book');
-            await booksService.insertBook(finalNewBookId, bookResponse);
-            finalBookId = finalNewBookId;
+            try {
+              await booksService.insertBook(finalNewBookId, bookResponse);
+              console.log('[deadlinesService.addDeadline] Created new book record:', finalNewBookId);
+              finalBookId = finalNewBookId;
+            } catch (insertError: any) {
+              if (insertError?.code === '23505' && bookData.google_volume_id) {
+                const { data: existingBookByVolumeId } = await supabase
+                  .from(DB_TABLES.BOOKS)
+                  .select('id')
+                  .eq('google_volume_id', bookData.google_volume_id)
+                  .single();
+
+                if (existingBookByVolumeId) {
+                  console.log('[deadlinesService.addDeadline] Found existing book by google_volume_id:', existingBookByVolumeId.id);
+                  finalBookId = existingBookByVolumeId.id;
+                } else {
+                  console.warn('[deadlinesService.addDeadline] Duplicate constraint but could not find existing book');
+                }
+              } else {
+                throw insertError;
+              }
+            }
           }
         } catch (bookError) {
           console.warn('Failed to fetch/insert book data:', bookError);
@@ -426,7 +445,8 @@ class DeadlinesService {
         `
         *,
         progress:deadline_progress(*),
-        status:deadline_status(*)
+        status:deadline_status(*),
+        books(publisher)
       ` as any
       )
       .eq('user_id', userId)
@@ -565,7 +585,8 @@ class DeadlinesService {
         `
         *,
         progress:deadline_progress(*),
-        status:deadline_status(*)
+        status:deadline_status(*),
+        books(publisher)
       ` as any
       )
       .eq('id', deadlineId)
