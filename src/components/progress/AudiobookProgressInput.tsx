@@ -237,6 +237,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '900',
     fontSize: 12,
+    transform: [{ translateX: -45 }],
   },
   inputRow: {
     flexDirection: 'row',

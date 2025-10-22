@@ -127,9 +127,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   label: {
-    textAlign: 'center',
+    textAlign: 'left',
     fontWeight: '900',
     fontSize: 12,
+    transform: [{ translateX: -20 }],
   },
   inputRow: {
     flexDirection: 'row',
@@ -148,7 +149,6 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
   percentText: {
-    backgroundColor: 'transparent',
     fontSize: 24,
     lineHeight: 28,
     fontWeight: '900',
@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
   calculatedText: {
     fontSize: 14,
     fontWeight: '600',
+    transform: [{ translateX: -20 }],
   },
 });
 

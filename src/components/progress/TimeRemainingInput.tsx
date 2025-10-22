@@ -170,6 +170,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '900',
     fontSize: 12,
+    transform: [{ translateX: -20 }],
   },
   inputRow: {
     flexDirection: 'row',
@@ -196,6 +197,7 @@ const styles = StyleSheet.create({
   calculatedText: {
     fontSize: 14,
     fontWeight: '600',
+    transform: [{ translateX: -20 }],
   },
 });
 
