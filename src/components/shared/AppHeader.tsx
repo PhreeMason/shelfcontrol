@@ -37,7 +37,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
     >
       <View style={styles.headerContent}>
         {showBackButton ? (
-          <TouchableOpacity onPress={onBack} style={styles.backButton}>
+          <TouchableOpacity onPress={onBack}>
             <IconSymbol
               name="chevron.left"
               size={Platform.OS === 'ios' ? 24 : 40}
@@ -45,7 +45,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             />
           </TouchableOpacity>
         ) : (
-          <View style={styles.backButton} />
+          <View style={styles.headerSpacer} />
         )}
 
         <ThemedText
@@ -71,9 +71,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
   },
-  backButton: {
-    marginRight: 8,
-  },
   headerTitle: {
     fontSize: 24,
     lineHeight: 32,
@@ -82,7 +79,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   headerSpacer: {
-    width: 40,
+    width: 15,
   },
 });
 
