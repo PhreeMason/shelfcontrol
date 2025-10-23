@@ -48,7 +48,13 @@ import {
   UserListeningPaceData,
   UserPaceData,
 } from '@/utils/paceCalculations';
-import React, { createContext, ReactNode, useCallback, useContext, useMemo } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+} from 'react';
 
 interface DeadlineContextType {
   deadlines: ReadingDeadlineWithProgress[];
@@ -225,26 +231,31 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     return calculateUserListeningPace(deadlines);
   }, [deadlines]);
 
-  const getDeadlinePaceStatus = useCallback((deadline: ReadingDeadlineWithProgress) => {
-    return calculateDeadlinePaceStatus(
-      deadline,
-      userPaceData,
-      userListeningPaceData
-    );
-  }, [userPaceData, userListeningPaceData]);
+  const getDeadlinePaceStatus = useCallback(
+    (deadline: ReadingDeadlineWithProgress) => {
+      return calculateDeadlinePaceStatus(
+        deadline,
+        userPaceData,
+        userListeningPaceData
+      );
+    },
+    [userPaceData, userListeningPaceData]
+  );
 
-  const formatPaceForFormat = useCallback((
-    pace: number,
-    format: 'physical' | 'eBook' | 'audio'
-  ): string => {
-    return formatPaceDisplay(pace, format);
-  }, []);
+  const formatPaceForFormat = useCallback(
+    (pace: number, format: 'physical' | 'eBook' | 'audio'): string => {
+      return formatPaceDisplay(pace, format);
+    },
+    []
+  );
 
   const getUserPaceReliability = useCallback((): boolean => {
     return userPaceData.isReliable;
   }, [userPaceData]);
 
-  const getUserPaceMethod = useCallback((): 'recent_data' | 'default_fallback' => {
+  const getUserPaceMethod = useCallback(():
+    | 'recent_data'
+    | 'default_fallback' => {
     return userPaceData.calculationMethod;
   }, [userPaceData]);
 
@@ -252,243 +263,273 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     return userListeningPaceData.isReliable;
   }, [userListeningPaceData]);
 
-  const getUserListeningPaceMethod = useCallback((): 'recent_data' | 'default_fallback' => {
+  const getUserListeningPaceMethod = useCallback(():
+    | 'recent_data'
+    | 'default_fallback' => {
     return userListeningPaceData.calculationMethod;
   }, [userListeningPaceData]);
 
-  const getDeadlineCalculations = useCallback((
-    deadline: ReadingDeadlineWithProgress
-  ): DeadlineCalculationResult => {
-    const currentProgress = calculateProgress(deadline);
-    const totalQuantity = calculateTotalQuantity(
-      deadline.format,
-      deadline.total_quantity
-    );
-    const remaining = calculateRemaining(
-      deadline.format,
-      deadline.total_quantity,
-      undefined,
-      currentProgress,
-      undefined
-    );
-    const progressPercentage = calculateProgressPercentage(deadline);
-    const deadlineStatus = getDeadlineStatus(deadline);
-    let daysLeft,
-      unitsPerDay,
-      urgencyLevel,
-      urgencyColor,
-      statusMessage,
-      paceData;
-
-    if (deadlineStatus.isArchived) {
-      daysLeft = 0;
-      unitsPerDay = 0;
-      urgencyLevel = 'good' as const;
-      urgencyColor = '#10b981';
-      statusMessage = deadlineStatus.isCompleted ? 'Completed!' : 'Set aside';
-      paceData = createArchivedPaceData(statusMessage);
-    } else {
-      daysLeft = calculateDaysLeft(deadline.deadline_date);
-      const currentProgressAsOfStartOfDay =
-        calculateProgressAsOfStartOfDay(deadline);
-      unitsPerDay = calculateUnitsPerDay(
-        deadline.total_quantity,
-        currentProgressAsOfStartOfDay,
-        daysLeft,
-        deadline.format
+  const getDeadlineCalculations = useCallback(
+    (deadline: ReadingDeadlineWithProgress): DeadlineCalculationResult => {
+      const currentProgress = calculateProgress(deadline);
+      const totalQuantity = calculateTotalQuantity(
+        deadline.format,
+        deadline.total_quantity
       );
+      const remaining = calculateRemaining(
+        deadline.format,
+        deadline.total_quantity,
+        undefined,
+        currentProgress,
+        undefined
+      );
+      const progressPercentage = calculateProgressPercentage(deadline);
+      const deadlineStatus = getDeadlineStatus(deadline);
+      let daysLeft,
+        unitsPerDay,
+        urgencyLevel,
+        urgencyColor,
+        statusMessage,
+        paceData;
 
-      paceData = getDeadlinePaceStatus(deadline);
-      urgencyLevel = mapPaceToUrgency(paceData.status, daysLeft);
-      urgencyColor = mapPaceColorToUrgencyColor(paceData.status.color);
-      statusMessage = paceData.statusMessage;
-    }
+      if (deadlineStatus.isArchived) {
+        daysLeft = 0;
+        unitsPerDay = 0;
+        urgencyLevel = 'good' as const;
+        urgencyColor = '#10b981';
+        statusMessage = deadlineStatus.isCompleted ? 'Completed!' : 'Set aside';
+        paceData = createArchivedPaceData(statusMessage);
+      } else {
+        daysLeft = calculateDaysLeft(deadline.deadline_date);
+        const currentProgressAsOfStartOfDay =
+          calculateProgressAsOfStartOfDay(deadline);
+        unitsPerDay = calculateUnitsPerDay(
+          deadline.total_quantity,
+          currentProgressAsOfStartOfDay,
+          daysLeft,
+          deadline.format
+        );
 
-    return createDeadlineCalculationResult(
-      deadline,
-      { currentProgress, totalQuantity, daysLeft, progressPercentage },
-      remaining,
-      daysLeft,
-      unitsPerDay,
-      urgencyLevel,
-      urgencyColor,
-      statusMessage,
-      paceData
-    );
-  }, [getDeadlinePaceStatus]);
+        paceData = getDeadlinePaceStatus(deadline);
+        urgencyLevel = mapPaceToUrgency(paceData.status, daysLeft);
+        urgencyColor = mapPaceColorToUrgencyColor(paceData.status.color);
+        statusMessage = paceData.statusMessage;
+      }
 
-  const addDeadline = useCallback((
-    params: {
-      deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
-      progressDetails: ReadingDeadlineProgressInsert;
-      status?: string;
-      bookData?: { api_id: string; book_id?: string };
+      return createDeadlineCalculationResult(
+        deadline,
+        { currentProgress, totalQuantity, daysLeft, progressPercentage },
+        remaining,
+        daysLeft,
+        unitsPerDay,
+        urgencyLevel,
+        urgencyColor,
+        statusMessage,
+        paceData
+      );
     },
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => {
-    addDeadlineMutation(params, {
-      onSuccess: () => {
-        posthog.capture('deadline created', {
-          format: params.deadlineDetails.format,
-          status: params.status || 'active',
-          source: params.deadlineDetails.source || 'manual',
-        });
-        onSuccess?.();
-      },
-      onError: (error: Error) => {
-        console.error('Error adding deadline:', error);
-        onError?.(error);
-      },
-    });
-  }, [addDeadlineMutation]);
+    [getDeadlinePaceStatus]
+  );
 
-  const updateDeadline = useCallback((
-    params: {
-      deadlineDetails: ReadingDeadlineInsert;
-      progressDetails: ReadingDeadlineProgressInsert;
-      status?: string;
-      bookData?: { api_id: string; book_id?: string };
-    },
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => {
-    updateDeadlineMutation(params, {
-      onSuccess: () => {
-        posthog.capture('deadline updated', {
-          format: params.deadlineDetails.format,
-        });
-        onSuccess?.();
+  const addDeadline = useCallback(
+    (
+      params: {
+        deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
+        progressDetails: ReadingDeadlineProgressInsert;
+        status?: string;
+        bookData?: { api_id: string; book_id?: string };
       },
-      onError: (error: Error) => {
-        console.error('Error updating deadline:', error);
-        onError?.(error);
-      },
-    });
-  }, [updateDeadlineMutation]);
-
-  const updateDeadlineDate = useCallback((
-    deadlineId: string,
-    newDate: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => {
-    updateDeadlineDateMutation(
-      { deadlineId, newDate },
-      {
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      addDeadlineMutation(params, {
         onSuccess: () => {
-          posthog.capture('deadline date updated');
+          posthog.capture('deadline created', {
+            format: params.deadlineDetails.format,
+            status: params.status || 'active',
+            source: params.deadlineDetails.source || 'manual',
+          });
           onSuccess?.();
         },
         onError: (error: Error) => {
-          console.error('Error updating deadline date:', error);
+          console.error('Error adding deadline:', error);
           onError?.(error);
         },
-      }
-    );
-  }, [updateDeadlineDateMutation]);
+      });
+    },
+    [addDeadlineMutation]
+  );
 
-  const deleteDeadline = useCallback((
-    deadlineId: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => {
-    deleteDeadlineMutation(deadlineId, {
-      onSuccess: () => {
-        posthog.capture('deadline deleted');
-        onSuccess?.();
+  const updateDeadline = useCallback(
+    (
+      params: {
+        deadlineDetails: ReadingDeadlineInsert;
+        progressDetails: ReadingDeadlineProgressInsert;
+        status?: string;
+        bookData?: { api_id: string; book_id?: string };
       },
-      onError: (error: Error) => {
-        console.error('Error deleting deadline:', error);
-        onError?.(error);
-      },
-    });
-  }, [deleteDeadlineMutation]);
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      updateDeadlineMutation(params, {
+        onSuccess: () => {
+          posthog.capture('deadline updated', {
+            format: params.deadlineDetails.format,
+          });
+          onSuccess?.();
+        },
+        onError: (error: Error) => {
+          console.error('Error updating deadline:', error);
+          onError?.(error);
+        },
+      });
+    },
+    [updateDeadlineMutation]
+  );
 
-  const completeDeadline = useCallback((
-    deadlineId: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => {
-    completeDeadlineMutation(deadlineId, {
-      onSuccess: () => {
-        posthog.capture('deadline completed');
-        onSuccess?.();
-      },
-      onError: (error: Error) => {
-        console.error('Error completing deadline:', error);
-        onError?.(error);
-      },
-    });
-  }, [completeDeadlineMutation]);
+  const updateDeadlineDate = useCallback(
+    (
+      deadlineId: string,
+      newDate: string,
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      updateDeadlineDateMutation(
+        { deadlineId, newDate },
+        {
+          onSuccess: () => {
+            posthog.capture('deadline date updated');
+            onSuccess?.();
+          },
+          onError: (error: Error) => {
+            console.error('Error updating deadline date:', error);
+            onError?.(error);
+          },
+        }
+      );
+    },
+    [updateDeadlineDateMutation]
+  );
 
-  const startReadingDeadline = useCallback((
-    deadlineId: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => {
-    startReadingDeadlineMutation(deadlineId, {
-      onSuccess: () => {
-        posthog.capture('deadline started');
-        onSuccess?.();
-      },
-      onError: (error: Error) => {
-        console.error('Error starting reading deadline:', error);
-        onError?.(error);
-      },
-    });
-  }, [startReadingDeadlineMutation]);
+  const deleteDeadline = useCallback(
+    (
+      deadlineId: string,
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      deleteDeadlineMutation(deadlineId, {
+        onSuccess: () => {
+          posthog.capture('deadline deleted');
+          onSuccess?.();
+        },
+        onError: (error: Error) => {
+          console.error('Error deleting deadline:', error);
+          onError?.(error);
+        },
+      });
+    },
+    [deleteDeadlineMutation]
+  );
 
-  const didNotFinishDeadline = useCallback((
-    deadlineId: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => {
-    didNotFinishDeadlineMutation(deadlineId, {
-      onSuccess: () => {
-        posthog.capture('deadline marked did not finish');
-        onSuccess?.();
-      },
-      onError: (error: Error) => {
-        console.error('Error marking deadline as did not finish:', error);
-        onError?.(error);
-      },
-    });
-  }, [didNotFinishDeadlineMutation]);
+  const completeDeadline = useCallback(
+    (
+      deadlineId: string,
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      completeDeadlineMutation(deadlineId, {
+        onSuccess: () => {
+          posthog.capture('deadline completed');
+          onSuccess?.();
+        },
+        onError: (error: Error) => {
+          console.error('Error completing deadline:', error);
+          onError?.(error);
+        },
+      });
+    },
+    [completeDeadlineMutation]
+  );
 
-  const pauseDeadline = useCallback((
-    deadlineId: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => {
-    pauseDeadlineMutation(deadlineId, {
-      onSuccess: () => {
-        posthog.capture('deadline paused');
-        onSuccess?.();
-      },
-      onError: (error: Error) => {
-        console.error('Error pausing deadline:', error);
-        onError?.(error);
-      },
-    });
-  }, [pauseDeadlineMutation]);
+  const startReadingDeadline = useCallback(
+    (
+      deadlineId: string,
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      startReadingDeadlineMutation(deadlineId, {
+        onSuccess: () => {
+          posthog.capture('deadline started');
+          onSuccess?.();
+        },
+        onError: (error: Error) => {
+          console.error('Error starting reading deadline:', error);
+          onError?.(error);
+        },
+      });
+    },
+    [startReadingDeadlineMutation]
+  );
 
-  const resumeDeadline = useCallback((
-    deadlineId: string,
-    onSuccess?: () => void,
-    onError?: (error: Error) => void
-  ) => {
-    resumeDeadlineMutation(deadlineId, {
-      onSuccess: () => {
-        posthog.capture('deadline resumed');
-        onSuccess?.();
-      },
-      onError: (error: Error) => {
-        console.error('Error resuming deadline:', error);
-        onError?.(error);
-      },
-    });
-  }, [resumeDeadlineMutation]);
+  const didNotFinishDeadline = useCallback(
+    (
+      deadlineId: string,
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      didNotFinishDeadlineMutation(deadlineId, {
+        onSuccess: () => {
+          posthog.capture('deadline marked did not finish');
+          onSuccess?.();
+        },
+        onError: (error: Error) => {
+          console.error('Error marking deadline as did not finish:', error);
+          onError?.(error);
+        },
+      });
+    },
+    [didNotFinishDeadlineMutation]
+  );
+
+  const pauseDeadline = useCallback(
+    (
+      deadlineId: string,
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      pauseDeadlineMutation(deadlineId, {
+        onSuccess: () => {
+          posthog.capture('deadline paused');
+          onSuccess?.();
+        },
+        onError: (error: Error) => {
+          console.error('Error pausing deadline:', error);
+          onError?.(error);
+        },
+      });
+    },
+    [pauseDeadlineMutation]
+  );
+
+  const resumeDeadline = useCallback(
+    (
+      deadlineId: string,
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      resumeDeadlineMutation(deadlineId, {
+        onSuccess: () => {
+          posthog.capture('deadline resumed');
+          onSuccess?.();
+        },
+        onError: (error: Error) => {
+          console.error('Error resuming deadline:', error);
+          onError?.(error);
+        },
+      });
+    },
+    [resumeDeadlineMutation]
+  );
 
   const value: DeadlineContextType = {
     deadlines,

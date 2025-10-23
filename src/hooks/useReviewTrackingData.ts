@@ -36,12 +36,15 @@ export const useReviewTrackingData = (
   // Memoize the entire return object to prevent unnecessary re-renders in consuming components
   // Without this, every render would create a new object reference, triggering effects
   // that depend on these values even when the actual data hasn't changed
-  return useMemo(() => ({
-    reviewTracking: query.data?.review_tracking ?? null,
-    platforms: query.data?.platforms ?? EMPTY_PLATFORMS,
-    completionPercentage: query.data?.completion_percentage ?? 0,
-    isLoading: query.isLoading,
-    error: query.error,
-    refetch: query.refetch,
-  }), [query.data, query.isLoading, query.error, query.refetch]);
+  return useMemo(
+    () => ({
+      reviewTracking: query.data?.review_tracking ?? null,
+      platforms: query.data?.platforms ?? EMPTY_PLATFORMS,
+      completionPercentage: query.data?.completion_percentage ?? 0,
+      isLoading: query.isLoading,
+      error: query.error,
+      refetch: query.refetch,
+    }),
+    [query.data, query.isLoading, query.error, query.refetch]
+  );
 };

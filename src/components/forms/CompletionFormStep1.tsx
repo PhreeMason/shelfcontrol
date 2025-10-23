@@ -117,7 +117,7 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
     startDate,
     finishDate,
     duration,
-    deadline
+    deadline,
   });
   const formatDate = (date: Dayjs) => {
     return date.format('MMM D');

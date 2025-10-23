@@ -82,16 +82,14 @@ const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
             ]}
             testID="no-button"
           >
-            <ThemedText
-              style={styles.selectionButtonText}
-            >
+            <ThemedText style={styles.selectionButtonText}>
               No, I'm all done
             </ThemedText>
           </Pressable>
         </View>
 
         <ThemedText variant="default" style={[styles.title]}>
-          {needsReview ? "We'll help you track your review progress" : " "}
+          {needsReview ? "We'll help you track your review progress" : ' '}
         </ThemedText>
 
         {needsReview !== null && (

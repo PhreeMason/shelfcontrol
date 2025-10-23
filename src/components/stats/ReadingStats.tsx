@@ -99,13 +99,16 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
           <ThemedText style={[styles.statNumber, { color: colors.primary }]}>
             {deadline.format === 'audio' && averagePace
               ? formatProgressDisplay(deadline.format, averagePace)
-              : averagePace ?? 'N/A'}
+              : (averagePace ?? 'N/A')}
           </ThemedText>
           <ThemedText variant="default" style={styles.statLabel}>
             {averagePace
               ? deadline.format === 'audio'
                 ? 'avg listening pace'
-                : formatAveragePace(averagePace, deadline.format).split(' ').slice(1).join(' ')
+                : formatAveragePace(averagePace, deadline.format)
+                    .split(' ')
+                    .slice(1)
+                    .join(' ')
               : 'avg pace'}
           </ThemedText>
         </View>
@@ -114,7 +117,9 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
             {sessionCount}
           </ThemedText>
           <ThemedText variant="default" style={styles.statLabel}>
-            {deadline.format === 'audio' ? 'listening sessions' : 'reading sessions'}
+            {deadline.format === 'audio'
+              ? 'listening sessions'
+              : 'reading sessions'}
           </ThemedText>
         </View>
       </ThemedView>

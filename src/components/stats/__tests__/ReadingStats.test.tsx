@@ -19,7 +19,12 @@ jest.mock('@/components/progress/ProgressBar', () => {
 });
 
 jest.mock('@/components/stats/StatsSummaryCard', () => {
-  return function MockStatsSummaryCard({ label, dateText, subtitle, children }: any) {
+  return function MockStatsSummaryCard({
+    label,
+    dateText,
+    subtitle,
+    children,
+  }: any) {
     const React = require('react');
     const { View, Text } = require('react-native');
     return React.createElement(View, { testID: 'stats-summary-card' }, [

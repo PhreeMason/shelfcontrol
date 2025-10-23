@@ -75,7 +75,8 @@ export function useProgressInputViewModel({
     displayValueRef.current = displayValue;
   }, [displayValue]);
 
-  const effectiveMode = mode === 'remaining' && format !== 'audio' ? 'direct' : mode;
+  const effectiveMode =
+    mode === 'remaining' && format !== 'audio' ? 'direct' : mode;
 
   const isDirectPages = effectiveMode === 'direct' && format !== 'audio';
   const isDirectAudio = effectiveMode === 'direct' && format === 'audio';
@@ -157,7 +158,8 @@ export function useProgressInputViewModel({
   const displayTotal = useMemo(() => {
     if (isPercentage) return '/ 100%';
     if (isRemaining) return `/ ${formatAudiobookTime(totalQuantity)}`;
-    if (isDirectAudio) return totalQuantity ? `/ ${formatAudiobookTime(totalQuantity)}` : '';
+    if (isDirectAudio)
+      return totalQuantity ? `/ ${formatAudiobookTime(totalQuantity)}` : '';
     return `/ ${totalQuantity} pages`;
   }, [isPercentage, isRemaining, isDirectAudio, totalQuantity]);
 
@@ -173,10 +175,19 @@ export function useProgressInputViewModel({
       return `= ${formatAudiobookTime(calculatedCurrentTime)} current`;
     }
     return ' ';
-  }, [isPercentage, isRemaining, format, calculatedProgress, calculatedCurrentTime]);
+  }, [
+    isPercentage,
+    isRemaining,
+    format,
+    calculatedProgress,
+    calculatedCurrentTime,
+  ]);
 
   const helpText = useMemo(() => {
-    if ((isDirectAudio || isRemaining) && (showTooltip || (!isValid && isFocused))) {
+    if (
+      (isDirectAudio || isRemaining) &&
+      (showTooltip || (!isValid && isFocused))
+    ) {
       return 'Use formats like: 3h 2m, 3:02, or 45m';
     }
     return undefined;
@@ -227,7 +238,9 @@ export function useProgressInputViewModel({
       const parsed = parseAudiobookTime(displayValue);
 
       if (parsed !== null) {
-        const finalValue = isRemaining ? Math.max(0, totalQuantity - parsed) : parsed;
+        const finalValue = isRemaining
+          ? Math.max(0, totalQuantity - parsed)
+          : parsed;
         onChange(finalValue);
         const formattedValue = formatAudiobookTime(parsed);
         setDisplayValue(formattedValue);

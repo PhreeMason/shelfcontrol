@@ -17,18 +17,9 @@ interface ProgressInputBaseProps {
 const ProgressInputBase: React.FC<ProgressInputBaseProps> = props => {
   const viewModel = useProgressInputViewModel(props);
 
-
   return (
-    <ThemedView
-      style={[
-        styles.container,
-        viewModel.styling.containerStyle,
-      ]}
-    >
-      <ThemedText
-        variant="muted"
-        style={styles.label}
-      >
+    <ThemedView style={[styles.container, viewModel.styling.containerStyle]}>
+      <ThemedText variant="muted" style={styles.label}>
         {viewModel.display.label}
       </ThemedText>
       <ThemedView style={[styles.inputRow, { backgroundColor: 'transparent' }]}>

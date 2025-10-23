@@ -120,10 +120,15 @@ export function getCompletionStatusLabel(
     did_not_finish: 'Did Not Finish',
   };
 
-  return statusMap[status ?? ''] || (isAudio ? 'Finished Listening' : 'Finished Reading');
+  return (
+    statusMap[status ?? ''] ||
+    (isAudio ? 'Finished Listening' : 'Finished Reading')
+  );
 }
 
-export function getProgressLabel(format: 'physical' | 'eBook' | 'audio'): string {
+export function getProgressLabel(
+  format: 'physical' | 'eBook' | 'audio'
+): string {
   return format === 'audio' ? 'Time Listened' : 'Pages Read';
 }
 

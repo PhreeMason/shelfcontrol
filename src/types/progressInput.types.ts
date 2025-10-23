@@ -2,7 +2,10 @@ import { BookFormat } from './deadline.types';
 
 export type ProgressInputMode = 'direct' | 'percentage' | 'remaining';
 
-export type ProgressInputModePreferences = Record<BookFormat, ProgressInputMode>;
+export type ProgressInputModePreferences = Record<
+  BookFormat,
+  ProgressInputMode
+>;
 
 export const DEFAULT_PROGRESS_INPUT_MODES: ProgressInputModePreferences = {
   physical: 'direct',

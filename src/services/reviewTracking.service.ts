@@ -436,7 +436,6 @@ class ReviewTrackingService {
       return null;
     }
 
-
     const { data: platforms } = await supabase
       .from(DB_TABLES.REVIEW_PLATFORMS)
       .select('*')
@@ -519,9 +518,10 @@ class ReviewTrackingService {
     const postedPlatformNames = postedPlatforms.map(p => p.platform_name);
 
     const newPlatformNames = platforms.map(p => p.name);
-    const platformsToDelete = existingPlatforms?.filter(
-      p => !p.posted && !newPlatformNames.includes(p.platform_name)
-    ) || [];
+    const platformsToDelete =
+      existingPlatforms?.filter(
+        p => !p.posted && !newPlatformNames.includes(p.platform_name)
+      ) || [];
 
     if (platformsToDelete.length > 0) {
       const idsToDelete = platformsToDelete.map(p => p.id);
@@ -535,7 +535,8 @@ class ReviewTrackingService {
       }
     }
 
-    const existingPlatformNames = existingPlatforms?.map(p => p.platform_name) || [];
+    const existingPlatformNames =
+      existingPlatforms?.map(p => p.platform_name) || [];
     const platformsToAdd = platforms.filter(
       p => !existingPlatformNames.includes(p.name)
     );
@@ -589,7 +590,9 @@ class ReviewTrackingService {
       const currentProgress = progressData?.current_progress || 0;
 
       const progressPercentage = deadlineWithQuantity?.total_quantity
-        ? Math.round((currentProgress / deadlineWithQuantity.total_quantity) * 100)
+        ? Math.round(
+            (currentProgress / deadlineWithQuantity.total_quantity) * 100
+          )
         : 0;
 
       const { error: noteError } = await supabase

@@ -191,9 +191,7 @@ export const prepareDeadlineDetailsFromForm = (
     data.totalMinutes
   );
 
-  const filteredPublishers = data.publishers?.filter(
-    (p) => p.trim().length > 0
-  );
+  const filteredPublishers = data.publishers?.filter(p => p.trim().length > 0);
 
   const baseDetails = {
     author: data.bookAuthor || null,

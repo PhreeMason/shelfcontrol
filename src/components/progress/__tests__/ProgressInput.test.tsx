@@ -67,13 +67,19 @@ jest.mock('../InputModeToggle', () => {
   const React = require('react');
   const { TouchableOpacity, Text } = require('react-native');
   return function MockInputModeToggle({ modes, onModeChange }: any) {
-    return React.createElement('View', { testID: 'input-mode-toggle' },
+    return React.createElement(
+      'View',
+      { testID: 'input-mode-toggle' },
       modes.map((mode: any) =>
-        React.createElement(TouchableOpacity, {
-          key: mode.key,
-          testID: `mode-${mode.key}`,
-          onPress: () => onModeChange(mode.key),
-        }, React.createElement(Text, null, mode.label))
+        React.createElement(
+          TouchableOpacity,
+          {
+            key: mode.key,
+            testID: `mode-${mode.key}`,
+            onPress: () => onModeChange(mode.key),
+          },
+          React.createElement(Text, null, mode.label)
+        )
       )
     );
   };
@@ -235,7 +241,10 @@ describe('ProgressInput', () => {
       const percentageButton = screen.getByTestId('mode-percentage');
       fireEvent.press(percentageButton);
 
-      expect(mockSetProgressInputMode).toHaveBeenCalledWith('physical', 'percentage');
+      expect(mockSetProgressInputMode).toHaveBeenCalledWith(
+        'physical',
+        'percentage'
+      );
     });
 
     it('should persist mode change across renders', () => {
@@ -337,7 +346,10 @@ describe('ProgressInput', () => {
       const remainingButton = screen.getByTestId('mode-remaining');
       fireEvent.press(remainingButton);
 
-      expect(mockSetProgressInputMode).toHaveBeenCalledWith('audio', 'remaining');
+      expect(mockSetProgressInputMode).toHaveBeenCalledWith(
+        'audio',
+        'remaining'
+      );
     });
   });
 

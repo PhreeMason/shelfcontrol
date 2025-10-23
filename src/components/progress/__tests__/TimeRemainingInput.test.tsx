@@ -45,7 +45,9 @@ describe('TimeRemainingInput', () => {
     });
 
     it('should render calculated current time', () => {
-      render(<TimeRemainingInput {...defaultProps} value={300} totalQuantity={600} />);
+      render(
+        <TimeRemainingInput {...defaultProps} value={300} totalQuantity={600} />
+      );
       expect(screen.getByText(/5h/)).toBeTruthy();
       expect(screen.getByText(/current/)).toBeTruthy();
     });
@@ -69,7 +71,13 @@ describe('TimeRemainingInput', () => {
   describe('Time Remaining Calculation', () => {
     it('should calculate current time from remaining time (hours and minutes)', () => {
       const onChange = jest.fn();
-      render(<TimeRemainingInput {...defaultProps} totalQuantity={600} onChange={onChange} />);
+      render(
+        <TimeRemainingInput
+          {...defaultProps}
+          totalQuantity={600}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByPlaceholderText('');
       fireEvent.changeText(input, '3h 0m');
@@ -79,7 +87,13 @@ describe('TimeRemainingInput', () => {
 
     it('should calculate current time from remaining time (minutes only)', () => {
       const onChange = jest.fn();
-      render(<TimeRemainingInput {...defaultProps} totalQuantity={180} onChange={onChange} />);
+      render(
+        <TimeRemainingInput
+          {...defaultProps}
+          totalQuantity={180}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByPlaceholderText('');
       fireEvent.changeText(input, '60m');
@@ -89,7 +103,13 @@ describe('TimeRemainingInput', () => {
 
     it('should calculate current time from remaining time (colon format)', () => {
       const onChange = jest.fn();
-      render(<TimeRemainingInput {...defaultProps} totalQuantity={600} onChange={onChange} />);
+      render(
+        <TimeRemainingInput
+          {...defaultProps}
+          totalQuantity={600}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByPlaceholderText('');
       fireEvent.changeText(input, '2:30');
@@ -99,7 +119,13 @@ describe('TimeRemainingInput', () => {
 
     it('should handle zero remaining time (book complete)', () => {
       const onChange = jest.fn();
-      render(<TimeRemainingInput {...defaultProps} totalQuantity={600} onChange={onChange} />);
+      render(
+        <TimeRemainingInput
+          {...defaultProps}
+          totalQuantity={600}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByPlaceholderText('');
       fireEvent.changeText(input, '0m');
@@ -109,7 +135,13 @@ describe('TimeRemainingInput', () => {
 
     it('should not allow negative current time', () => {
       const onChange = jest.fn();
-      render(<TimeRemainingInput {...defaultProps} totalQuantity={100} onChange={onChange} />);
+      render(
+        <TimeRemainingInput
+          {...defaultProps}
+          totalQuantity={100}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByPlaceholderText('');
       fireEvent.changeText(input, '200m');
@@ -131,7 +163,13 @@ describe('TimeRemainingInput', () => {
 
     it('should accept valid time formats', () => {
       const onChange = jest.fn();
-      render(<TimeRemainingInput {...defaultProps} totalQuantity={600} onChange={onChange} />);
+      render(
+        <TimeRemainingInput
+          {...defaultProps}
+          totalQuantity={600}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByPlaceholderText('');
 
@@ -150,7 +188,13 @@ describe('TimeRemainingInput', () => {
     it('should handle blur with valid input', () => {
       const onBlur = jest.fn();
       const onChange = jest.fn();
-      render(<TimeRemainingInput {...defaultProps} onBlur={onBlur} onChange={onChange} />);
+      render(
+        <TimeRemainingInput
+          {...defaultProps}
+          onBlur={onBlur}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByPlaceholderText('');
       fireEvent.changeText(input, '2h 30m');
@@ -160,7 +204,9 @@ describe('TimeRemainingInput', () => {
     });
 
     it('should reset to previous value on blur with invalid input', () => {
-      render(<TimeRemainingInput {...defaultProps} value={300} totalQuantity={600} />);
+      render(
+        <TimeRemainingInput {...defaultProps} value={300} totalQuantity={600} />
+      );
 
       const input = screen.getByPlaceholderText('');
       fireEvent.changeText(input, 'invalid');
@@ -190,7 +236,9 @@ describe('TimeRemainingInput', () => {
       const input = screen.getByPlaceholderText('');
       expect(input.props.value).toBe('5h');
 
-      rerender(<TimeRemainingInput {...defaultProps} value={450} totalQuantity={600} />);
+      rerender(
+        <TimeRemainingInput {...defaultProps} value={450} totalQuantity={600} />
+      );
 
       expect(input.props.value).toBe('2h 30m');
     });
@@ -219,7 +267,13 @@ describe('TimeRemainingInput', () => {
   describe('Edge Cases', () => {
     it('should handle totalQuantity of 0', () => {
       const onChange = jest.fn();
-      render(<TimeRemainingInput {...defaultProps} totalQuantity={0} onChange={onChange} />);
+      render(
+        <TimeRemainingInput
+          {...defaultProps}
+          totalQuantity={0}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByPlaceholderText('');
       fireEvent.changeText(input, '0m');
@@ -229,7 +283,13 @@ describe('TimeRemainingInput', () => {
 
     it('should handle very large totalQuantity', () => {
       const onChange = jest.fn();
-      render(<TimeRemainingInput {...defaultProps} totalQuantity={10000} onChange={onChange} />);
+      render(
+        <TimeRemainingInput
+          {...defaultProps}
+          totalQuantity={10000}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByPlaceholderText('');
       fireEvent.changeText(input, '100h');
@@ -239,7 +299,13 @@ describe('TimeRemainingInput', () => {
 
     it('should handle current time at start (remaining equals total)', () => {
       const onChange = jest.fn();
-      render(<TimeRemainingInput {...defaultProps} totalQuantity={600} onChange={onChange} />);
+      render(
+        <TimeRemainingInput
+          {...defaultProps}
+          totalQuantity={600}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByPlaceholderText('');
       fireEvent.changeText(input, '10h 0m');
@@ -249,7 +315,13 @@ describe('TimeRemainingInput', () => {
 
     it('should handle current time at end (remaining is 0)', () => {
       const onChange = jest.fn();
-      render(<TimeRemainingInput {...defaultProps} totalQuantity={600} onChange={onChange} />);
+      render(
+        <TimeRemainingInput
+          {...defaultProps}
+          totalQuantity={600}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByPlaceholderText('');
       fireEvent.changeText(input, '0m');

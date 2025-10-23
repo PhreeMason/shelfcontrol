@@ -129,12 +129,12 @@ class DeadlinesService {
                   .eq('google_volume_id', bookData.google_volume_id)
                   .limit(1);
 
-                const existingBookByVolumeId = existingBookByVolumeIdResults?.[0];
+                const existingBookByVolumeId =
+                  existingBookByVolumeIdResults?.[0];
 
                 if (existingBookByVolumeId) {
                   finalBookId = existingBookByVolumeId.id;
                 }
-
               } else {
                 throw insertError;
               }

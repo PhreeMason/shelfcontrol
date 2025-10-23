@@ -256,7 +256,11 @@ describe('deadlineFormUtils', () => {
         'flexible'
       );
 
-      expect(result.publishers).toEqual(['Penguin', 'HarperCollins', 'Macmillan']);
+      expect(result.publishers).toEqual([
+        'Penguin',
+        'HarperCollins',
+        'Macmillan',
+      ]);
     });
 
     it('should set publishers to null when all strings are empty', () => {

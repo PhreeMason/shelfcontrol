@@ -68,12 +68,21 @@ describe('PercentageProgressInput', () => {
     });
 
     it('should render calculated progress for ebooks', () => {
-      render(<PercentageProgressInput {...defaultProps} format="eBook" value={150} />);
+      render(
+        <PercentageProgressInput {...defaultProps} format="eBook" value={150} />
+      );
       expect(screen.getByText(/= 152 pages/)).toBeTruthy();
     });
 
     it('should render formatted time for audiobooks', () => {
-      render(<PercentageProgressInput {...defaultProps} format="audio" value={180} totalQuantity={600} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          format="audio"
+          value={180}
+          totalQuantity={600}
+        />
+      );
       expect(screen.getByText(/= 3h/)).toBeTruthy();
     });
   });
@@ -81,7 +90,13 @@ describe('PercentageProgressInput', () => {
   describe('Percentage Calculation', () => {
     it('should calculate progress from percentage (conservative rounding)', () => {
       const onChange = jest.fn();
-      render(<PercentageProgressInput {...defaultProps} totalQuantity={400} onChange={onChange} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          totalQuantity={400}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '65');
@@ -91,7 +106,13 @@ describe('PercentageProgressInput', () => {
 
     it('should round down conservatively for decimal results', () => {
       const onChange = jest.fn();
-      render(<PercentageProgressInput {...defaultProps} totalQuantity={300} onChange={onChange} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          totalQuantity={300}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '33');
@@ -101,7 +122,13 @@ describe('PercentageProgressInput', () => {
 
     it('should handle 0 percentage', () => {
       const onChange = jest.fn();
-      render(<PercentageProgressInput {...defaultProps} totalQuantity={400} onChange={onChange} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          totalQuantity={400}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '0');
@@ -111,7 +138,13 @@ describe('PercentageProgressInput', () => {
 
     it('should handle 100 percentage', () => {
       const onChange = jest.fn();
-      render(<PercentageProgressInput {...defaultProps} totalQuantity={400} onChange={onChange} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          totalQuantity={400}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '100');
@@ -121,7 +154,13 @@ describe('PercentageProgressInput', () => {
 
     it('should not call onChange for percentage > 100', () => {
       const onChange = jest.fn();
-      render(<PercentageProgressInput {...defaultProps} totalQuantity={400} onChange={onChange} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          totalQuantity={400}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '150');
@@ -131,7 +170,13 @@ describe('PercentageProgressInput', () => {
 
     it('should not call onChange for negative percentage', () => {
       const onChange = jest.fn();
-      render(<PercentageProgressInput {...defaultProps} totalQuantity={400} onChange={onChange} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          totalQuantity={400}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '-10');
@@ -162,7 +207,13 @@ describe('PercentageProgressInput', () => {
     });
 
     it('should reset to calculated percentage on blur with invalid input', () => {
-      render(<PercentageProgressInput {...defaultProps} value={200} totalQuantity={400} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          value={200}
+          totalQuantity={400}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '150');
@@ -184,7 +235,13 @@ describe('PercentageProgressInput', () => {
 
   describe('Format-Specific Display', () => {
     it('should display "pages" for physical format', () => {
-      render(<PercentageProgressInput {...defaultProps} format="physical" totalQuantity={400} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          format="physical"
+          totalQuantity={400}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '50');
@@ -193,7 +250,13 @@ describe('PercentageProgressInput', () => {
     });
 
     it('should display "pages" for eBook format', () => {
-      render(<PercentageProgressInput {...defaultProps} format="eBook" totalQuantity={400} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          format="eBook"
+          totalQuantity={400}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '50');
@@ -202,7 +265,13 @@ describe('PercentageProgressInput', () => {
     });
 
     it('should display formatted time for audio format', () => {
-      render(<PercentageProgressInput {...defaultProps} format="audio" totalQuantity={600} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          format="audio"
+          totalQuantity={600}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '50');
@@ -211,7 +280,13 @@ describe('PercentageProgressInput', () => {
     });
 
     it('should handle minutes for audio format', () => {
-      render(<PercentageProgressInput {...defaultProps} format="audio" totalQuantity={120} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          format="audio"
+          totalQuantity={120}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '50');
@@ -223,7 +298,13 @@ describe('PercentageProgressInput', () => {
   describe('Edge Cases', () => {
     it('should handle totalQuantity of 0', () => {
       const onChange = jest.fn();
-      render(<PercentageProgressInput {...defaultProps} totalQuantity={0} onChange={onChange} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          totalQuantity={0}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '50');
@@ -233,7 +314,13 @@ describe('PercentageProgressInput', () => {
 
     it('should handle very large totalQuantity', () => {
       const onChange = jest.fn();
-      render(<PercentageProgressInput {...defaultProps} totalQuantity={10000} onChange={onChange} />);
+      render(
+        <PercentageProgressInput
+          {...defaultProps}
+          totalQuantity={10000}
+          onChange={onChange}
+        />
+      );
 
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '50');
@@ -242,11 +329,19 @@ describe('PercentageProgressInput', () => {
     });
 
     it('should display calculated progress updates in real-time', () => {
-      const { rerender } = render(<PercentageProgressInput {...defaultProps} totalQuantity={400} />);
+      const { rerender } = render(
+        <PercentageProgressInput {...defaultProps} totalQuantity={400} />
+      );
 
       expect(screen.getByText(/= 0 pages/)).toBeTruthy();
 
-      rerender(<PercentageProgressInput {...defaultProps} value={200} totalQuantity={400} />);
+      rerender(
+        <PercentageProgressInput
+          {...defaultProps}
+          value={200}
+          totalQuantity={400}
+        />
+      );
 
       expect(screen.getByText(/= 200 pages/)).toBeTruthy();
     });

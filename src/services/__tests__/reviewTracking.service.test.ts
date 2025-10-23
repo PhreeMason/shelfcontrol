@@ -116,7 +116,11 @@ describe('ReviewTrackingService', () => {
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
                   single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId, total_quantity: 350 },
+                    data: {
+                      id: 'rd-123',
+                      user_id: userId,
+                      total_quantity: 350,
+                    },
                     error: null,
                   }),
                 }),

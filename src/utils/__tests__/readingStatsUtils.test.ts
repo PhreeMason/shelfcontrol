@@ -528,9 +528,15 @@ describe('readingStatsUtils', () => {
     });
 
     it('should return Did Not Finish for did_not_finish status (any format)', () => {
-      expect(getCompletionStatusLabel('did_not_finish', 'physical')).toBe('Did Not Finish');
-      expect(getCompletionStatusLabel('did_not_finish', 'eBook')).toBe('Did Not Finish');
-      expect(getCompletionStatusLabel('did_not_finish', 'audio')).toBe('Did Not Finish');
+      expect(getCompletionStatusLabel('did_not_finish', 'physical')).toBe(
+        'Did Not Finish'
+      );
+      expect(getCompletionStatusLabel('did_not_finish', 'eBook')).toBe(
+        'Did Not Finish'
+      );
+      expect(getCompletionStatusLabel('did_not_finish', 'audio')).toBe(
+        'Did Not Finish'
+      );
     });
 
     it('should return Finished Reading for null status without format', () => {

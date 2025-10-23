@@ -77,7 +77,8 @@ export const useReviewPlatforms = (
 
       const platformsChanged = !areSetEqual(presetPlatforms, selectedPlatforms);
       const customsChanged = !areArraysEqual(customPlats, customPlatforms);
-      const blogChanged = blogPlatform !== null && (!hasBlog || blogUrl !== blogPlatform);
+      const blogChanged =
+        blogPlatform !== null && (!hasBlog || blogUrl !== blogPlatform);
 
       if (platformsChanged) {
         setSelectedPlatforms(presetPlatforms);
@@ -91,7 +92,10 @@ export const useReviewPlatforms = (
       }
     } else {
       const defaults = getReviewFormDefaults(deadlineSource);
-      const defaultsChanged = !areSetEqual(defaults.platforms, selectedPlatforms);
+      const defaultsChanged = !areSetEqual(
+        defaults.platforms,
+        selectedPlatforms
+      );
 
       if (defaultsChanged) {
         setSelectedPlatforms(defaults.platforms);

@@ -37,12 +37,19 @@ const ProgressInput: React.FC<ProgressInputProps> = ({
     [availableModes, format]
   );
 
-  const renderInput = (value: number, onChange: (v: number) => void, onBlur?: () => void) => {
+  const renderInput = (
+    value: number,
+    onChange: (v: number) => void,
+    onBlur?: () => void
+  ) => {
     const testID =
-      selectedMode === 'percentage' ? 'percentage-progress-input' :
-      selectedMode === 'remaining' && format === 'audio' ? 'time-remaining-input' :
-      format === 'audio' ? 'audiobook-progress-input' :
-      'pages-progress-input';
+      selectedMode === 'percentage'
+        ? 'percentage-progress-input'
+        : selectedMode === 'remaining' && format === 'audio'
+          ? 'time-remaining-input'
+          : format === 'audio'
+            ? 'audiobook-progress-input'
+            : 'pages-progress-input';
 
     return (
       <ProgressInputBase

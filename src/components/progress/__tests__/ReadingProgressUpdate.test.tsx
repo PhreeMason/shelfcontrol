@@ -630,7 +630,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
         const button = screen.getByText('Update Progress');
         fireEvent.press(button);
 
-        expect(router.push).toHaveBeenCalledWith('/deadline/deadline-1/completion-flow');
+        expect(router.push).toHaveBeenCalledWith(
+          '/deadline/deadline-1/completion-flow'
+        );
       });
 
       it('should handle backward progress deletion success', () => {

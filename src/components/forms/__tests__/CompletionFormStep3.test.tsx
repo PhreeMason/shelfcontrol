@@ -410,7 +410,9 @@ describe('CompletionFormStep3', () => {
           type: 'success',
           text1: 'Review tracking set up!',
         });
-        expect(router.replace).toHaveBeenCalledWith('/deadline/test-deadline-id');
+        expect(router.replace).toHaveBeenCalledWith(
+          '/deadline/test-deadline-id'
+        );
       });
     });
 
@@ -432,7 +434,9 @@ describe('CompletionFormStep3', () => {
           type: 'success',
           text1: 'Review tracking set up!',
         });
-        expect(router.replace).toHaveBeenCalledWith('/deadline/test-deadline-id');
+        expect(router.replace).toHaveBeenCalledWith(
+          '/deadline/test-deadline-id'
+        );
       });
     });
 

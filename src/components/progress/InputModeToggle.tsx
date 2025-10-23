@@ -30,13 +30,20 @@ const InputModeToggle: React.FC<InputModeToggleProps> = ({
   return (
     <TouchableOpacity
       testID="input-mode-toggle"
-      style={[styles.container, { borderColor: primaryColor, backgroundColor: 'transparent' }]}
+      style={[
+        styles.container,
+        { borderColor: primaryColor, backgroundColor: 'transparent' },
+      ]}
       onPress={handleCycle}
     >
       <ThemedText style={[styles.label, { color: primaryColor }]}>
         {currentLabel}
       </ThemedText>
-      <IconSymbol name="chevron.up.chevron.down" size={16} color={primaryColor} />
+      <IconSymbol
+        name="chevron.up.chevron.down"
+        size={16}
+        color={primaryColor}
+      />
     </TouchableOpacity>
   );
 };

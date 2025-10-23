@@ -94,7 +94,7 @@ export const useUpdateReviewTracking = () => {
       if (!userId) throw new Error('User not authenticated');
       return reviewTrackingService.updateReviewTracking(userId, params);
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (userId && data.deadline_id) {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.REVIEW_TRACKING.BY_DEADLINE(

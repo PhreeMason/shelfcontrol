@@ -62,8 +62,10 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
   const { data: bookData } = useFetchBookById(deadline.book_id || null);
   const { data: userPlatforms = [] } = useUserPlatforms();
 
-  const { reviewTracking: existingReviewTracking, platforms: existingPlatforms } =
-    useReviewTrackingData(deadline.id, mode === 'edit');
+  const {
+    reviewTracking: existingReviewTracking,
+    platforms: existingPlatforms,
+  } = useReviewTrackingData(deadline.id, mode === 'edit');
 
   const initialPlatformNames = useMemo(() => {
     return mode === 'edit' && existingPlatforms.length > 0
@@ -101,15 +103,18 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
   const { control, handleSubmit, watch, setValue } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewFormSchema),
     defaultValues: {
-      hasReviewDeadline: mode === 'edit' && existingReviewTracking
-        ? !!existingReviewTracking.review_due_date
-        : false,
-      reviewDueDate: mode === 'edit' && existingReviewTracking?.review_due_date
-        ? new Date(existingReviewTracking.review_due_date)
-        : null,
-      needsLinkSubmission: mode === 'edit' && existingReviewTracking
-        ? existingReviewTracking.needs_link_submission
-        : false,
+      hasReviewDeadline:
+        mode === 'edit' && existingReviewTracking
+          ? !!existingReviewTracking.review_due_date
+          : false,
+      reviewDueDate:
+        mode === 'edit' && existingReviewTracking?.review_due_date
+          ? new Date(existingReviewTracking.review_due_date)
+          : null,
+      needsLinkSubmission:
+        mode === 'edit' && existingReviewTracking
+          ? existingReviewTracking.needs_link_submission
+          : false,
       reviewNotes: '',
     },
   });
@@ -374,7 +379,13 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
           />
         )}
         <ThemedButton
-          title={isSubmitting ? 'Saving...' : mode === 'edit' ? 'Update' : 'Save & Finish'}
+          title={
+            isSubmitting
+              ? 'Saving...'
+              : mode === 'edit'
+                ? 'Update'
+                : 'Save & Finish'
+          }
           variant="primary"
           onPress={handleSubmit(handleSaveAndFinish)}
           disabled={isSubmitting}
@@ -474,7 +485,7 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flexGrow: 1,
-  }
+  },
 });
 
 export default CompletionFormStep3;

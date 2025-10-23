@@ -10,7 +10,9 @@ export const searchBookList = async (
 };
 
 export const fetchBookData = async (
-  identifier: string | { api_id?: string; isbn?: string; google_volume_id?: string }
+  identifier:
+    | string
+    | { api_id?: string; isbn?: string; google_volume_id?: string }
 ): Promise<FullBookData> => {
   return booksService.fetchBookData(identifier);
 };
@@ -29,19 +31,32 @@ export const useSearchBooksList = (query: string) => {
 };
 
 export const useFetchBookData = (
-  identifier: string | { api_id?: string; isbn?: string; google_volume_id?: string }
+  identifier:
+    | string
+    | { api_id?: string; isbn?: string; google_volume_id?: string }
 ) => {
-  const queryKey = typeof identifier === 'string'
-    ? QUERY_KEYS.BOOKS.BY_API_ID(identifier)
-    : QUERY_KEYS.BOOKS.BY_API_ID(
-        identifier.google_volume_id || identifier.isbn || identifier.api_id || ''
-      );
+  const queryKey =
+    typeof identifier === 'string'
+      ? QUERY_KEYS.BOOKS.BY_API_ID(identifier)
+      : QUERY_KEYS.BOOKS.BY_API_ID(
+          identifier.google_volume_id ||
+            identifier.isbn ||
+            identifier.api_id ||
+            ''
+        );
 
   return useQuery({
     queryKey,
     queryFn: async () => fetchBookData(identifier),
     staleTime: 1000 * 60 * 30,
-    enabled: typeof identifier === 'string' ? !!identifier : !!(identifier.api_id || identifier.isbn || identifier.google_volume_id),
+    enabled:
+      typeof identifier === 'string'
+        ? !!identifier
+        : !!(
+            identifier.api_id ||
+            identifier.isbn ||
+            identifier.google_volume_id
+          ),
   });
 };
 

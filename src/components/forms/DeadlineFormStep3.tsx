@@ -32,7 +32,10 @@ export const DeadlineFormStep3 = ({
 
   const removePublisher = (index: number) => {
     const newPublishers = publishers.filter((_, i) => i !== index);
-    setValue('publishers', newPublishers.length > 0 ? newPublishers : undefined);
+    setValue(
+      'publishers',
+      newPublishers.length > 0 ? newPublishers : undefined
+    );
     if (index === 0 && isPublisherAutofilled) {
       setValue('isPublisherAutofilled', false);
     }
@@ -96,7 +99,10 @@ export const DeadlineFormStep3 = ({
                     placeholder="Publisher name"
                   />
                   {index === 0 && isPublisherAutofilled && (
-                    <ThemedText color="primary" style={styles.autoFilledIndicator}>
+                    <ThemedText
+                      color="primary"
+                      style={styles.autoFilledIndicator}
+                    >
                       ✓ Linked from library
                     </ThemedText>
                   )}
@@ -104,7 +110,10 @@ export const DeadlineFormStep3 = ({
                 <TouchableOpacity
                   style={[
                     styles.removeButton,
-                    { backgroundColor: colors.surface, borderColor: colors.border },
+                    {
+                      backgroundColor: colors.surface,
+                      borderColor: colors.border,
+                    },
                   ]}
                   onPress={() => removePublisher(index)}
                   testID={`remove-publisher-${index}`}

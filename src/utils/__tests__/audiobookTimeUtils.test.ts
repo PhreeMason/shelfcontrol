@@ -2,10 +2,7 @@ import {
   convertMinutesToHoursAndMinutes,
   convertHoursAndMinutesToTotalMinutes,
 } from '../audiobookTimeUtils';
-import {
-  parseAudiobookTime,
-  formatAudiobookTime,
-} from '../timeFormatUtils';
+import { parseAudiobookTime, formatAudiobookTime } from '../timeFormatUtils';
 
 describe('audiobookTimeUtils', () => {
   describe('convertMinutesToHoursAndMinutes', () => {
