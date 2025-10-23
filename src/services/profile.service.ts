@@ -25,22 +25,24 @@ class ProfileService {
    * Get profile by user ID
    */
   async getProfile(userId: string): Promise<Profile | null> {
-    const { data, error } = await supabase
+    const { data: results, error } = await supabase
       .from(DB_TABLES.PROFILES)
       .select('*')
       .eq('id', userId)
-      .single();
+      .limit(1);
+
+    const data = results?.[0];
 
     if (error) {
       console.error('Error fetching profile:', error);
       return null;
     }
 
-    return data;
+    return data || null;
   }
 
   async updateProfile(profileId: string, updates: UpdateProfileParams) {
-    const { data, error } = await supabase
+    const { data: updateResults, error } = await supabase
       .from(DB_TABLES.PROFILES)
       .update({
         ...updates,
@@ -48,9 +50,12 @@ class ProfileService {
       })
       .eq('id', profileId)
       .select()
-      .single();
+      .limit(1);
+
+    const data = updateResults?.[0];
 
     if (error) throw error;
+    if (!data) throw new Error('Profile not found');
 
     activityService.trackUserActivity('profile_updated', {
       fields: Object.keys(updates),
@@ -85,7 +90,7 @@ class ProfileService {
       return this.getProfile(userId);
     }
 
-    const { data, error } = await supabase
+    const { data: updateResults, error } = await supabase
       .from(DB_TABLES.PROFILES)
       .update({
         ...updates,
@@ -93,9 +98,12 @@ class ProfileService {
       })
       .eq('id', userId)
       .select()
-      .single();
+      .limit(1);
+
+    const data = updateResults?.[0];
 
     if (error) throw error;
+    if (!data) throw new Error('Profile not found');
     return data;
   }
 

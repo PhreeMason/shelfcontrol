@@ -120,22 +120,21 @@ class DeadlinesService {
             const finalNewBookId = generateId('book');
             try {
               await booksService.insertBook(finalNewBookId, bookResponse);
-              console.log('[deadlinesService.addDeadline] Created new book record:', finalNewBookId);
               finalBookId = finalNewBookId;
             } catch (insertError: any) {
               if (insertError?.code === '23505' && bookData.google_volume_id) {
-                const { data: existingBookByVolumeId } = await supabase
+                const { data: existingBookByVolumeIdResults } = await supabase
                   .from(DB_TABLES.BOOKS)
                   .select('id')
                   .eq('google_volume_id', bookData.google_volume_id)
-                  .single();
+                  .limit(1);
+
+                const existingBookByVolumeId = existingBookByVolumeIdResults?.[0];
 
                 if (existingBookByVolumeId) {
-                  console.log('[deadlinesService.addDeadline] Found existing book by google_volume_id:', existingBookByVolumeId.id);
                   finalBookId = existingBookByVolumeId.id;
-                } else {
-                  console.warn('[deadlinesService.addDeadline] Duplicate constraint but could not find existing book');
                 }
+
               } else {
                 throw insertError;
               }
@@ -149,7 +148,7 @@ class DeadlinesService {
       finalBookId = bookData.book_id;
     }
 
-    const { data: deadlineData, error: deadlineError } = await supabase
+    const { data: deadlineDataResults, error: deadlineError } = await supabase
       .from(DB_TABLES.DEADLINES)
       .insert({
         ...deadlineDetails,
@@ -157,7 +156,9 @@ class DeadlinesService {
         user_id: userId,
       })
       .select()
-      .single();
+      .limit(1);
+
+    const deadlineData = deadlineDataResults?.[0];
 
     if (deadlineError) throw deadlineError;
 
@@ -169,15 +170,17 @@ class DeadlinesService {
       progressDetails.updated_at = yesterday.toISOString();
     }
 
-    const { data: progressData, error: progressError } = await supabase
+    const { data: progressDataResults, error: progressError } = await supabase
       .from(DB_TABLES.DEADLINE_PROGRESS)
       .insert(progressDetails)
       .select()
-      .single();
+      .limit(1);
+
+    const progressData = progressDataResults?.[0];
 
     if (progressError) throw progressError;
 
-    const { data: statusData, error: statusError } = await supabase
+    const { data: statusDataResults, error: statusError } = await supabase
       .from(DB_TABLES.DEADLINE_STATUS)
       .insert({
         deadline_id: finalDeadlineId,
@@ -185,7 +188,9 @@ class DeadlinesService {
         updated_at: new Date().toISOString(),
       })
       .select()
-      .single();
+      .limit(1);
+
+    const statusData = statusDataResults?.[0];
 
     if (statusError) throw statusError;
 
@@ -211,7 +216,7 @@ class DeadlinesService {
   async updateDeadline(userId: string, params: UpdateDeadlineParams) {
     const { deadlineDetails, progressDetails, status } = params;
 
-    const { data: deadlineData, error: deadlineError } = await supabase
+    const { data: deadlineDataResults, error: deadlineError } = await supabase
       .from(DB_TABLES.DEADLINES)
       .update({
         ...deadlineDetails,
@@ -220,17 +225,25 @@ class DeadlinesService {
       .eq('id', deadlineDetails.id!)
       .eq('user_id', userId)
       .select()
-      .single();
+      .limit(1);
+
+    const deadlineData = deadlineDataResults?.[0];
+
+    if (!deadlineData) {
+      return null;
+    }
 
     if (deadlineError) throw deadlineError;
 
     let progressData;
     if (progressDetails.id) {
-      const { data: existingProgress } = await supabase
+      const { data: existingProgressResults } = await supabase
         .from(DB_TABLES.DEADLINE_PROGRESS)
         .select('*')
         .eq('id', progressDetails.id)
-        .single();
+        .limit(1);
+
+      const existingProgress = existingProgressResults?.[0];
 
       const updatePayload: any = {
         current_progress: progressDetails.current_progress!,
@@ -246,15 +259,15 @@ class DeadlinesService {
         updatePayload.created_at = new Date().toISOString();
       }
 
-      const { data, error } = await supabase
+      const { data: updateResults, error } = await supabase
         .from(DB_TABLES.DEADLINE_PROGRESS)
         .update(updatePayload)
         .eq('id', progressDetails.id)
         .select()
-        .single();
+        .limit(1);
 
       if (error) throw error;
-      progressData = data;
+      progressData = updateResults?.[0];
     } else {
       const finalProgressId = generateId('rdp');
 
@@ -267,7 +280,7 @@ class DeadlinesService {
         timestamp = deadlineData.created_at;
       }
 
-      const { data, error } = await supabase
+      const { data: insertResults, error } = await supabase
         .from(DB_TABLES.DEADLINE_PROGRESS)
         .insert({
           id: finalProgressId,
@@ -278,10 +291,10 @@ class DeadlinesService {
           updated_at: timestamp,
         })
         .select()
-        .single();
+        .limit(1);
 
       if (error) throw error;
-      progressData = data;
+      progressData = insertResults?.[0];
     }
 
     if (status) {
@@ -294,7 +307,7 @@ class DeadlinesService {
           updated_at: new Date().toISOString(),
         })
         .select()
-        .single();
+        .limit(1);
 
       if (statusError) {
         console.warn('Failed to insert status:', statusError);
@@ -313,7 +326,7 @@ class DeadlinesService {
     deadlineId: string,
     newDate: string
   ) {
-    const { data, error } = await supabase
+    const { data: updateResults, error } = await supabase
       .from(DB_TABLES.DEADLINES)
       .update({
         deadline_date: newDate,
@@ -322,7 +335,9 @@ class DeadlinesService {
       .eq('id', deadlineId)
       .eq('user_id', userId)
       .select()
-      .single();
+      .limit(1);
+
+    const data = updateResults?.[0];
 
     if (error) throw error;
 
@@ -365,7 +380,7 @@ class DeadlinesService {
   async updateDeadlineProgress(params: UpdateProgressParams) {
     const finalProgressId = generateId('rdp');
 
-    const { data, error } = await supabase
+    const { data: insertResults, error } = await supabase
       .from(DB_TABLES.DEADLINE_PROGRESS)
       .insert({
         id: finalProgressId,
@@ -376,7 +391,9 @@ class DeadlinesService {
         updated_at: new Date().toISOString(),
       })
       .select()
-      .single();
+      .limit(1);
+
+    const data = insertResults?.[0];
 
     if (error) throw error;
 
@@ -439,7 +456,7 @@ class DeadlinesService {
     userId: string,
     deadlineId: string
   ): Promise<ReadingDeadlineWithProgress | null> {
-    const { data, error } = await supabase
+    const { data: results, error } = await supabase
       .from(DB_TABLES.DEADLINES)
       .select(
         `
@@ -451,7 +468,9 @@ class DeadlinesService {
       )
       .eq('user_id', userId)
       .eq('id', deadlineId)
-      .single();
+      .limit(1);
+
+    const data = results?.[0];
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -523,7 +542,7 @@ class DeadlinesService {
       did_not_finish: [],
     };
 
-    const { data: deadline } = await supabase
+    const { data: deadlineResults } = await supabase
       .from(DB_TABLES.DEADLINES)
       .select(
         `
@@ -533,7 +552,9 @@ class DeadlinesService {
       )
       .eq('id', deadlineId)
       .eq('user_id', userId)
-      .single();
+      .limit(1);
+
+    const deadline = deadlineResults?.[0];
 
     if (!deadline) {
       throw new Error('Deadline not found or access denied');
@@ -570,7 +591,7 @@ class DeadlinesService {
         updated_at: new Date().toISOString(),
       })
       .select()
-      .single();
+      .limit(1);
 
     if (error) throw error;
 
@@ -579,7 +600,7 @@ class DeadlinesService {
       status,
     });
 
-    const { data: updatedDeadline } = await supabase
+    const { data: updatedDeadlineResults } = await supabase
       .from(DB_TABLES.DEADLINES)
       .select(
         `
@@ -591,7 +612,9 @@ class DeadlinesService {
       )
       .eq('id', deadlineId)
       .eq('user_id', userId)
-      .single();
+      .limit(1);
+
+    const updatedDeadline = updatedDeadlineResults?.[0];
 
     return sortDeadlineArrays(
       updatedDeadline as unknown as ReadingDeadlineWithProgress
@@ -602,7 +625,7 @@ class DeadlinesService {
    * Complete a deadline (sets progress to max if needed)
    */
   async completeDeadline(userId: string, deadlineId: string) {
-    const { data: deadline, error: deadlineError } = await supabase
+    const { data: deadlineResults, error: deadlineError } = await supabase
       .from(DB_TABLES.DEADLINES)
       .select(
         `
@@ -612,9 +635,13 @@ class DeadlinesService {
       )
       .eq('id', deadlineId)
       .eq('user_id', userId)
-      .single();
+      .limit(1);
 
-    if (deadlineError) throw deadlineError;
+    const deadline = deadlineResults?.[0];
+
+    if (deadlineError || !deadline) {
+      throw new Error('Deadline not found or access denied');
+    }
 
     const latestProgress =
       deadline.progress?.length > 0

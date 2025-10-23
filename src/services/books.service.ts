@@ -60,11 +60,13 @@ class BooksService {
    * Fetch book from the database by book ID
    */
   async fetchBookById(bookId: string) {
-    const { data, error } = await supabase
+    const { data: results, error } = await supabase
       .from(DB_TABLES.BOOKS)
       .select('*')
       .eq('id', bookId)
-      .single();
+      .limit(1);
+
+    const data = results?.[0];
 
     if (error) {
       throw new Error(`Failed to fetch book data: ${error.message}`);
@@ -77,11 +79,13 @@ class BooksService {
    * Check if a book exists in the database by API ID
    */
   async getBookByApiId(apiId: string) {
-    const { data, error } = await supabase
+    const { data: results, error } = await supabase
       .from(DB_TABLES.BOOKS)
       .select('id')
       .eq('api_id', apiId)
-      .single();
+      .limit(1);
+
+    const data = results?.[0];
 
     if (error && error.code !== 'PGRST116') {
       throw error;
@@ -96,7 +100,7 @@ class BooksService {
   async insertBook(bookId: string, bookData: FullBookData) {
     const { format, metadata, edition, ...bookDataRest } = bookData;
 
-    const { data, error } = await supabase
+    const { data: insertResults, error } = await supabase
       .from(DB_TABLES.BOOKS)
       .insert({
         ...bookDataRest,
@@ -106,7 +110,9 @@ class BooksService {
         edition: edition as any,
       })
       .select()
-      .single();
+      .limit(1);
+
+    const data = insertResults?.[0];
 
     if (error) throw error;
 
