@@ -23,6 +23,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import PostReviewModal from '../review/PostReviewModal';
 import { DeleteDeadlineModal } from './modals/DeleteDeadlineModal';
 import { ProgressCheckModal } from './modals/ProgressCheckModal';
@@ -43,7 +44,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const translateY = useSharedValue(500);
-  const { startReadingDeadline, resumeDeadline } = useDeadlines();
+  const { startReadingDeadline, resumeDeadline, pauseDeadline } = useDeadlines();
   const [showUpdateDateModal, setShowUpdateDateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPostReviewModal, setShowPostReviewModal] = useState(false);
@@ -93,7 +94,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
       );
       if (archivedStatus) {
         return {
-          label: 'Archived',
+          label: '',
           date: dayjs(archivedStatus.created_at).format('MMM D, YYYY'),
         };
       }
@@ -130,11 +131,15 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
     if (isPaused) {
       return {
         label: 'Resume Book',
-        icon: 'play.fill' as const,
+        icon: 'play.circle.fill' as const,
         onPress: () => {
           resumeDeadline(
             deadline.id,
             () => {
+              Toast.show({
+                type: 'success',
+                text1: `${deadline.book_title} is now active.`,
+              });
               onClose();
             },
             error => {
@@ -177,7 +182,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
 
   if (!isArchived) {
     editingActions.push({
-      label: 'Edit Details',
+      label: 'Book Details',
       icon: 'pencil.and.scribble',
       iconColor: colors.primary,
       showChevron: true,
@@ -188,7 +193,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
 
     if (isToReview && reviewTracking) {
       editingActions.push({
-        label: 'Edit Reviews',
+        label: 'Review Details',
         icon: 'square.and.pencil',
         iconColor: colors.backupPink,
         showChevron: true,
@@ -208,14 +213,37 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
       },
     });
 
-    if (isToReview) {
+    // if (isToReview) {
+    //   actions.push({
+    //     label: 'Track Reviews',
+    //     icon: 'note.text',
+    //     iconColor: colors.backupPink,
+    //     showChevron: true,
+    //     onPress: () => {
+    //       setShowPostReviewModal(true);
+    //     },
+    //   });
+    // }
+
+    if (isActive) {
       actions.push({
-        label: 'Track Reviews',
-        icon: 'note.text',
-        iconColor: colors.backupPink,
-        showChevron: true,
+        label: 'Pause Reading',
+        icon: 'pause.circle.fill' as const,
+        iconColor: colors.textSecondary,
         onPress: () => {
-          setShowPostReviewModal(true);
+          pauseDeadline(
+            deadline.id,
+            () => {
+              onClose();
+              Toast.show({
+                type: 'success',
+                text1: `${deadline.book_title} has been paused.`,
+              });
+            },
+            error => {
+              console.error('Failed to pause reading:', error);
+            }
+          );
         },
       });
     }
@@ -223,7 +251,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
 
   actions.push({
     label: 'Add Note',
-    icon: 'square.and.pencil',
+    icon: 'text.page',
     iconColor: colors.primary,
     showChevron: true,
     onPress: () => {
@@ -303,7 +331,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
             <View style={styles.actionsContainer}>
               {editingActions.length > 0 && (
                 <View style={styles.section}>
-                  <ThemedText style={styles.sectionHeader}>EDITING</ThemedText>
+                  <ThemedText style={styles.sectionHeader}>EDIT</ThemedText>
                   <View style={styles.gridRow}>
                     {editingActions.map((action, index) => (
                       <TouchableOpacity
@@ -379,6 +407,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
                     name="trash.fill"
                     size={28}
                     color={colors.error}
+                    style={{ transform: [{ translateY: -2 }] }}
                   />
                   <ThemedText
                     style={[styles.deleteButtonLabel, { color: colors.error }]}
@@ -416,7 +445,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
         visible={showProgressCheckModal}
         onClose={() => setShowProgressCheckModal(false)}
       />
-
+{/* // TODO: Remove this modal once we sure we dont need it anymore */}
       {isToReview && (
         <PostReviewModal
           visible={showPostReviewModal}
@@ -526,6 +555,7 @@ const styles = StyleSheet.create({
   deleteButtonLabel: {
     fontSize: 16,
     fontWeight: '600',
+    paddingTop: 2
   },
   cancelButton: {
     paddingVertical: 16,
