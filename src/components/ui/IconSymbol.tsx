@@ -55,6 +55,7 @@ export const MAPPING = {
   ellipsis: 'more-horiz',
   book: 'menu-book',
   'doc.on.clipboard': 'content-copy',
+  'text.page': 'description',
 } as IconMapping;
 
 /**
