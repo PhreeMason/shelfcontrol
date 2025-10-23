@@ -219,9 +219,15 @@ export const DeadlineFormStep1 = ({
           <ThemedText color="textMuted" style={styles.noResultsText}>
             No books found for "{query}"
           </ThemedText>
-          <ThemedText color="textMuted" style={styles.noResultsSubtext}>
-            Try a different search or add manually
-          </ThemedText>
+          <TouchableOpacity
+            style={[styles.manualEntryButton, { borderColor: colors.primary }]}
+            onPress={onManualEntry}
+          >
+            <IconSymbol name="pencil" size={20} color={colors.primary} />
+            <ThemedText color="primary" style={styles.manualEntryText}>
+              Add it manually
+            </ThemedText>
+          </TouchableOpacity>
         </View>
       );
     }
@@ -302,16 +308,6 @@ export const DeadlineFormStep1 = ({
             OR
           </ThemedText>
         </View>
-
-        <TouchableOpacity
-          style={[styles.manualEntryButton, { borderColor: colors.primary }]}
-          onPress={onManualEntry}
-        >
-          <IconSymbol name="pencil" size={20} color={colors.primary} />
-          <ThemedText color="primary" style={styles.manualEntryText}>
-            Can't find your book? Add it manually
-          </ThemedText>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -446,6 +442,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 16,
     gap: 8,
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
   manualEntryText: {
     fontSize: 16,
