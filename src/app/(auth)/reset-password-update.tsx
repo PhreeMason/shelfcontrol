@@ -3,6 +3,7 @@ import {
   AnimatedCustomInputRef,
 } from '@/components/AnimatedCustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { ROUTES } from '@/constants/routes';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
 import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
@@ -19,7 +20,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { z } from 'zod';
-import { ROUTES } from '@/constants/routes';
 
 const updatePasswordSchema = z
   .object({
@@ -68,8 +68,6 @@ export default function ResetPasswordUpdateScreen() {
   const createSessionFromUrl = useCallback(
     async (url: string) => {
       try {
-        console.log('Processing URL:', url);
-
         const { params, errorCode } = QueryParams.getQueryParams(url);
 
         if (errorCode) {
@@ -93,7 +91,6 @@ export default function ResetPasswordUpdateScreen() {
             'Invalid or expired reset link. Please request a new password reset.'
           );
         } else {
-          console.log('Session established successfully');
           setIsSessionEstablished(true);
         }
       } catch (err) {
