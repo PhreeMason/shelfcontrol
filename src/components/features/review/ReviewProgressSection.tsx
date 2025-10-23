@@ -69,7 +69,9 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
     const totalQuantity = deadline.total_quantity || 0;
 
     const wasCompleted = currentProgress >= totalQuantity;
-    const completeMethod = wasCompleted ? completeDeadline : didNotFinishDeadline;
+    const completeMethod = wasCompleted
+      ? completeDeadline
+      : didNotFinishDeadline;
 
     completeMethod(
       deadline.id,

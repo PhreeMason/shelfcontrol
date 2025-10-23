@@ -5,7 +5,12 @@ import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { CategorizedPlatforms } from '@/utils/reviewFormUtils';
 import React from 'react';
-import { Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 
 interface PlatformSelectionSectionProps {
   categorizedPlatforms: CategorizedPlatforms;
@@ -23,7 +28,9 @@ interface PlatformSelectionSectionProps {
   postedPlatforms?: string[];
 }
 
-export const PlatformSelectionSection: React.FC<PlatformSelectionSectionProps> = ({
+export const PlatformSelectionSection: React.FC<
+  PlatformSelectionSectionProps
+> = ({
   categorizedPlatforms,
   selectedPlatforms,
   togglePlatform,
@@ -40,11 +47,15 @@ export const PlatformSelectionSection: React.FC<PlatformSelectionSectionProps> =
 }) => {
   const { colors } = useTheme();
 
-  const isPlatformPosted = (platform: string) => postedPlatforms.includes(platform);
+  const isPlatformPosted = (platform: string) =>
+    postedPlatforms.includes(platform);
 
   return (
     <ThemedView
-      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      style={[
+        styles.card,
+        { backgroundColor: colors.surface, borderColor: colors.border },
+      ]}
       testID="platform-selection-section"
     >
       <ThemedView style={styles.section}>
@@ -56,7 +67,7 @@ export const PlatformSelectionSection: React.FC<PlatformSelectionSectionProps> =
         </ThemedText>
         <ThemedView style={styles.platformsList}>
           <ThemedView style={styles.platformsGrid}>
-            {categorizedPlatforms.usedPresets.map((platform) => {
+            {categorizedPlatforms.usedPresets.map(platform => {
               const isPosted = isPlatformPosted(platform);
               return (
                 <ThemedView key={platform} style={styles.platformItem}>
@@ -69,10 +80,13 @@ export const PlatformSelectionSection: React.FC<PlatformSelectionSectionProps> =
                 </ThemedView>
               );
             })}
-            {categorizedPlatforms.custom.map((platform) => {
+            {categorizedPlatforms.custom.map(platform => {
               const isPosted = isPlatformPosted(platform);
               return (
-                <ThemedView key={`history-${platform}`} style={styles.platformItem}>
+                <ThemedView
+                  key={`history-${platform}`}
+                  style={styles.platformItem}
+                >
                   <Checkbox
                     label={isPosted ? `${platform} ✓` : platform}
                     checked={selectedPlatforms.has(platform)}
@@ -82,7 +96,7 @@ export const PlatformSelectionSection: React.FC<PlatformSelectionSectionProps> =
                 </ThemedView>
               );
             })}
-            {categorizedPlatforms.unusedPresets.map((platform) => {
+            {categorizedPlatforms.unusedPresets.map(platform => {
               const isPosted = isPlatformPosted(platform);
               return (
                 <ThemedView key={platform} style={styles.platformItem}>

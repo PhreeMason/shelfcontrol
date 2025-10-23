@@ -30,11 +30,15 @@ export const ReviewTimelineSection: React.FC<ReviewTimelineSectionProps> = ({
   const watchReviewDueDate = watch('reviewDueDate');
 
   const isPastDate =
-    watchReviewDueDate && dayjs(watchReviewDueDate).isBefore(dayjs().startOf('day'));
+    watchReviewDueDate &&
+    dayjs(watchReviewDueDate).isBefore(dayjs().startOf('day'));
 
   return (
     <ThemedView
-      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      style={[
+        styles.card,
+        { backgroundColor: colors.surface, borderColor: colors.border },
+      ]}
       testID="timeline-section"
     >
       <ThemedView style={styles.section}>
@@ -74,7 +78,9 @@ export const ReviewTimelineSection: React.FC<ReviewTimelineSectionProps> = ({
                 />
               )}
             </View>
-            <ThemedText style={styles.radioLabel}>Yes, I have a review deadline</ThemedText>
+            <ThemedText style={styles.radioLabel}>
+              Yes, I have a review deadline
+            </ThemedText>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -108,7 +114,9 @@ export const ReviewTimelineSection: React.FC<ReviewTimelineSectionProps> = ({
                 />
               )}
             </View>
-            <ThemedText style={styles.radioLabel}>No deadline, review when I can</ThemedText>
+            <ThemedText style={styles.radioLabel}>
+              No deadline, review when I can
+            </ThemedText>
           </TouchableOpacity>
         </ThemedView>
         {watchHasDeadline && watchReviewDueDate && (
@@ -124,7 +132,12 @@ export const ReviewTimelineSection: React.FC<ReviewTimelineSectionProps> = ({
               onPress={() => setShowDatePicker(true)}
               testID="date-picker-trigger"
             >
-              <IconSymbol name="calendar" size={24} color={colors.text} style={{ opacity: 0.7 }} />
+              <IconSymbol
+                name="calendar"
+                size={24}
+                color={colors.text}
+                style={{ opacity: 0.7 }}
+              />
               <ThemedText style={styles.dateText}>
                 {watchReviewDueDate.toLocaleDateString('en-US', {
                   weekday: 'long',

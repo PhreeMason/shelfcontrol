@@ -124,7 +124,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
     } else if (!watchHasDeadline) {
       setValue('reviewDueDate', null);
     }
-  }, [watchHasDeadline, watchReviewDueDate, setValue]);
+  }, [watchHasDeadline, watchReviewDueDate, setValue, deadline.deadline_date]);
 
   const handleSaveAndFinish = (data: ReviewFormData) => {
     if (!session?.user?.id) return;

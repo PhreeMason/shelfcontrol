@@ -25,9 +25,7 @@ const EditReviewTracking = () => {
         style={{ flex: 1, backgroundColor: colors.background }}
       >
         <ThemedView style={[styles.container, { padding: 20 }]}>
-          <ThemedText variant="title">
-            Deadline Not Found
-          </ThemedText>
+          <ThemedText variant="title">Deadline Not Found</ThemedText>
           <ThemedText style={{ marginTop: 8 }}>
             The deadline you are trying to edit could not be found.
           </ThemedText>
@@ -50,11 +48,10 @@ const EditReviewTracking = () => {
         style={{ flex: 1, backgroundColor: colors.background }}
       >
         <ThemedView style={[styles.container, { padding: 20 }]}>
-          <ThemedText variant="title">
-            Cannot Edit Review Tracking
-          </ThemedText>
+          <ThemedText variant="title">Cannot Edit Review Tracking</ThemedText>
           <ThemedText style={{ marginTop: 8 }}>
-            Review tracking can only be edited for deadlines in the "to review" status.
+            Review tracking can only be edited for deadlines in the "to review"
+            status.
           </ThemedText>
           <ThemedButton
             title="Go Back"
@@ -73,9 +70,7 @@ const EditReviewTracking = () => {
         style={{ flex: 1, backgroundColor: colors.background }}
       >
         <ThemedView style={[styles.container, { padding: 20 }]}>
-          <ThemedText variant="title">
-            No Review Tracking Found
-          </ThemedText>
+          <ThemedText variant="title">No Review Tracking Found</ThemedText>
           <ThemedText style={{ marginTop: 8 }}>
             No review tracking data exists for this deadline.
           </ThemedText>

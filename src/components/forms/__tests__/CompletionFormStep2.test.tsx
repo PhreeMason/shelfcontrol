@@ -139,9 +139,7 @@ describe('CompletionFormStep2', () => {
         />
       );
 
-      const image = screen.UNSAFE_getByType(
-        require('expo-image').Image
-      );
+      const image = screen.UNSAFE_getByType(require('expo-image').Image);
       expect(image.props.source.uri).toBe('https://example.com/cover.jpg');
     });
 

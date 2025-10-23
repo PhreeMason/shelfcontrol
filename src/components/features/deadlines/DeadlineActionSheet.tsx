@@ -44,7 +44,8 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const translateY = useSharedValue(500);
-  const { startReadingDeadline, resumeDeadline, pauseDeadline } = useDeadlines();
+  const { startReadingDeadline, resumeDeadline, pauseDeadline } =
+    useDeadlines();
   const [showUpdateDateModal, setShowUpdateDateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPostReviewModal, setShowPostReviewModal] = useState(false);
@@ -394,10 +395,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
               <View style={styles.section}>
                 <TouchableOpacity
                   testID="delete-action"
-                  style={[
-                    styles.deleteButton,
-                    { borderColor: colors.error },
-                  ]}
+                  style={[styles.deleteButton, { borderColor: colors.error }]}
                   onPress={() => {
                     onClose();
                     setShowDeleteModal(true);
@@ -445,7 +443,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
         visible={showProgressCheckModal}
         onClose={() => setShowProgressCheckModal(false)}
       />
-{/* // TODO: Remove this modal once we sure we dont need it anymore */}
+      {/* // TODO: Remove this modal once we sure we dont need it anymore */}
       {isToReview && (
         <PostReviewModal
           visible={showPostReviewModal}
@@ -555,7 +553,7 @@ const styles = StyleSheet.create({
   deleteButtonLabel: {
     fontSize: 16,
     fontWeight: '600',
-    paddingTop: 2
+    paddingTop: 2,
   },
   cancelButton: {
     paddingVertical: 16,

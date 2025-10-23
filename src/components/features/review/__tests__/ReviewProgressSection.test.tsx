@@ -1,4 +1,9 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import React from 'react';
 import ReviewProgressSection from '../ReviewProgressSection';
 
@@ -93,7 +98,11 @@ jest.mock('@/providers/DeadlineProvider', () => ({
 }));
 
 jest.mock('../MarkCompleteDialog', () => {
-  return function MockMarkCompleteDialog({ visible, onComplete, onCancel }: any) {
+  return function MockMarkCompleteDialog({
+    visible,
+    onComplete,
+    onCancel,
+  }: any) {
     const React = require('react');
     const { View, TouchableOpacity, Text } = require('react-native');
     if (!visible) return null;

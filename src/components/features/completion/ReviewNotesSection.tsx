@@ -11,12 +11,17 @@ interface ReviewNotesSectionProps {
   control: Control<ReviewFormData>;
 }
 
-export const ReviewNotesSection: React.FC<ReviewNotesSectionProps> = ({ control }) => {
+export const ReviewNotesSection: React.FC<ReviewNotesSectionProps> = ({
+  control,
+}) => {
   const { colors } = useTheme();
 
   return (
     <ThemedView
-      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      style={[
+        styles.card,
+        { backgroundColor: colors.surface, borderColor: colors.border },
+      ]}
       testID="review-notes-section"
     >
       <ThemedView style={styles.section}>

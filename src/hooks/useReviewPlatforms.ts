@@ -97,6 +97,7 @@ export const useReviewPlatforms = (
         setSelectedPlatforms(defaults.platforms);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deadlineSource, initialPlatforms]);
 
   useEffect(() => {

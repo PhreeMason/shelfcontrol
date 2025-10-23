@@ -20,7 +20,10 @@ export const LinkSubmissionSection: React.FC<LinkSubmissionSectionProps> = ({
 
   return (
     <ThemedView
-      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      style={[
+        styles.card,
+        { backgroundColor: colors.surface, borderColor: colors.border },
+      ]}
       testID="link-submission-section"
     >
       <ThemedView style={styles.section}>
@@ -96,7 +99,9 @@ export const LinkSubmissionSection: React.FC<LinkSubmissionSectionProps> = ({
                 />
               )}
             </View>
-            <ThemedText style={styles.radioLabel}>No link submission needed</ThemedText>
+            <ThemedText style={styles.radioLabel}>
+              No link submission needed
+            </ThemedText>
           </TouchableOpacity>
         </ThemedView>
       </ThemedView>

@@ -21,32 +21,31 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
   return (
     <ThemedView style={styles.heroCardContainer}>
       <DeadlineCard deadline={deadline} disableNavigation={true} />
-      {isPending ?
+      {isPending ? (
         <TouchableOpacity
           testID="primary-action-button"
           style={[
             styles.primaryActionButton,
             { backgroundColor: colors.primary },
           ]}
-          onPress={() => startReadingDeadline(
-            deadline.id,
-            () => { },
-            error => {
-              console.error('Failed to start reading:', error);
-            }
-          )}
+          onPress={() =>
+            startReadingDeadline(
+              deadline.id,
+              () => {},
+              error => {
+                console.error('Failed to start reading:', error);
+              }
+            )
+          }
         >
-          <IconSymbol
-            name='book.fill'
-            size={20}
-            color={colors.surface}
-          />
+          <IconSymbol name="book.fill" size={20} color={colors.surface} />
           <ThemedText
             style={[styles.primaryActionText, { color: colors.surface }]}
           >
             Start Reading
           </ThemedText>
-        </TouchableOpacity> : null}
+        </TouchableOpacity>
+      ) : null}
     </ThemedView>
   );
 };

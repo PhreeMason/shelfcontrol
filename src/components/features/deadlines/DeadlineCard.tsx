@@ -64,11 +64,7 @@ export function DeadlineCard({
               hitSlop={8}
               style={styles.moreButton}
             >
-              <IconSymbol
-                name="ellipsis"
-                size={24}
-                color={colors.textMuted}
-              />
+              <IconSymbol name="ellipsis" size={24} color={colors.textMuted} />
             </Pressable>
           )}
         </View>

@@ -4,7 +4,10 @@ import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { BorderRadius, Colors, FontFamily, Spacing } from '@/constants/Colors';
 import { posthog } from '@/lib/posthog';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { platformUrlSchema, PlatformUrlFormData } from '@/utils/platformUrlSchema';
+import {
+  platformUrlSchema,
+  PlatformUrlFormData,
+} from '@/utils/platformUrlSchema';
 import * as Clipboard from 'expo-clipboard';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -218,7 +221,10 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
                             <ThemedIconButton
                               icon="doc.on.clipboard"
                               onPress={() =>
-                                handleCopyUrl(currentUrl, platform.platform_name)
+                                handleCopyUrl(
+                                  currentUrl,
+                                  platform.platform_name
+                                )
                               }
                               variant="ghost"
                               size="sm"
