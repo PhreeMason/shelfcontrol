@@ -75,12 +75,9 @@ const DeadlineView = () => {
     );
   }
 
-  const { isCompleted, isToReview, isArchived, isPending } =
+  const { isToReview, isArchived, isPending } =
     getDeadlineStatus(deadline);
 
-  const handleEdit = () => {
-    router.push(`/deadline/${id}/edit`);
-  };
 
   const handleBack = () => {
     router.back();
@@ -88,7 +85,6 @@ const DeadlineView = () => {
 
   const headerProps = {
     onBack: handleBack,
-    ...(isCompleted ? {} : { onEdit: handleEdit }),
   };
 
   const shouldShowStats = isToReview || isArchived;
@@ -102,7 +98,7 @@ const DeadlineView = () => {
       <DeadlineViewHeader {...headerProps} />
 
       <ThemedScrollView style={[styles.content, { backgroundColor: 'white' }]}>
-        <DeadlineHeroSection deadline={deadline} />
+        <DeadlineHeroSection isPending={isPending} deadline={deadline} />
 
         {shouldShowStats ? (
           <DeadlineTabsSection deadline={deadline} />
