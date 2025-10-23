@@ -38,7 +38,7 @@ export function DeadlineCountdownDisplay({
                 { marginTop: Platform.select({ ios: -2, android: 1 }) },
               ]}
             >
-              done
+              Done
             </ThemedText>
           </>
         ) : latestStatus === 'did_not_finish' ? (
@@ -56,7 +56,7 @@ export function DeadlineCountdownDisplay({
                 { marginTop: 4 },
               ]}
             >
-              dnf
+              DNF
             </ThemedText>
           </>
         ) : latestStatus === 'to_review' ? (
