@@ -48,7 +48,7 @@ import {
   UserListeningPaceData,
   UserPaceData,
 } from '@/utils/paceCalculations';
-import React, { createContext, ReactNode, useContext, useMemo } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useMemo } from 'react';
 
 interface DeadlineContextType {
   deadlines: ReadingDeadlineWithProgress[];
@@ -215,7 +215,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     didNotFinish: didNotFinishDeadlines,
     pending: pendingDeadlines,
     paused: pausedDeadlines,
-  } = separateDeadlines(deadlines);
+  } = useMemo(() => separateDeadlines(deadlines), [deadlines]);
 
   const userPaceData = useMemo(() => {
     return calculateUserPace(deadlines);
@@ -225,49 +225,38 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     return calculateUserListeningPace(deadlines);
   }, [deadlines]);
 
-  const getDeadlinePaceStatus = (deadline: ReadingDeadlineWithProgress) => {
+  const getDeadlinePaceStatus = useCallback((deadline: ReadingDeadlineWithProgress) => {
     return calculateDeadlinePaceStatus(
       deadline,
       userPaceData,
       userListeningPaceData
     );
-  };
+  }, [userPaceData, userListeningPaceData]);
 
-  const formatPaceForFormat = (
+  const formatPaceForFormat = useCallback((
     pace: number,
     format: 'physical' | 'eBook' | 'audio'
   ): string => {
     return formatPaceDisplay(pace, format);
-  };
+  }, []);
 
-  const getUserPaceReliability = (): boolean => {
+  const getUserPaceReliability = useCallback((): boolean => {
     return userPaceData.isReliable;
-  };
+  }, [userPaceData]);
 
-  const getUserPaceMethod = (): 'recent_data' | 'default_fallback' => {
+  const getUserPaceMethod = useCallback((): 'recent_data' | 'default_fallback' => {
     return userPaceData.calculationMethod;
-  };
+  }, [userPaceData]);
 
-  // Calculate units per day needed based on format (now using utility function)
-
-  // Calculate progress as of the start of today (now using utility function)
-
-  // Calculate how much progress was made today (now using utility function)
-
-  // Format the units per day display (now using utility function)
-
-  // Special formatting for DeadlineCard display (now using utility function)
-
-  // Comprehensive calculations for a single deadline (enhanced with pace-based logic)
-
-  const getUserListeningPaceReliability = (): boolean => {
+  const getUserListeningPaceReliability = useCallback((): boolean => {
     return userListeningPaceData.isReliable;
-  };
+  }, [userListeningPaceData]);
 
-  const getUserListeningPaceMethod = (): 'recent_data' | 'default_fallback' => {
+  const getUserListeningPaceMethod = useCallback((): 'recent_data' | 'default_fallback' => {
     return userListeningPaceData.calculationMethod;
-  };
-  const getDeadlineCalculations = (
+  }, [userListeningPaceData]);
+
+  const getDeadlineCalculations = useCallback((
     deadline: ReadingDeadlineWithProgress
   ): DeadlineCalculationResult => {
     const currentProgress = calculateProgress(deadline);
@@ -326,9 +315,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
       statusMessage,
       paceData
     );
-  };
+  }, [getDeadlinePaceStatus]);
 
-  const addDeadline = (
+  const addDeadline = useCallback((
     params: {
       deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
       progressDetails: ReadingDeadlineProgressInsert;
@@ -352,9 +341,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         onError?.(error);
       },
     });
-  };
+  }, [addDeadlineMutation]);
 
-  const updateDeadline = (
+  const updateDeadline = useCallback((
     params: {
       deadlineDetails: ReadingDeadlineInsert;
       progressDetails: ReadingDeadlineProgressInsert;
@@ -376,9 +365,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         onError?.(error);
       },
     });
-  };
+  }, [updateDeadlineMutation]);
 
-  const updateDeadlineDate = (
+  const updateDeadlineDate = useCallback((
     deadlineId: string,
     newDate: string,
     onSuccess?: () => void,
@@ -397,9 +386,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         },
       }
     );
-  };
+  }, [updateDeadlineDateMutation]);
 
-  const deleteDeadline = (
+  const deleteDeadline = useCallback((
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
@@ -414,9 +403,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         onError?.(error);
       },
     });
-  };
+  }, [deleteDeadlineMutation]);
 
-  const completeDeadline = (
+  const completeDeadline = useCallback((
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
@@ -431,9 +420,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         onError?.(error);
       },
     });
-  };
+  }, [completeDeadlineMutation]);
 
-  const startReadingDeadline = (
+  const startReadingDeadline = useCallback((
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
@@ -448,9 +437,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         onError?.(error);
       },
     });
-  };
+  }, [startReadingDeadlineMutation]);
 
-  const didNotFinishDeadline = (
+  const didNotFinishDeadline = useCallback((
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
@@ -465,9 +454,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         onError?.(error);
       },
     });
-  };
+  }, [didNotFinishDeadlineMutation]);
 
-  const pauseDeadline = (
+  const pauseDeadline = useCallback((
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
@@ -482,9 +471,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         onError?.(error);
       },
     });
-  };
+  }, [pauseDeadlineMutation]);
 
-  const resumeDeadline = (
+  const resumeDeadline = useCallback((
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
@@ -499,10 +488,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         onError?.(error);
       },
     });
-  };
+  }, [resumeDeadlineMutation]);
 
   const value: DeadlineContextType = {
-    // Data
     deadlines,
     activeDeadlines,
     overdueDeadlines,

@@ -3,6 +3,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import {
   reviewTrackingService,
   CreateReviewTrackingParams,
+  UpdateReviewTrackingParams,
 } from '@/services/reviewTracking.service';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -79,6 +80,35 @@ export const useCreateReviewTracking = () => {
     },
     onError: error => {
       console.error('Error creating review tracking:', error);
+    },
+  });
+};
+
+export const useUpdateReviewTracking = () => {
+  const { session } = useAuth();
+  const userId = session?.user?.id;
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: UpdateReviewTrackingParams) => {
+      if (!userId) throw new Error('User not authenticated');
+      return reviewTrackingService.updateReviewTracking(userId, params);
+    },
+    onSuccess: (data) => {
+      if (userId && data.deadline_id) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.REVIEW_TRACKING.BY_DEADLINE(
+            userId,
+            data.deadline_id
+          ),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
+      }
+    },
+    onError: error => {
+      console.error('Error updating review tracking:', error);
     },
   });
 };

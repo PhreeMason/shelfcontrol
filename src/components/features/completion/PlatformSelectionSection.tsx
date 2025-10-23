@@ -20,6 +20,7 @@ interface PlatformSelectionSectionProps {
   setNewCustomPlatform: (value: string) => void;
   addCustomPlatform: () => void;
   removeCustomPlatform: (index: number) => void;
+  postedPlatforms?: string[];
 }
 
 export const PlatformSelectionSection: React.FC<PlatformSelectionSectionProps> = ({
@@ -35,8 +36,11 @@ export const PlatformSelectionSection: React.FC<PlatformSelectionSectionProps> =
   setNewCustomPlatform,
   addCustomPlatform,
   removeCustomPlatform,
+  postedPlatforms = [],
 }) => {
   const { colors } = useTheme();
+
+  const isPlatformPosted = (platform: string) => postedPlatforms.includes(platform);
 
   return (
     <ThemedView
@@ -52,42 +56,58 @@ export const PlatformSelectionSection: React.FC<PlatformSelectionSectionProps> =
         </ThemedText>
         <ThemedView style={styles.platformsList}>
           <ThemedView style={styles.platformsGrid}>
-            {categorizedPlatforms.usedPresets.map((platform) => (
-              <ThemedView key={platform} style={styles.platformItem}>
-                <Checkbox
-                  label={platform}
-                  checked={selectedPlatforms.has(platform)}
-                  onToggle={() => togglePlatform(platform)}
-                />
-              </ThemedView>
-            ))}
-            {categorizedPlatforms.custom.map((platform) => (
-              <ThemedView key={`history-${platform}`} style={styles.platformItem}>
-                <Checkbox
-                  label={platform}
-                  checked={selectedPlatforms.has(platform)}
-                  onToggle={() => togglePlatform(platform)}
-                />
-              </ThemedView>
-            ))}
-            {categorizedPlatforms.unusedPresets.map((platform) => (
-              <ThemedView key={platform} style={styles.platformItem}>
-                <Checkbox
-                  label={platform}
-                  checked={selectedPlatforms.has(platform)}
-                  onToggle={() => togglePlatform(platform)}
-                />
-              </ThemedView>
-            ))}
-            {customPlatforms.map((platform, index) => (
-              <ThemedView key={`custom-${index}`} style={styles.platformItem}>
-                <Checkbox
-                  label={platform}
-                  checked={true}
-                  onToggle={() => removeCustomPlatform(index)}
-                />
-              </ThemedView>
-            ))}
+            {categorizedPlatforms.usedPresets.map((platform) => {
+              const isPosted = isPlatformPosted(platform);
+              return (
+                <ThemedView key={platform} style={styles.platformItem}>
+                  <Checkbox
+                    label={isPosted ? `${platform} ✓` : platform}
+                    checked={selectedPlatforms.has(platform)}
+                    onToggle={() => togglePlatform(platform)}
+                    disabled={isPosted}
+                  />
+                </ThemedView>
+              );
+            })}
+            {categorizedPlatforms.custom.map((platform) => {
+              const isPosted = isPlatformPosted(platform);
+              return (
+                <ThemedView key={`history-${platform}`} style={styles.platformItem}>
+                  <Checkbox
+                    label={isPosted ? `${platform} ✓` : platform}
+                    checked={selectedPlatforms.has(platform)}
+                    onToggle={() => togglePlatform(platform)}
+                    disabled={isPosted}
+                  />
+                </ThemedView>
+              );
+            })}
+            {categorizedPlatforms.unusedPresets.map((platform) => {
+              const isPosted = isPlatformPosted(platform);
+              return (
+                <ThemedView key={platform} style={styles.platformItem}>
+                  <Checkbox
+                    label={isPosted ? `${platform} ✓` : platform}
+                    checked={selectedPlatforms.has(platform)}
+                    onToggle={() => togglePlatform(platform)}
+                    disabled={isPosted}
+                  />
+                </ThemedView>
+              );
+            })}
+            {customPlatforms.map((platform, index) => {
+              const isPosted = isPlatformPosted(platform);
+              return (
+                <ThemedView key={`custom-${index}`} style={styles.platformItem}>
+                  <Checkbox
+                    label={isPosted ? `${platform} ✓` : platform}
+                    checked={true}
+                    onToggle={() => removeCustomPlatform(index)}
+                    disabled={isPosted}
+                  />
+                </ThemedView>
+              );
+            })}
           </ThemedView>
 
           <Checkbox
@@ -144,6 +164,12 @@ export const PlatformSelectionSection: React.FC<PlatformSelectionSectionProps> =
               </ThemedText>
             </TouchableOpacity>
           </ThemedView>
+
+          {postedPlatforms.length > 0 && (
+            <ThemedText variant="secondary" style={styles.helpText}>
+              Platforms marked with ✓ have been posted and cannot be removed.
+            </ThemedText>
+          )}
         </ThemedView>
       </ThemedView>
     </ThemedView>
@@ -179,6 +205,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 18,
     marginBottom: Spacing.sm,
+  },
+  helpText: {
+    fontSize: 13,
+    lineHeight: 17,
+    marginBottom: Spacing.xs,
   },
   platformsList: {
     gap: Spacing.md,

@@ -13,8 +13,16 @@ export interface UpdateReviewPlatformsParams {
   platforms: {
     id: string;
     posted: boolean;
-    review_url?: string;
+    review_url?: string | null;
   }[];
+}
+
+export interface UpdateReviewTrackingParams {
+  review_tracking_id: string;
+  review_due_date?: string | null;
+  needs_link_submission: boolean;
+  platforms: { name: string }[];
+  review_notes?: string;
 }
 
 export interface ReviewTrackingResponse {
@@ -92,22 +100,26 @@ class ReviewTrackingService {
       throw new Error('At least one platform must be selected');
     }
 
-    const { data: deadline, error: deadlineError } = await supabase
+    const { data: deadlineResults, error: deadlineError } = await supabase
       .from(DB_TABLES.DEADLINES)
       .select('id, user_id, total_quantity')
       .eq('id', deadline_id)
       .eq('user_id', userId)
-      .single();
+      .limit(1);
+
+    const deadline = deadlineResults?.[0];
 
     if (deadlineError || !deadline) {
       throw new Error('Deadline not found or access denied');
     }
 
-    const { data: existingTracking } = await supabase
+    const { data: existingTrackingResults } = await supabase
       .from(DB_TABLES.REVIEW_TRACKING)
       .select('id')
       .eq('deadline_id', deadline_id)
-      .single();
+      .limit(1);
+
+    const existingTracking = existingTrackingResults?.[0];
 
     if (existingTracking) {
       throw new Error('Review tracking already exists for this deadline');
@@ -125,7 +137,7 @@ class ReviewTrackingService {
         all_reviews_complete: false,
       })
       .select()
-      .single();
+      .limit(1);
 
     if (reviewTrackingError) throw reviewTrackingError;
 
@@ -146,14 +158,16 @@ class ReviewTrackingService {
     if (platformsError) throw platformsError;
 
     if (review_notes) {
-      const { data: progressData } = await supabase
+      const { data: progressResults } = await supabase
         .from(DB_TABLES.DEADLINE_PROGRESS)
         .select('current_progress')
         .eq('deadline_id', deadline_id)
         .order('created_at', { ascending: false })
-        .single();
+        .limit(1);
 
+      const progressData = progressResults?.[0];
       const currentProgress = progressData?.current_progress || 0;
+
       const progressPercentage = deadline.total_quantity
         ? Math.round((currentProgress / deadline.total_quantity) * 100)
         : 0;
@@ -168,7 +182,7 @@ class ReviewTrackingService {
           user_id: userId,
         })
         .select()
-        .single();
+        .limit(1);
 
       if (noteError) {
         console.warn('Failed to create review note:', noteError);
@@ -221,34 +235,39 @@ class ReviewTrackingService {
     reviewTrackingId: string,
     params: UpdateReviewPlatformsParams
   ) {
-    const { data: reviewTracking, error: trackingError } = await supabase
+    const { data: reviewTrackingResults, error: trackingError } = await supabase
       .from(DB_TABLES.REVIEW_TRACKING)
       .select('id, deadline_id')
       .eq('id', reviewTrackingId)
-      .single();
+      .limit(1);
+
+    const reviewTracking = reviewTrackingResults?.[0];
 
     if (trackingError || !reviewTracking) {
       throw new Error('Review tracking not found');
     }
 
-    const { data: deadline, error: deadlineError } = await supabase
+    const { data: deadlineResults, error: deadlineError } = await supabase
       .from(DB_TABLES.DEADLINES)
       .select('id, user_id')
       .eq('id', reviewTracking.deadline_id)
       .eq('user_id', userId)
-      .single();
+      .limit(1);
+
+    const deadline = deadlineResults?.[0];
 
     if (deadlineError || !deadline) {
       throw new Error('Review tracking not found or access denied');
     }
 
     for (const platform of params.platforms) {
-      // Fetch current state of the platform to check if already posted
-      const { data: currentPlatform } = await supabase
+      const { data: currentPlatformResults } = await supabase
         .from(DB_TABLES.REVIEW_PLATFORMS)
         .select('posted, posted_date')
         .eq('id', platform.id)
-        .single();
+        .limit(1);
+
+      const currentPlatform = currentPlatformResults?.[0];
 
       const updatePayload: any = {
         posted: platform.posted,
@@ -260,7 +279,7 @@ class ReviewTrackingService {
         updatePayload.posted_date = new Date().toISOString();
       }
 
-      if (platform.review_url) {
+      if (platform.review_url !== undefined) {
         updatePayload.review_url = platform.review_url;
       }
 
@@ -268,7 +287,7 @@ class ReviewTrackingService {
         .from(DB_TABLES.REVIEW_PLATFORMS)
         .update(updatePayload)
         .eq('id', platform.id)
-        .single();
+        .limit(1);
 
       if (updateError) {
         console.warn(`Failed to update platform ${platform.id}:`, updateError);
@@ -375,14 +394,6 @@ class ReviewTrackingService {
    *   'rd_123'
    * );
    *
-   * if (!tracking) {
-   *   console.log('No review tracking set up');
-   * } else {
-   *   console.log(`${tracking.completion_percentage}% complete`);
-   *   const postedCount = tracking.platforms.filter(p => p.posted).length;
-   *   console.log(`Posted to ${postedCount} of ${tracking.platforms.length} platforms`);
-   * }
-   *
    * @remarks
    * - Returns null for PGRST116 error (not found) - this is expected behavior
    * - Completion percentage calculated as: Math.round((posted / total) * 100)
@@ -393,22 +404,26 @@ class ReviewTrackingService {
     userId: string,
     deadlineId: string
   ): Promise<ReviewTrackingResponse | null> {
-    const { data: deadline, error: deadlineError } = await supabase
+    const { data: deadlineResults, error: deadlineError } = await supabase
       .from(DB_TABLES.DEADLINES)
       .select('id, user_id')
       .eq('id', deadlineId)
       .eq('user_id', userId)
-      .single();
+      .limit(1);
+
+    const deadline = deadlineResults?.[0];
 
     if (deadlineError || !deadline) {
       throw new Error('Deadline not found or access denied');
     }
 
-    const { data: reviewTracking, error: trackingError } = await supabase
+    const { data: reviewTrackingResults, error: trackingError } = await supabase
       .from(DB_TABLES.REVIEW_TRACKING)
       .select('*')
       .eq('deadline_id', deadlineId)
-      .single();
+      .limit(1);
+
+    const reviewTracking = reviewTrackingResults?.[0];
 
     if (trackingError) {
       if (trackingError.code === 'PGRST116') {
@@ -416,6 +431,11 @@ class ReviewTrackingService {
       }
       throw trackingError;
     }
+
+    if (!reviewTracking) {
+      return null;
+    }
+
 
     const { data: platforms } = await supabase
       .from(DB_TABLES.REVIEW_PLATFORMS)
@@ -446,6 +466,153 @@ class ReviewTrackingService {
           review_url: p.review_url,
         })) || [],
       completion_percentage,
+    };
+  }
+
+  async updateReviewTracking(
+    userId: string,
+    params: UpdateReviewTrackingParams
+  ) {
+    const {
+      review_tracking_id,
+      review_due_date,
+      needs_link_submission,
+      platforms,
+      review_notes,
+    } = params;
+
+    if (!platforms || platforms.length === 0) {
+      throw new Error('At least one platform must be selected');
+    }
+
+    const { data: reviewTrackingResults, error: trackingError } = await supabase
+      .from(DB_TABLES.REVIEW_TRACKING)
+      .select('id, deadline_id')
+      .eq('id', review_tracking_id)
+      .limit(1);
+
+    const reviewTracking = reviewTrackingResults?.[0];
+
+    if (trackingError || !reviewTracking) {
+      throw new Error('Review tracking not found');
+    }
+
+    const { data: deadlineResults, error: deadlineError } = await supabase
+      .from(DB_TABLES.DEADLINES)
+      .select('id, user_id')
+      .eq('id', reviewTracking.deadline_id)
+      .eq('user_id', userId)
+      .limit(1);
+
+    const deadline = deadlineResults?.[0];
+
+    if (deadlineError || !deadline) {
+      throw new Error('Review tracking not found or access denied');
+    }
+
+    const { data: existingPlatforms } = await supabase
+      .from(DB_TABLES.REVIEW_PLATFORMS)
+      .select('*')
+      .eq('review_tracking_id', review_tracking_id);
+
+    const postedPlatforms = existingPlatforms?.filter(p => p.posted) || [];
+    const postedPlatformNames = postedPlatforms.map(p => p.platform_name);
+
+    const newPlatformNames = platforms.map(p => p.name);
+    const platformsToDelete = existingPlatforms?.filter(
+      p => !p.posted && !newPlatformNames.includes(p.platform_name)
+    ) || [];
+
+    if (platformsToDelete.length > 0) {
+      const idsToDelete = platformsToDelete.map(p => p.id);
+      const { error: deleteError } = await supabase
+        .from(DB_TABLES.REVIEW_PLATFORMS)
+        .delete()
+        .in('id', idsToDelete);
+
+      if (deleteError) {
+        console.warn('Failed to delete platforms:', deleteError);
+      }
+    }
+
+    const existingPlatformNames = existingPlatforms?.map(p => p.platform_name) || [];
+    const platformsToAdd = platforms.filter(
+      p => !existingPlatformNames.includes(p.name)
+    );
+
+    if (platformsToAdd.length > 0) {
+      const platformRecords = platformsToAdd.map(platform => ({
+        id: generateId('rp'),
+        review_tracking_id,
+        platform_name: platform.name,
+        posted: false,
+        posted_date: null,
+        review_url: null,
+      }));
+
+      const { error: insertError } = await supabase
+        .from(DB_TABLES.REVIEW_PLATFORMS)
+        .insert(platformRecords)
+        .select();
+
+      if (insertError) throw insertError;
+    }
+
+    const { error: updateError } = await supabase
+      .from(DB_TABLES.REVIEW_TRACKING)
+      .update({
+        review_due_date: review_due_date || null,
+        needs_link_submission,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', review_tracking_id);
+
+    if (updateError) throw updateError;
+
+    if (review_notes) {
+      const { data: deadlineWithQuantityResults } = await supabase
+        .from(DB_TABLES.DEADLINES)
+        .select('total_quantity')
+        .eq('id', reviewTracking.deadline_id)
+        .limit(1);
+
+      const deadlineWithQuantity = deadlineWithQuantityResults?.[0];
+
+      const { data: progressResults } = await supabase
+        .from(DB_TABLES.DEADLINE_PROGRESS)
+        .select('current_progress')
+        .eq('deadline_id', reviewTracking.deadline_id)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      const progressData = progressResults?.[0];
+      const currentProgress = progressData?.current_progress || 0;
+
+      const progressPercentage = deadlineWithQuantity?.total_quantity
+        ? Math.round((currentProgress / deadlineWithQuantity.total_quantity) * 100)
+        : 0;
+
+      const { error: noteError } = await supabase
+        .from(DB_TABLES.DEADLINE_NOTES)
+        .insert({
+          id: generateId('note'),
+          deadline_id: reviewTracking.deadline_id,
+          note_text: review_notes,
+          deadline_progress: progressPercentage,
+          user_id: userId,
+        })
+        .select()
+        .limit(1);
+
+      if (noteError) {
+        console.warn('Failed to create review note:', noteError);
+      }
+    }
+
+    return {
+      review_tracking_id,
+      deadline_id: reviewTracking.deadline_id,
+      posted_platform_names: postedPlatformNames,
     };
   }
 }

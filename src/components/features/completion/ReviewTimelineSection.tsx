@@ -1,8 +1,9 @@
 import { ThemedText, ThemedView } from '@/components/themed';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
-import { ReviewFormData } from '@/utils/reviewFormSchema';
 import { dayjs } from '@/lib/dayjs';
+import { ReviewFormData } from '@/utils/reviewFormSchema';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React from 'react';
 import { Control, UseFormSetValue, UseFormWatch } from 'react-hook-form';
@@ -123,6 +124,7 @@ export const ReviewTimelineSection: React.FC<ReviewTimelineSectionProps> = ({
               onPress={() => setShowDatePicker(true)}
               testID="date-picker-trigger"
             >
+              <IconSymbol name="calendar" size={24} color={colors.text} style={{ opacity: 0.7 }} />
               <ThemedText style={styles.dateText}>
                 {watchReviewDueDate.toLocaleDateString('en-US', {
                   weekday: 'long',
@@ -214,6 +216,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     padding: 16,
     borderRadius: BorderRadius.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
   dateText: {
     lineHeight: 20,

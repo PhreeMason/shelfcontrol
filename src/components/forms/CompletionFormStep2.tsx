@@ -83,20 +83,17 @@ const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
             testID="no-button"
           >
             <ThemedText
-              style={[
-                styles.selectionButtonText,
-                needsReview === false && styles.selectionButtonTextSelected,
-              ]}
+              style={styles.selectionButtonText}
             >
               No, I'm all done
             </ThemedText>
           </Pressable>
         </View>
-        {needsReview && (
-          <ThemedText variant="default" style={[styles.title]}>
-            We'll help you track your review progress
-          </ThemedText>
-        )}
+
+        <ThemedText variant="default" style={[styles.title]}>
+          {needsReview ? "We'll help you track your review progress" : " "}
+        </ThemedText>
+
         {needsReview !== null && (
           <View style={styles.confirmationContainer}>
             <ThemedButton
@@ -171,7 +168,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.surface,
   },
   selectionButtonSelected: {
-    backgroundColor: Colors.light.primary + '40',
+    // backgroundColor: Colors.light.primary + '80',
     borderColor: Colors.light.primary,
     borderWidth: 3,
     opacity: 1,
@@ -183,7 +180,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   selectionButtonTextSelected: {
-    color: Colors.light.textOnPrimary,
+    // color: Colors.light.textOnPrimary,
   },
   confirmationContainer: {
     backgroundColor: 'transparent',

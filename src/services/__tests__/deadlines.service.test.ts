@@ -18,6 +18,7 @@ jest.mock('@/lib/supabase', () => ({
       eq: jest.fn().mockReturnThis(),
       gt: jest.fn().mockReturnThis(),
       single: jest.fn(),
+      limit: jest.fn(),
       order: jest.fn().mockReturnThis(),
       in: jest.fn().mockReturnThis(),
     })),
@@ -71,19 +72,19 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
         .mockResolvedValueOnce({
-          data: { id: 'rd-123', ...mockParams.deadlineDetails },
+          data: [{ id: 'rd-123', ...mockParams.deadlineDetails }],
           error: null,
         })
-        .mockResolvedValueOnce({ data: mockProgressData, error: null })
-        .mockResolvedValueOnce({ data: mockStatusData, error: null });
+        .mockResolvedValueOnce({ data: [mockProgressData], error: null })
+        .mockResolvedValueOnce({ data: [mockStatusData], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const paramsWithBookData = {
@@ -166,7 +167,7 @@ describe('DeadlinesService', () => {
         first_publish_year: null,
       } as any;
 
-      mockBooksService.getBookByApiId.mockResolvedValue(null);
+      mockBooksService.getBookByApiId.mockResolvedValue(undefined);
       mockBooksService.fetchBookData.mockResolvedValue(mockBookResponse);
       mockBooksService.insertBook.mockResolvedValue({} as any);
 
@@ -204,7 +205,7 @@ describe('DeadlinesService', () => {
     });
 
     it('should handle book fetch error gracefully', async () => {
-      mockBooksService.getBookByApiId.mockResolvedValue(null);
+      mockBooksService.getBookByApiId.mockResolvedValue(undefined);
       mockBooksService.fetchBookData.mockRejectedValue(
         new Error('Fetch failed')
       );

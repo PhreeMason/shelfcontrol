@@ -3,8 +3,11 @@ import { ThemedText, ThemedView } from '@/components/themed';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { BorderRadius, Colors, FontFamily, Spacing } from '@/constants/Colors';
 import { posthog } from '@/lib/posthog';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { platformUrlSchema, PlatformUrlFormData } from '@/utils/platformUrlSchema';
 import * as Clipboard from 'expo-clipboard';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import WebViewModal from './WebViewModal';
@@ -42,11 +45,26 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
     platformName: '',
   });
 
+  const { control, reset } = useForm<PlatformUrlFormData>({
+    resolver: zodResolver(platformUrlSchema),
+    defaultValues: {
+      platforms: {},
+    },
+  });
+
   const sortedPlatforms = useMemo(() => {
     return [...platforms].sort((a, b) =>
       a.platform_name.localeCompare(b.platform_name)
     );
   }, [platforms]);
+
+  useEffect(() => {
+    const initialUrls: Record<string, string> = {};
+    platforms.forEach(platform => {
+      initialUrls[platform.id] = platform.review_url || '';
+    });
+    reset({ platforms: initialUrls });
+  }, [platforms, reset]);
 
   const handleToggle = (platform: Platform) => {
     const newPostedStatus = !platform.posted;
@@ -62,9 +80,14 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
     }
   };
 
-  const handleUrlChange = (platformId: string, url: string) => {
+  const handleUrlBlur = (platformId: string, url: string) => {
     if (onUpdateUrl) {
-      onUpdateUrl(platformId, url);
+      const trimmedUrl = url.trim();
+      const platform = platforms.find(p => p.id === platformId);
+
+      if (platform && platform.review_url !== trimmedUrl) {
+        onUpdateUrl(platformId, trimmedUrl);
+      }
     }
   };
 
@@ -168,50 +191,57 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
               </View>
 
               {needsLinkSubmission && platform.posted && (
-                <View style={styles.urlInputContainer}>
-                  <View style={styles.inputRow}>
-                    <TextInput
-                      style={styles.urlInput}
-                      placeholder="Paste review URL (optional)"
-                      placeholderTextColor={Colors.light.textMuted}
-                      value={platform.review_url || ''}
-                      onChangeText={text => handleUrlChange(platform.id, text)}
-                      keyboardType="url"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      editable={!readOnly}
-                    />
-                    {platform.review_url && (
-                      <ThemedIconButton
-                        icon="doc.on.clipboard"
-                        onPress={() =>
-                          handleCopyUrl(
-                            platform.review_url!,
-                            platform.platform_name
-                          )
-                        }
-                        variant="ghost"
-                        size="sm"
-                        hapticsOnPress
-                      />
-                    )}
-                  </View>
-                  {platform.review_url && (
-                    <Pressable
-                      onPress={() =>
-                        handleOpenUrl(
-                          platform.review_url!,
-                          platform.platform_name
-                        )
-                      }
-                      style={styles.viewReviewLink}
-                    >
-                      <ThemedText style={styles.viewReviewText}>
-                        View Review →
-                      </ThemedText>
-                    </Pressable>
-                  )}
-                </View>
+                <Controller
+                  control={control}
+                  name={`platforms.${platform.id}`}
+                  render={({ field: { onChange, onBlur, value } }) => {
+                    const currentUrl = value || '';
+                    return (
+                      <View style={styles.urlInputContainer}>
+                        <View style={styles.inputRow}>
+                          <TextInput
+                            style={styles.urlInput}
+                            placeholder="Paste review URL (optional)"
+                            placeholderTextColor={Colors.light.textMuted}
+                            value={currentUrl}
+                            onChangeText={onChange}
+                            onBlur={() => {
+                              onBlur();
+                              handleUrlBlur(platform.id, currentUrl);
+                            }}
+                            keyboardType="url"
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            editable={!readOnly}
+                          />
+                          {currentUrl && (
+                            <ThemedIconButton
+                              icon="doc.on.clipboard"
+                              onPress={() =>
+                                handleCopyUrl(currentUrl, platform.platform_name)
+                              }
+                              variant="ghost"
+                              size="sm"
+                              hapticsOnPress
+                            />
+                          )}
+                        </View>
+                        {currentUrl && (
+                          <Pressable
+                            onPress={() =>
+                              handleOpenUrl(currentUrl, platform.platform_name)
+                            }
+                            style={styles.viewReviewLink}
+                          >
+                            <ThemedText style={styles.viewReviewText}>
+                              View Review →
+                            </ThemedText>
+                          </Pressable>
+                        )}
+                      </View>
+                    );
+                  }}
+                />
               )}
             </View>
           );

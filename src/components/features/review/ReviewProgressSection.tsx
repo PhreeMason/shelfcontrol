@@ -7,7 +7,7 @@ import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getDeadlineStatus } from '@/utils/deadlineActionUtils';
 import { calculateProgress } from '@/utils/deadlineUtils';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import MarkCompleteDialog from './MarkCompleteDialog';
@@ -34,44 +34,37 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
   const { updatePlatforms } = useReviewTrackingMutation(deadline.id);
   const { completeDeadline, didNotFinishDeadline } = useDeadlines();
 
-  if (isLoading) {
-    return (
-      <ThemedView style={styles.loadingContainer}>
-        <ActivityIndicator size="small" color={Colors.light.primary} />
-      </ThemedView>
-    );
-  }
+  const handleTogglePlatform = useCallback(
+    (platformId: string, posted: boolean) => {
+      if (!reviewTracking) return;
 
-  if (!reviewTracking) {
-    return null;
-  }
+      updatePlatforms({
+        reviewTrackingId: reviewTracking.id,
+        params: {
+          platforms: [{ id: platformId, posted }],
+        },
+      });
+    },
+    [reviewTracking, updatePlatforms]
+  );
 
-  const postedCount = platforms.filter(p => p.posted).length;
-  const totalCount = platforms.length;
+  const handleUpdateUrl = useCallback(
+    (platformId: string, url: string) => {
+      if (!reviewTracking) return;
 
-  const handleTogglePlatform = (platformId: string, posted: boolean) => {
-    if (!reviewTracking) return;
+      const reviewUrl = url.trim() === '' ? null : url;
 
-    updatePlatforms({
-      reviewTrackingId: reviewTracking.id,
-      params: {
-        platforms: [{ id: platformId, posted }],
-      },
-    });
-  };
+      updatePlatforms({
+        reviewTrackingId: reviewTracking.id,
+        params: {
+          platforms: [{ id: platformId, posted: true, review_url: reviewUrl }],
+        },
+      });
+    },
+    [reviewTracking, updatePlatforms]
+  );
 
-  const handleUpdateUrl = (platformId: string, url: string) => {
-    if (!reviewTracking) return;
-
-    updatePlatforms({
-      reviewTrackingId: reviewTracking.id,
-      params: {
-        platforms: [{ id: platformId, posted: true, review_url: url }],
-      },
-    });
-  };
-
-  const handleMarkComplete = () => {
+  const handleMarkComplete = useCallback(() => {
     const currentProgress = calculateProgress(deadline);
     const totalQuantity = deadline.total_quantity || 0;
 
@@ -101,7 +94,22 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
         });
       }
     );
-  };
+  }, [deadline, completeDeadline, didNotFinishDeadline]);
+
+  if (isLoading) {
+    return (
+      <ThemedView style={styles.loadingContainer}>
+        <ActivityIndicator size="small" color={Colors.light.primary} />
+      </ThemedView>
+    );
+  }
+
+  if (!reviewTracking) {
+    return null;
+  }
+
+  const postedCount = platforms.filter(p => p.posted).length;
+  const totalCount = platforms.length;
 
   return (
     <ThemedView style={styles.container}>

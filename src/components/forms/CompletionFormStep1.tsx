@@ -2,7 +2,11 @@ import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { Colors } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
+import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { parseServerDateTime } from '@/utils/dateNormalization';
+import { formatProgressDisplay } from '@/utils/deadlineUtils';
+import type { Dayjs } from 'dayjs';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef, useState } from 'react';
@@ -100,20 +104,23 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
       ? deadline.progress[deadline.progress.length - 1]
       : null;
   const currentProgress = latestProgress?.current_progress || 0;
-  const firstProgress =
-    deadline.progress && deadline.progress.length > 0
-      ? deadline.progress[0]
+  const firstReadingStatus =
+    deadline.status && deadline.status.length > 0
+      ? deadline.status.find(s => s.status === 'reading')
       : null;
-  const startDate = firstProgress?.created_at
-    ? new Date(firstProgress.created_at)
-    : new Date();
-  const finishDate = new Date();
-  const duration = Math.ceil(
-    (finishDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-  );
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const startDate = firstReadingStatus?.created_at
+    ? parseServerDateTime(firstReadingStatus.created_at)
+    : parseServerDateTime(deadline.created_at);
+  const finishDate = dayjs();
+  const duration = Math.ceil(finishDate.diff(startDate, 'day', true));
+  console.log({
+    startDate,
+    finishDate,
+    duration,
+    deadline
+  });
+  const formatDate = (date: Dayjs) => {
+    return date.format('MMM D');
   };
 
   const randomQuote =
@@ -185,8 +192,10 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
               {formatDate(startDate)} → {formatDate(finishDate)}
             </ThemedText>
             <ThemedText variant="secondary" style={styles.statsText}>
-              {duration} {duration === 1 ? 'day' : 'days'} • {currentProgress}/
-              {deadline.total_quantity || 0} pages read
+              {duration} {duration === 1 ? 'day' : 'days'} •{' '}
+              {deadline.format === 'audio'
+                ? `${formatProgressDisplay(deadline.format, currentProgress)} / ${formatProgressDisplay(deadline.format, deadline.total_quantity || 0)} listened`
+                : `${currentProgress}/${deadline.total_quantity || 0} pages read`}
             </ThemedText>
           </Animated.View>
 

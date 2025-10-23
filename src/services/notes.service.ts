@@ -24,7 +24,7 @@ class NotesService {
   ): Promise<DeadlineNote> {
     const finalNoteId = generateId('dn');
 
-    const { data, error } = await supabase
+    const { data: insertResults, error } = await supabase
       .from(DB_TABLES.DEADLINE_NOTES)
       .insert({
         id: finalNoteId,
@@ -36,7 +36,9 @@ class NotesService {
         updated_at: new Date().toISOString(),
       })
       .select()
-      .single();
+      .limit(1);
+
+    const data = insertResults?.[0];
 
     if (error) throw error;
 

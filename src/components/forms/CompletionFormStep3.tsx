@@ -1,26 +1,28 @@
+import { LinkSubmissionSection } from '@/components/features/completion/LinkSubmissionSection';
+import { PlatformSelectionSection } from '@/components/features/completion/PlatformSelectionSection';
+import { ReviewNotesSection } from '@/components/features/completion/ReviewNotesSection';
+import { ReviewTimelineSection } from '@/components/features/completion/ReviewTimelineSection';
 import {
   ThemedButton,
   ThemedKeyboardAwareScrollView,
   ThemedText,
   ThemedView,
 } from '@/components/themed';
-import { LinkSubmissionSection } from '@/components/features/completion/LinkSubmissionSection';
-import { PlatformSelectionSection } from '@/components/features/completion/PlatformSelectionSection';
-import { ReviewNotesSection } from '@/components/features/completion/ReviewNotesSection';
-import { ReviewTimelineSection } from '@/components/features/completion/ReviewTimelineSection';
 import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
 import { ROUTES } from '@/constants/routes';
 import { useFetchBookById } from '@/hooks/useBooks';
-import { useReviewPlatforms } from '@/hooks/useReviewPlatforms';
 import {
   useCompleteDeadline,
   useDidNotFinishDeadline,
   useToReviewDeadline,
 } from '@/hooks/useDeadlines';
+import { useReviewPlatforms } from '@/hooks/useReviewPlatforms';
 import {
   useCreateReviewTracking,
+  useUpdateReviewTracking,
   useUserPlatforms,
 } from '@/hooks/useReviewTracking';
+import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -28,7 +30,7 @@ import { ReviewFormData, reviewFormSchema } from '@/utils/reviewFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Image, Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -37,11 +39,13 @@ import Toast from 'react-native-toast-message';
 interface CompletionFormStep3Props {
   deadline: ReadingDeadlineWithProgress;
   isDNF?: boolean;
+  mode?: 'create' | 'edit';
 }
 
 const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
   deadline,
   isDNF = false,
+  mode = 'create',
 }) => {
   const { colors } = useTheme();
   const { session } = useAuth();
@@ -50,12 +54,28 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
   const insets = useSafeAreaInsets();
 
   const { mutate: createReviewTracking } = useCreateReviewTracking();
+  const { mutate: updateReviewTracking } = useUpdateReviewTracking();
   const { mutate: updateToReview } = useToReviewDeadline();
   const { mutate: completeDeadline } = useCompleteDeadline();
   const { mutate: didNotFinishDeadline } = useDidNotFinishDeadline();
 
   const { data: bookData } = useFetchBookById(deadline.book_id || null);
   const { data: userPlatforms = [] } = useUserPlatforms();
+
+  const { reviewTracking: existingReviewTracking, platforms: existingPlatforms } =
+    useReviewTrackingData(deadline.id, mode === 'edit');
+
+  const initialPlatformNames = useMemo(() => {
+    return mode === 'edit' && existingPlatforms.length > 0
+      ? existingPlatforms.map(p => p.platform_name)
+      : undefined;
+  }, [mode, existingPlatforms]);
+
+  const postedPlatformNames = useMemo(() => {
+    return mode === 'edit' && existingPlatforms.length > 0
+      ? existingPlatforms.filter(p => p.posted).map(p => p.platform_name)
+      : [];
+  }, [mode, existingPlatforms]);
 
   const {
     selectedPlatforms,
@@ -71,14 +91,25 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
     addCustomPlatform,
     removeCustomPlatform,
     getAllSelectedPlatforms,
-  } = useReviewPlatforms(userPlatforms, deadline.source);
+  } = useReviewPlatforms(
+    userPlatforms,
+    deadline.source,
+    initialPlatformNames,
+    postedPlatformNames
+  );
 
   const { control, handleSubmit, watch, setValue } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewFormSchema),
     defaultValues: {
-      hasReviewDeadline: false,
-      reviewDueDate: null,
-      needsLinkSubmission: false,
+      hasReviewDeadline: mode === 'edit' && existingReviewTracking
+        ? !!existingReviewTracking.review_due_date
+        : false,
+      reviewDueDate: mode === 'edit' && existingReviewTracking?.review_due_date
+        ? new Date(existingReviewTracking.review_due_date)
+        : null,
+      needsLinkSubmission: mode === 'edit' && existingReviewTracking
+        ? existingReviewTracking.needs_link_submission
+        : false,
       reviewNotes: '',
     },
   });
@@ -87,20 +118,8 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
   const watchReviewDueDate = watch('reviewDueDate');
 
   useEffect(() => {
-    const source = deadline.source;
-
-    if (source === 'NetGalley' || source === 'Publisher ARC') {
-      setValue('hasReviewDeadline', true);
-      const defaultDate = new Date();
-      defaultDate.setDate(defaultDate.getDate() + 7);
-      setValue('reviewDueDate', defaultDate);
-    }
-  }, [deadline.source, setValue]);
-
-  useEffect(() => {
     if (watchHasDeadline && !watchReviewDueDate) {
-      const defaultDate = new Date();
-      defaultDate.setDate(defaultDate.getDate() + 7);
+      const defaultDate = new Date(deadline.deadline_date);
       setValue('reviewDueDate', defaultDate);
     } else if (!watchHasDeadline) {
       setValue('reviewDueDate', null);
@@ -123,55 +142,103 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
 
     setIsSubmitting(true);
 
-    const params: any = {
-      deadline_id: deadline.id,
-      needs_link_submission: data.needsLinkSubmission,
-      platforms: allPlatforms.map(name => ({ name })),
-    };
-
-    if (data.hasReviewDeadline && data.reviewDueDate) {
-      params.review_due_date = data.reviewDueDate.toISOString();
-    }
-
-    if (data.reviewNotes) {
-      params.review_notes = data.reviewNotes;
-    }
-
-    createReviewTracking(params, {
-      onSuccess: () => {
-        updateToReview(deadline.id, {
-          onSuccess: () => {
-            Toast.show({
-              type: 'success',
-              text1: 'Review tracking set up!',
-            });
-            setIsSubmitting(false);
-            router.replace(`/deadline/${deadline.id}`);
-          },
-          onError: error => {
-            console.warn(
-              'Could not update status to to_review:',
-              error.message
-            );
-            Toast.show({
-              type: 'success',
-              text1: 'Review tracking set up!',
-            });
-            setIsSubmitting(false);
-            router.replace(`/deadline/${deadline.id}`);
-          },
-        });
-      },
-      onError: error => {
-        console.error('Error setting up review tracking:', error);
+    if (mode === 'edit') {
+      if (!existingReviewTracking?.id) {
         Toast.show({
           type: 'error',
           text1: 'Error',
-          text2: 'Failed to set up review tracking. Please try again.',
+          text2: 'Review tracking not found',
         });
         setIsSubmitting(false);
-      },
-    });
+        return;
+      }
+
+      const updateParams: any = {
+        review_tracking_id: existingReviewTracking.id,
+        needs_link_submission: data.needsLinkSubmission,
+        platforms: allPlatforms.map(name => ({ name })),
+      };
+
+      if (data.hasReviewDeadline && data.reviewDueDate) {
+        updateParams.review_due_date = data.reviewDueDate.toISOString();
+      } else {
+        updateParams.review_due_date = null;
+      }
+
+      if (data.reviewNotes?.trim()) {
+        updateParams.review_notes = data.reviewNotes.trim();
+      }
+
+      updateReviewTracking(updateParams, {
+        onSuccess: () => {
+          Toast.show({
+            type: 'success',
+            text1: 'Review tracking updated!',
+          });
+          setIsSubmitting(false);
+          router.back();
+        },
+        onError: error => {
+          console.error('Error updating review tracking:', error);
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Failed to update review tracking. Please try again.',
+          });
+          setIsSubmitting(false);
+        },
+      });
+    } else {
+      const params: any = {
+        deadline_id: deadline.id,
+        needs_link_submission: data.needsLinkSubmission,
+        platforms: allPlatforms.map(name => ({ name })),
+      };
+
+      if (data.hasReviewDeadline && data.reviewDueDate) {
+        params.review_due_date = data.reviewDueDate.toISOString();
+      }
+
+      if (data.reviewNotes) {
+        params.review_notes = data.reviewNotes;
+      }
+
+      createReviewTracking(params, {
+        onSuccess: () => {
+          updateToReview(deadline.id, {
+            onSuccess: () => {
+              Toast.show({
+                type: 'success',
+                text1: 'Review tracking set up!',
+              });
+              setIsSubmitting(false);
+              router.replace(`/deadline/${deadline.id}`);
+            },
+            onError: error => {
+              console.warn(
+                'Could not update status to to_review:',
+                error.message
+              );
+              Toast.show({
+                type: 'success',
+                text1: 'Review tracking set up!',
+              });
+              setIsSubmitting(false);
+              router.replace(`/deadline/${deadline.id}`);
+            },
+          });
+        },
+        onError: error => {
+          console.error('Error setting up review tracking:', error);
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Failed to set up review tracking. Please try again.',
+          });
+          setIsSubmitting(false);
+        },
+      });
+    }
   };
 
   const handleSkip = () => {
@@ -296,20 +363,24 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
       </ThemedKeyboardAwareScrollView>
 
       <ThemedView style={styles.actionBar}>
+        {mode === 'create' && (
+          <ThemedButton
+            title="Skip Review Tracking"
+            variant="secondary"
+            onPress={handleSkip}
+            disabled={isSubmitting}
+            testID="skip-button"
+            style={styles.actionButton}
+          />
+        )}
         <ThemedButton
-          title="Skip Review Tracking"
-          variant="secondary"
-          onPress={handleSkip}
-          disabled={isSubmitting}
-          testID="skip-button"
-        />
-        <ThemedButton
-          title={isSubmitting ? 'Saving...' : 'Save & Finish'}
+          title={isSubmitting ? 'Saving...' : mode === 'edit' ? 'Update' : 'Save & Finish'}
           variant="primary"
           onPress={handleSubmit(handleSaveAndFinish)}
           disabled={isSubmitting}
           hapticsOnPress
           testID="save-and-finish-button"
+          style={styles.actionButton}
         />
       </ThemedView>
     </ThemedView>
@@ -399,7 +470,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.surface,
     borderTopWidth: 1,
     borderTopColor: Colors.light.border,
+    gap: Spacing.sm,
   },
+  actionButton: {
+    flexGrow: 1,
+  }
 });
 
 export default CompletionFormStep3;
