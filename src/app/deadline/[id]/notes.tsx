@@ -1,6 +1,7 @@
 import AppHeader from '@/components/shared/AppHeader';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Colors } from '@/constants/Colors';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
 import {
   useAddNote,
@@ -329,7 +330,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.light.darkPurple,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -346,7 +347,7 @@ const styles = StyleSheet.create({
   },
   doneButton: {
     fontSize: 17,
-    color: '#007AFF',
+    color: Colors.light.darkPurple,
     fontWeight: '600',
   },
 });
