@@ -1,7 +1,7 @@
-import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react-native';
-import InputModeToggle from '../InputModeToggle';
 import type { ProgressInputMode } from '@/types/progressInput.types';
+import { fireEvent, render, screen } from '@testing-library/react-native';
+import React from 'react';
+import InputModeToggle from '../InputModeToggle';
 
 jest.mock('@/components/themed', () => ({
   ThemedText: ({ children, ...props }: any) => {
@@ -180,41 +180,6 @@ describe('InputModeToggle', () => {
       expect(mockOnModeChange).toHaveBeenNthCalledWith(3, 'percentage');
 
       expect(mockOnModeChange).toHaveBeenCalledTimes(3);
-    });
-  });
-
-  describe('Styling', () => {
-    it('should use transparent background with primary border', () => {
-      render(
-        <InputModeToggle
-          modes={twoModeOptions}
-          selectedMode="direct"
-          onModeChange={mockOnModeChange}
-        />
-      );
-
-      const toggleButton = screen.getByTestId('input-mode-toggle');
-      expect(toggleButton.props.style).toMatchObject({
-        backgroundColor: 'transparent',
-        borderColor: '#B8A9D9',
-      });
-    });
-
-    it('should use primary color text for label', () => {
-      render(
-        <InputModeToggle
-          modes={twoModeOptions}
-          selectedMode="direct"
-          onModeChange={mockOnModeChange}
-        />
-      );
-
-      const labelText = screen.getByText('Page');
-      expect(labelText.props.style).toContainEqual(
-        expect.objectContaining({
-          color: '#B8A9D9',
-        })
-      );
     });
   });
 

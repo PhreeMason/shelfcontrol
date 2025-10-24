@@ -1,18 +1,18 @@
 import { booksService } from '@/services';
-import { useQuery } from '@tanstack/react-query';
 import {
-  SearchBooksResponse,
-  FullBookData,
   BookSearchResult,
+  FullBookData,
+  SearchBooksResponse,
 } from '@/types/bookSearch';
 import { Database } from '@/types/database.types';
+import { useQuery } from '@tanstack/react-query';
 import {
-  searchBookList,
-  fetchBookData,
   fetchBookById,
-  useSearchBooksList,
-  useFetchBookData,
+  fetchBookData,
+  searchBookList,
   useFetchBookById,
+  useFetchBookData,
+  useSearchBooksList,
 } from '../useBooks';
 
 type BookRecord = Database['public']['Tables']['books']['Row'];
@@ -241,6 +241,7 @@ describe('useBooks hooks', () => {
       useFetchBookData('api-123');
 
       expect(mockUseQuery).toHaveBeenCalledWith({
+        enabled: true,
         queryKey: ['book', 'api-123'],
         queryFn: expect.any(Function),
         staleTime: 1000 * 60 * 30,

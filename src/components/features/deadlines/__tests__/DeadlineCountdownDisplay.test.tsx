@@ -37,12 +37,12 @@ describe('DeadlineCountdownDisplay', () => {
       );
 
       expect(getByText('🏆')).toBeTruthy();
-      expect(getByText('done')).toBeTruthy();
+      expect(getByText('Done')).toBeTruthy();
     });
   });
 
   describe('Did not finish status', () => {
-    it('should display dnf label', () => {
+    it('should display DNF label', () => {
       const { getByText } = render(
         <DeadlineCountdownDisplay
           {...defaultProps}
@@ -50,7 +50,7 @@ describe('DeadlineCountdownDisplay', () => {
         />
       );
 
-      expect(getByText('dnf')).toBeTruthy();
+      expect(getByText('DNF')).toBeTruthy();
     });
   });
 

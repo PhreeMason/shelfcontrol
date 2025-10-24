@@ -43,8 +43,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -59,9 +59,9 @@ describe('ReviewTrackingService', () => {
             return {
               select: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: null,
-                    error: { code: 'PGRST116', message: 'Not found' },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [],
+                    error: null,
                   }),
                 }),
               }),
@@ -70,8 +70,8 @@ describe('ReviewTrackingService', () => {
           return {
             insert: jest.fn().mockReturnValue({
               select: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: { id: 'rt-1', deadline_id: 'rd-123' },
+                limit: jest.fn().mockResolvedValue({
+                  data: [{ id: 'rt-1', deadline_id: 'rd-123' }],
                   error: null,
                 }),
               }),
@@ -115,12 +115,14 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: {
-                      id: 'rd-123',
-                      user_id: userId,
-                      total_quantity: 350,
-                    },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [
+                      {
+                        id: 'rd-123',
+                        user_id: userId,
+                        total_quantity: 350,
+                      },
+                    ],
                     error: null,
                   }),
                 }),
@@ -135,9 +137,9 @@ describe('ReviewTrackingService', () => {
             return {
               select: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: null,
-                    error: { code: 'PGRST116', message: 'Not found' },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [],
+                    error: null,
                   }),
                 }),
               }),
@@ -146,8 +148,8 @@ describe('ReviewTrackingService', () => {
           return {
             insert: jest.fn().mockReturnValue({
               select: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: { id: 'rt-1', deadline_id: 'rd-123' },
+                limit: jest.fn().mockResolvedValue({
+                  data: [{ id: 'rt-1', deadline_id: 'rd-123' }],
                   error: null,
                 }),
               }),
@@ -171,8 +173,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 order: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { current_progress: 245 },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ current_progress: 245 }],
                     error: null,
                   }),
                 }),
@@ -185,8 +187,8 @@ describe('ReviewTrackingService', () => {
           return {
             insert: jest.fn().mockReturnValue({
               select: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: { id: 'note-1' },
+                limit: jest.fn().mockResolvedValue({
+                  data: [{ id: 'note-1' }],
                   error: null,
                 }),
               }),
@@ -210,7 +212,7 @@ describe('ReviewTrackingService', () => {
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             eq: jest.fn().mockReturnValue({
-              single: jest.fn().mockResolvedValue({
+              limit: jest.fn().mockResolvedValue({
                 data: null,
                 error: { code: 'PGRST116', message: 'Not found' },
               }),
@@ -229,8 +231,8 @@ describe('ReviewTrackingService', () => {
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             eq: jest.fn().mockReturnValue({
-              single: jest.fn().mockResolvedValue({
-                data: null,
+              limit: jest.fn().mockResolvedValue({
+                data: [],
                 error: null,
               }),
             }),
@@ -261,8 +263,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -275,8 +277,8 @@ describe('ReviewTrackingService', () => {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: { id: 'rt-existing' },
+                limit: jest.fn().mockResolvedValue({
+                  data: [{ id: 'rt-existing' }],
                   error: null,
                 }),
               }),
@@ -301,8 +303,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -317,9 +319,9 @@ describe('ReviewTrackingService', () => {
             return {
               select: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: null,
-                    error: { code: 'PGRST116', message: 'Not found' },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [],
+                    error: null,
                   }),
                 }),
               }),
@@ -329,7 +331,7 @@ describe('ReviewTrackingService', () => {
           return {
             insert: jest.fn().mockReturnValue({
               select: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
+                limit: jest.fn().mockResolvedValue({
                   data: null,
                   error: insertError,
                 }),
@@ -355,8 +357,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -371,9 +373,9 @@ describe('ReviewTrackingService', () => {
             return {
               select: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: null,
-                    error: { code: 'PGRST116', message: 'Not found' },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [],
+                    error: null,
                   }),
                 }),
               }),
@@ -382,8 +384,8 @@ describe('ReviewTrackingService', () => {
           return {
             insert: jest.fn().mockReturnValue({
               select: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: { id: 'rt-1', deadline_id: 'rd-123' },
+                limit: jest.fn().mockResolvedValue({
+                  data: [{ id: 'rt-1', deadline_id: 'rd-123' }],
                   error: null,
                 }),
               }),
@@ -433,8 +435,8 @@ describe('ReviewTrackingService', () => {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: { id: 'rt-123', deadline_id: 'rd-123' },
+                limit: jest.fn().mockResolvedValue({
+                  data: [{ id: 'rt-123', deadline_id: 'rd-123' }],
                   error: null,
                 }),
               }),
@@ -447,8 +449,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -465,8 +467,8 @@ describe('ReviewTrackingService', () => {
             return {
               select: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { posted: false, posted_date: null },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ posted: false, posted_date: null }],
                     error: null,
                   }),
                 }),
@@ -478,8 +480,8 @@ describe('ReviewTrackingService', () => {
             return {
               update: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: {},
+                  limit: jest.fn().mockResolvedValue({
+                    data: [],
                     error: null,
                   }),
                 }),
@@ -521,8 +523,8 @@ describe('ReviewTrackingService', () => {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: { id: 'rt-123', deadline_id: 'rd-123' },
+                limit: jest.fn().mockResolvedValue({
+                  data: [{ id: 'rt-123', deadline_id: 'rd-123' }],
                   error: null,
                 }),
               }),
@@ -535,8 +537,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -553,8 +555,8 @@ describe('ReviewTrackingService', () => {
             return {
               select: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { posted: false, posted_date: null },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ posted: false, posted_date: null }],
                     error: null,
                   }),
                 }),
@@ -566,8 +568,8 @@ describe('ReviewTrackingService', () => {
             return {
               update: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: {},
+                  limit: jest.fn().mockResolvedValue({
+                    data: [],
                     error: null,
                   }),
                 }),
@@ -606,8 +608,8 @@ describe('ReviewTrackingService', () => {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: { id: 'rt-123', deadline_id: 'rd-123' },
+                limit: jest.fn().mockResolvedValue({
+                  data: [{ id: 'rt-123', deadline_id: 'rd-123' }],
                   error: null,
                 }),
               }),
@@ -620,8 +622,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: null,
+                  limit: jest.fn().mockResolvedValue({
+                    data: [],
                     error: null,
                   }),
                 }),
@@ -646,7 +648,7 @@ describe('ReviewTrackingService', () => {
       mockSupabaseFrom.mockImplementation(() => ({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
+            limit: jest.fn().mockResolvedValue({
               data: null,
               error: { code: 'PGRST116', message: 'Not found' },
             }),
@@ -670,8 +672,8 @@ describe('ReviewTrackingService', () => {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: { id: 'rt-123', deadline_id: 'rd-123' },
+                limit: jest.fn().mockResolvedValue({
+                  data: [{ id: 'rt-123', deadline_id: 'rd-123' }],
                   error: null,
                 }),
               }),
@@ -684,8 +686,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -702,8 +704,8 @@ describe('ReviewTrackingService', () => {
             return {
               select: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { posted: false, posted_date: null },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ posted: false, posted_date: null }],
                     error: null,
                   }),
                 }),
@@ -715,8 +717,8 @@ describe('ReviewTrackingService', () => {
             return {
               update: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: {},
+                  limit: jest.fn().mockResolvedValue({
+                    data: [],
                     error: null,
                   }),
                 }),
@@ -755,8 +757,8 @@ describe('ReviewTrackingService', () => {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: { id: 'rt-123', deadline_id: 'rd-123' },
+                limit: jest.fn().mockResolvedValue({
+                  data: [{ id: 'rt-123', deadline_id: 'rd-123' }],
                   error: null,
                 }),
               }),
@@ -769,8 +771,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -786,8 +788,8 @@ describe('ReviewTrackingService', () => {
             return {
               select: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { posted: true, posted_date: existingPostedDate },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ posted: true, posted_date: existingPostedDate }],
                     error: null,
                   }),
                 }),
@@ -802,8 +804,8 @@ describe('ReviewTrackingService', () => {
                 expect(updatePayload.posted_date).toBeUndefined();
                 return {
                   eq: jest.fn().mockReturnValue({
-                    single: jest.fn().mockResolvedValue({
-                      data: {},
+                    limit: jest.fn().mockResolvedValue({
+                      data: [],
                       error: null,
                     }),
                   }),
@@ -840,8 +842,8 @@ describe('ReviewTrackingService', () => {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: { id: 'rt-123', deadline_id: 'rd-123' },
+                limit: jest.fn().mockResolvedValue({
+                  data: [{ id: 'rt-123', deadline_id: 'rd-123' }],
                   error: null,
                 }),
               }),
@@ -854,8 +856,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -871,8 +873,8 @@ describe('ReviewTrackingService', () => {
             return {
               select: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { posted: false, posted_date: null },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ posted: false, posted_date: null }],
                     error: null,
                   }),
                 }),
@@ -888,8 +890,8 @@ describe('ReviewTrackingService', () => {
                 expect(updatePayload.posted).toBe(true);
                 return {
                   eq: jest.fn().mockReturnValue({
-                    single: jest.fn().mockResolvedValue({
-                      data: {},
+                    limit: jest.fn().mockResolvedValue({
+                      data: [],
                       error: null,
                     }),
                   }),
@@ -930,8 +932,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -944,14 +946,14 @@ describe('ReviewTrackingService', () => {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: {
+                limit: jest.fn().mockResolvedValue({
+                  data: [{
                     id: 'rt-123',
                     deadline_id: 'rd-123',
                     review_due_date: '2025-10-20',
                     needs_link_submission: true,
                     all_reviews_complete: false,
-                  },
+                  }],
                   error: null,
                 }),
               }),
@@ -1028,8 +1030,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -1042,7 +1044,7 @@ describe('ReviewTrackingService', () => {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
+                limit: jest.fn().mockResolvedValue({
                   data: null,
                   error: { code: 'PGRST116', message: 'Not found' },
                 }),
@@ -1067,7 +1069,7 @@ describe('ReviewTrackingService', () => {
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             eq: jest.fn().mockReturnValue({
-              single: jest.fn().mockResolvedValue({
+              limit: jest.fn().mockResolvedValue({
                 data: null,
                 error: null,
               }),
@@ -1089,8 +1091,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -1103,7 +1105,7 @@ describe('ReviewTrackingService', () => {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
+                limit: jest.fn().mockResolvedValue({
                   data: null,
                   error: dbError,
                 }),
@@ -1127,8 +1129,8 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
-                  single: jest.fn().mockResolvedValue({
-                    data: { id: 'rd-123', user_id: userId },
+                  limit: jest.fn().mockResolvedValue({
+                    data: [{ id: 'rd-123', user_id: userId }],
                     error: null,
                   }),
                 }),
@@ -1141,14 +1143,14 @@ describe('ReviewTrackingService', () => {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: {
+                limit: jest.fn().mockResolvedValue({
+                  data: [{
                     id: 'rt-123',
                     deadline_id: 'rd-123',
                     review_due_date: '2025-10-20',
                     needs_link_submission: true,
                     all_reviews_complete: false,
-                  },
+                  }],
                   error: null,
                 }),
               }),

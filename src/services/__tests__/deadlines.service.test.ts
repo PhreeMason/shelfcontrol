@@ -17,8 +17,7 @@ jest.mock('@/lib/supabase', () => ({
       select: jest.fn().mockReturnThis(),
       eq: jest.fn().mockReturnThis(),
       gt: jest.fn().mockReturnThis(),
-      single: jest.fn(),
-      limit: jest.fn(),
+      limit: jest.fn().mockReturnThis(),
       order: jest.fn().mockReturnThis(),
       in: jest.fn().mockReturnThis(),
     })),
@@ -118,19 +117,19 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
         .mockResolvedValueOnce({
-          data: { id: 'rd-123', ...mockParams.deadlineDetails },
+          data: [{ id: 'rd-123', ...mockParams.deadlineDetails }],
           error: null,
         })
-        .mockResolvedValueOnce({ data: mockProgressData, error: null })
-        .mockResolvedValueOnce({ data: mockStatusData, error: null });
+        .mockResolvedValueOnce({ data: [mockProgressData], error: null })
+        .mockResolvedValueOnce({ data: [mockStatusData], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await deadlinesService.addDeadline(userId, mockParams);
@@ -173,16 +172,16 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
-        .mockResolvedValueOnce({ data: { id: 'rdp-123' }, error: null })
-        .mockResolvedValueOnce({ data: { id: 'status-123' }, error: null });
+        .mockResolvedValueOnce({ data: [{ id: 'rd-123' }], error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'rdp-123' }], error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'status-123' }], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const paramsWithBookData = {
@@ -212,16 +211,16 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
-        .mockResolvedValueOnce({ data: { id: 'rdp-123' }, error: null })
-        .mockResolvedValueOnce({ data: { id: 'status-123' }, error: null });
+        .mockResolvedValueOnce({ data: [{ id: 'rd-123' }], error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'rdp-123' }], error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'status-123' }], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const paramsWithBookData = {
@@ -245,14 +244,14 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
         .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       await expect(
@@ -265,15 +264,15 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'rd-123' }], error: null })
         .mockResolvedValueOnce({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       await expect(
@@ -286,16 +285,16 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
-        .mockResolvedValueOnce({ data: { id: 'rdp-123' }, error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'rd-123' }], error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'rdp-123' }], error: null })
         .mockResolvedValueOnce({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       await expect(
@@ -306,16 +305,16 @@ describe('DeadlinesService', () => {
     it('should use provided book_id when available', async () => {
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
-        .mockResolvedValueOnce({ data: { id: 'rdp-123' }, error: null })
-        .mockResolvedValueOnce({ data: { id: 'status-123' }, error: null });
+        .mockResolvedValueOnce({ data: [{ id: 'rd-123' }], error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'rdp-123' }], error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'status-123' }], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const paramsWithBookId = {
@@ -346,16 +345,16 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
-        .mockResolvedValueOnce({ data: { id: 'rdp-123' }, error: null })
-        .mockResolvedValueOnce({ data: { id: 'status-123' }, error: null });
+        .mockResolvedValueOnce({ data: [{ id: 'rd-123' }], error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'rdp-123' }], error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'status-123' }], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const paramsWithIgnoreFlag = {
@@ -381,16 +380,16 @@ describe('DeadlinesService', () => {
     it('should not modify timestamps when ignore_in_calcs is false', async () => {
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: { id: 'rd-123' }, error: null })
-        .mockResolvedValueOnce({ data: { id: 'rdp-123' }, error: null })
-        .mockResolvedValueOnce({ data: { id: 'status-123' }, error: null });
+        .mockResolvedValueOnce({ data: [{ id: 'rd-123' }], error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'rdp-123' }], error: null })
+        .mockResolvedValueOnce({ data: [{ id: 'status-123' }], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const currentTimestamp = new Date().toISOString();
@@ -445,17 +444,17 @@ describe('DeadlinesService', () => {
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
-        .mockResolvedValueOnce({ data: mockProgressData, error: null });
+        .mockResolvedValueOnce({ data: [mockDeadlineData], error: null })
+        .mockResolvedValueOnce({ data: [mockProgressData], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
         insert: mockInsert,
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await deadlinesService.updateDeadline(userId, mockParams);
@@ -491,17 +490,17 @@ describe('DeadlinesService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
-        .mockResolvedValueOnce({ data: existingProgressData, error: null })
-        .mockResolvedValueOnce({ data: mockProgressData, error: null });
+        .mockResolvedValueOnce({ data: [mockDeadlineData], error: null })
+        .mockResolvedValueOnce({ data: [existingProgressData], error: null })
+        .mockResolvedValueOnce({ data: [mockProgressData], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const paramsWithExistingProgress = {
@@ -527,26 +526,24 @@ describe('DeadlinesService', () => {
       });
     });
 
-    it('should throw error when deadline update fails', async () => {
-      const mockError = new Error('Deadline update failed');
-
+    it('should return null when deadline update finds no data', async () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: null, error: mockError });
+        .mockResolvedValue({ data: [], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
-      await expect(
-        deadlinesService.updateDeadline(userId, mockParams)
-      ).rejects.toThrow('Deadline update failed');
+      const result = await deadlinesService.updateDeadline(userId, mockParams);
+
+      expect(result).toBeNull();
     });
 
     it('should throw error when progress update fails', async () => {
@@ -557,9 +554,9 @@ describe('DeadlinesService', () => {
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
+        .mockResolvedValueOnce({ data: [mockDeadlineData], error: null })
         .mockResolvedValueOnce({ data: null, error: mockProgressError });
 
       mockSupabaseFrom.mockReturnValue({
@@ -567,7 +564,7 @@ describe('DeadlinesService', () => {
         insert: mockInsert,
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       await expect(
@@ -591,17 +588,17 @@ describe('DeadlinesService', () => {
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
-        .mockResolvedValueOnce({ data: mockProgressData, error: null });
+        .mockResolvedValueOnce({ data: [mockDeadlineData], error: null })
+        .mockResolvedValueOnce({ data: [mockProgressData], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
         insert: mockInsert,
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const paramsWithIgnoreFlag = {
@@ -641,17 +638,17 @@ describe('DeadlinesService', () => {
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
-        .mockResolvedValueOnce({ data: mockProgressData, error: null });
+        .mockResolvedValueOnce({ data: [mockDeadlineData], error: null })
+        .mockResolvedValueOnce({ data: [mockProgressData], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
         insert: mockInsert,
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const paramsWithoutIgnoreFlag = {
@@ -705,17 +702,17 @@ describe('DeadlinesService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
-        .mockResolvedValueOnce({ data: existingProgressData, error: null })
-        .mockResolvedValueOnce({ data: updatedProgressData, error: null });
+        .mockResolvedValueOnce({ data: [mockDeadlineData], error: null })
+        .mockResolvedValueOnce({ data: [existingProgressData], error: null })
+        .mockResolvedValueOnce({ data: [updatedProgressData], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const paramsWithToggle = {
@@ -767,17 +764,17 @@ describe('DeadlinesService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: mockDeadlineData, error: null })
-        .mockResolvedValueOnce({ data: existingProgressData, error: null })
-        .mockResolvedValueOnce({ data: updatedProgressData, error: null });
+        .mockResolvedValueOnce({ data: [mockDeadlineData], error: null })
+        .mockResolvedValueOnce({ data: [existingProgressData], error: null })
+        .mockResolvedValueOnce({ data: [updatedProgressData], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const paramsNoToggle = {
@@ -817,14 +814,14 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockProgressData, error: null });
+        .mockResolvedValue({ data: [mockProgressData], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await deadlinesService.updateDeadlineProgress(mockParams);
@@ -855,14 +852,14 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockProgressData, error: null });
+        .mockResolvedValue({ data: [mockProgressData], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result =
@@ -881,14 +878,14 @@ describe('DeadlinesService', () => {
 
       const mockInsert = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
         .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         insert: mockInsert,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       await expect(
@@ -933,7 +930,8 @@ describe('DeadlinesService', () => {
       expect(mockSelect).toHaveBeenCalledWith(`
         *,
         progress:deadline_progress(*),
-        status:deadline_status(*)
+        status:deadline_status(*),
+        books(publisher)
       `);
       expect(mockEq).toHaveBeenCalledWith('user_id', userId);
       expect(mockOrder).toHaveBeenCalledWith('created_at', {
@@ -977,14 +975,14 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockDeadline, error: null });
+        .mockResolvedValue({ data: [mockDeadline], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await deadlinesService.getDeadlineById(userId, deadlineId);
@@ -999,14 +997,14 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
         .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await deadlinesService.getDeadlineById(userId, deadlineId);
@@ -1019,14 +1017,14 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
         .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       await expect(
@@ -1062,8 +1060,8 @@ describe('DeadlinesService', () => {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            single: jest.fn().mockResolvedValue({
-              data: mockDeadlineWithStatus,
+            limit: jest.fn().mockResolvedValue({
+              data: [mockDeadlineWithStatus],
               error: null,
             }),
           };
@@ -1071,15 +1069,15 @@ describe('DeadlinesService', () => {
           return {
             insert: jest.fn().mockReturnThis(),
             select: jest.fn().mockReturnThis(),
-            single: jest.fn().mockResolvedValue({ data: {}, error: null }),
+            limit: jest.fn().mockResolvedValue({ data: [{}], error: null }),
           };
         } else {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            single: jest
+            limit: jest
               .fn()
-              .mockResolvedValue({ data: mockUpdatedDeadline, error: null }),
+              .mockResolvedValue({ data: [mockUpdatedDeadline], error: null }),
           };
         }
       });
@@ -1124,8 +1122,8 @@ describe('DeadlinesService', () => {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            single: jest.fn().mockResolvedValue({
-              data: mockDeadlineWithStatus,
+            limit: jest.fn().mockResolvedValue({
+              data: [mockDeadlineWithStatus],
               error: null,
             }),
           };
@@ -1133,15 +1131,15 @@ describe('DeadlinesService', () => {
           return {
             insert: jest.fn().mockReturnThis(),
             select: jest.fn().mockReturnThis(),
-            single: jest.fn().mockResolvedValue({ data: {}, error: null }),
+            limit: jest.fn().mockResolvedValue({ data: [{}], error: null }),
           };
         } else {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            single: jest
+            limit: jest
               .fn()
-              .mockResolvedValue({ data: mockUpdatedDeadline, error: null }),
+              .mockResolvedValue({ data: [mockUpdatedDeadline], error: null }),
           };
         }
       });
@@ -1176,8 +1174,8 @@ describe('DeadlinesService', () => {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            single: jest.fn().mockResolvedValue({
-              data: mockDeadlineWithStatus,
+            limit: jest.fn().mockResolvedValue({
+              data: [mockDeadlineWithStatus],
               error: null,
             }),
           };
@@ -1185,7 +1183,7 @@ describe('DeadlinesService', () => {
           return {
             insert: jest.fn().mockReturnThis(),
             select: jest.fn().mockReturnThis(),
-            single: jest
+            limit: jest
               .fn()
               .mockResolvedValue({ data: null, error: mockError }),
           };
@@ -1211,8 +1209,8 @@ describe('DeadlinesService', () => {
         return {
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
-          single: jest.fn().mockResolvedValue({
-            data: mockDeadlineWithStatus,
+          limit: jest.fn().mockResolvedValue({
+            data: [mockDeadlineWithStatus],
             error: null,
           }),
         };
@@ -1237,8 +1235,8 @@ describe('DeadlinesService', () => {
         return {
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
-          single: jest.fn().mockResolvedValue({
-            data: mockDeadlineWithStatus,
+          limit: jest.fn().mockResolvedValue({
+            data: [mockDeadlineWithStatus],
             error: null,
           }),
         };
@@ -1272,8 +1270,8 @@ describe('DeadlinesService', () => {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            single: jest.fn().mockResolvedValue({
-              data: mockDeadlineWithStatus,
+            limit: jest.fn().mockResolvedValue({
+              data: [mockDeadlineWithStatus],
               error: null,
             }),
           };
@@ -1281,15 +1279,15 @@ describe('DeadlinesService', () => {
           return {
             insert: jest.fn().mockReturnThis(),
             select: jest.fn().mockReturnThis(),
-            single: jest.fn().mockResolvedValue({ data: {}, error: null }),
+            limit: jest.fn().mockResolvedValue({ data: [{}], error: null }),
           };
         } else {
           return {
             select: jest.fn().mockReturnThis(),
             eq: jest.fn().mockReturnThis(),
-            single: jest
+            limit: jest
               .fn()
-              .mockResolvedValue({ data: mockUpdatedDeadline, error: null }),
+              .mockResolvedValue({ data: [mockUpdatedDeadline], error: null }),
           };
         }
       });
@@ -1328,9 +1326,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValueOnce({ data: mockDeadline, error: null });
+        .mockResolvedValueOnce({ data: [mockDeadline], error: null });
 
       const mockInsert = jest.fn().mockReturnThis();
 
@@ -1338,7 +1336,7 @@ describe('DeadlinesService', () => {
         .mockReturnValueOnce({
           select: mockSelect,
           eq: mockEq,
-          single: mockSingle,
+          limit: mockLimit,
         })
         .mockReturnValueOnce({
           insert: mockInsert,
@@ -1386,14 +1384,14 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockDeadline, error: null });
+        .mockResolvedValue({ data: [mockDeadline], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       jest.spyOn(deadlinesService, 'updateDeadlineStatus').mockResolvedValue({
@@ -1427,9 +1425,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockDeadline, error: null });
+        .mockResolvedValue({ data: [mockDeadline], error: null });
 
       const mockInsert = jest.fn().mockReturnThis();
 
@@ -1437,7 +1435,7 @@ describe('DeadlinesService', () => {
         .mockReturnValueOnce({
           select: mockSelect,
           eq: mockEq,
-          single: mockSingle,
+          limit: mockLimit,
         })
         .mockReturnValueOnce({
           insert: mockInsert,
@@ -1474,19 +1472,19 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
         .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       await expect(
         deadlinesService.completeDeadline(userId, deadlineId)
-      ).rejects.toThrow('Deadline fetch failed');
+      ).rejects.toThrow('Deadline not found or access denied');
     });
 
     it('should throw error when progress update fails', async () => {
@@ -1500,9 +1498,9 @@ describe('DeadlinesService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockDeadline, error: null });
+        .mockResolvedValue({ data: [mockDeadline], error: null });
 
       const mockInsert = jest
         .fn()
@@ -1512,7 +1510,7 @@ describe('DeadlinesService', () => {
         .mockReturnValueOnce({
           select: mockSelect,
           eq: mockEq,
-          single: mockSingle,
+          limit: mockLimit,
         })
         .mockReturnValueOnce({
           insert: mockInsert,

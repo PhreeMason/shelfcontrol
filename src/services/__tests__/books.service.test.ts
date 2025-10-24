@@ -11,7 +11,7 @@ jest.mock('@/lib/supabase', () => ({
     from: jest.fn(() => ({
       select: jest.fn().mockReturnThis(),
       eq: jest.fn().mockReturnThis(),
-      single: jest.fn(),
+      limit: jest.fn().mockReturnThis(),
       insert: jest.fn().mockReturnThis(),
     })),
   },
@@ -284,11 +284,11 @@ describe('BooksService', () => {
   describe('fetchBookById', () => {
     let mockSelect: jest.Mock;
     let mockEq: jest.Mock;
-    let mockSingle: jest.Mock;
+    let mockLimit: jest.Mock;
 
     beforeEach(() => {
-      mockSingle = jest.fn();
-      mockEq = jest.fn().mockReturnValue({ single: mockSingle });
+      mockLimit = jest.fn();
+      mockEq = jest.fn().mockReturnValue({ limit: mockLimit });
       mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
       (supabase.from as jest.Mock).mockReturnValue({ select: mockSelect });
     });
@@ -300,8 +300,8 @@ describe('BooksService', () => {
         authors: ['Test Author'],
       };
 
-      mockSingle.mockResolvedValue({
-        data: mockBook,
+      mockLimit.mockResolvedValue({
+        data: [mockBook],
         error: null,
       });
 
@@ -315,7 +315,7 @@ describe('BooksService', () => {
 
     it('should throw error when book not found', async () => {
       const mockError = { message: 'Book not found', code: 'PGRST116' };
-      mockSingle.mockResolvedValue({
+      mockLimit.mockResolvedValue({
         data: null,
         error: mockError,
       });
@@ -330,7 +330,7 @@ describe('BooksService', () => {
 
     it('should throw error for database errors', async () => {
       const mockError = { message: 'Database connection failed' };
-      mockSingle.mockResolvedValue({
+      mockLimit.mockResolvedValue({
         data: null,
         error: mockError,
       });
@@ -344,19 +344,19 @@ describe('BooksService', () => {
   describe('getBookByApiId', () => {
     let mockSelect: jest.Mock;
     let mockEq: jest.Mock;
-    let mockSingle: jest.Mock;
+    let mockLimit: jest.Mock;
 
     beforeEach(() => {
-      mockSingle = jest.fn();
-      mockEq = jest.fn().mockReturnValue({ single: mockSingle });
+      mockLimit = jest.fn();
+      mockEq = jest.fn().mockReturnValue({ limit: mockLimit });
       mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
       (supabase.from as jest.Mock).mockReturnValue({ select: mockSelect });
     });
 
     it('should return book data when found', async () => {
       const mockBook = { id: 'book-123' };
-      mockSingle.mockResolvedValue({
-        data: mockBook,
+      mockLimit.mockResolvedValue({
+        data: [mockBook],
         error: null,
       });
 
@@ -368,22 +368,21 @@ describe('BooksService', () => {
       expect(result).toEqual(mockBook);
     });
 
-    it('should return null when book not found (PGRST116 error)', async () => {
-      const mockError = { code: 'PGRST116', message: 'No rows found' };
-      mockSingle.mockResolvedValue({
-        data: null,
-        error: mockError,
+    it('should return undefined when book not found (empty array)', async () => {
+      mockLimit.mockResolvedValue({
+        data: [],
+        error: null,
       });
 
       const result = await booksService.getBookByApiId('nonexistent-api');
 
-      expect(result).toBeNull();
+      expect(result).toBeUndefined();
       expect(supabase.from).toHaveBeenCalledWith('books');
     });
 
     it('should throw error for other database errors', async () => {
       const mockError = { code: 'OTHER_ERROR', message: 'Database error' };
-      mockSingle.mockResolvedValue({
+      mockLimit.mockResolvedValue({
         data: null,
         error: mockError,
       });
@@ -397,11 +396,11 @@ describe('BooksService', () => {
   describe('insertBook', () => {
     let mockInsert: jest.Mock;
     let mockSelect: jest.Mock;
-    let mockSingle: jest.Mock;
+    let mockLimit: jest.Mock;
 
     beforeEach(() => {
-      mockSingle = jest.fn();
-      mockSelect = jest.fn().mockReturnValue({ single: mockSingle });
+      mockLimit = jest.fn();
+      mockSelect = jest.fn().mockReturnValue({ limit: mockLimit });
       mockInsert = jest.fn().mockReturnValue({ select: mockSelect });
       (supabase.from as jest.Mock).mockReturnValue({ insert: mockInsert });
     });
@@ -455,8 +454,8 @@ describe('BooksService', () => {
 
       const mockInsertedBook = { ...expectedInsertData };
 
-      mockSingle.mockResolvedValue({
-        data: mockInsertedBook,
+      mockLimit.mockResolvedValue({
+        data: [mockInsertedBook],
         error: null,
       });
 
@@ -515,8 +514,8 @@ describe('BooksService', () => {
         total_duration: null,
       };
 
-      mockSingle.mockResolvedValue({
-        data: expectedInsertData,
+      mockLimit.mockResolvedValue({
+        data: [expectedInsertData],
         error: null,
       });
 
@@ -551,7 +550,7 @@ describe('BooksService', () => {
       };
 
       const mockError = new Error('Insert failed');
-      mockSingle.mockResolvedValue({
+      mockLimit.mockResolvedValue({
         data: null,
         error: mockError,
       });
@@ -593,8 +592,8 @@ describe('BooksService', () => {
           total_duration: null,
         };
 
-        mockSingle.mockResolvedValue({
-          data: { id: `book-${format}`, ...bookData },
+        mockLimit.mockResolvedValue({
+          data: [{ id: `book-${format}`, ...bookData }],
           error: null,
         });
 

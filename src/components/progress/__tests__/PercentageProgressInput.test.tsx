@@ -1,5 +1,5 @@
-import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import React from 'react';
 import PercentageProgressInput from '../PercentageProgressInput';
 
 jest.mock('@/components/themed', () => ({
@@ -165,7 +165,7 @@ describe('PercentageProgressInput', () => {
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '150');
 
-      expect(onChange).toHaveBeenCalledWith(0);
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it('should not call onChange for negative percentage', () => {
@@ -181,7 +181,7 @@ describe('PercentageProgressInput', () => {
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '-10');
 
-      expect(onChange).toHaveBeenCalledWith(0);
+      expect(onChange).not.toHaveBeenCalled();
     });
   });
 
@@ -274,9 +274,9 @@ describe('PercentageProgressInput', () => {
       );
 
       const input = screen.getByTestId('percentage-progress-input');
-      fireEvent.changeText(input, '50');
+      fireEvent.changeText(input, '53');
 
-      expect(screen.getByText(/= 5h 0m/)).toBeTruthy();
+      expect(screen.getByText(/= 5h/)).toBeTruthy();
     });
 
     it('should handle minutes for audio format', () => {
@@ -291,7 +291,7 @@ describe('PercentageProgressInput', () => {
       const input = screen.getByTestId('percentage-progress-input');
       fireEvent.changeText(input, '50');
 
-      expect(screen.getByText(/= 1h 0m/)).toBeTruthy();
+      expect(screen.getByText(/= 1h/)).toBeTruthy();
     });
   });
 

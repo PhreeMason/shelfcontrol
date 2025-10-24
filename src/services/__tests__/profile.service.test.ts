@@ -11,7 +11,7 @@ jest.mock('@/lib/supabase', () => ({
       select: jest.fn().mockReturnThis(),
       update: jest.fn().mockReturnThis(),
       eq: jest.fn().mockReturnThis(),
-      single: jest.fn(),
+      limit: jest.fn().mockReturnThis(),
     })),
     storage: {
       from: jest.fn(() => ({
@@ -49,14 +49,14 @@ describe('ProfileService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockProfile, error: null });
+        .mockResolvedValue({ data: [mockProfile], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await profileService.getProfile('user-123');
@@ -64,7 +64,7 @@ describe('ProfileService', () => {
       expect(mockSupabaseFrom).toHaveBeenCalledWith('profiles');
       expect(mockSelect).toHaveBeenCalledWith('*');
       expect(mockEq).toHaveBeenCalledWith('id', 'user-123');
-      expect(mockSingle).toHaveBeenCalled();
+      expect(mockLimit).toHaveBeenCalledWith(1);
       expect(result).toEqual(mockProfile);
     });
 
@@ -72,14 +72,14 @@ describe('ProfileService', () => {
       const mockError = new Error('Profile not found');
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
         .mockResolvedValue({ data: null, error: mockError });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await profileService.getProfile('user-123');
@@ -90,14 +90,14 @@ describe('ProfileService', () => {
     it('should return null when no data is returned', async () => {
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: null, error: null });
+        .mockResolvedValue({ data: [], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await profileService.getProfile('user-123');
@@ -124,15 +124,15 @@ describe('ProfileService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockUpdatedProfile, error: null });
+        .mockResolvedValue({ data: [mockUpdatedProfile], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
         eq: mockEq,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await profileService.updateProfile(profileId, updates);
@@ -144,7 +144,7 @@ describe('ProfileService', () => {
       });
       expect(mockEq).toHaveBeenCalledWith('id', profileId);
       expect(mockSelect).toHaveBeenCalledWith();
-      expect(mockSingle).toHaveBeenCalled();
+      expect(mockLimit).toHaveBeenCalledWith(1);
       expect(result).toEqual(mockUpdatedProfile);
     });
 
@@ -156,7 +156,7 @@ describe('ProfileService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
         .mockResolvedValue({ data: null, error: mockError });
 
@@ -164,7 +164,7 @@ describe('ProfileService', () => {
         update: mockUpdate,
         eq: mockEq,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       await expect(
@@ -184,15 +184,15 @@ describe('ProfileService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockUpdatedProfile, error: null });
+        .mockResolvedValue({ data: [mockUpdatedProfile], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
         eq: mockEq,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await profileService.updateProfile(profileId, updates);
@@ -225,15 +225,15 @@ describe('ProfileService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockUpdatedProfile, error: null });
+        .mockResolvedValue({ data: [mockUpdatedProfile], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
         eq: mockEq,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await profileService.updateProfileFromApple(
@@ -270,15 +270,15 @@ describe('ProfileService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockUpdatedProfile, error: null });
+        .mockResolvedValue({ data: [mockUpdatedProfile], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
         eq: mockEq,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await profileService.updateProfileFromApple(
@@ -312,15 +312,15 @@ describe('ProfileService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockUpdatedProfile, error: null });
+        .mockResolvedValue({ data: [mockUpdatedProfile], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,
         eq: mockEq,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await profileService.updateProfileFromApple(
@@ -350,14 +350,14 @@ describe('ProfileService', () => {
 
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
-        .mockResolvedValue({ data: mockExistingProfile, error: null });
+        .mockResolvedValue({ data: [mockExistingProfile], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
         eq: mockEq,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       const result = await profileService.updateProfileFromApple(
@@ -380,7 +380,7 @@ describe('ProfileService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
-      const mockSingle = jest
+      const mockLimit = jest
         .fn()
         .mockResolvedValue({ data: null, error: mockError });
 
@@ -388,7 +388,7 @@ describe('ProfileService', () => {
         update: mockUpdate,
         eq: mockEq,
         select: mockSelect,
-        single: mockSingle,
+        limit: mockLimit,
       });
 
       await expect(
