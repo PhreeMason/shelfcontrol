@@ -4,9 +4,11 @@ import {
   FilterType,
   PageRangeFilter,
   ReadingDeadlineWithProgress,
+  SortOrder,
   TimeRangeFilter,
 } from '@/types/deadline.types';
 import { isDateThisMonth, isDateThisWeek } from '@/utils/dateUtils';
+import { normalizeServerDate } from '@/utils/dateNormalization';
 import React from 'react';
 import DeadlinesList from './DeadlinesList';
 
@@ -16,6 +18,8 @@ interface FilteredDeadlinesProps {
   selectedFormats: BookFormat[];
   selectedPageRanges: PageRangeFilter[];
   selectedSources: string[];
+  excludedStatuses: FilterType[];
+  sortOrder: SortOrder;
 }
 
 const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
@@ -24,6 +28,8 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   selectedFormats,
   selectedPageRanges,
   selectedSources,
+  excludedStatuses,
+  sortOrder,
 }) => {
   const {
     deadlines,
@@ -87,6 +93,55 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     return filtered;
   };
 
+  const applyStatusExclusions = (
+    deadlines: ReadingDeadlineWithProgress[]
+  ): ReadingDeadlineWithProgress[] => {
+    if (excludedStatuses.length === 0 || selectedFilter !== 'all') {
+      return deadlines;
+    }
+
+    const deadlineStatusMap = new Map<string, FilterType>();
+    const allDeadlinesByStatus = {
+      active: activeDeadlines,
+      pending: pendingDeadlines,
+      paused: pausedDeadlines,
+      overdue: overdueDeadlines,
+      toReview: toReviewDeadlines,
+      completed: completedDeadlines,
+      didNotFinish: didNotFinishDeadlines,
+    };
+
+    Object.entries(allDeadlinesByStatus).forEach(([status, statusDeadlines]) => {
+      statusDeadlines.forEach(deadline => {
+        deadlineStatusMap.set(deadline.id, status as FilterType);
+      });
+    });
+
+    return deadlines.filter(deadline => {
+      const status = deadlineStatusMap.get(deadline.id);
+      return status ? !excludedStatuses.includes(status) : true;
+    });
+  };
+
+  const applySorting = (
+    deadlines: ReadingDeadlineWithProgress[]
+  ): ReadingDeadlineWithProgress[] => {
+    if (sortOrder === 'default') {
+      return deadlines;
+    }
+
+    return [...deadlines].sort((a, b) => {
+      const dateA = a.deadline_date ? normalizeServerDate(a.deadline_date).valueOf() : 0;
+      const dateB = b.deadline_date ? normalizeServerDate(b.deadline_date).valueOf() : 0;
+
+      if (sortOrder === 'soonest') {
+        return dateA - dateB;
+      } else {
+        return dateB - dateA;
+      }
+    });
+  };
+
   const getFilteredDeadlines = (): ReadingDeadlineWithProgress[] => {
     let filtered: ReadingDeadlineWithProgress[];
 
@@ -105,7 +160,10 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     } else {
       filtered = activeDeadlines;
     }
-    return applyAllFilters(filtered);
+    filtered = applyAllFilters(filtered);
+    filtered = applyStatusExclusions(filtered);
+    filtered = applySorting(filtered);
+    return filtered;
   };
 
   const getEmptyMessage = (): string => {

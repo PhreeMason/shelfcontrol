@@ -3,8 +3,10 @@ import { ThemedText } from '@/components/themed/ThemedText';
 import { useTheme } from '@/hooks/useThemeColor';
 import {
   BookFormat,
+  FilterType,
   PageRangeFilter,
   ReadingDeadlineWithProgress,
+  SortOrder,
   TimeRangeFilter,
 } from '@/types/deadline.types';
 import { isDateThisMonth, isDateThisWeek } from '@/utils/dateUtils';
@@ -43,6 +45,14 @@ interface FilterSheetProps {
   selectedSources: string[];
   onSourcesChange: (sources: string[]) => void;
 
+  excludedStatuses: FilterType[];
+  onExcludedStatusesChange: (statuses: FilterType[]) => void;
+
+  sortOrder: SortOrder;
+  onSortOrderChange: (order: SortOrder) => void;
+
+  statusCounts?: Record<FilterType, number>;
+
   availableSources: string[];
 }
 
@@ -59,6 +69,11 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   onPageRangesChange,
   selectedSources,
   onSourcesChange,
+  excludedStatuses,
+  onExcludedStatusesChange,
+  sortOrder,
+  onSortOrderChange,
+  statusCounts,
   availableSources,
 }) => {
   const { colors } = useTheme();
@@ -112,6 +127,14 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
       onSourcesChange(selectedSources.filter(s => s !== source));
     } else {
       onSourcesChange([...selectedSources, source]);
+    }
+  };
+
+  const toggleExcludedStatus = (status: FilterType) => {
+    if (excludedStatuses.includes(status)) {
+      onExcludedStatusesChange(excludedStatuses.filter(s => s !== status));
+    } else {
+      onExcludedStatusesChange([...excludedStatuses, status]);
     }
   };
 
@@ -196,21 +219,39 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     return filtered;
   };
 
+  const applyStatusExclusionsToCount = (count: number): number => {
+    if (excludedStatuses.length === 0 || selectedFilter !== 'all' || !statusCounts) {
+      return count;
+    }
+
+    let excludedCount = 0;
+    excludedStatuses.forEach(status => {
+      excludedCount += statusCounts[status] || 0;
+    });
+
+    return Math.max(0, count - excludedCount);
+  };
+
   const getFilteredCount = (): number => {
-    return applyFilters(deadlines).length;
+    const baseCount = applyFilters(deadlines).length;
+    return applyStatusExclusionsToCount(baseCount);
   };
 
   const hasActiveFilters =
     timeRangeFilter !== 'all' ||
     selectedFormats.length > 0 ||
     selectedPageRanges.length > 0 ||
-    selectedSources.length > 0;
+    selectedSources.length > 0 ||
+    excludedStatuses.length > 0 ||
+    sortOrder !== 'default';
 
   const clearAllFilters = () => {
     onTimeRangeChange('all');
     onFormatsChange([]);
     onPageRangesChange([]);
     onSourcesChange([]);
+    onExcludedStatusesChange([]);
+    onSortOrderChange('default');
   };
 
   const formatLabels: Record<BookFormat, string> = {
@@ -251,7 +292,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
           <ScrollView
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
           >
             <View style={styles.header}>
               <ThemedText style={styles.title}>
@@ -390,6 +431,67 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
                     />
                   );
                 })}
+              </View>
+            </View>
+
+            {selectedFilter === 'all' && (
+              <View style={styles.section}>
+                <ThemedText style={styles.sectionTitle}>
+                  Exclude Statuses
+                </ThemedText>
+                <View style={styles.filterRow}>
+                  {(['active', 'pending', 'paused', 'overdue', 'toReview', 'completed', 'didNotFinish'] as FilterType[]).map(
+                    status => {
+                      const statusLabels: Record<string, string> = {
+                        active: 'Active',
+                        pending: 'Pending',
+                        paused: 'Paused',
+                        overdue: 'Overdue',
+                        toReview: 'To Review',
+                        completed: 'Completed',
+                        didNotFinish: 'DNF',
+                      };
+                      const count = statusCounts?.[status] ?? 0;
+                      return (
+                        <ThemedButton
+                          key={status}
+                          title={`${statusLabels[status]} ${count}`}
+                          style={styles.filterPill}
+                          variant={
+                            excludedStatuses.includes(status)
+                              ? 'primary'
+                              : 'outline'
+                          }
+                          onPress={() => toggleExcludedStatus(status)}
+                        />
+                      );
+                    }
+                  )}
+                </View>
+              </View>
+            )}
+
+            <View style={styles.section}>
+              <ThemedText style={styles.sectionTitle}>Sort By</ThemedText>
+              <View style={styles.filterRow}>
+                {(['default', 'soonest', 'latest'] as SortOrder[]).map(
+                  order => {
+                    const sortLabels: Record<SortOrder, string> = {
+                      default: 'Default',
+                      soonest: 'Soonest First',
+                      latest: 'Latest First',
+                    };
+                    return (
+                      <ThemedButton
+                        key={order}
+                        title={sortLabels[order]}
+                        style={styles.filterPill}
+                        variant={sortOrder === order ? 'primary' : 'outline'}
+                        onPress={() => onSortOrderChange(order)}
+                      />
+                    );
+                  }
+                )}
               </View>
             </View>
           </ScrollView>

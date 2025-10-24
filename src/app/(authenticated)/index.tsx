@@ -33,6 +33,10 @@ export default function HomeScreen() {
     setSelectedPageRanges,
     selectedSources,
     setSelectedSources,
+    excludedStatuses,
+    setExcludedStatuses,
+    sortOrder,
+    setSortOrder,
   } = usePreferences();
   const { refetch, isRefreshing } = useDeadlines();
   const { data: availableSources = [] } = useDeadlineSources();
@@ -87,6 +91,7 @@ export default function HomeScreen() {
       setSelectedFormats([]);
       setSelectedPageRanges([]);
       setSelectedSources([]);
+      setExcludedStatuses([]);
     }
     prevSelectedFilterRef.current = selectedFilter;
   }, [
@@ -95,6 +100,7 @@ export default function HomeScreen() {
     setSelectedFormats,
     setSelectedPageRanges,
     setSelectedSources,
+    setExcludedStatuses,
   ]);
 
   const handleFilterChange = (filter: FilterType) => {
@@ -125,6 +131,10 @@ export default function HomeScreen() {
         onPageRangesChange={setSelectedPageRanges}
         selectedSources={selectedSources}
         onSourcesChange={setSelectedSources}
+        excludedStatuses={excludedStatuses}
+        onExcludedStatusesChange={setExcludedStatuses}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
         availableSources={availableSources}
         animatedStyle={stickyFilterStyle}
       />
@@ -153,6 +163,10 @@ export default function HomeScreen() {
           onPageRangesChange={setSelectedPageRanges}
           selectedSources={selectedSources}
           onSourcesChange={setSelectedSources}
+          excludedStatuses={excludedStatuses}
+          onExcludedStatusesChange={setExcludedStatuses}
+          sortOrder={sortOrder}
+          onSortOrderChange={setSortOrder}
           availableSources={availableSources}
           animatedStyle={scrollableFilterStyle}
           onLayout={handleFilterLayout}
@@ -164,6 +178,8 @@ export default function HomeScreen() {
           selectedFormats={selectedFormats}
           selectedPageRanges={selectedPageRanges}
           selectedSources={selectedSources}
+          excludedStatuses={excludedStatuses}
+          sortOrder={sortOrder}
         />
       </Animated.ScrollView>
 

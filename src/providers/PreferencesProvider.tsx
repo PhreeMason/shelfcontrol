@@ -3,6 +3,7 @@ import {
   BookFormat,
   FilterType,
   PageRangeFilter,
+  SortOrder,
   TimeRangeFilter,
 } from '@/types/deadline.types';
 import {
@@ -29,6 +30,10 @@ interface PreferencesContextType {
   setSelectedPageRanges: (ranges: PageRangeFilter[]) => void;
   selectedSources: string[];
   setSelectedSources: (sources: string[]) => void;
+  excludedStatuses: FilterType[];
+  setExcludedStatuses: (statuses: FilterType[]) => void;
+  sortOrder: SortOrder;
+  setSortOrder: (order: SortOrder) => void;
   progressInputModes: ProgressInputModePreferences;
   getProgressInputMode: (format: BookFormat) => ProgressInputMode;
   setProgressInputMode: (format: BookFormat, mode: ProgressInputMode) => void;
@@ -46,6 +51,10 @@ const PreferencesContext = createContext<PreferencesContextType>({
   setSelectedPageRanges: () => {},
   selectedSources: [],
   setSelectedSources: () => {},
+  excludedStatuses: [],
+  setExcludedStatuses: () => {},
+  sortOrder: 'default',
+  setSortOrder: () => {},
   progressInputModes: DEFAULT_PROGRESS_INPUT_MODES,
   getProgressInputMode: () => 'direct',
   setProgressInputMode: () => {},
@@ -58,6 +67,8 @@ const STORAGE_KEYS = {
   SELECTED_FORMATS: '@preferences/selectedFormats',
   SELECTED_PAGE_RANGES: '@preferences/selectedPageRanges',
   SELECTED_SOURCES: '@preferences/selectedSources',
+  EXCLUDED_STATUSES: '@preferences/excludedStatuses',
+  SORT_ORDER: '@preferences/sortOrder',
   PROGRESS_INPUT_MODES: '@preferences/progressInputModes',
 };
 
@@ -71,6 +82,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     PageRangeFilter[]
   >([]);
   const [selectedSources, setSelectedSourcesState] = useState<string[]>([]);
+  const [excludedStatuses, setExcludedStatusesState] = useState<FilterType[]>([]);
+  const [sortOrder, setSortOrderState] = useState<SortOrder>('default');
   const [progressInputModes, setProgressInputModesState] =
     useState<ProgressInputModePreferences>(DEFAULT_PROGRESS_INPUT_MODES);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,6 +97,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           savedFormats,
           savedPageRanges,
           savedSources,
+          savedExcludedStatuses,
+          savedSortOrder,
           savedProgressInputModes,
         ] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FILTER),
@@ -91,6 +106,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FORMATS),
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_PAGE_RANGES),
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_SOURCES),
+          AsyncStorage.getItem(STORAGE_KEYS.EXCLUDED_STATUSES),
+          AsyncStorage.getItem(STORAGE_KEYS.SORT_ORDER),
           AsyncStorage.getItem(STORAGE_KEYS.PROGRESS_INPUT_MODES),
         ]);
 
@@ -110,6 +127,12 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
         }
         if (savedSources) {
           setSelectedSourcesState(JSON.parse(savedSources) as string[]);
+        }
+        if (savedExcludedStatuses) {
+          setExcludedStatusesState(JSON.parse(savedExcludedStatuses) as FilterType[]);
+        }
+        if (savedSortOrder) {
+          setSortOrderState(savedSortOrder as SortOrder);
         }
         if (savedProgressInputModes) {
           setProgressInputModesState(
@@ -180,6 +203,27 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     }
   };
 
+  const setExcludedStatuses = async (statuses: FilterType[]) => {
+    try {
+      setExcludedStatusesState(statuses);
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.EXCLUDED_STATUSES,
+        JSON.stringify(statuses)
+      );
+    } catch (error) {
+      console.error('Error saving excluded statuses preference:', error);
+    }
+  };
+
+  const setSortOrder = async (order: SortOrder) => {
+    try {
+      setSortOrderState(order);
+      await AsyncStorage.setItem(STORAGE_KEYS.SORT_ORDER, order);
+    } catch (error) {
+      console.error('Error saving sort order preference:', error);
+    }
+  };
+
   const getProgressInputMode = (format: BookFormat): ProgressInputMode => {
     return progressInputModes[format] || 'direct';
   };
@@ -211,6 +255,10 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     setSelectedPageRanges,
     selectedSources,
     setSelectedSources,
+    excludedStatuses,
+    setExcludedStatuses,
+    sortOrder,
+    setSortOrder,
     progressInputModes,
     getProgressInputMode,
     setProgressInputMode,

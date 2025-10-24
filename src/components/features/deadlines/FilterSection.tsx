@@ -6,6 +6,7 @@ import {
   FilterType,
   PageRangeFilter,
   ReadingDeadlineWithProgress,
+  SortOrder,
   TimeRangeFilter,
 } from '@/types/deadline.types';
 import React, { useState } from 'react';
@@ -29,6 +30,10 @@ interface FilterSectionProps {
   onPageRangesChange: (ranges: PageRangeFilter[]) => void;
   selectedSources: string[];
   onSourcesChange: (sources: string[]) => void;
+  excludedStatuses: FilterType[];
+  onExcludedStatusesChange: (statuses: FilterType[]) => void;
+  sortOrder: SortOrder;
+  onSortOrderChange: (order: SortOrder) => void;
   availableSources: string[];
   animatedStyle?: any;
   onLayout?: (event: LayoutChangeEvent) => void;
@@ -56,6 +61,10 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   onPageRangesChange,
   selectedSources,
   onSourcesChange,
+  excludedStatuses,
+  onExcludedStatusesChange,
+  sortOrder,
+  onSortOrderChange,
   availableSources,
   animatedStyle,
   onLayout,
@@ -105,6 +114,17 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     return countMap.get(filterKey) ?? 0;
   };
 
+  const statusCounts: Record<FilterType, number> = {
+    active: activeDeadlines.length,
+    overdue: overdueDeadlines.length,
+    pending: pendingDeadlines.length,
+    paused: pausedDeadlines.length,
+    completed: completedDeadlines.length,
+    toReview: toReviewDeadlines.length,
+    didNotFinish: didNotFinishDeadlines.length,
+    all: deadlines.length,
+  };
+
   const visibleOptions = filterOptions.filter(option => {
     if (option.key === 'overdue' && overdueDeadlines.length === 0) {
       return false;
@@ -116,7 +136,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     timeRangeFilter !== 'all' ||
     selectedFormats.length > 0 ||
     selectedPageRanges.length > 0 ||
-    selectedSources.length > 0;
+    selectedSources.length > 0 ||
+    excludedStatuses.length > 0 ||
+    sortOrder !== 'default';
 
   return (
     <Animated.View
@@ -172,6 +194,11 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         onPageRangesChange={onPageRangesChange}
         selectedSources={selectedSources}
         onSourcesChange={onSourcesChange}
+        excludedStatuses={excludedStatuses}
+        onExcludedStatusesChange={onExcludedStatusesChange}
+        sortOrder={sortOrder}
+        onSortOrderChange={onSortOrderChange}
+        statusCounts={statusCounts}
         availableSources={availableSources}
       />
     </Animated.View>

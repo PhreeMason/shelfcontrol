@@ -133,6 +133,20 @@ describe('FilterSheet', () => {
     onPageRangesChange: jest.fn(),
     selectedSources: [] as string[],
     onSourcesChange: jest.fn(),
+    excludedStatuses: [] as ('active' | 'pending' | 'paused' | 'overdue' | 'toReview' | 'completed' | 'didNotFinish' | 'all')[],
+    onExcludedStatusesChange: jest.fn(),
+    sortOrder: 'default' as 'default' | 'soonest' | 'latest',
+    onSortOrderChange: jest.fn(),
+    statusCounts: {
+      active: 5,
+      pending: 3,
+      paused: 2,
+      overdue: 1,
+      toReview: 4,
+      completed: 10,
+      didNotFinish: 2,
+      all: 27,
+    },
     availableSources: ['Library', 'Amazon'],
   };
 
@@ -312,6 +326,11 @@ describe('FilterSheet', () => {
           onFormatsChange={jest.fn()}
           selectedSources={[]}
           onSourcesChange={jest.fn()}
+          excludedStatuses={[]}
+          onExcludedStatusesChange={jest.fn()}
+          sortOrder="default"
+          onSortOrderChange={jest.fn()}
+          statusCounts={defaultProps.statusCounts}
           availableSources={['Library', 'Amazon', 'Bookstore']}
           selectedPageRanges={[]}
           onPageRangesChange={jest.fn()}
@@ -383,6 +402,11 @@ describe('FilterSheet', () => {
           onFormatsChange={jest.fn()}
           selectedSources={[]}
           onSourcesChange={jest.fn()}
+          excludedStatuses={[]}
+          onExcludedStatusesChange={jest.fn()}
+          sortOrder="default"
+          onSortOrderChange={jest.fn()}
+          statusCounts={defaultProps.statusCounts}
           availableSources={['Library', 'Amazon']}
           selectedPageRanges={[]}
           onPageRangesChange={jest.fn()}
@@ -440,6 +464,11 @@ describe('FilterSheet', () => {
           onFormatsChange={jest.fn()}
           selectedSources={[]}
           onSourcesChange={jest.fn()}
+          excludedStatuses={[]}
+          onExcludedStatusesChange={jest.fn()}
+          sortOrder="default"
+          onSortOrderChange={jest.fn()}
+          statusCounts={defaultProps.statusCounts}
           availableSources={[]}
           selectedPageRanges={[]}
           onPageRangesChange={jest.fn()}
@@ -455,6 +484,11 @@ describe('FilterSheet', () => {
           visible={true}
           onClose={jest.fn()}
           deadlines={mockDeadlines}
+          excludedStatuses={[]}
+          onExcludedStatusesChange={jest.fn()}
+          sortOrder="default"
+          onSortOrderChange={jest.fn()}
+          statusCounts={defaultProps.statusCounts}
           selectedFilter="active"
           timeRangeFilter="all"
           onTimeRangeChange={jest.fn()}
@@ -469,6 +503,100 @@ describe('FilterSheet', () => {
       );
 
       expect(screen.getByText('Source')).toBeTruthy();
+    });
+  });
+
+  describe('Status Exclusion Filters', () => {
+    it('should show excluded status section when selectedFilter is "all"', () => {
+      render(<FilterSheet {...defaultProps} selectedFilter="all" />);
+
+      expect(screen.getByText('Exclude Statuses')).toBeTruthy();
+    });
+
+    it('should not show excluded status section when selectedFilter is not "all"', () => {
+      render(<FilterSheet {...defaultProps} selectedFilter="active" />);
+
+      expect(screen.queryByText('Exclude Statuses')).toBeNull();
+    });
+
+    it('should show status counts in exclusion buttons', () => {
+      render(<FilterSheet {...defaultProps} selectedFilter="all" />);
+
+      expect(screen.getByText('Active 5')).toBeTruthy();
+      expect(screen.getByText('Pending 3')).toBeTruthy();
+      expect(screen.getByText('Completed 10')).toBeTruthy();
+      expect(screen.getByText('DNF 2')).toBeTruthy();
+    });
+
+    it('should call onExcludedStatusesChange when status is toggled', () => {
+      const onExcludedStatusesChange = jest.fn();
+      render(
+        <FilterSheet
+          {...defaultProps}
+          selectedFilter="all"
+          onExcludedStatusesChange={onExcludedStatusesChange}
+        />
+      );
+
+      fireEvent.press(screen.getByText('Completed 10'));
+
+      expect(onExcludedStatusesChange).toHaveBeenCalledWith(['completed']);
+    });
+
+    it('should update filtered count when statuses are excluded', () => {
+      render(
+        <FilterSheet
+          {...defaultProps}
+          selectedFilter="all"
+          excludedStatuses={['completed']}
+          statusCounts={{
+            active: 1,
+            pending: 0,
+            paused: 0,
+            overdue: 0,
+            toReview: 0,
+            completed: 2,
+            didNotFinish: 0,
+            all: 3,
+          }}
+        />
+      );
+
+      expect(screen.getByText(/SHOW 1 DEADLINES/)).toBeTruthy();
+    });
+
+    it('should update filtered count when multiple statuses are excluded', () => {
+      render(
+        <FilterSheet
+          {...defaultProps}
+          selectedFilter="all"
+          excludedStatuses={['active', 'completed']}
+          statusCounts={{
+            active: 1,
+            pending: 0,
+            paused: 0,
+            overdue: 0,
+            toReview: 0,
+            completed: 1,
+            didNotFinish: 1,
+            all: 3,
+          }}
+        />
+      );
+
+      expect(screen.getByText(/SHOW 1 DEADLINES/)).toBeTruthy();
+    });
+
+    it('should not apply status exclusions to count when not on "all" filter', () => {
+      render(
+        <FilterSheet
+          {...defaultProps}
+          selectedFilter="active"
+          excludedStatuses={['completed']}
+        />
+      );
+
+      expect(screen.getByText(/SHOW 3 DEADLINES/)).toBeTruthy();
     });
   });
 });
