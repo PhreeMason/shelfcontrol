@@ -85,11 +85,6 @@ export function useDeadlineCardState(
       countdownColor = urgencyTextColorMap[latestStatus];
     }
 
-    if (isPending && urgencyTextColorMap[latestStatus]) {
-      borderColor = urgencyTextColorMap[latestStatus];
-      countdownColor = urgencyTextColorMap[latestStatus];
-    }
-
     return {
       latestStatus,
       latestStatusRecord,
