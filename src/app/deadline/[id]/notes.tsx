@@ -132,21 +132,21 @@ const Notes = () => {
           </ThemedText>
           <View style={styles.noteActions}>
             <TouchableOpacity
-              onPress={() => handleEditNote(item)}
-              style={styles.iconButton}
-            >
-              <IconSymbol
-                name="pencil"
-                size={18}
-                color={colors.textSecondary}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
               onPress={() => handleCopyNote(item)}
               style={styles.iconButton}
             >
               <IconSymbol
                 name="doc.on.clipboard"
+                size={18}
+                color={colors.textSecondary}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleEditNote(item)}
+              style={styles.iconButton}
+            >
+              <IconSymbol
+                name="pencil"
                 size={18}
                 color={colors.textSecondary}
               />
@@ -276,6 +276,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
+    paddingHorizontal: 12
   },
   noteText: {
     fontSize: 16,
@@ -321,7 +322,6 @@ const styles = StyleSheet.create({
     minHeight: 40,
     maxHeight: 100,
     borderRadius: 20,
-    paddingHorizontal: 16,
     paddingVertical: 10,
     fontSize: 16,
   },
