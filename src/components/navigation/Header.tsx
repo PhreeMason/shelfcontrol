@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'space-between',
     gap: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     paddingBottom: 13,
   },
   dateRow: {

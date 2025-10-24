@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   filterContainer: {
     maxHeight: 60,
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
   },
   filterScrollView: {
     flexGrow: 0,
