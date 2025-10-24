@@ -87,10 +87,13 @@ export const useUpdateDeadlineDate = () => {
       }
       return deadlinesService.updateDeadlineDate(userId, deadlineId, newDate);
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       if (userId) {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.DETAIL(userId, variables.deadlineId),
         });
       }
     },

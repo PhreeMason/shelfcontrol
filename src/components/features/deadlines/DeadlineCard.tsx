@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
     padding: 0,
     borderWidth: 1,
     flexDirection: 'row',
-    alignItems: 'stretch',
     overflow: 'hidden',
     borderColor: 'rgba(232, 194, 185, 0.15)',
     position: 'relative',
@@ -105,8 +104,8 @@ const styles = StyleSheet.create({
   bookContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 16,
+    gap: 10,
+    paddingHorizontal: 10,
     paddingVertical: 10,
     flex: 3,
     minWidth: 0,
