@@ -60,6 +60,39 @@ export const useAddNote = () => {
   });
 };
 
+export const useUpdateNote = () => {
+  const { session } = useAuth();
+  const userId = session?.user?.id;
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: [MUTATION_KEYS.NOTES.UPDATE],
+    mutationFn: async ({
+      noteId,
+      noteText,
+    }: {
+      noteId: string;
+      deadlineId: string;
+      noteText: string;
+    }) => {
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      return notesService.updateNote(noteId, userId, noteText);
+    },
+    onSuccess: (_, variables) => {
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.NOTES.BY_DEADLINE(userId, variables.deadlineId),
+        });
+      }
+    },
+    onError: error => {
+      console.error('Error updating note:', error);
+    },
+  });
+};
+
 export const useDeleteNote = () => {
   const { session } = useAuth();
   const userId = session?.user?.id;

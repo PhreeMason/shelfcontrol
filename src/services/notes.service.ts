@@ -50,6 +50,31 @@ class NotesService {
     return data as DeadlineNote;
   }
 
+  async updateNote(
+    noteId: string,
+    userId: string,
+    noteText: string
+  ): Promise<DeadlineNote> {
+    const { data, error } = await supabase
+      .from(DB_TABLES.DEADLINE_NOTES)
+      .update({
+        note_text: noteText,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', noteId)
+      .eq('user_id', userId)
+      .select()
+      .limit(1);
+
+    if (error) throw error;
+
+    activityService.trackUserActivity('note_updated', {
+      noteId,
+    });
+
+    return data?.[0] as DeadlineNote;
+  }
+
   async deleteNote(noteId: string, userId: string): Promise<string> {
     const { error } = await supabase
       .from(DB_TABLES.DEADLINE_NOTES)

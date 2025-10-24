@@ -45,6 +45,7 @@ export const MUTATION_KEYS = {
   },
   NOTES: {
     ADD: 'addNote',
+    UPDATE: 'updateNote',
     DELETE: 'deleteNote',
   },
   PROFILE: {

@@ -1,13 +1,22 @@
 import AppHeader from '@/components/shared/AppHeader';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
-import { useAddNote, useGetNotes } from '@/hooks/useNotes';
+import {
+  useAddNote,
+  useDeleteNote,
+  useGetNotes,
+  useUpdateNote,
+} from '@/hooks/useNotes';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
 import { DeadlineNote } from '@/types/notes.types';
+import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  Alert,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -22,10 +31,13 @@ const Notes = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useTheme();
   const [noteText, setNoteText] = useState('');
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
 
   const { data: deadline } = useGetDeadlineById(id);
   const { data: notes, isLoading } = useGetNotes(id);
   const addNoteMutation = useAddNote();
+  const updateNoteMutation = useUpdateNote();
+  const deleteNoteMutation = useDeleteNote();
 
   const currentProgress =
     deadline?.progress && deadline.progress.length > 0
@@ -36,33 +48,121 @@ const Notes = () => {
     ? Math.round((currentProgress / deadline.total_quantity) * 100)
     : 0;
 
-  const handleAddNote = () => {
+  const handleSubmitNote = () => {
     if (!noteText.trim() || !id) return;
 
-    addNoteMutation.mutate(
-      {
-        deadlineId: id,
-        noteText: noteText.trim(),
-        deadlineProgress: currentProgressPercentage,
-      },
-      {
-        onSuccess: () => {
-          setNoteText('');
+    if (editingNoteId) {
+      updateNoteMutation.mutate(
+        {
+          noteId: editingNoteId,
+          deadlineId: id,
+          noteText: noteText.trim(),
         },
-      }
-    );
+        {
+          onSuccess: () => {
+            setNoteText('');
+            setEditingNoteId(null);
+          },
+        }
+      );
+    } else {
+      addNoteMutation.mutate(
+        {
+          deadlineId: id,
+          noteText: noteText.trim(),
+          deadlineProgress: currentProgressPercentage,
+        },
+        {
+          onSuccess: () => {
+            setNoteText('');
+          },
+        }
+      );
+    }
   };
 
-  const renderNote = ({ item }: { item: DeadlineNote }) => {
+  const handleEditNote = (note: DeadlineNote) => {
+    setNoteText(note.note_text);
+    setEditingNoteId(note.id);
+  };
+
+  const handleDeleteNote = (note: DeadlineNote) => {
+    Alert.alert('Delete Note', 'Are you sure you want to delete this note?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          if (!id) return;
+          deleteNoteMutation.mutate({
+            noteId: note.id,
+            deadlineId: id,
+          });
+        },
+      },
+    ]);
+  };
+
+  const handleCopyNote = async (note: DeadlineNote) => {
+    await Clipboard.setStringAsync(note.note_text);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+
+  const renderNote = ({
+    item,
+    index,
+  }: {
+    item: DeadlineNote;
+    index: number;
+  }) => {
     const formattedDate = dayjs(item.created_at).format('MMM D, h:mma');
     const progressText = `At ${item.deadline_progress}%`;
-
+    const isLateItemInList = index === 0;
     return (
-      <View style={styles.noteItem}>
+      <View
+        style={[styles.noteItem, isLateItemInList && { borderBottomWidth: 0 }]}
+      >
         <ThemedText style={styles.noteText}>{item.note_text}</ThemedText>
-        <ThemedText style={styles.noteMetadata}>
-          {formattedDate} • {progressText}
-        </ThemedText>
+        <View style={styles.noteFooter}>
+          <ThemedText style={styles.noteMetadata}>
+            {formattedDate} • {progressText}
+          </ThemedText>
+          <View style={styles.noteActions}>
+            <TouchableOpacity
+              onPress={() => handleEditNote(item)}
+              style={styles.iconButton}
+            >
+              <IconSymbol
+                name="pencil"
+                size={18}
+                color={colors.textSecondary}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleCopyNote(item)}
+              style={styles.iconButton}
+            >
+              <IconSymbol
+                name="doc.on.clipboard"
+                size={18}
+                color={colors.textSecondary}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleDeleteNote(item)}
+              style={styles.iconButton}
+            >
+              <IconSymbol
+                name="trash.fill"
+                size={18}
+                color={colors.textSecondary}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     );
   };
@@ -118,7 +218,7 @@ const Notes = () => {
             value={noteText}
             onChangeText={setNoteText}
             multiline
-            onSubmitEditing={handleAddNote}
+            onSubmitEditing={handleSubmitNote}
             returnKeyType="done"
           />
           <TouchableOpacity
@@ -126,7 +226,7 @@ const Notes = () => {
               styles.sendButton,
               !noteText.trim() && styles.sendButtonDisabled,
             ]}
-            onPress={handleAddNote}
+            onPress={handleSubmitNote}
             disabled={!noteText.trim()}
           >
             <ThemedText
@@ -135,7 +235,7 @@ const Notes = () => {
                 !noteText.trim() && styles.sendButtonTextDisabled,
               ]}
             >
-              Add
+              {editingNoteId ? 'Update' : 'Add'}
             </ThemedText>
           </TouchableOpacity>
         </View>
@@ -169,12 +269,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    padding: 16,
+    padding: 4,
     flexGrow: 1,
   },
   noteItem: {
-    marginBottom: 20,
-    paddingBottom: 16,
+    paddingTop: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
   },
@@ -183,9 +282,21 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: 8,
   },
+  noteFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   noteMetadata: {
     fontSize: 13,
     opacity: 0.6,
+  },
+  noteActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  iconButton: {
+    padding: 4,
   },
   emptyContainer: {
     flex: 1,
