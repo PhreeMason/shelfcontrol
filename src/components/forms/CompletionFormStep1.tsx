@@ -21,16 +21,16 @@ interface CompletionFormStep1Props {
 const congratsQuotes = [
   'Way to go, book finisher!',
   'Another one bites the dust!',
-  'You did it! Time to celebrate with a snack.',
+  'Time to celebrate with a snack.',
   'You read it like a boss!',
   'You came, you read, you conquered!',
   'Mission accomplished! Book devoured!',
   'Reading level: Expert. Well done!',
   'You turned pages like a pro!',
-  'Book completed! You are a reading machine!',
+  'You are a reading machine!',
   'You read it all! Impressive stamina!',
-  'You finished a book! Cue the victory dance!',
-  'Book completed! You are on fire!',
+  'Cue the victory dance!',
+  'You are on fire!',
 ];
 
 const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
