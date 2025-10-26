@@ -211,8 +211,8 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     }
 
     if (selectedSources.length > 0) {
-      filtered = filtered.filter(deadline =>
-        selectedSources.includes(deadline.source)
+      filtered = filtered.filter(
+        deadline => deadline.source && selectedSources.includes(deadline.source)
       );
     }
 
@@ -220,7 +220,11 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   };
 
   const applyStatusExclusionsToCount = (count: number): number => {
-    if (excludedStatuses.length === 0 || selectedFilter !== 'all' || !statusCounts) {
+    if (
+      excludedStatuses.length === 0 ||
+      selectedFilter !== 'all' ||
+      !statusCounts
+    ) {
       return count;
     }
 
@@ -440,33 +444,41 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
                   Exclude Statuses
                 </ThemedText>
                 <View style={styles.filterRow}>
-                  {(['active', 'pending', 'paused', 'overdue', 'toReview', 'completed', 'didNotFinish'] as FilterType[]).map(
-                    status => {
-                      const statusLabels: Record<string, string> = {
-                        active: 'Active',
-                        pending: 'Pending',
-                        paused: 'Paused',
-                        overdue: 'Overdue',
-                        toReview: 'To Review',
-                        completed: 'Completed',
-                        didNotFinish: 'DNF',
-                      };
-                      const count = statusCounts?.[status] ?? 0;
-                      return (
-                        <ThemedButton
-                          key={status}
-                          title={`${statusLabels[status]} ${count}`}
-                          style={styles.filterPill}
-                          variant={
-                            excludedStatuses.includes(status)
-                              ? 'primary'
-                              : 'outline'
-                          }
-                          onPress={() => toggleExcludedStatus(status)}
-                        />
-                      );
-                    }
-                  )}
+                  {(
+                    [
+                      'active',
+                      'pending',
+                      'paused',
+                      'overdue',
+                      'toReview',
+                      'completed',
+                      'didNotFinish',
+                    ] as FilterType[]
+                  ).map(status => {
+                    const statusLabels: Record<string, string> = {
+                      active: 'Active',
+                      pending: 'Pending',
+                      paused: 'Paused',
+                      overdue: 'Overdue',
+                      toReview: 'To Review',
+                      completed: 'Completed',
+                      didNotFinish: 'DNF',
+                    };
+                    const count = statusCounts?.[status] ?? 0;
+                    return (
+                      <ThemedButton
+                        key={status}
+                        title={`${statusLabels[status]} ${count}`}
+                        style={styles.filterPill}
+                        variant={
+                          excludedStatuses.includes(status)
+                            ? 'primary'
+                            : 'outline'
+                        }
+                        onPress={() => toggleExcludedStatus(status)}
+                      />
+                    );
+                  })}
                 </View>
               </View>
             )}

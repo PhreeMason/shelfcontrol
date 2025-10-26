@@ -142,7 +142,16 @@ describe('FilterSheet', () => {
     onPageRangesChange: jest.fn(),
     selectedSources: [] as string[],
     onSourcesChange: jest.fn(),
-    excludedStatuses: [] as ('active' | 'pending' | 'paused' | 'overdue' | 'toReview' | 'completed' | 'didNotFinish' | 'all')[],
+    excludedStatuses: [] as (
+      | 'active'
+      | 'pending'
+      | 'paused'
+      | 'overdue'
+      | 'toReview'
+      | 'completed'
+      | 'didNotFinish'
+      | 'all'
+    )[],
     onExcludedStatusesChange: jest.fn(),
     sortOrder: 'default' as 'default' | 'soonest' | 'latest',
     onSortOrderChange: jest.fn(),

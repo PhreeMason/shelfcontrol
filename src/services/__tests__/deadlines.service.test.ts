@@ -530,9 +530,7 @@ describe('DeadlinesService', () => {
       const mockUpdate = jest.fn().mockReturnThis();
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
-      const mockLimit = jest
-        .fn()
-        .mockResolvedValue({ data: [], error: null });
+      const mockLimit = jest.fn().mockResolvedValue({ data: [], error: null });
 
       mockSupabaseFrom.mockReturnValue({
         update: mockUpdate,

@@ -41,6 +41,9 @@ describe('useTodaysDeadlines', () => {
       updated_at: '2024-01-01T00:00:00Z',
       total_quantity: 300,
       source: 'library',
+      acquisition_source: null,
+      deadline_type: null,
+      publishers: null,
       flexibility: 'flexible' as const,
       progress: [],
     };

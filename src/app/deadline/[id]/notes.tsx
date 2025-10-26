@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
-    paddingHorizontal: 12
+    paddingHorizontal: 12,
   },
   noteText: {
     fontSize: 16,

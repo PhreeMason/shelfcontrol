@@ -85,8 +85,8 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     }
 
     if (selectedSources.length > 0) {
-      filtered = filtered.filter(deadline =>
-        selectedSources.includes(deadline.source)
+      filtered = filtered.filter(
+        deadline => deadline.source && selectedSources.includes(deadline.source)
       );
     }
 
@@ -111,11 +111,13 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       didNotFinish: didNotFinishDeadlines,
     };
 
-    Object.entries(allDeadlinesByStatus).forEach(([status, statusDeadlines]) => {
-      statusDeadlines.forEach(deadline => {
-        deadlineStatusMap.set(deadline.id, status as FilterType);
-      });
-    });
+    Object.entries(allDeadlinesByStatus).forEach(
+      ([status, statusDeadlines]) => {
+        statusDeadlines.forEach(deadline => {
+          deadlineStatusMap.set(deadline.id, status as FilterType);
+        });
+      }
+    );
 
     return deadlines.filter(deadline => {
       const status = deadlineStatusMap.get(deadline.id);
@@ -131,8 +133,12 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     }
 
     return [...deadlines].sort((a, b) => {
-      const dateA = a.deadline_date ? normalizeServerDate(a.deadline_date).valueOf() : 0;
-      const dateB = b.deadline_date ? normalizeServerDate(b.deadline_date).valueOf() : 0;
+      const dateA = a.deadline_date
+        ? normalizeServerDate(a.deadline_date).valueOf()
+        : 0;
+      const dateB = b.deadline_date
+        ? normalizeServerDate(b.deadline_date).valueOf()
+        : 0;
 
       if (sortOrder === 'soonest') {
         return dateA - dateB;

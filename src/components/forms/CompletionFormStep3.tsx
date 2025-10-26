@@ -95,7 +95,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
     getAllSelectedPlatforms,
   } = useReviewPlatforms(
     userPlatforms,
-    deadline.source,
+    deadline.source || '',
     initialPlatformNames,
     postedPlatformNames
   );

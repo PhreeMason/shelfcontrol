@@ -371,6 +371,9 @@ describe('deadlineProviderUtils', () => {
         format: 'physical',
         flexibility: 'flexible',
         source: 'test',
+        acquisition_source: null,
+        deadline_type: null,
+        publishers: null,
         created_at: yesterday.toISOString(),
         updated_at: yesterday.toISOString(),
         progress: [
@@ -405,6 +408,9 @@ describe('deadlineProviderUtils', () => {
         format: 'physical',
         flexibility: 'flexible',
         source: 'test',
+        acquisition_source: null,
+        deadline_type: null,
+        publishers: null,
         created_at: today.toISOString(),
         updated_at: today.toISOString(),
         progress: [
@@ -439,6 +445,9 @@ describe('deadlineProviderUtils', () => {
         format: 'physical',
         flexibility: 'flexible',
         source: 'test',
+        acquisition_source: null,
+        deadline_type: null,
+        publishers: null,
         created_at: new Date('2024-01-20T08:00:00Z').toISOString(),
         updated_at: new Date('2024-01-20T08:00:00Z').toISOString(),
         progress: [
@@ -473,6 +482,9 @@ describe('deadlineProviderUtils', () => {
         format: 'physical',
         flexibility: 'flexible',
         source: 'test',
+        acquisition_source: null,
+        deadline_type: null,
+        publishers: null,
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
         progress: [
@@ -508,6 +520,9 @@ describe('deadlineProviderUtils', () => {
         format: 'physical',
         flexibility: 'flexible',
         source: 'test',
+        acquisition_source: null,
+        deadline_type: null,
+        publishers: null,
         created_at: yesterday.toISOString(),
         updated_at: today.toISOString(),
         progress: [

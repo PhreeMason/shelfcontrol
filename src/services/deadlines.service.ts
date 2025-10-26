@@ -442,9 +442,12 @@ class DeadlinesService {
 
     if (error) throw error;
 
-    // Extract unique sources
-    const uniqueSources = [...new Set(data?.map(d => d.source) || [])];
-    return uniqueSources.filter(Boolean).sort();
+    const uniqueSources = [
+      ...new Set(
+        data?.map(d => d.source).filter((s): s is string => s !== null) || []
+      ),
+    ];
+    return uniqueSources.sort();
   }
 
   /**

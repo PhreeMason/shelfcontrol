@@ -138,6 +138,9 @@ describe('chartDataUtils', () => {
       book_title: 'Test Book',
       author: 'Test Author',
       source: 'manual',
+      acquisition_source: null,
+      deadline_type: null,
+      publishers: null,
       flexibility:
         'fixed' as Database['public']['Enums']['deadline_flexibility'],
       status: [],
@@ -515,6 +518,9 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         source: 'manual',
+        acquisition_source: null,
+        deadline_type: null,
+        publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
         status: [],
@@ -537,6 +543,9 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         source: 'manual',
+        acquisition_source: null,
+        deadline_type: null,
+        publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
         status: [],
@@ -559,6 +568,9 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         source: 'manual',
+        acquisition_source: null,
+        deadline_type: null,
+        publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
         status: [],
@@ -609,6 +621,9 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         source: 'manual',
+        acquisition_source: null,
+        deadline_type: null,
+        publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
         status: [],
@@ -641,6 +656,9 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         source: 'manual',
+        acquisition_source: null,
+        deadline_type: null,
+        publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
         status: [],
@@ -712,6 +730,9 @@ describe('chartDataUtils', () => {
       book_title: 'Test Book',
       author: 'Test Author',
       source: 'manual',
+      acquisition_source: null,
+      deadline_type: null,
+      publishers: null,
       flexibility:
         'fixed' as Database['public']['Enums']['deadline_flexibility'],
       status: [],

@@ -82,7 +82,9 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     PageRangeFilter[]
   >([]);
   const [selectedSources, setSelectedSourcesState] = useState<string[]>([]);
-  const [excludedStatuses, setExcludedStatusesState] = useState<FilterType[]>([]);
+  const [excludedStatuses, setExcludedStatusesState] = useState<FilterType[]>(
+    []
+  );
   const [sortOrder, setSortOrderState] = useState<SortOrder>('default');
   const [progressInputModes, setProgressInputModesState] =
     useState<ProgressInputModePreferences>(DEFAULT_PROGRESS_INPUT_MODES);
@@ -129,7 +131,9 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           setSelectedSourcesState(JSON.parse(savedSources) as string[]);
         }
         if (savedExcludedStatuses) {
-          setExcludedStatusesState(JSON.parse(savedExcludedStatuses) as FilterType[]);
+          setExcludedStatusesState(
+            JSON.parse(savedExcludedStatuses) as FilterType[]
+          );
         }
         if (savedSortOrder) {
           setSortOrderState(savedSortOrder as SortOrder);

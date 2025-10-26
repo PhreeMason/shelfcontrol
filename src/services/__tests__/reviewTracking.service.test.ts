@@ -947,13 +947,15 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 limit: jest.fn().mockResolvedValue({
-                  data: [{
-                    id: 'rt-123',
-                    deadline_id: 'rd-123',
-                    review_due_date: '2025-10-20',
-                    needs_link_submission: true,
-                    all_reviews_complete: false,
-                  }],
+                  data: [
+                    {
+                      id: 'rt-123',
+                      deadline_id: 'rd-123',
+                      review_due_date: '2025-10-20',
+                      needs_link_submission: true,
+                      all_reviews_complete: false,
+                    },
+                  ],
                   error: null,
                 }),
               }),
@@ -1144,13 +1146,15 @@ describe('ReviewTrackingService', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 limit: jest.fn().mockResolvedValue({
-                  data: [{
-                    id: 'rt-123',
-                    deadline_id: 'rd-123',
-                    review_due_date: '2025-10-20',
-                    needs_link_submission: true,
-                    all_reviews_complete: false,
-                  }],
+                  data: [
+                    {
+                      id: 'rt-123',
+                      deadline_id: 'rd-123',
+                      review_due_date: '2025-10-20',
+                      needs_link_submission: true,
+                      all_reviews_complete: false,
+                    },
+                  ],
                   error: null,
                 }),
               }),
