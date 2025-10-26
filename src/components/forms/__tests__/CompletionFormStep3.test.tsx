@@ -131,6 +131,9 @@ describe('CompletionFormStep3', () => {
     total_quantity: 300,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
+    acquisition_source: null,
+    deadline_type: null,
+    publishers: null,
     progress: [],
   };
 

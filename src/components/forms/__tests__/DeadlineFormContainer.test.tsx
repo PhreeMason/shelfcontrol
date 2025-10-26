@@ -329,7 +329,7 @@ describe('DeadlineFormContainer', () => {
     book_id: 'test-book-id',
     book_title: 'Test Book Title',
     author: 'Test Author',
-    source: 'manual',
+    deadline_type: 'manual',
     deadline_date: '2024-12-31T00:00:00Z',
     flexibility: 'flexible',
     format: 'physical',
@@ -801,9 +801,6 @@ describe('DeadlineFormContainer', () => {
       const titleInput = screen.getByTestId('input-bookTitle');
       fireEvent.changeText(titleInput, 'Test Book Title');
 
-      const sourceInput = screen.getByTestId('input-source');
-      fireEvent.changeText(sourceInput, 'Test Library');
-
       // Fill total quantity (required field)
       const totalQuantityInput = screen.getByTestId('input-totalQuantity');
       fireEvent.changeText(totalQuantityInput, '300');
@@ -823,12 +820,12 @@ describe('DeadlineFormContainer', () => {
     });
 
     it('should render step 3 with real form components', () => {
-      // Start on step 3 directly (page: '3' = step 3 for new mode)
-      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '3' });
+      // Start on step 4 directly (page: '4' = step 4 final step for new mode)
+      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '4' });
 
       render(<DeadlineFormContainer mode="new" />);
 
-      // Should be on step 3 with priority selector and other real components
+      // Should be on step 4 with priority selector and other real components
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
       expect(screen.getByTestId('date-picker-button')).toBeTruthy();
       expect(screen.getByTestId('pace-estimate-box')).toBeTruthy();
@@ -876,8 +873,8 @@ describe('DeadlineFormContainer', () => {
     });
 
     it('should start on final step when page param is set', () => {
-      // For edit mode, page: '2' = step 2 (final step)
-      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '2' });
+      // For edit mode, page: '3' = step 3 (final step)
+      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '3' });
 
       render(
         <DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />
@@ -889,7 +886,7 @@ describe('DeadlineFormContainer', () => {
 
     it('should trigger scroll effect on final step navigation', () => {
       // Set up to start directly on final step for edit mode
-      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '2' });
+      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '3' });
 
       render(
         <DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />
@@ -928,8 +925,8 @@ describe('DeadlineFormContainer', () => {
     });
 
     it('should execute date picker toggle handler', () => {
-      // For new mode, page: '3' = step 3 (final step)
-      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '3' });
+      // For new mode, page: '4' = step 4 (final step)
+      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '4' });
 
       render(<DeadlineFormContainer mode="new" />);
 
@@ -952,16 +949,16 @@ describe('DeadlineFormContainer', () => {
         }
       );
 
-      // For new mode, page: '3' = step 3 (final step) with all required form data
+      // For new mode, page: '4' = step 4 (final step) with all required form data
       (useLocalSearchParams as jest.Mock).mockReturnValue({
         api_id: 'test-123',
         book_id: 'book-456',
         bookTitle: 'Test Book',
         bookAuthor: 'Test Author',
-        source: 'Library',
+        deadline_type: 'Library',
         totalQuantity: '300',
         format: 'physical',
-        page: '3',
+        page: '4',
       });
 
       render(<DeadlineFormContainer mode="new" />);
@@ -992,8 +989,8 @@ describe('DeadlineFormContainer', () => {
         }
       );
 
-      // For edit mode, page: '2' = step 2 (final step)
-      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '2' });
+      // For edit mode, page: '3' = step 3 (final step)
+      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '3' });
 
       // Use the existing mockDeadline which already has the correct structure
       render(
@@ -1026,14 +1023,14 @@ describe('DeadlineFormContainer', () => {
         }
       );
 
-      // For new mode, page: '3' = step 3 (final step) with all required form data
+      // For new mode, page: '4' = step 4 (final step) with all required form data
       (useLocalSearchParams as jest.Mock).mockReturnValue({
         bookTitle: 'Test Book',
         bookAuthor: 'Test Author',
-        source: 'Library',
+        deadline_type: 'Library',
         totalQuantity: '300',
         format: 'physical',
-        page: '3',
+        page: '4',
       });
 
       render(<DeadlineFormContainer mode="new" />);
@@ -1061,8 +1058,8 @@ describe('DeadlineFormContainer', () => {
         setTimeout(successCallback, 100);
       });
 
-      // For new mode, page: '3' = step 3 (final step)
-      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '3' });
+      // For new mode, page: '4' = step 4 (final step)
+      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '4' });
 
       render(<DeadlineFormContainer mode="new" />);
 
