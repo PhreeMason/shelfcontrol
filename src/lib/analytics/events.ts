@@ -156,6 +156,63 @@ export interface EventPropertiesMap {
     format: ReadingFormat;
   };
 
+  deadline_contact_added: {
+    deadline_id: string;
+    deadline_status: DeadlineStatus;
+    has_email: boolean;
+    has_username: boolean;
+    has_name: boolean;
+  };
+
+  deadline_contact_edited: {
+    deadline_id: string;
+    deadline_status: DeadlineStatus;
+    has_email: boolean;
+    has_username: boolean;
+    has_name: boolean;
+  };
+
+  deadline_contact_deleted: {
+    deadline_id: string;
+    deadline_status: DeadlineStatus;
+  };
+
+  deadline_disclosure_added: {
+    deadline_id: string;
+    deadline_status: DeadlineStatus;
+    source: string;
+    character_count: number;
+    was_template_used: boolean;
+  };
+
+  deadline_disclosure_edited: {
+    deadline_id: string;
+    deadline_status: DeadlineStatus;
+    source: string;
+    character_count: number;
+  };
+
+  deadline_disclosure_deleted: {
+    deadline_id: string;
+    deadline_status: DeadlineStatus;
+  };
+
+  deadline_disclosure_copied: {
+    deadline_id: string;
+    deadline_status: DeadlineStatus;
+    character_count: number;
+  };
+
+  deadline_disclosure_template_selected: {
+    deadline_id: string;
+    template_name: string;
+  };
+
+  deadline_disclosure_saved_as_template: {
+    template_name: string;
+    character_count: number;
+  };
+
   completion_flow_started: {
     format: ReadingFormat;
     status: DeadlineStatus;

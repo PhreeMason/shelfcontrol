@@ -6,6 +6,7 @@ import {
   useUpdateDeadlineDisclosure,
 } from '@/hooks/useDisclosureTemplates';
 import { useTheme } from '@/hooks/useTheme';
+import { analytics } from '@/lib/analytics/client';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { DisclosureTemplate } from '@/types/disclosure.types';
 import { getDeadlineSourceOptions } from '@/utils/getDeadlineSourceOptions';
@@ -24,6 +25,11 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
   const { colors } = useTheme();
   const updateDeadlineDisclosureMutation = useUpdateDeadlineDisclosure();
   const createTemplateMutation = useCreateTemplate();
+
+  const latestStatus =
+    deadline.status && deadline.status.length > 0
+      ? (deadline.status[deadline.status.length - 1].status ?? 'reading')
+      : 'reading';
 
   const [isEditing, setIsEditing] = useState(false);
   const [selectedSource, setSelectedSource] = useState<string | null>(
@@ -65,6 +71,10 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
 
   const handleSelectTemplate = (template: DisclosureTemplate | null) => {
     if (template) {
+      analytics.track('deadline_disclosure_template_selected', {
+        deadline_id: deadline.id,
+        template_name: template.template_name || 'Unnamed Template',
+      });
       setSelectedTemplateId(template.id);
       setDisclosureText(template.disclosure_text);
     } else {
@@ -87,6 +97,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
     source: string,
     templateId: string | null
   ) => {
+    const isNewDisclosure = !currentDisclosure;
     updateDeadlineDisclosureMutation.mutate(
       {
         deadlineId: deadline.id,
@@ -98,6 +109,32 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
       },
       {
         onSuccess: () => {
+          if (isNewDisclosure) {
+            analytics.track('deadline_disclosure_added', {
+              deadline_id: deadline.id,
+              deadline_status: latestStatus as
+                | 'pending'
+                | 'reading'
+                | 'completed'
+                | 'paused'
+                | 'dnf',
+              source,
+              character_count: text.length,
+              was_template_used: !!templateId,
+            });
+          } else {
+            analytics.track('deadline_disclosure_edited', {
+              deadline_id: deadline.id,
+              deadline_status: latestStatus as
+                | 'pending'
+                | 'reading'
+                | 'completed'
+                | 'paused'
+                | 'dnf',
+              source,
+              character_count: text.length,
+            });
+          }
           setIsEditing(false);
         },
         onError: () => {
@@ -136,6 +173,10 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
       },
       {
         onSuccess: newTemplate => {
+          analytics.track('deadline_disclosure_saved_as_template', {
+            template_name: templateName || 'Unnamed Template',
+            character_count: pendingDisclosureData.text.length,
+          });
           saveDisclosure(
             pendingDisclosureData.text,
             pendingDisclosureData.source,
@@ -173,6 +214,16 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
   const handleCopyDisclosure = async () => {
     try {
       await Clipboard.setStringAsync(currentDisclosure);
+      analytics.track('deadline_disclosure_copied', {
+        deadline_id: deadline.id,
+        deadline_status: latestStatus as
+          | 'pending'
+          | 'reading'
+          | 'completed'
+          | 'paused'
+          | 'dnf',
+        character_count: currentDisclosure.length,
+      });
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
@@ -205,6 +256,15 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
               },
               {
                 onSuccess: () => {
+                  analytics.track('deadline_disclosure_deleted', {
+                    deadline_id: deadline.id,
+                    deadline_status: latestStatus as
+                      | 'pending'
+                      | 'reading'
+                      | 'completed'
+                      | 'paused'
+                      | 'dnf',
+                  });
                   setSelectedSource(null);
                   setSelectedTemplateId(null);
                   setDisclosureText('');

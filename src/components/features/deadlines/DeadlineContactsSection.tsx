@@ -5,6 +5,7 @@ import {
   useGetContacts,
   useUpdateContact,
 } from '@/hooks/useContacts';
+import { analytics } from '@/lib/analytics/client';
 import { ContactFormData } from '@/schemas/contactFormSchema';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { useState } from 'react';
@@ -27,6 +28,11 @@ export const DeadlineContactsSection = ({
   const updateContactMutation = useUpdateContact();
   const deleteContactMutation = useDeleteContact();
 
+  const latestStatus =
+    deadline.status && deadline.status.length > 0
+      ? (deadline.status[deadline.status.length - 1].status ?? 'reading')
+      : 'reading';
+
   const handleAddContact = (data: ContactFormData) => {
     addContactMutation.mutate(
       {
@@ -39,6 +45,18 @@ export const DeadlineContactsSection = ({
       },
       {
         onSuccess: () => {
+          analytics.track('deadline_contact_added', {
+            deadline_id: deadline.id,
+            deadline_status: latestStatus as
+              | 'pending'
+              | 'reading'
+              | 'completed'
+              | 'paused'
+              | 'dnf',
+            has_email: !!data.email,
+            has_username: !!data.username,
+            has_name: !!data.contact_name,
+          });
           setIsAdding(false);
         },
       }
@@ -58,6 +76,18 @@ export const DeadlineContactsSection = ({
       },
       {
         onSuccess: () => {
+          analytics.track('deadline_contact_edited', {
+            deadline_id: deadline.id,
+            deadline_status: latestStatus as
+              | 'pending'
+              | 'reading'
+              | 'completed'
+              | 'paused'
+              | 'dnf',
+            has_email: !!data.email,
+            has_username: !!data.username,
+            has_name: !!data.contact_name,
+          });
           setEditingContactId(null);
         },
       }
@@ -77,10 +107,25 @@ export const DeadlineContactsSection = ({
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
-            deleteContactMutation.mutate({
-              contactId,
-              deadlineId: deadline.id,
-            });
+            deleteContactMutation.mutate(
+              {
+                contactId,
+                deadlineId: deadline.id,
+              },
+              {
+                onSuccess: () => {
+                  analytics.track('deadline_contact_deleted', {
+                    deadline_id: deadline.id,
+                    deadline_status: latestStatus as
+                      | 'pending'
+                      | 'reading'
+                      | 'completed'
+                      | 'paused'
+                      | 'dnf',
+                  });
+                },
+              }
+            );
           },
         },
       ]
