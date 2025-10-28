@@ -437,16 +437,19 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
       onSuccess?: () => void,
       onError?: (error: Error) => void
     ) => {
-      completeDeadlineMutation(deadlineId, {
-        onSuccess: () => {
-          posthog.capture('deadline completed');
-          onSuccess?.();
-        },
-        onError: (error: Error) => {
-          console.error('Error completing deadline:', error);
-          onError?.(error);
-        },
-      });
+      completeDeadlineMutation(
+        { deadlineId },
+        {
+          onSuccess: () => {
+            posthog.capture('deadline completed');
+            onSuccess?.();
+          },
+          onError: (error: Error) => {
+            console.error('Error completing deadline:', error);
+            onError?.(error);
+          },
+        }
+      );
     },
     [completeDeadlineMutation]
   );

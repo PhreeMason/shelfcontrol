@@ -385,11 +385,12 @@ describe('useDeadlines hooks', () => {
       useCompleteDeadline();
 
       const mutationConfig = mockUseMutation.mock.calls[0][0];
-      await mutationConfig.mutationFn('deadline-123');
+      await mutationConfig.mutationFn({ deadlineId: 'deadline-123' });
 
       expect(mockDeadlinesService.completeDeadline).toHaveBeenCalledWith(
         'session-user-123',
-        'deadline-123'
+        'deadline-123',
+        undefined
       );
     });
 

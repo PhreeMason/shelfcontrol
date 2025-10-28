@@ -3,6 +3,7 @@ import { Colors } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
+import { posthog } from '@/lib/posthog';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { parseServerDateTime } from '@/utils/dateNormalization';
 import { formatProgressDisplay } from '@/utils/deadlineUtils';
@@ -49,6 +50,11 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
   const buttonOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    posthog.capture('celebration_screen_viewed', {
+      book_title: deadline.book_title,
+      format: deadline.format,
+    });
+
     if (confettiRef.current) {
       confettiRef.current.start();
     }
@@ -113,12 +119,6 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
     : parseServerDateTime(deadline.created_at);
   const finishDate = dayjs();
   const duration = Math.ceil(finishDate.diff(startDate, 'day', true));
-  console.log({
-    startDate,
-    finishDate,
-    duration,
-    deadline,
-  });
   const formatDate = (date: Dayjs) => {
     return date.format('MMM D');
   };

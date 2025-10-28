@@ -11,11 +11,13 @@ import { Pressable, StyleSheet, View } from 'react-native';
 interface CompletionFormStep2Props {
   deadline: ReadingDeadlineWithProgress;
   onContinue: (needsReview: boolean) => void;
+  isProcessing?: boolean;
 }
 
 const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
   deadline,
   onContinue,
+  isProcessing = false,
 }) => {
   const { data: fetchedBook } = useFetchBookById(deadline.book_id || '');
   const [needsReview, setNeedsReview] = useState<boolean | null>(null);
@@ -95,11 +97,12 @@ const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
         {needsReview !== null && (
           <View style={styles.confirmationContainer}>
             <ThemedButton
-              title="Continue →"
+              title={isProcessing ? 'Processing...' : 'Continue →'}
               variant="primary"
               onPress={handleContinue}
               style={styles.button}
               testID="continue-button"
+              disabled={isProcessing}
             />
           </View>
         )}

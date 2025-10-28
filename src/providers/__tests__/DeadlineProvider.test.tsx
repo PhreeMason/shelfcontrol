@@ -301,10 +301,13 @@ describe('DeadlineProvider', () => {
         result.current.completeDeadline('test-id');
       });
 
-      expect(mockMutate).toHaveBeenCalledWith('test-id', {
-        onSuccess: expect.any(Function),
-        onError: expect.any(Function),
-      });
+      expect(mockMutate).toHaveBeenCalledWith(
+        { deadlineId: 'test-id' },
+        {
+          onSuccess: expect.any(Function),
+          onError: expect.any(Function),
+        }
+      );
     });
 
     it('should call updateDeadlineDate mutation', () => {

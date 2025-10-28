@@ -6,17 +6,20 @@ import {
   useCompleteDeadline,
   useDidNotFinishDeadline,
 } from '@/hooks/useDeadlines';
+import { dayjs } from '@/lib/dayjs';
+import { posthog } from '@/lib/posthog';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   createCompletionCallbacks,
   getCompletionStatus,
   handleReviewQuestionResponse,
   shouldShowCelebration,
-  shouldShowReviewQuestion,
   shouldShowReviewForm,
+  shouldShowReviewQuestion,
 } from '@/utils/completionFlowUtils';
+import { normalizeServerDateStartOfDay } from '@/utils/dateNormalization';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Toast from 'react-native-toast-message';
 
 interface CompletionFormContainerProps {
@@ -30,9 +33,44 @@ const CompletionFormContainer: React.FC<CompletionFormContainerProps> = ({
 }) => {
   const [currentStep, setCurrentStep] = useState(isDNF ? 2 : 1);
   const [needsReview, setNeedsReview] = useState<boolean | null>(null);
+  const mountTimeRef = useRef(Date.now());
+  const hasCompletedRef = useRef(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const { mutate: completeDeadline } = useCompleteDeadline();
   const { mutate: didNotFinishDeadline } = useDidNotFinishDeadline();
+
+  useEffect(() => {
+    const createdDate = normalizeServerDateStartOfDay(deadline.created_at);
+    const daysToComplete = dayjs().diff(createdDate, 'day');
+
+    posthog.capture('completion_flow_started', {
+      format: deadline.format,
+      status: deadline.status || 'unknown',
+      days_to_complete: daysToComplete,
+      is_dnf: isDNF,
+    });
+
+    return () => {
+      if (!hasCompletedRef.current) {
+        const timeSpent = Math.round((Date.now() - mountTimeRef.current) / 1000);
+        posthog.capture('completion_flow_abandoned', {
+          last_step: currentStep,
+          time_spent: timeSpent,
+        });
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const stepNames = ['celebration', 'review_question', 'review_form'];
+    const stepName = stepNames[currentStep - 1] || 'unknown';
+
+    posthog.capture('completion_step_viewed', {
+      step_number: currentStep,
+      step_name: stepName,
+    });
+  }, [currentStep]);
 
   const handleCelebrationContinue = () => {
     setCurrentStep(2);
@@ -51,6 +89,8 @@ const CompletionFormContainer: React.FC<CompletionFormContainerProps> = ({
   };
 
   const handleDirectCompletion = () => {
+    setIsProcessing(true);
+
     const callbacks = createCompletionCallbacks(
       isDNF,
       deadline.book_title || '',
@@ -59,15 +99,40 @@ const CompletionFormContainer: React.FC<CompletionFormContainerProps> = ({
     );
 
     const finalStatus = getCompletionStatus(isDNF);
-    const statusMutation =
-      finalStatus === 'did_not_finish'
-        ? didNotFinishDeadline
-        : completeDeadline;
 
-    statusMutation(deadline.id, {
-      onSuccess: callbacks.onSuccess,
-      onError: callbacks.onError,
-    });
+    if (finalStatus === 'did_not_finish') {
+      posthog.capture('did_not_finish_selected', {
+        format: deadline.format,
+        book_title: deadline.book_title,
+      });
+    }
+
+    const mutationCallbacks = {
+      onSuccess: () => {
+        hasCompletedRef.current = true;
+        setIsProcessing(false);
+        callbacks.onSuccess();
+      },
+      onError: (error: any) => {
+        setIsProcessing(false);
+        callbacks.onError(error);
+      },
+    };
+
+    if (finalStatus === 'did_not_finish') {
+      didNotFinishDeadline(deadline.id, mutationCallbacks);
+    } else {
+      completeDeadline(
+        {
+          deadlineId: deadline.id,
+          deadline: {
+            total_quantity: deadline.total_quantity,
+            progress: deadline.progress,
+          },
+        },
+        mutationCallbacks
+      );
+    }
   };
 
   const handleReviewQuestionContinue = (needsReviewAnswer: boolean) => {
@@ -94,6 +159,7 @@ const CompletionFormContainer: React.FC<CompletionFormContainerProps> = ({
         <CompletionFormStep2
           deadline={deadline}
           onContinue={handleReviewQuestionContinue}
+          isProcessing={isProcessing}
         />
       );
     }

@@ -1354,10 +1354,9 @@ describe('DeadlinesService', () => {
         deadlineId
       );
 
-      expect(mockSelect).toHaveBeenCalledWith(`
-        *,
-        progress:deadline_progress(*)
-      `);
+      expect(mockSelect).toHaveBeenCalledWith(
+        'id, total_quantity, progress:deadline_progress(current_progress)'
+      );
       expect(mockInsert).toHaveBeenCalledWith({
         id: 'rdp-123',
         deadline_id: 'rd-123',

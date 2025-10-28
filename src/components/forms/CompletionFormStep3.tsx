@@ -24,6 +24,7 @@ import {
 } from '@/hooks/useReviewTracking';
 import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { useTheme } from '@/hooks/useThemeColor';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { ReviewFormData, reviewFormSchema } from '@/utils/reviewFormSchema';
@@ -210,6 +211,11 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
 
       createReviewTracking(params, {
         onSuccess: () => {
+          posthog.capture('review_tracking_created', {
+            platform_count: allPlatforms.length,
+            has_custom_note: !!data.reviewNotes?.trim(),
+          });
+
           updateToReview(deadline.id, {
             onSuccess: () => {
               Toast.show({
@@ -253,12 +259,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
 
     setIsSubmitting(true);
 
-    const statusMutation =
-      finalStatus === 'did_not_finish'
-        ? didNotFinishDeadline
-        : completeDeadline;
-
-    statusMutation(deadline.id, {
+    const mutationCallbacks = {
       onSuccess: () => {
         Toast.show({
           type: 'success',
@@ -267,7 +268,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
         setIsSubmitting(false);
         router.replace(ROUTES.HOME);
       },
-      onError: error => {
+      onError: (error: any) => {
         console.error('Error updating deadline status:', error);
         Toast.show({
           type: 'error',
@@ -276,7 +277,22 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
         });
         setIsSubmitting(false);
       },
-    });
+    };
+
+    if (finalStatus === 'did_not_finish') {
+      didNotFinishDeadline(deadline.id, mutationCallbacks);
+    } else {
+      completeDeadline(
+        {
+          deadlineId: deadline.id,
+          deadline: {
+            total_quantity: deadline.total_quantity,
+            progress: deadline.progress,
+          },
+        },
+        mutationCallbacks
+      );
+    }
   };
 
   const handleDateChange = (_event: any, selectedDate?: Date) => {

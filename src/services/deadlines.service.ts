@@ -194,12 +194,16 @@ class DeadlinesService {
 
     if (statusError) throw statusError;
 
-    activityService.trackUserActivity('deadline_created', {
-      id: finalDeadlineId,
-      book_title: deadlineDetails.book_title,
-      dueDate: deadlineDetails.deadline_date,
-      startingProgress: progressDetails.current_progress,
-    });
+    activityService.trackUserActivity(
+      'deadline_created',
+      {
+        id: finalDeadlineId,
+        book_title: deadlineDetails.book_title,
+        dueDate: deadlineDetails.deadline_date,
+        startingProgress: progressDetails.current_progress,
+      },
+      userId
+    );
 
     return {
       ...deadlineData,
@@ -314,9 +318,13 @@ class DeadlinesService {
       }
     }
 
-    activityService.trackUserActivity('deadline_updated', {
-      id: deadlineDetails.id,
-    });
+    activityService.trackUserActivity(
+      'deadline_updated',
+      {
+        id: deadlineDetails.id,
+      },
+      userId
+    );
 
     return { ...deadlineData, progress: progressData };
   }
@@ -341,10 +349,14 @@ class DeadlinesService {
 
     if (error) throw error;
 
-    activityService.trackUserActivity('deadline_date_updated', {
-      id: deadlineId,
-      newDate,
-    });
+    activityService.trackUserActivity(
+      'deadline_date_updated',
+      {
+        id: deadlineId,
+        newDate,
+      },
+      userId
+    );
     return data;
   }
 
@@ -367,9 +379,13 @@ class DeadlinesService {
 
     if (deadlineError) throw deadlineError;
 
-    activityService.trackUserActivity('deadline_deleted', {
-      id: deadlineId,
-    });
+    activityService.trackUserActivity(
+      'deadline_deleted',
+      {
+        id: deadlineId,
+      },
+      userId
+    );
 
     return deadlineId;
   }
@@ -397,10 +413,13 @@ class DeadlinesService {
 
     if (error) throw error;
 
-    activityService.trackUserActivity('progress_updated', {
-      deadlineId: params.deadlineId,
-      progress: params.currentProgress,
-    });
+    activityService.trackUserActivity(
+      'progress_updated',
+      {
+        deadlineId: params.deadlineId,
+        progress: params.currentProgress,
+      }
+    );
 
     return data;
   }
@@ -503,6 +522,7 @@ class DeadlinesService {
    * @param userId - The authenticated user's ID
    * @param deadlineId - ID of the deadline to update
    * @param status - New status to transition to
+   * @param options - Optional configuration for optimization
    *
    * @returns Updated deadline with status and progress arrays ordered by created_at asc (oldest first, newest last)
    *
@@ -534,74 +554,85 @@ class DeadlinesService {
   async updateDeadlineStatus(
     userId: string,
     deadlineId: string,
-    status: Database['public']['Enums']['deadline_status_enum']
+    status: Database['public']['Enums']['deadline_status_enum'],
+    options?: { skipValidation?: boolean; skipRefetch?: boolean }
   ) {
-    const validTransitions: Record<string, string[]> = {
-      pending: ['reading'],
-      reading: ['paused', 'to_review', 'complete', 'did_not_finish'],
-      paused: ['reading', 'complete', 'did_not_finish'],
-      to_review: ['complete', 'did_not_finish'],
-      complete: [],
-      did_not_finish: [],
-    };
+    if (!options?.skipValidation) {
+      const validTransitions: Record<string, string[]> = {
+        pending: ['reading'],
+        reading: ['paused', 'to_review', 'complete', 'did_not_finish'],
+        paused: ['reading', 'complete', 'did_not_finish'],
+        to_review: ['complete', 'did_not_finish'],
+        complete: [],
+        did_not_finish: [],
+      };
 
-    const { data: deadlineResults } = await supabase
-      .from(DB_TABLES.DEADLINES)
-      .select(
-        `
+      const { data: deadlineResults } = await supabase
+        .from(DB_TABLES.DEADLINES)
+        .select(
+          `
         id,
         status:deadline_status(status,created_at)
       ` as any
-      )
-      .eq('id', deadlineId)
-      .eq('user_id', userId)
-      .limit(1);
+        )
+        .eq('id', deadlineId)
+        .eq('user_id', userId)
+        .limit(1);
 
-    const deadline = deadlineResults?.[0];
+      const deadline = deadlineResults?.[0];
 
-    if (!deadline) {
-      throw new Error('Deadline not found or access denied');
-    }
+      if (!deadline) {
+        throw new Error('Deadline not found or access denied');
+      }
 
-    const deadlineData = deadline as unknown as {
-      id: string;
-      status: { status: string }[];
-    };
-    const currentStatusArray = deadlineData.status;
-    const currentStatusData =
-      currentStatusArray && currentStatusArray.length > 0
-        ? currentStatusArray[currentStatusArray.length - 1]
-        : null;
+      const deadlineData = deadline as unknown as {
+        id: string;
+        status: { status: string }[];
+      };
+      const currentStatusArray = deadlineData.status;
+      const currentStatusData =
+        currentStatusArray && currentStatusArray.length > 0
+          ? currentStatusArray[currentStatusArray.length - 1]
+          : null;
 
-    if (currentStatusData && currentStatusData.status) {
-      const currentStatus = currentStatusData.status;
-      const allowedTransitions =
-        validTransitions[currentStatus as string] || [];
+      if (currentStatusData && currentStatusData.status) {
+        const currentStatus = currentStatusData.status;
+        const allowedTransitions =
+          validTransitions[currentStatus as string] || [];
 
-      if (!allowedTransitions.includes(status) && currentStatus !== status) {
-        throw new Error(
-          `Invalid status transition from ${currentStatus} to ${status}`
-        );
+        if (!allowedTransitions.includes(status) && currentStatus !== status) {
+          throw new Error(
+            `Invalid status transition from ${currentStatus} to ${status}`
+          );
+        }
       }
     }
 
-    const { error } = await supabase
-      .from(DB_TABLES.DEADLINE_STATUS)
-      .insert({
-        deadline_id: deadlineId,
-        status,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .select()
-      .limit(1);
+    const insertQuery = supabase.from(DB_TABLES.DEADLINE_STATUS).insert({
+      deadline_id: deadlineId,
+      status,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    const { error } = options?.skipRefetch
+      ? await insertQuery
+      : await insertQuery.select().limit(1);
 
     if (error) throw error;
 
-    activityService.trackUserActivity('status_updated', {
-      deadlineId,
-      status,
-    });
+    activityService.trackUserActivity(
+      'status_updated',
+      {
+        deadlineId,
+        status,
+      },
+      userId
+    );
+
+    if (options?.skipRefetch) {
+      return null as any;
+    }
 
     const { data: updatedDeadlineResults } = await supabase
       .from(DB_TABLES.DEADLINES)
@@ -627,27 +658,37 @@ class DeadlinesService {
   /**
    * Complete a deadline (sets progress to max if needed)
    */
-  async completeDeadline(userId: string, deadlineId: string) {
-    const { data: deadlineResults, error: deadlineError } = await supabase
-      .from(DB_TABLES.DEADLINES)
-      .select(
-        `
-        *,
-        progress:deadline_progress(*)
-      `
-      )
-      .eq('id', deadlineId)
-      .eq('user_id', userId)
-      .limit(1);
+  async completeDeadline(
+    userId: string,
+    deadlineId: string,
+    existingDeadline?: {
+      total_quantity: number;
+      progress?: { current_progress: number }[];
+    }
+  ) {
+    let deadline: { total_quantity: number; progress?: { current_progress: number }[] };
 
-    const deadline = deadlineResults?.[0];
+    if (existingDeadline) {
+      deadline = existingDeadline;
+    } else {
+      const { data: deadlineResults, error: deadlineError } = await supabase
+        .from(DB_TABLES.DEADLINES)
+        .select('id, total_quantity, progress:deadline_progress(current_progress)')
+        .eq('id', deadlineId)
+        .eq('user_id', userId)
+        .limit(1);
 
-    if (deadlineError || !deadline) {
-      throw new Error('Deadline not found or access denied');
+      const fetchedDeadline = deadlineResults?.[0];
+
+      if (deadlineError || !fetchedDeadline) {
+        throw new Error('Deadline not found or access denied');
+      }
+
+      deadline = fetchedDeadline;
     }
 
     const latestProgress =
-      deadline.progress?.length > 0
+      deadline.progress && deadline.progress.length > 0
         ? Math.max(...deadline.progress.map(p => p.current_progress))
         : 0;
 
@@ -666,12 +707,17 @@ class DeadlinesService {
       if (progressError) throw progressError;
     }
 
-    // Now mark as complete
-    return this.updateDeadlineStatus(
+    const result = await this.updateDeadlineStatus(
       userId,
       deadlineId,
-      DEADLINE_STATUS.COMPLETE
+      DEADLINE_STATUS.COMPLETE,
+      {
+        skipValidation: true,
+        skipRefetch: true,
+      }
     );
+
+    return result;
   }
 
   /**
@@ -686,9 +732,12 @@ class DeadlinesService {
 
     if (error) throw error;
 
-    activityService.trackUserActivity('future_progress_deleted', {
-      deadlineId,
-    });
+    activityService.trackUserActivity(
+      'future_progress_deleted',
+      {
+        deadlineId,
+      }
+    );
 
     return { deadlineId, newProgress };
   }
