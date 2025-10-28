@@ -1,8 +1,12 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTheme } from '@/hooks/useTheme';
+import { analytics } from '@/lib/analytics/client';
 import { DeadlineContact } from '@/types/contacts.types';
-import { Pressable, StyleSheet, View } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
+import { useState } from 'react';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 interface ContactCardProps {
   contact: DeadlineContact;
@@ -16,36 +20,80 @@ export const ContactCard = ({
   onDelete,
 }: ContactCardProps) => {
   const { colors } = useTheme();
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const hasName =
     contact.contact_name && contact.contact_name.trim().length > 0;
   const hasEmail = contact.email && contact.email.trim().length > 0;
   const hasUsername = contact.username && contact.username.trim().length > 0;
 
+  const handleLongPressCopy = async (
+    value: string | null,
+    fieldType: 'name' | 'email' | 'username'
+  ) => {
+    if (!value || value.trim().length === 0) return;
+
+    try {
+      await Clipboard.setStringAsync(value);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      analytics.track('contact_field_copied', {
+        field_type: fieldType,
+      });
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 1000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      Alert.alert('Error', 'Failed to copy to clipboard');
+    }
+  };
+
   return (
-    <ThemedView style={[styles.card, { borderColor: colors.border }]}>
-      <View style={styles.contentContainer}>
+    <View style={styles.cardWrapper}>
+      <ThemedView style={[styles.card, { borderColor: colors.border }]}>
+        <View style={styles.contentContainer}>
         {hasName && (
-          <View style={styles.infoRow}>
+          <Pressable
+            onLongPress={() =>
+              handleLongPressCopy(contact.contact_name, 'name')
+            }
+            style={({ pressed }) => [
+              styles.infoRow,
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
+          >
             <IconSymbol name="person.fill" size={16} color={colors.primary} />
             <ThemedText style={styles.infoText}>
               {contact.contact_name}
             </ThemedText>
-          </View>
+          </Pressable>
         )}
 
         {hasEmail && (
-          <View style={styles.infoRow}>
+          <Pressable
+            onLongPress={() => handleLongPressCopy(contact.email, 'email')}
+            style={({ pressed }) => [
+              styles.infoRow,
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
+          >
             <IconSymbol name="envelope" size={16} color={colors.primary} />
             <ThemedText style={styles.infoText}>{contact.email}</ThemedText>
-          </View>
+          </Pressable>
         )}
 
         {hasUsername && (
-          <View style={styles.infoRow}>
+          <Pressable
+            onLongPress={() =>
+              handleLongPressCopy(contact.username, 'username')
+            }
+            style={({ pressed }) => [
+              styles.infoRow,
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
+          >
             <IconSymbol name="at" size={16} color={colors.primary} />
             <ThemedText style={styles.infoText}>{contact.username}</ThemedText>
-          </View>
+          </Pressable>
         )}
       </View>
 
@@ -69,11 +117,22 @@ export const ContactCard = ({
           <IconSymbol name="trash.fill" size={16} color={colors.danger} />
         </Pressable>
       </View>
-    </ThemedView>
+      </ThemedView>
+      {copySuccess && (
+        <View
+          style={[styles.copySuccessBadge, { backgroundColor: colors.success }]}
+        >
+          <ThemedText style={styles.copySuccessText}>Copied!</ThemedText>
+        </View>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  cardWrapper: {
+    position: 'relative',
+  },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -104,5 +163,18 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     // paddingHorizontal: 1,
+  },
+  copySuccessBadge: {
+    position: 'absolute',
+    top: -8,
+    right: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  copySuccessText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

@@ -177,6 +177,10 @@ export interface EventPropertiesMap {
     deadline_status: DeadlineStatus;
   };
 
+  contact_field_copied: {
+    field_type: 'name' | 'email' | 'username';
+  };
+
   deadline_disclosure_added: {
     deadline_id: string;
     deadline_status: DeadlineStatus;

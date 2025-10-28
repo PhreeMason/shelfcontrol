@@ -18,6 +18,7 @@ import { useGetDeadlineById } from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
+import { getDeadlineSourceOptions } from '@/utils/getDeadlineSourceOptions';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
@@ -89,6 +90,8 @@ const DeadlineView = () => {
 
   const shouldShowStats = isToReview || isArchived;
   const shouldShowProgress = !shouldShowStats && !isPending;
+  const sourceOptions = getDeadlineSourceOptions(deadline);
+  const shouldShowDisclosure = sourceOptions.length > 0;
 
   return (
     <SafeAreaView
@@ -114,7 +117,7 @@ const DeadlineView = () => {
 
         <DeadlineContactsSection deadline={deadline} />
 
-        <DisclosureSection deadline={deadline} />
+        {shouldShowDisclosure && <DisclosureSection deadline={deadline} />}
 
         <BookDetailsSection deadline={deadline} />
 
