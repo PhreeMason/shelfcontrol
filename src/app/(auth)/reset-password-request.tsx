@@ -58,7 +58,8 @@ export default function ResetPasswordRequestScreen() {
 
       if (error) {
         analytics.track('password_reset_request_failed', {
-          error_type: 'other', error_message: error.message,
+          error_type: 'other',
+          error_message: error.message,
         });
         setError('root', {
           message: error.message || 'Failed to send reset email',

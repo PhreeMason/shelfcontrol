@@ -413,13 +413,10 @@ class DeadlinesService {
 
     if (error) throw error;
 
-    activityService.trackUserActivity(
-      'progress_updated',
-      {
-        deadlineId: params.deadlineId,
-        progress: params.currentProgress,
-      }
-    );
+    activityService.trackUserActivity('progress_updated', {
+      deadlineId: params.deadlineId,
+      progress: params.currentProgress,
+    });
 
     return data;
   }
@@ -449,7 +446,7 @@ class DeadlinesService {
     return deadlines.map(d => {
       const normalized = {
         ...d,
-        type: (d as any).deadline_type || 'Personal'
+        type: (d as any).deadline_type || 'Personal',
       };
       return sortDeadlineArrays(normalized);
     });
@@ -468,7 +465,9 @@ class DeadlinesService {
 
     const uniqueTypes = [
       ...new Set(
-        data?.map(d => d.deadline_type).filter((s): s is string => s !== null) || []
+        data
+          ?.map(d => d.deadline_type)
+          .filter((s): s is string => s !== null) || []
       ),
     ];
     return uniqueTypes.sort();
@@ -509,7 +508,7 @@ class DeadlinesService {
     const deadline = data as unknown as ReadingDeadlineWithProgress;
     const normalizedDeadline = {
       ...deadline,
-      type: (deadline as any).deadline_type || 'Personal'
+      type: (deadline as any).deadline_type || 'Personal',
     };
     return sortDeadlineArrays(normalizedDeadline);
   }
@@ -675,14 +674,19 @@ class DeadlinesService {
       progress?: { current_progress: number }[];
     }
   ) {
-    let deadline: { total_quantity: number; progress?: { current_progress: number }[] };
+    let deadline: {
+      total_quantity: number;
+      progress?: { current_progress: number }[];
+    };
 
     if (existingDeadline) {
       deadline = existingDeadline;
     } else {
       const { data: deadlineResults, error: deadlineError } = await supabase
         .from(DB_TABLES.DEADLINES)
-        .select('id, total_quantity, progress:deadline_progress(current_progress)')
+        .select(
+          'id, total_quantity, progress:deadline_progress(current_progress)'
+        )
         .eq('id', deadlineId)
         .eq('user_id', userId)
         .limit(1);
@@ -741,12 +745,9 @@ class DeadlinesService {
 
     if (error) throw error;
 
-    activityService.trackUserActivity(
-      'future_progress_deleted',
-      {
-        deadlineId,
-      }
-    );
+    activityService.trackUserActivity('future_progress_deleted', {
+      deadlineId,
+    });
 
     return { deadlineId, newProgress };
   }
@@ -796,10 +797,12 @@ class DeadlinesService {
 
     if (error) throw error;
 
-    return deadlines?.map((d: any) => ({
-      ...d,
-      type: d.deadline_type
-    })) || [];
+    return (
+      deadlines?.map((d: any) => ({
+        ...d,
+        type: d.deadline_type,
+      })) || []
+    );
   }
 
   async getUserProgressForToday(userId: string) {

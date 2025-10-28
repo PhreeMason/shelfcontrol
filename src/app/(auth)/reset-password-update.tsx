@@ -115,7 +115,8 @@ export default function ResetPasswordUpdateScreen() {
 
       if (error) {
         analytics.track('password_update_failed', {
-          error_type: 'other', error_message: error.message,
+          error_type: 'other',
+          error_message: error.message,
         });
         setError('root', {
           message: error.message || 'Failed to update password',

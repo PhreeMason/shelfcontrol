@@ -123,7 +123,12 @@ export function useDeadlineCardViewModel({
   const handleCardPress = () => {
     if (!disableNavigation) {
       analytics.track('deadline_card_clicked', {
-        deadline_status: latestStatus as 'pending' | 'reading' | 'completed' | 'paused' | 'dnf',
+        deadline_status: latestStatus as
+          | 'pending'
+          | 'reading'
+          | 'completed'
+          | 'paused'
+          | 'dnf',
         deadline_format: deadline.format as 'physical' | 'eBook' | 'audio',
         deadline_title: deadline.book_title,
       });

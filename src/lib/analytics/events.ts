@@ -1,8 +1,19 @@
 export type AuthMethod = 'email' | 'apple';
 export type ReadingFormat = 'physical' | 'eBook' | 'audio';
-export type DeadlineStatus = 'pending' | 'reading' | 'completed' | 'paused' | 'dnf';
+export type DeadlineStatus =
+  | 'pending'
+  | 'reading'
+  | 'completed'
+  | 'paused'
+  | 'dnf';
 export type BookSource = 'search' | 'manual';
-export type ErrorType = 'user_exists' | 'weak_password' | 'invalid_credentials' | 'email_not_confirmed' | 'unexpected' | 'other';
+export type ErrorType =
+  | 'user_exists'
+  | 'weak_password'
+  | 'invalid_credentials'
+  | 'email_not_confirmed'
+  | 'unexpected'
+  | 'other';
 export type RefreshTrigger = 'error_retry' | 'manual_refresh';
 export type WebViewClosedVia = 'button' | 'back_button' | 'close_button';
 

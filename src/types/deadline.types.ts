@@ -40,4 +40,9 @@ export type PageRangeFilter = 'under300' | '300to500' | 'over500';
 
 export type BookFormat = 'physical' | 'eBook' | 'audio';
 
-export type SortOrder = 'default' | 'soonest' | 'latest' | 'lowestPace' | 'highestPace';
+export type SortOrder =
+  | 'default'
+  | 'soonest'
+  | 'latest'
+  | 'lowestPace'
+  | 'highestPace';

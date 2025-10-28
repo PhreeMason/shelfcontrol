@@ -108,16 +108,17 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
     }
   };
 
-  const progressMessageTotalQuantity = 
-    formatProgressDisplay(deadline.format, totalQuantity);
+  const progressMessageTotalQuantity = formatProgressDisplay(
+    deadline.format,
+    totalQuantity
+  );
 
   const progressMessageCurrentProgress = formatProgressDisplay(
     deadline.format,
     currentProgress
   );
 
-  const messageUnit =
-    deadline.format === 'audio' ? '' : ' pages';
+  const messageUnit = deadline.format === 'audio' ? '' : ' pages';
 
   return (
     <Modal
@@ -153,9 +154,9 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
               <ThemedText
                 style={[styles.subtitle, { color: colors.text + '80' }]}
               >
-                You're currently at{' '}
-                {progressMessageCurrentProgress}/
-                {progressMessageTotalQuantity}{messageUnit}.
+                You're currently at {progressMessageCurrentProgress}/
+                {progressMessageTotalQuantity}
+                {messageUnit}.
               </ThemedText>
             )}
 

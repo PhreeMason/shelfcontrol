@@ -48,17 +48,24 @@ export function useFormFlowTracking(
     } else if (flowType === 'completion') {
       const completionConfig = config as CompletionFlowConfig;
       if (completionConfig.additionalStartProperties) {
-        analytics.track('completion_flow_started', completionConfig.additionalStartProperties);
+        analytics.track(
+          'completion_flow_started',
+          completionConfig.additionalStartProperties
+        );
       }
     }
 
     return () => {
       if (!hasSubmittedRef.current) {
-        const timeSpent = Math.round((Date.now() - mountTimeRef.current) / 1000);
+        const timeSpent = Math.round(
+          (Date.now() - mountTimeRef.current) / 1000
+        );
         const lastStep = currentStepRef.current;
 
         if (flowType === 'deadline_creation' && mode === 'new') {
-          const abandonmentData = getAbandonmentData?.() || { book_selected: false };
+          const abandonmentData = getAbandonmentData?.() || {
+            book_selected: false,
+          };
           analytics.track('deadline_creation_abandoned', {
             last_step: lastStep,
             time_spent: timeSpent,
@@ -85,7 +92,10 @@ export function useFormFlowTracking(
     } else if (flowType === 'completion') {
       analytics.track('completion_step_viewed', {
         step_number: currentStep,
-        step_name: stepName as 'celebration' | 'review_question' | 'review_form',
+        step_name: stepName as
+          | 'celebration'
+          | 'review_question'
+          | 'review_form',
       });
     }
 
@@ -96,7 +106,9 @@ export function useFormFlowTracking(
     hasSubmittedRef.current = true;
 
     if (flowType === 'deadline_creation' && mode === 'new') {
-      const completionTime = Math.round((Date.now() - mountTimeRef.current) / 1000);
+      const completionTime = Math.round(
+        (Date.now() - mountTimeRef.current) / 1000
+      );
       const baseData = {
         time_spent_seconds: completionTime,
         total_steps: stepNames.length,

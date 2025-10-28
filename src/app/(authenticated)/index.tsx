@@ -132,7 +132,13 @@ export default function HomeScreen() {
         filter_types: activeFilters,
       });
     }
-  }, [timeRangeFilter, selectedFormats, selectedPageRanges, selectedTypes, excludedStatuses]);
+  }, [
+    timeRangeFilter,
+    selectedFormats,
+    selectedPageRanges,
+    selectedTypes,
+    excludedStatuses,
+  ]);
 
   React.useEffect(() => {
     if (prevSortOrderRef.current !== sortOrder) {

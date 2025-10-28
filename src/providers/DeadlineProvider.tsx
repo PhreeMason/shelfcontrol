@@ -375,7 +375,10 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
       updateDeadlineMutation(params, {
         onSuccess: () => {
           analytics.track('deadline_updated', {
-            format: params.deadlineDetails.format as 'physical' | 'eBook' | 'audio',
+            format: params.deadlineDetails.format as
+              | 'physical'
+              | 'eBook'
+              | 'audio',
           });
           onSuccess?.();
         },

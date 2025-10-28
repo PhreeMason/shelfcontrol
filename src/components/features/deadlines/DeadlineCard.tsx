@@ -69,7 +69,7 @@ export function DeadlineCard({
                         ]}
                       />
                     </View>
-                    <ThemedText variant='muted' style={styles.progressLabel}>
+                    <ThemedText variant="muted" style={styles.progressLabel}>
                       {Math.round(viewModel.progress.progressPercentage)}%
                     </ThemedText>
                   </View>

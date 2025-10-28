@@ -12,7 +12,7 @@ export const showDuplicateBookWarning = ({
   selectedBook,
   allDeadlines,
 }: DuplicateCheckParams): void => {
-  const duplicateDeadlines = allDeadlines.filter((deadline) => {
+  const duplicateDeadlines = allDeadlines.filter(deadline => {
     if (selectedBook.id && deadline.book_id === selectedBook.id) {
       return true;
     }

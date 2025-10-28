@@ -83,7 +83,7 @@ describe('FilterSheet', () => {
       created_at: '2024-01-01',
       updated_at: '2024-01-01',
       acquisition_source: null,
-      type: "Personal",
+      type: 'Personal',
       publishers: null,
       status: [],
       progress: [],
@@ -101,7 +101,7 @@ describe('FilterSheet', () => {
       created_at: '2024-01-01',
       updated_at: '2024-01-01',
       acquisition_source: null,
-      type: "Personal",
+      type: 'Personal',
       publishers: null,
       status: [],
       progress: [],
@@ -119,7 +119,7 @@ describe('FilterSheet', () => {
       created_at: '2024-01-01',
       updated_at: '2024-01-01',
       acquisition_source: null,
-      type: "Personal",
+      type: 'Personal',
       publishers: null,
       status: [],
       progress: [],
@@ -150,7 +150,12 @@ describe('FilterSheet', () => {
       | 'all'
     )[],
     onExcludedStatusesChange: jest.fn(),
-    sortOrder: 'default' as 'default' | 'soonest' | 'latest' | 'lowestPace' | 'highestPace',
+    sortOrder: 'default' as
+      | 'default'
+      | 'soonest'
+      | 'latest'
+      | 'lowestPace'
+      | 'highestPace',
     onSortOrderChange: jest.fn(),
     statusCounts: {
       active: 5,
@@ -319,9 +324,7 @@ describe('FilterSheet', () => {
     it('should add typewhen toggling unselected source', () => {
       const onTypesChange = jest.fn();
 
-      render(
-        <FilterSheet {...defaultProps} onTypesChange={onTypesChange} />
-      );
+      render(<FilterSheet {...defaultProps} onTypesChange={onTypesChange} />);
 
       fireEvent.press(screen.getByText('Amazon 1'));
 

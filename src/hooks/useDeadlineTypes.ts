@@ -25,8 +25,7 @@ export const useDeadlineTypes = () => {
         userTypes.forEach(type => {
           if (
             !DEFAULT_TYPES.some(
-              defaultType =>
-                defaultType.toLowerCase() === type.toLowerCase()
+              defaultType => defaultType.toLowerCase() === type.toLowerCase()
             )
           ) {
             allTypes.push(type);

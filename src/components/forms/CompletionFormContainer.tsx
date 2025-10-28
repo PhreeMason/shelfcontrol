@@ -48,7 +48,12 @@ const CompletionFormContainer: React.FC<CompletionFormContainerProps> = ({
     stepNames: ['celebration', 'review_question', 'review_form'],
     additionalStartProperties: {
       format: deadline.format as 'physical' | 'eBook' | 'audio',
-      status: (deadline.status || 'unknown') as 'pending' | 'reading' | 'completed' | 'paused' | 'dnf',
+      status: (deadline.status || 'unknown') as
+        | 'pending'
+        | 'reading'
+        | 'completed'
+        | 'paused'
+        | 'dnf',
       days_to_complete: daysToComplete,
       is_dnf: isDNF,
     },

@@ -212,8 +212,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        type:
-          'This is a very long source name that exceeds thirty characters',
+        type: 'This is a very long source name that exceeds thirty characters',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',

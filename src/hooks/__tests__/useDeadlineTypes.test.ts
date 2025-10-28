@@ -184,7 +184,9 @@ describe('useDeadlineTypes', () => {
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual(DEFAULT_TYPES);
-      expect(mockDeadlinesService.getUniqueDeadlineTypes).not.toHaveBeenCalled();
+      expect(
+        mockDeadlinesService.getUniqueDeadlineTypes
+      ).not.toHaveBeenCalled();
     });
 
     it('should merge user types with defaults correctly', async () => {
@@ -377,10 +379,7 @@ describe('useDeadlineTypes', () => {
       useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userTypes = Array.from(
-        { length: 50 },
-        (_, i) => `Type ${i + 1}`
-      );
+      const userTypes = Array.from({ length: 50 }, (_, i) => `Type ${i + 1}`);
       mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
 
       const result = await queryConfig.queryFn();

@@ -5,7 +5,10 @@ import {
   normalizeServerDateStartOfDay,
 } from './dateNormalization';
 import { calculateTotalQuantity } from './deadlineCalculations';
-import { calculateProgressAsOfStartOfDay, calculateUnitsPerDay } from './deadlineProviderUtils';
+import {
+  calculateProgressAsOfStartOfDay,
+  calculateUnitsPerDay,
+} from './deadlineProviderUtils';
 import { calculateDaysLeft } from './deadlineUtils';
 
 type DateField = 'created_at' | 'updated_at';

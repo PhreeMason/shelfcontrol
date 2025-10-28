@@ -76,7 +76,8 @@ const Notes = () => {
         },
         {
           onSuccess: () => {
-            const lengthDelta = noteText.trim().length - initialNoteTextRef.current.length;
+            const lengthDelta =
+              noteText.trim().length - initialNoteTextRef.current.length;
             analytics.track('note_edited', {
               note_id: editingNoteId,
               length_delta: lengthDelta,

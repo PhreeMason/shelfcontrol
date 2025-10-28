@@ -77,7 +77,7 @@ export const DeadlineFormStep1 = ({
     analytics.track('book_selected', {
       source: 'search',
       has_cover: !!book.cover_image_url,
-      has_isbn: !!(book.metadata?.isbn),
+      has_isbn: !!book.metadata?.isbn,
       has_publication_date: !!book.publication_date,
     });
 

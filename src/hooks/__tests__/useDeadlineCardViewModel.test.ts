@@ -88,7 +88,7 @@ describe('useDeadlineCardViewModel', () => {
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     acquisition_source: null,
-    type: "Personal",
+    type: 'Personal',
     publishers: null,
     status: [
       {

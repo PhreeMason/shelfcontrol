@@ -29,7 +29,7 @@ const createMockDeadline = (
   deadline_date: '2025-01-20',
   flexibility: 'flexible',
   acquisition_source: null,
-  type: "Personal",
+  type: 'Personal',
   publishers: null,
   created_at: '2025-01-01T00:00:00Z',
   updated_at: '2025-01-15T00:00:00Z',

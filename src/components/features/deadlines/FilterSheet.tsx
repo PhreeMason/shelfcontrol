@@ -487,28 +487,32 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
               <ThemedText style={styles.sectionTitle}>Sort By</ThemedText>
               <View style={styles.filterRow}>
                 {(selectedFilter === 'all'
-                  ? ['default', 'soonest', 'latest', 'lowestPace', 'highestPace']
+                  ? [
+                      'default',
+                      'soonest',
+                      'latest',
+                      'lowestPace',
+                      'highestPace',
+                    ]
                   : ['default', 'lowestPace', 'highestPace']
-                ).map(
-                  order => {
-                    const sortLabels: Record<SortOrder, string> = {
-                      default: 'Default',
-                      soonest: 'Soonest First',
-                      latest: 'Latest First',
-                      lowestPace: 'Lowest Pace',
-                      highestPace: 'Highest Pace',
-                    };
-                    return (
-                      <ThemedButton
-                        key={order}
-                        title={sortLabels[order as SortOrder]}
-                        style={styles.filterPill}
-                        variant={sortOrder === order ? 'primary' : 'outline'}
-                        onPress={() => onSortOrderChange(order as SortOrder)}
-                      />
-                    );
-                  }
-                )}
+                ).map(order => {
+                  const sortLabels: Record<SortOrder, string> = {
+                    default: 'Default',
+                    soonest: 'Soonest First',
+                    latest: 'Latest First',
+                    lowestPace: 'Lowest Pace',
+                    highestPace: 'Highest Pace',
+                  };
+                  return (
+                    <ThemedButton
+                      key={order}
+                      title={sortLabels[order as SortOrder]}
+                      style={styles.filterPill}
+                      variant={sortOrder === order ? 'primary' : 'outline'}
+                      onPress={() => onSortOrderChange(order as SortOrder)}
+                    />
+                  );
+                })}
               </View>
             </View>
           </ScrollView>

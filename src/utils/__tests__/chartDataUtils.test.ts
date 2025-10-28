@@ -138,7 +138,7 @@ describe('chartDataUtils', () => {
       book_title: 'Test Book',
       author: 'Test Author',
       acquisition_source: null,
-      type: "Personal",
+      type: 'Personal',
       publishers: null,
       flexibility:
         'fixed' as Database['public']['Enums']['deadline_flexibility'],
@@ -517,7 +517,7 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         acquisition_source: null,
-        type: "Personal",
+        type: 'Personal',
         publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
@@ -541,7 +541,7 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         acquisition_source: null,
-        type: "Personal",
+        type: 'Personal',
         publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
@@ -565,7 +565,7 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         acquisition_source: null,
-        type: "Personal",
+        type: 'Personal',
         publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
@@ -617,7 +617,7 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         acquisition_source: null,
-        type: "Personal",
+        type: 'Personal',
         publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
@@ -651,7 +651,7 @@ describe('chartDataUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         acquisition_source: null,
-        type: "Personal",
+        type: 'Personal',
         publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
@@ -724,7 +724,7 @@ describe('chartDataUtils', () => {
       book_title: 'Test Book',
       author: 'Test Author',
       acquisition_source: null,
-      type: "Personal",
+      type: 'Personal',
       publishers: null,
       flexibility:
         'fixed' as Database['public']['Enums']['deadline_flexibility'],
