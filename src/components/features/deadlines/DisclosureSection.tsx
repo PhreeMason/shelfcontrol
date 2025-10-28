@@ -239,9 +239,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
           <View style={styles.actions}>
             <Pressable
               onPress={handleCopyDisclosure}
-              style={({ pressed }) => [
-                { opacity: pressed ? 0.5 : 1 },
-              ]}
+              style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
             >
               <IconSymbol
                 name="doc.on.clipboard"
@@ -251,24 +249,24 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             </Pressable>
             <Pressable
               onPress={handleEditDisclosure}
-              style={({ pressed }) => [
-                { opacity: pressed ? 0.5 : 1 },
-              ]}
+              style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
             >
               <IconSymbol name="pencil" size={18} color={colors.textMuted} />
             </Pressable>
             <Pressable
               onPress={handleDeleteDisclosure}
-              style={({ pressed }) => [
-                { opacity: pressed ? 0.5 : 1 },
-              ]}
+              style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
               disabled={updateDeadlineDisclosureMutation.isPending}
               testID="delete-disclosure-button"
             >
               <IconSymbol
                 name="trash"
                 size={18}
-                color={updateDeadlineDisclosureMutation.isPending ? colors.textMuted : colors.danger}
+                color={
+                  updateDeadlineDisclosureMutation.isPending
+                    ? colors.textMuted
+                    : colors.danger
+                }
               />
             </Pressable>
           </View>

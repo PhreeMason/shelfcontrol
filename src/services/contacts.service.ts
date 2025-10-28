@@ -38,7 +38,7 @@ class ContactsService {
         deadline_id: deadlineId,
         contact_name: contactData.contact_name ?? null,
         email: contactData.email ?? null,
-        username: contactData.username ?? null
+        username: contactData.username ?? null,
       })
       .select()
       .limit(1);

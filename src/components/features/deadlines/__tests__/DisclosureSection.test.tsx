@@ -54,7 +54,11 @@ jest.mock('@/components/themed', () => ({
 jest.mock('@/components/ui/IconSymbol', () => ({
   IconSymbol: ({ name, ...props }: any) => {
     const React = require('react');
-    return React.createElement('Text', { ...props, testID: `icon-${name}` }, name);
+    return React.createElement(
+      'Text',
+      { ...props, testID: `icon-${name}` },
+      name
+    );
   },
 }));
 
@@ -158,7 +162,9 @@ describe('DisclosureSection', () => {
     (useUpdateDeadlineDisclosure as jest.Mock).mockReturnValue(
       mockUpdateDeadlineDisclosureMutation
     );
-    (useCreateTemplate as jest.Mock).mockReturnValue(mockCreateTemplateMutation);
+    (useCreateTemplate as jest.Mock).mockReturnValue(
+      mockCreateTemplateMutation
+    );
   });
 
   afterEach(() => {
@@ -169,7 +175,9 @@ describe('DisclosureSection', () => {
     it('should render disclosure text when present', () => {
       render(<DisclosureSection deadline={mockDeadlineWithDisclosure} />);
 
-      expect(screen.getByText('This is a test disclosure message.')).toBeTruthy();
+      expect(
+        screen.getByText('This is a test disclosure message.')
+      ).toBeTruthy();
     });
 
     it('should render source badge when disclosure source exists', () => {
