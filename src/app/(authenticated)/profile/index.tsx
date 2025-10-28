@@ -10,7 +10,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ROUTES } from '@/constants/routes';
 import { useExportReadingProgress } from '@/hooks/useExport';
 import { useTheme, useThemedStyles } from '@/hooks/useThemeColor';
-import { posthog } from '@/lib/posthog';
+import { analytics } from '@/lib/analytics/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
@@ -38,7 +38,7 @@ export default function Profile() {
   const exportMutation = useExportReadingProgress();
 
   React.useEffect(() => {
-    posthog.capture('profile viewed');
+    analytics.track('profile_viewed');
     refreshProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -63,8 +63,13 @@ export default function Profile() {
   };
 
   const handleExportData = async () => {
+    analytics.track('export_data_initiated');
+
     try {
       await exportMutation.mutateAsync();
+      analytics.track('export_completed', {
+        record_count: deadlines.length,
+      });
       Toast.show({
         type: 'success',
         text1: 'Export Successful',
@@ -74,6 +79,14 @@ export default function Profile() {
       const errorMessage = error?.message || 'Failed to export data';
       const isRateLimit =
         errorMessage.includes('Rate limit') || errorMessage.includes('429');
+
+      if (isRateLimit) {
+        analytics.track('export_rate_limited');
+      } else {
+        analytics.track('export_failed', {
+          error_message: errorMessage,
+        });
+      }
 
       Toast.show({
         type: 'error',

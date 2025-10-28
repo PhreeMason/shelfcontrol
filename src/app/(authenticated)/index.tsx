@@ -3,8 +3,8 @@ import FilteredDeadlines from '@/components/features/deadlines/FilteredDeadlines
 import { Header } from '@/components/navigation';
 import { ThemedView } from '@/components/themed';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
-import { useDeadlineSources } from '@/hooks/useDeadlineSources';
-import { posthog } from '@/lib/posthog';
+import { useDeadlineTypes } from '@/hooks/useDeadlineTypes';
+import { analytics } from '@/lib/analytics/client';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { usePreferences } from '@/providers/PreferencesProvider';
 import { FilterType } from '@/types/deadline.types';
@@ -38,9 +38,24 @@ export default function HomeScreen() {
     sortOrder,
     setSortOrder,
   } = usePreferences();
-  const { refetch, isRefreshing } = useDeadlines();
-  const { data: availableSources = [] } = useDeadlineSources();
+  const { refetch, isRefreshing, deadlines } = useDeadlines();
+  const { data: availableSources = [] } = useDeadlineTypes();
   const prevSelectedFilterRef = React.useRef<FilterType | null>(null);
+  const prevSortOrderRef = React.useRef(sortOrder);
+
+  React.useEffect(() => {
+    const activeFilters: string[] = [];
+    if (timeRangeFilter !== 'all') activeFilters.push('time_range');
+    if (selectedFormats.length > 0) activeFilters.push('formats');
+    if (selectedPageRanges.length > 0) activeFilters.push('page_ranges');
+    if (selectedSources.length > 0) activeFilters.push('sources');
+    if (excludedStatuses.length > 0) activeFilters.push('excluded_statuses');
+
+    analytics.track('home_screen_viewed', {
+      deadlines_count: deadlines.length,
+      active_filters: activeFilters,
+    });
+  }, []);
 
   const gradientHeight = Math.max(insets.top, 10);
 
@@ -87,6 +102,7 @@ export default function HomeScreen() {
       prevSelectedFilterRef.current !== null &&
       prevSelectedFilterRef.current !== selectedFilter
     ) {
+      analytics.track('filter_cleared');
       setTimeRangeFilter('all');
       setSelectedFormats([]);
       setSelectedPageRanges([]);
@@ -103,8 +119,33 @@ export default function HomeScreen() {
     setExcludedStatuses,
   ]);
 
+  React.useEffect(() => {
+    const activeFilters: string[] = [];
+    if (timeRangeFilter !== 'all') activeFilters.push('time_range');
+    if (selectedFormats.length > 0) activeFilters.push('formats');
+    if (selectedPageRanges.length > 0) activeFilters.push('page_ranges');
+    if (selectedSources.length > 0) activeFilters.push('sources');
+    if (excludedStatuses.length > 0) activeFilters.push('excluded_statuses');
+
+    if (activeFilters.length > 0) {
+      analytics.track('filter_combination_applied', {
+        filter_types: activeFilters,
+      });
+    }
+  }, [timeRangeFilter, selectedFormats, selectedPageRanges, selectedSources, excludedStatuses]);
+
+  React.useEffect(() => {
+    if (prevSortOrderRef.current !== sortOrder) {
+      analytics.track('sort_changed', {
+        previous_sort: prevSortOrderRef.current,
+        new_sort: sortOrder,
+      });
+      prevSortOrderRef.current = sortOrder;
+    }
+  }, [sortOrder]);
+
   const handleFilterChange = (filter: FilterType) => {
-    posthog.capture('filter changed', {
+    analytics.track('filter_changed', {
       filter_type: filter,
     });
     setSelectedFilter(filter);
@@ -146,7 +187,13 @@ export default function HomeScreen() {
         contentContainerStyle={[styles.scrollContent]}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={refetch} />
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={() => {
+              analytics.track('deadlines_refreshed');
+              refetch();
+            }}
+          />
         }
       >
         <Header />

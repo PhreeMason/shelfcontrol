@@ -5,7 +5,7 @@ import {
 import { AppleSSO } from '@/components/auth/AppleSSO';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
-import { posthog } from '@/lib/posthog';
+import { analytics } from '@/lib/analytics/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useRouter } from 'expo-router';
@@ -75,7 +75,7 @@ export default function SignUpScreen() {
       const { error } = await signUp(data.email, data.password, '');
       console.log('Sign up response error:', error);
       if (error) {
-        posthog.capture('sign up failed', {
+        analytics.track('sign_up_failed', {
           error_type: error.message.includes('User already registered')
             ? 'user_exists'
             : error.message.includes('Password should be')
@@ -94,14 +94,14 @@ export default function SignUpScreen() {
           setError('root', { message: error.message || 'Sign up failed' });
         }
       } else {
-        posthog.capture('user signed up', {
+        analytics.track('user_signed_up', {
           method: 'email',
         });
         router.replace(ROUTES.HOME);
       }
     } catch (err) {
       console.error('Sign up error:', err);
-      posthog.capture('sign up failed', {
+      analytics.track('sign_up_failed', {
         error_type: 'unexpected',
         error_message: 'An unexpected error occurred',
       });

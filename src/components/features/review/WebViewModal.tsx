@@ -2,7 +2,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ThemedText } from '@/components/themed';
 import { Colors, FontFamily, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
-import { posthog } from '@/lib/posthog';
+import { analytics } from '@/lib/analytics/client';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -65,13 +65,13 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
         const urlDomain = normalizedUrl
           ? new URL(normalizedUrl).hostname
           : 'unknown';
-        posthog.capture('review webview opened', {
+        analytics.track('review_webview_opened', {
           platform_name: platformName,
           url_domain: urlDomain,
         });
       } catch {
         // Invalid URL, still track the event
-        posthog.capture('review webview opened', {
+        analytics.track('review_webview_opened', {
           platform_name: platformName,
           url_domain: 'invalid',
         });
@@ -98,13 +98,13 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
       const urlDomain = normalizedUrl
         ? new URL(normalizedUrl).hostname
         : 'unknown';
-      posthog.capture('review webview refresh', {
+      analytics.track('review_webview_refresh', {
         platform_name: platformName,
         trigger: error ? 'error_retry' : 'manual_refresh',
         url_domain: urlDomain,
       });
     } catch {
-      posthog.capture('review webview refresh', {
+      analytics.track('review_webview_refresh', {
         platform_name: platformName,
         trigger: error ? 'error_retry' : 'manual_refresh',
         url_domain: 'invalid',
@@ -115,7 +115,7 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
   const handleClose = () => {
     // Track modal close
     const duration = Math.round((Date.now() - openTimeRef.current) / 1000);
-    posthog.capture('review webview closed', {
+    analytics.track('review_webview_closed', {
       platform_name: platformName,
       duration: duration,
       closed_via: 'close_button',
@@ -137,13 +137,13 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
         const urlDomain = normalizedUrl
           ? new URL(normalizedUrl).hostname
           : 'unknown';
-        posthog.capture('review webview loaded', {
+        analytics.track('review_webview_loaded', {
           platform_name: platformName,
           load_time: loadTime,
           url_domain: urlDomain,
         });
       } catch {
-        posthog.capture('review webview loaded', {
+        analytics.track('review_webview_loaded', {
           platform_name: platformName,
           load_time: loadTime,
           url_domain: 'invalid',
@@ -171,16 +171,14 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
         const urlDomain = normalizedUrl
           ? new URL(normalizedUrl).hostname
           : 'unknown';
-        posthog.capture('review webview error', {
+        analytics.track('review_webview_error', {
           platform_name: platformName,
-          error_type: 'timeout',
           error_message: timeoutError,
           url_domain: urlDomain,
         });
       } catch {
-        posthog.capture('review webview error', {
+        analytics.track('review_webview_error', {
           platform_name: platformName,
-          error_type: 'timeout',
           error_message: timeoutError,
           url_domain: 'invalid',
         });
@@ -305,16 +303,14 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                     const urlDomain = normalizedUrl
                       ? new URL(normalizedUrl).hostname
                       : 'unknown';
-                    posthog.capture('review webview error', {
+                    analytics.track('review_webview_error', {
                       platform_name: platformName,
-                      error_type: 'load_error',
                       error_message: errorMsg,
                       url_domain: urlDomain,
                     });
                   } catch {
-                    posthog.capture('review webview error', {
+                    analytics.track('review_webview_error', {
                       platform_name: platformName,
-                      error_type: 'load_error',
                       error_message: errorMsg,
                       url_domain: 'invalid',
                     });
@@ -331,16 +327,14 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                     const urlDomain = normalizedUrl
                       ? new URL(normalizedUrl).hostname
                       : 'unknown';
-                    posthog.capture('review webview error', {
+                    analytics.track('review_webview_error', {
                       platform_name: platformName,
-                      error_type: 'http_error',
                       error_message: errorMsg,
                       url_domain: urlDomain,
                     });
                   } catch {
-                    posthog.capture('review webview error', {
+                    analytics.track('review_webview_error', {
                       platform_name: platformName,
-                      error_type: 'http_error',
                       error_message: errorMsg,
                       url_domain: 'invalid',
                     });

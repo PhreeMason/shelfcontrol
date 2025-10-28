@@ -6,6 +6,9 @@ import {
   ThemedView,
 } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
+import { dayjs } from '@/lib/dayjs';
+import { analytics } from '@/lib/analytics/client';
+import { useFormFlowTracking } from '@/hooks/analytics/useFormFlowTracking';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { SelectedBook } from '@/types/bookSearch';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -97,10 +100,9 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     formState.previousPageCount || null
   );
 
-  // Track if form has been initialized to prevent infinite loops
   const isInitialized = useRef(false);
+  const bookSelectedRef = useRef(false);
 
-  // Ref for the scroll view to control scrolling
   const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
 
   const {
@@ -155,12 +157,56 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     }
   }, [mode, stableParams, existingDeadline, setValue]);
 
-  // Scroll to top when navigating to the last step
   useEffect(() => {
     if (currentStep === totalSteps && scrollViewRef.current) {
       scrollViewRef.current.scrollToPosition(0, 0, true);
     }
   }, [currentStep, totalSteps]);
+
+  useEffect(() => {
+    if (watchedValues.bookTitle) {
+      bookSelectedRef.current = true;
+    }
+  }, [watchedValues.bookTitle]);
+
+  const formFlowTracking = useFormFlowTracking({
+    flowType: 'deadline_creation',
+    mode,
+    currentStep,
+    stepNames: formSteps,
+    getAbandonmentData: () => ({
+      book_selected: bookSelectedRef.current,
+    }),
+  });
+
+  useEffect(() => {
+    if (mode === 'new' && selectedFormat) {
+      analytics.track('deadline_format_selected', {
+        format: selectedFormat as 'physical' | 'eBook' | 'audio',
+      });
+    }
+  }, [selectedFormat, mode]);
+
+  useEffect(() => {
+    if (mode === 'new' && selectedPriority) {
+      analytics.track('priority_set', {
+        priority_level: selectedPriority,
+      });
+    }
+  }, [selectedPriority, mode]);
+
+  useEffect(() => {
+    const deadline = watchedValues.deadline;
+    if (mode === 'new' && deadline) {
+      const daysFromNow = dayjs(deadline).diff(dayjs(), 'day');
+      const isFuture = daysFromNow >= 0;
+
+      analytics.track('deadline_date_set', {
+        days_from_now: daysFromNow,
+        is_future: isFuture,
+      });
+    }
+  }, [watchedValues.deadline, mode]);
 
   // Calculate pace estimate when relevant values change
   useEffect(() => {
@@ -207,6 +253,15 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     const statusValue = selectedStatus === 'pending' ? 'pending' : 'reading';
 
     const successCallback = () => {
+      if (mode === 'new') {
+        const bookSource = data.api_id ? 'search' : 'manual';
+        formFlowTracking.markCompleted({
+          book_source: bookSource,
+          format: selectedFormat,
+          status: statusValue,
+        });
+      }
+
       setIsSubmitting(false);
       createSuccessToast(mode)();
     };

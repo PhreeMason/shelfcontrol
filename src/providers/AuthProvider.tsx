@@ -1,3 +1,4 @@
+import { analytics } from '@/lib/analytics/client';
 import { posthog } from '@/lib/posthog';
 import { AppleProfileData, authService, profileService } from '@/services';
 import { Database } from '@/types/database.types';
@@ -145,7 +146,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   const signOut = async () => {
     try {
       await authService.signOut();
-      posthog.capture('user signed out');
+      analytics.track('user_signed_out');
       posthog.reset();
       sessionManager.cleanupUserState(setProfile, setSession);
     } catch (error: any) {

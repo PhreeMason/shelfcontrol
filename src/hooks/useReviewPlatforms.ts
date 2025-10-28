@@ -1,3 +1,4 @@
+import { analytics } from '@/lib/analytics/client';
 import {
   CategorizedPlatforms,
   extractCategorizedPlatforms,
@@ -122,11 +123,19 @@ export const useReviewPlatforms = (
 
     setSelectedPlatforms(prev => {
       const newSet = new Set(prev);
+      const isTogglingOn = !newSet.has(platform);
+
       if (newSet.has(platform)) {
         newSet.delete(platform);
       } else {
         newSet.add(platform);
       }
+
+      analytics.track('review_platform_toggled', {
+        platform_name: platform,
+        toggled_on: isTogglingOn,
+      });
+
       return newSet;
     });
   };

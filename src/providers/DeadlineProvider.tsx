@@ -10,7 +10,7 @@ import {
   useUpdateDeadline,
   useUpdateDeadlineDate,
 } from '@/hooks/useDeadlines';
-import { posthog } from '@/lib/posthog';
+import { analytics } from '@/lib/analytics/client';
 import {
   ReadingDeadlineInsert,
   ReadingDeadlineProgressInsert,
@@ -344,9 +344,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     ) => {
       addDeadlineMutation(params, {
         onSuccess: () => {
-          posthog.capture('deadline created', {
-            format: params.deadlineDetails.format,
-            status: params.status || 'active',
+          analytics.track('deadline_created', {
+            format: params.deadlineDetails.format as 'physical' | 'eBook' | 'audio',
+            status: (params.status || 'active') as 'pending' | 'reading' | 'completed' | 'paused' | 'dnf',
             source: params.deadlineDetails.source || 'manual',
           });
           onSuccess?.();
@@ -373,8 +373,8 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     ) => {
       updateDeadlineMutation(params, {
         onSuccess: () => {
-          posthog.capture('deadline updated', {
-            format: params.deadlineDetails.format,
+          analytics.track('deadline_updated', {
+            format: params.deadlineDetails.format as 'physical' | 'eBook' | 'audio',
           });
           onSuccess?.();
         },
@@ -398,7 +398,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         { deadlineId, newDate },
         {
           onSuccess: () => {
-            posthog.capture('deadline date updated');
+            analytics.track('deadline_date_updated');
             onSuccess?.();
           },
           onError: (error: Error) => {
@@ -419,7 +419,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     ) => {
       deleteDeadlineMutation(deadlineId, {
         onSuccess: () => {
-          posthog.capture('deadline deleted');
+          analytics.track('deadline_deleted');
           onSuccess?.();
         },
         onError: (error: Error) => {
@@ -441,7 +441,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         { deadlineId },
         {
           onSuccess: () => {
-            posthog.capture('deadline completed');
+            analytics.track('deadline_completed');
             onSuccess?.();
           },
           onError: (error: Error) => {
@@ -462,7 +462,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     ) => {
       startReadingDeadlineMutation(deadlineId, {
         onSuccess: () => {
-          posthog.capture('deadline started');
+          analytics.track('deadline_started');
           onSuccess?.();
         },
         onError: (error: Error) => {
@@ -482,7 +482,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     ) => {
       didNotFinishDeadlineMutation(deadlineId, {
         onSuccess: () => {
-          posthog.capture('deadline marked did not finish');
+          analytics.track('deadline_marked_did_not_finish');
           onSuccess?.();
         },
         onError: (error: Error) => {
@@ -502,7 +502,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     ) => {
       pauseDeadlineMutation(deadlineId, {
         onSuccess: () => {
-          posthog.capture('deadline paused');
+          analytics.track('deadline_paused');
           onSuccess?.();
         },
         onError: (error: Error) => {
@@ -522,7 +522,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     ) => {
       resumeDeadlineMutation(deadlineId, {
         onSuccess: () => {
-          posthog.capture('deadline resumed');
+          analytics.track('deadline_resumed');
           onSuccess?.();
         },
         onError: (error: Error) => {

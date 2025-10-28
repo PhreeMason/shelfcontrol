@@ -8,6 +8,7 @@ import {
   useDeleteFutureProgress,
   useUpdateDeadlineProgress,
 } from '@/hooks/useDeadlines';
+import { analytics } from '@/lib/analytics/client';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { createProgressUpdateSchema } from '@/utils/progressUpdateSchema';
@@ -177,6 +178,12 @@ const ReadingProgressUpdate = ({
         currentProgress,
         newProgress
       );
+
+      analytics.track('backward_progress_warning_shown', {
+        current_progress: currentProgress,
+        new_progress: newProgress,
+        format: deadline.format,
+      });
 
       Alert.alert('Backward Progress Warning', message, [
         {

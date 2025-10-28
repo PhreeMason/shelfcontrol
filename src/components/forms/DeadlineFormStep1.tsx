@@ -2,6 +2,8 @@ import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useFetchBookData, useSearchBooksList } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
+import { analytics } from '@/lib/analytics/client';
+import { useSearchTracking } from '@/hooks/analytics/useSearchTracking';
 import { BookSearchResult, SelectedBook } from '@/types/bookSearch';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -47,6 +49,13 @@ export const DeadlineFormStep1 = ({
     error: searchError,
   } = useSearchBooksList(debouncedQuery);
 
+  useSearchTracking({
+    query,
+    debouncedQuery,
+    searchResults,
+    searchError,
+  });
+
   const [selectedBook, setSelectedBook] = useState<BookSearchResult | null>(
     null
   );
@@ -61,6 +70,13 @@ export const DeadlineFormStep1 = ({
 
   const handleBookSelection = useCallback(async (book: BookSearchResult) => {
     if (!book.api_id) return;
+
+    analytics.track('book_selected', {
+      source: 'search',
+      has_cover: !!book.cover_image_url,
+      has_isbn: !!(book.metadata?.isbn),
+      has_publication_date: !!book.publication_date,
+    });
 
     setSelectedApiId(book.api_id);
     setSelectedBook(book);
@@ -221,7 +237,10 @@ export const DeadlineFormStep1 = ({
           </ThemedText>
           <TouchableOpacity
             style={[styles.manualEntryButton, { borderColor: colors.primary }]}
-            onPress={onManualEntry}
+            onPress={() => {
+              analytics.track('manual_book_entry_started');
+              onManualEntry();
+            }}
           >
             <IconSymbol name="pencil" size={20} color={colors.primary} />
             <ThemedText color="primary" style={styles.manualEntryText}>

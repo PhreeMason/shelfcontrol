@@ -2,7 +2,7 @@ import Checkbox from '@/components/shared/Checkbox';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { BorderRadius, Colors, FontFamily, Spacing } from '@/constants/Colors';
-import { posthog } from '@/lib/posthog';
+import { analytics } from '@/lib/analytics/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   platformUrlSchema,
@@ -88,7 +88,10 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
       const trimmedUrl = url.trim();
       const platform = platforms.find(p => p.id === platformId);
 
-      if (platform && platform.review_url !== trimmedUrl) {
+      if (platform && platform.review_url !== trimmedUrl && trimmedUrl) {
+        analytics.track('review_url_added', {
+          platform_name: platform.platform_name,
+        });
         onUpdateUrl(platformId, trimmedUrl);
       }
     }
@@ -97,7 +100,7 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
   const handleOpenUrl = (url: string, platformName: string) => {
     const hasUrl = !!url && url.trim() !== '';
 
-    posthog.capture('review link viewed', {
+    analytics.track('review_link_viewed', {
       platform_name: platformName,
       has_url: hasUrl,
       source: 'platform_checklist',
@@ -133,7 +136,7 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
     try {
       await Clipboard.setStringAsync(url);
 
-      posthog.capture('review link copied', {
+      analytics.track('review_link_copied', {
         platform_name: platformName,
         source: 'platform_checklist',
       });

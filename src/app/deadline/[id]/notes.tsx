@@ -11,11 +11,12 @@ import {
 } from '@/hooks/useNotes';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
+import { analytics } from '@/lib/analytics/client';
 import { DeadlineNote } from '@/types/notes.types';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -33,12 +34,26 @@ const Notes = () => {
   const { colors } = useTheme();
   const [noteText, setNoteText] = useState('');
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const initialNoteTextRef = useRef('');
 
   const { data: deadline } = useGetDeadlineById(id);
   const { data: notes, isLoading } = useGetNotes(id);
   const addNoteMutation = useAddNote();
   const updateNoteMutation = useUpdateNote();
   const deleteNoteMutation = useDeleteNote();
+
+  useEffect(() => {
+    analytics.track('notes_screen_viewed', {
+      deadline_id: id,
+      existing_notes_count: notes?.length || 0,
+    });
+
+    return () => {
+      if (noteText.trim().length > 0 && !editingNoteId) {
+        analytics.track('note_creation_cancelled');
+      }
+    };
+  }, []);
 
   const currentProgress =
     deadline?.progress && deadline.progress.length > 0
@@ -61,8 +76,14 @@ const Notes = () => {
         },
         {
           onSuccess: () => {
+            const lengthDelta = noteText.trim().length - initialNoteTextRef.current.length;
+            analytics.track('note_edited', {
+              note_id: editingNoteId,
+              length_delta: lengthDelta,
+            });
             setNoteText('');
             setEditingNoteId(null);
+            initialNoteTextRef.current = '';
           },
         }
       );
@@ -75,6 +96,10 @@ const Notes = () => {
         },
         {
           onSuccess: () => {
+            analytics.track('note_created', {
+              note_length: noteText.trim().length,
+              progress_percentage: currentProgressPercentage,
+            });
             setNoteText('');
           },
         }
@@ -85,6 +110,7 @@ const Notes = () => {
   const handleEditNote = (note: DeadlineNote) => {
     setNoteText(note.note_text);
     setEditingNoteId(note.id);
+    initialNoteTextRef.current = note.note_text;
   };
 
   const handleDeleteNote = (note: DeadlineNote) => {
@@ -98,10 +124,19 @@ const Notes = () => {
         style: 'destructive',
         onPress: () => {
           if (!id) return;
-          deleteNoteMutation.mutate({
-            noteId: note.id,
-            deadlineId: id,
-          });
+          deleteNoteMutation.mutate(
+            {
+              noteId: note.id,
+              deadlineId: id,
+            },
+            {
+              onSuccess: () => {
+                analytics.track('note_deleted', {
+                  note_id: note.id,
+                });
+              },
+            }
+          );
         },
       },
     ]);
@@ -110,6 +145,7 @@ const Notes = () => {
   const handleCopyNote = async (note: DeadlineNote) => {
     await Clipboard.setStringAsync(note.note_text);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    analytics.track('note_copied');
   };
 
   const renderNote = ({

@@ -24,7 +24,7 @@ import {
 } from '@/hooks/useReviewTracking';
 import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { useTheme } from '@/hooks/useThemeColor';
-import { posthog } from '@/lib/posthog';
+import { analytics } from '@/lib/analytics/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { ReviewFormData, reviewFormSchema } from '@/utils/reviewFormSchema';
@@ -96,7 +96,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
     getAllSelectedPlatforms,
   } = useReviewPlatforms(
     userPlatforms,
-    deadline.source || '',
+    deadline.type || '',
     initialPlatformNames,
     postedPlatformNames
   );
@@ -211,7 +211,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
 
       createReviewTracking(params, {
         onSuccess: () => {
-          posthog.capture('review_tracking_created', {
+          analytics.track('review_submitted', {
             platform_count: allPlatforms.length,
             has_custom_note: !!data.reviewNotes?.trim(),
           });

@@ -244,7 +244,13 @@ describe('CompletionFormContainer', () => {
 
       await waitFor(() => {
         expect(mockCompleteDeadline).toHaveBeenCalledWith(
-          mockDeadline.id,
+          expect.objectContaining({
+            deadlineId: mockDeadline.id,
+            deadline: expect.objectContaining({
+              total_quantity: mockDeadline.total_quantity,
+              progress: mockDeadline.progress,
+            }),
+          }),
           expect.objectContaining({
             onSuccess: expect.any(Function),
             onError: expect.any(Function),
@@ -279,7 +285,9 @@ describe('CompletionFormContainer', () => {
 
       await waitFor(() => {
         expect(mockCompleteDeadline).toHaveBeenCalledWith(
-          mockDeadline.id,
+          expect.objectContaining({
+            deadlineId: mockDeadline.id,
+          }),
           expect.any(Object)
         );
       });
@@ -680,8 +688,8 @@ describe('CompletionFormContainer', () => {
     });
 
     it('should use createCompletionCallbacks utility with correct parameters', async () => {
-      mockCompleteDeadline.mockImplementation((deadlineId, callbacks) => {
-        expect(deadlineId).toBe(mockDeadline.id);
+      mockCompleteDeadline.mockImplementation((params, callbacks) => {
+        expect(params.deadlineId).toBe(mockDeadline.id);
         expect(typeof callbacks.onSuccess).toBe('function');
         expect(typeof callbacks.onError).toBe('function');
         callbacks.onSuccess();

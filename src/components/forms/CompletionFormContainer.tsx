@@ -7,7 +7,8 @@ import {
   useDidNotFinishDeadline,
 } from '@/hooks/useDeadlines';
 import { dayjs } from '@/lib/dayjs';
-import { posthog } from '@/lib/posthog';
+import { analytics } from '@/lib/analytics/client';
+import { useFormFlowTracking } from '@/hooks/analytics/useFormFlowTracking';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   createCompletionCallbacks,
@@ -19,7 +20,7 @@ import {
 } from '@/utils/completionFlowUtils';
 import { normalizeServerDateStartOfDay } from '@/utils/dateNormalization';
 import { router } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Toast from 'react-native-toast-message';
 
 interface CompletionFormContainerProps {
@@ -33,44 +34,25 @@ const CompletionFormContainer: React.FC<CompletionFormContainerProps> = ({
 }) => {
   const [currentStep, setCurrentStep] = useState(isDNF ? 2 : 1);
   const [needsReview, setNeedsReview] = useState<boolean | null>(null);
-  const mountTimeRef = useRef(Date.now());
-  const hasCompletedRef = useRef(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { mutate: completeDeadline } = useCompleteDeadline();
   const { mutate: didNotFinishDeadline } = useDidNotFinishDeadline();
 
-  useEffect(() => {
-    const createdDate = normalizeServerDateStartOfDay(deadline.created_at);
-    const daysToComplete = dayjs().diff(createdDate, 'day');
+  const createdDate = normalizeServerDateStartOfDay(deadline.created_at);
+  const daysToComplete = dayjs().diff(createdDate, 'day');
 
-    posthog.capture('completion_flow_started', {
-      format: deadline.format,
-      status: deadline.status || 'unknown',
+  useFormFlowTracking({
+    flowType: 'completion',
+    currentStep,
+    stepNames: ['celebration', 'review_question', 'review_form'],
+    additionalStartProperties: {
+      format: deadline.format as 'physical' | 'eBook' | 'audio',
+      status: (deadline.status || 'unknown') as 'pending' | 'reading' | 'completed' | 'paused' | 'dnf',
       days_to_complete: daysToComplete,
       is_dnf: isDNF,
-    });
-
-    return () => {
-      if (!hasCompletedRef.current) {
-        const timeSpent = Math.round((Date.now() - mountTimeRef.current) / 1000);
-        posthog.capture('completion_flow_abandoned', {
-          last_step: currentStep,
-          time_spent: timeSpent,
-        });
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const stepNames = ['celebration', 'review_question', 'review_form'];
-    const stepName = stepNames[currentStep - 1] || 'unknown';
-
-    posthog.capture('completion_step_viewed', {
-      step_number: currentStep,
-      step_name: stepName,
-    });
-  }, [currentStep]);
+    },
+  });
 
   const handleCelebrationContinue = () => {
     setCurrentStep(2);
@@ -101,15 +83,14 @@ const CompletionFormContainer: React.FC<CompletionFormContainerProps> = ({
     const finalStatus = getCompletionStatus(isDNF);
 
     if (finalStatus === 'did_not_finish') {
-      posthog.capture('did_not_finish_selected', {
-        format: deadline.format,
+      analytics.track('did_not_finish_selected', {
+        format: deadline.format as 'physical' | 'eBook' | 'audio',
         book_title: deadline.book_title,
       });
     }
 
     const mutationCallbacks = {
       onSuccess: () => {
-        hasCompletedRef.current = true;
         setIsProcessing(false);
         callbacks.onSuccess();
       },
