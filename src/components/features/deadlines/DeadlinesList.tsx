@@ -54,7 +54,7 @@ const DeadlinesList: React.FC<DeadlinesListProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    gap: 20,
+    gap: 18,
     paddingHorizontal: 12,
     paddingTop: 20,
   },
