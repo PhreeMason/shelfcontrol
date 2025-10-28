@@ -112,11 +112,12 @@ const DeadlineView = () => {
           </>
         ) : null}
 
-        <BookDetailsSection deadline={deadline} />
-
         <DeadlineContactsSection deadline={deadline} />
 
         <DisclosureSection deadline={deadline} />
+
+        <BookDetailsSection deadline={deadline} />
+
       </ThemedKeyboardAwareScrollView>
 
       <Pressable
