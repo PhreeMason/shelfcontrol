@@ -7,12 +7,22 @@ import {
 } from '@testing-library/react-native';
 import { DeadlineFormStep1 } from '../DeadlineFormStep1';
 import { useFetchBookData, useSearchBooksList } from '@/hooks/useBooks';
+import { useGetDeadlines } from '@/hooks/useDeadlines';
+import { showDuplicateBookWarning } from '@/hooks/useDuplicateBookWarning';
 import { useTheme } from '@/hooks/useThemeColor';
 
 // Mock hooks
 jest.mock('@/hooks/useBooks', () => ({
   useSearchBooksList: jest.fn(),
   useFetchBookData: jest.fn(),
+}));
+
+jest.mock('@/hooks/useDeadlines', () => ({
+  useGetDeadlines: jest.fn(),
+}));
+
+jest.mock('@/hooks/useDuplicateBookWarning', () => ({
+  showDuplicateBookWarning: jest.fn(),
 }));
 
 jest.mock('@/hooks/useThemeColor', () => ({
@@ -109,6 +119,10 @@ describe('DeadlineFormStep1', () => {
     (useFetchBookData as jest.Mock).mockReturnValue({
       data: null,
     });
+
+    (useGetDeadlines as jest.Mock).mockReturnValue({
+      data: [],
+    });
   });
 
   describe('Component Structure', () => {
@@ -135,7 +149,7 @@ describe('DeadlineFormStep1', () => {
     it('should render manual entry button', () => {
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      expect(screen.getByText(/Can't find your book/)).toBeTruthy();
+      expect(screen.getByText('OR')).toBeTruthy();
     });
 
     it('should render OR divider', () => {
@@ -278,9 +292,7 @@ describe('DeadlineFormStep1', () => {
       expect(
         screen.getByText(/No books found for "NonexistentBook"/)
       ).toBeTruthy();
-      expect(
-        screen.getByText('Try a different search or add manually')
-      ).toBeTruthy();
+      expect(screen.getByText('Add it manually')).toBeTruthy();
     });
 
     it('should show search prompt when input is empty', () => {
@@ -469,17 +481,39 @@ describe('DeadlineFormStep1', () => {
   });
 
   describe('Manual Entry', () => {
-    it('should call onManualEntry when manual entry button is pressed', () => {
+    it('should call onManualEntry when manual entry button is pressed in no results state', () => {
+      (useSearchBooksList as jest.Mock).mockReturnValue({
+        data: { bookList: [] },
+        isLoading: false,
+        error: null,
+      });
+
       render(<DeadlineFormStep1 {...defaultProps} />);
 
-      const manualEntryButton = screen.getByText(/Can't find your book/);
+      const searchInput = screen.getByPlaceholderText(
+        'Search by title or author...'
+      );
+      fireEvent.changeText(searchInput, 'NonexistentBook');
+
+      const manualEntryButton = screen.getByText('Add it manually');
       fireEvent.press(manualEntryButton);
 
       expect(mockOnManualEntry).toHaveBeenCalled();
     });
 
-    it('should show pencil icon on manual entry button', () => {
+    it('should show pencil icon on manual entry button in no results state', () => {
+      (useSearchBooksList as jest.Mock).mockReturnValue({
+        data: { bookList: [] },
+        isLoading: false,
+        error: null,
+      });
+
       render(<DeadlineFormStep1 {...defaultProps} />);
+
+      const searchInput = screen.getByPlaceholderText(
+        'Search by title or author...'
+      );
+      fireEvent.changeText(searchInput, 'NonexistentBook');
 
       expect(screen.getByTestId('icon-pencil')).toBeTruthy();
     });
@@ -549,6 +583,7 @@ describe('DeadlineFormStep1', () => {
         total_pages: 309,
         total_duration: null,
         publication_date: '1997-06-26',
+        publisher: null,
       });
     });
 
@@ -769,13 +804,13 @@ describe('DeadlineFormStep1', () => {
         screen.getByText(/No books found for "Nonexistent Book"/)
       ).toBeTruthy();
 
-      const manualEntryButton = screen.getByText(/Can't find your book/);
+      const manualEntryButton = screen.getByText('Add it manually');
       fireEvent.press(manualEntryButton);
 
       expect(mockOnManualEntry).toHaveBeenCalled();
     });
 
-    it('should handle search error -> manual entry fallback', () => {
+    it('should handle search error gracefully', () => {
       (useSearchBooksList as jest.Mock).mockReturnValue({
         data: null,
         isLoading: false,
@@ -787,11 +822,223 @@ describe('DeadlineFormStep1', () => {
       expect(
         screen.getByText('Failed to search books. Please try again.')
       ).toBeTruthy();
+      expect(screen.getByText('OR')).toBeTruthy();
+    });
+  });
 
-      const manualEntryButton = screen.getByText(/Can't find your book/);
-      fireEvent.press(manualEntryButton);
+  describe('Duplicate Book Detection', () => {
+    const mockExistingDeadlines = [
+      {
+        id: 'deadline-1',
+        book_id: 'db-book-1',
+        book_title: "Harry Potter and the Sorcerer's Stone",
+        author: 'J.K. Rowling',
+        deadline_date: '2024-12-31',
+        total_quantity: 309,
+        progress: [
+          {
+            id: 'progress-1',
+            deadline_id: 'deadline-1',
+            current_progress: 150,
+            created_at: '2024-01-01',
+            updated_at: '2024-01-02',
+            time_spent_reading: null,
+            ignore_in_calcs: false,
+          },
+        ],
+        status: [
+          {
+            id: 'status-1',
+            deadline_id: 'deadline-1',
+            status: 'reading' as const,
+            created_at: '2024-01-01',
+            updated_at: '2024-01-01',
+          },
+        ],
+      },
+    ];
 
-      expect(mockOnManualEntry).toHaveBeenCalled();
+    it('should not show warning when no duplicate deadlines exist', () => {
+      (useGetDeadlines as jest.Mock).mockReturnValue({
+        data: [],
+      });
+
+      (useFetchBookData as jest.Mock).mockReturnValue({
+        data: mockFullBookData,
+      });
+
+      const { rerender } = render(<DeadlineFormStep1 {...defaultProps} />);
+
+      (useSearchBooksList as jest.Mock).mockReturnValue({
+        data: mockSearchResults,
+        isLoading: false,
+        error: null,
+      });
+
+      rerender(<DeadlineFormStep1 {...defaultProps} />);
+
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
+      fireEvent.press(firstBookButton);
+
+      rerender(<DeadlineFormStep1 {...defaultProps} />);
+
+      expect(showDuplicateBookWarning).toHaveBeenCalledWith({
+        selectedBook: expect.objectContaining({
+          id: 'db-book-1',
+          title: "Harry Potter and the Sorcerer's Stone",
+        }),
+        allDeadlines: [],
+      });
+      expect(mockOnBookSelected).toHaveBeenCalled();
+    });
+
+    it('should call duplicate warning when duplicate book_id exists', () => {
+      (useGetDeadlines as jest.Mock).mockReturnValue({
+        data: mockExistingDeadlines,
+      });
+
+      (useFetchBookData as jest.Mock).mockReturnValue({
+        data: mockFullBookData,
+      });
+
+      const { rerender } = render(<DeadlineFormStep1 {...defaultProps} />);
+
+      (useSearchBooksList as jest.Mock).mockReturnValue({
+        data: mockSearchResults,
+        isLoading: false,
+        error: null,
+      });
+
+      rerender(<DeadlineFormStep1 {...defaultProps} />);
+
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
+      fireEvent.press(firstBookButton);
+
+      rerender(<DeadlineFormStep1 {...defaultProps} />);
+
+      expect(showDuplicateBookWarning).toHaveBeenCalledWith({
+        selectedBook: expect.objectContaining({
+          id: 'db-book-1',
+          title: "Harry Potter and the Sorcerer's Stone",
+        }),
+        allDeadlines: mockExistingDeadlines,
+      });
+    });
+
+    it('should call duplicate warning for fuzzy title/author match', () => {
+      const deadlinesWithoutBookId = [
+        {
+          ...mockExistingDeadlines[0],
+          id: 'deadline-2',
+          book_id: 'different-book-id',
+        },
+      ];
+
+      (useGetDeadlines as jest.Mock).mockReturnValue({
+        data: deadlinesWithoutBookId,
+      });
+
+      (useFetchBookData as jest.Mock).mockReturnValue({
+        data: mockFullBookData,
+      });
+
+      const { rerender } = render(<DeadlineFormStep1 {...defaultProps} />);
+
+      (useSearchBooksList as jest.Mock).mockReturnValue({
+        data: mockSearchResults,
+        isLoading: false,
+        error: null,
+      });
+
+      rerender(<DeadlineFormStep1 {...defaultProps} />);
+
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
+      fireEvent.press(firstBookButton);
+
+      rerender(<DeadlineFormStep1 {...defaultProps} />);
+
+      expect(showDuplicateBookWarning).toHaveBeenCalledWith({
+        selectedBook: expect.objectContaining({
+          id: 'db-book-1',
+          title: "Harry Potter and the Sorcerer's Stone",
+          author: 'J.K. Rowling',
+        }),
+        allDeadlines: deadlinesWithoutBookId,
+      });
+    });
+
+    it('should pass all deadline data to warning function', () => {
+      (useGetDeadlines as jest.Mock).mockReturnValue({
+        data: mockExistingDeadlines,
+      });
+
+      (useFetchBookData as jest.Mock).mockReturnValue({
+        data: mockFullBookData,
+      });
+
+      const { rerender } = render(<DeadlineFormStep1 {...defaultProps} />);
+
+      (useSearchBooksList as jest.Mock).mockReturnValue({
+        data: mockSearchResults,
+        isLoading: false,
+        error: null,
+      });
+
+      rerender(<DeadlineFormStep1 {...defaultProps} />);
+
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
+      fireEvent.press(firstBookButton);
+
+      rerender(<DeadlineFormStep1 {...defaultProps} />);
+
+      expect(showDuplicateBookWarning).toHaveBeenCalledWith({
+        selectedBook: expect.objectContaining({
+          id: 'db-book-1',
+          api_id: 'book-1',
+          title: "Harry Potter and the Sorcerer's Stone",
+          author: 'J.K. Rowling',
+          total_pages: 309,
+        }),
+        allDeadlines: mockExistingDeadlines,
+      });
+    });
+
+    it('should allow user to proceed after duplicate check', () => {
+      (useGetDeadlines as jest.Mock).mockReturnValue({
+        data: mockExistingDeadlines,
+      });
+
+      (useFetchBookData as jest.Mock).mockReturnValue({
+        data: mockFullBookData,
+      });
+
+      const { rerender } = render(<DeadlineFormStep1 {...defaultProps} />);
+
+      (useSearchBooksList as jest.Mock).mockReturnValue({
+        data: mockSearchResults,
+        isLoading: false,
+        error: null,
+      });
+
+      rerender(<DeadlineFormStep1 {...defaultProps} />);
+
+      const firstBookButton = screen.getByText(
+        "Harry Potter and the Sorcerer's Stone"
+      );
+      fireEvent.press(firstBookButton);
+
+      rerender(<DeadlineFormStep1 {...defaultProps} />);
+
+      expect(showDuplicateBookWarning).toHaveBeenCalled();
+      expect(mockOnBookSelected).toHaveBeenCalled();
     });
   });
 });

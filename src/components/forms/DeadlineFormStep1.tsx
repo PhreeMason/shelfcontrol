@@ -1,6 +1,8 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useFetchBookData, useSearchBooksList } from '@/hooks/useBooks';
+import { useGetDeadlines } from '@/hooks/useDeadlines';
+import { showDuplicateBookWarning } from '@/hooks/useDuplicateBookWarning';
 import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
 import { useSearchTracking } from '@/hooks/analytics/useSearchTracking';
@@ -30,6 +32,7 @@ export const DeadlineFormStep1 = ({
   setValue,
 }: DeadlineFormStep1Props) => {
   const { colors } = useTheme();
+  const { data: allDeadlines = [] } = useGetDeadlines();
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedApiId, setSelectedApiId] = useState<string | null>(null);
@@ -125,6 +128,11 @@ export const DeadlineFormStep1 = ({
         setValue('totalQuantity', selectedBookData.total_pages);
       }
 
+      showDuplicateBookWarning({
+        selectedBook: selectedBookData,
+        allDeadlines,
+      });
+
       setIsLoadingBookDetails(false);
       onBookSelected(selectedBookData);
     }
@@ -135,6 +143,7 @@ export const DeadlineFormStep1 = ({
     selectedBook,
     setValue,
     onBookSelected,
+    allDeadlines,
   ]);
 
   const renderSearchResults = () => {
