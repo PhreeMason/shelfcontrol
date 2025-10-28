@@ -347,7 +347,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
           analytics.track('deadline_created', {
             format: params.deadlineDetails.format as 'physical' | 'eBook' | 'audio',
             status: (params.status || 'active') as 'pending' | 'reading' | 'completed' | 'paused' | 'dnf',
-            source: params.deadlineDetails.source || 'manual',
+            type: params.deadlineDetails.type || 'manual',
           });
           onSuccess?.();
         },

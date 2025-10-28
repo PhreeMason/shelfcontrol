@@ -139,7 +139,7 @@ describe('chartDataUtils', () => {
       author: 'Test Author',
       source: 'manual',
       acquisition_source: null,
-      deadline_type: null,
+      type: "Personal",
       publishers: null,
       flexibility:
         'fixed' as Database['public']['Enums']['deadline_flexibility'],
@@ -519,7 +519,7 @@ describe('chartDataUtils', () => {
         author: 'Test Author',
         source: 'manual',
         acquisition_source: null,
-        deadline_type: null,
+        type: "Personal",
         publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
@@ -544,7 +544,7 @@ describe('chartDataUtils', () => {
         author: 'Test Author',
         source: 'manual',
         acquisition_source: null,
-        deadline_type: null,
+        type: "Personal",
         publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
@@ -569,7 +569,7 @@ describe('chartDataUtils', () => {
         author: 'Test Author',
         source: 'manual',
         acquisition_source: null,
-        deadline_type: null,
+        type: "Personal",
         publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
@@ -622,7 +622,7 @@ describe('chartDataUtils', () => {
         author: 'Test Author',
         source: 'manual',
         acquisition_source: null,
-        deadline_type: null,
+        type: "Personal",
         publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
@@ -657,7 +657,7 @@ describe('chartDataUtils', () => {
         author: 'Test Author',
         source: 'manual',
         acquisition_source: null,
-        deadline_type: null,
+        type: "Personal",
         publishers: null,
         flexibility:
           'fixed' as Database['public']['Enums']['deadline_flexibility'],
@@ -731,7 +731,7 @@ describe('chartDataUtils', () => {
       author: 'Test Author',
       source: 'manual',
       acquisition_source: null,
-      deadline_type: null,
+      type: "Personal",
       publishers: null,
       flexibility:
         'fixed' as Database['public']['Enums']['deadline_flexibility'],

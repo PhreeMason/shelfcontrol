@@ -209,7 +209,7 @@ export const createReadAgainParams = (
     bookTitle: deadline.book_title,
     bookAuthor: deadline.author || '',
     format: deadline.format,
-    source: deadline.source || '',
+    source: deadline.type || '',
     flexibility: (deadline as any).flexibility || 'flexible',
     book_id: (deadline as any).book_id || '',
   };

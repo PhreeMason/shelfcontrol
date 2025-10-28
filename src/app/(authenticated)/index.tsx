@@ -31,15 +31,15 @@ export default function HomeScreen() {
     setSelectedFormats,
     selectedPageRanges,
     setSelectedPageRanges,
-    selectedSources,
-    setSelectedSources,
+    selectedTypes,
+    setSelectedTypes,
     excludedStatuses,
     setExcludedStatuses,
     sortOrder,
     setSortOrder,
   } = usePreferences();
   const { refetch, isRefreshing, deadlines } = useDeadlines();
-  const { data: availableSources = [] } = useDeadlineTypes();
+  const { data: availableTypes = [] } = useDeadlineTypes();
   const prevSelectedFilterRef = React.useRef<FilterType | null>(null);
   const prevSortOrderRef = React.useRef(sortOrder);
 
@@ -48,7 +48,7 @@ export default function HomeScreen() {
     if (timeRangeFilter !== 'all') activeFilters.push('time_range');
     if (selectedFormats.length > 0) activeFilters.push('formats');
     if (selectedPageRanges.length > 0) activeFilters.push('page_ranges');
-    if (selectedSources.length > 0) activeFilters.push('sources');
+    if (selectedTypes.length > 0) activeFilters.push('types');
     if (excludedStatuses.length > 0) activeFilters.push('excluded_statuses');
 
     analytics.track('home_screen_viewed', {
@@ -106,7 +106,7 @@ export default function HomeScreen() {
       setTimeRangeFilter('all');
       setSelectedFormats([]);
       setSelectedPageRanges([]);
-      setSelectedSources([]);
+      setSelectedTypes([]);
       setExcludedStatuses([]);
     }
     prevSelectedFilterRef.current = selectedFilter;
@@ -115,7 +115,7 @@ export default function HomeScreen() {
     setTimeRangeFilter,
     setSelectedFormats,
     setSelectedPageRanges,
-    setSelectedSources,
+    setSelectedTypes,
     setExcludedStatuses,
   ]);
 
@@ -124,7 +124,7 @@ export default function HomeScreen() {
     if (timeRangeFilter !== 'all') activeFilters.push('time_range');
     if (selectedFormats.length > 0) activeFilters.push('formats');
     if (selectedPageRanges.length > 0) activeFilters.push('page_ranges');
-    if (selectedSources.length > 0) activeFilters.push('sources');
+    if (selectedTypes.length > 0) activeFilters.push('types');
     if (excludedStatuses.length > 0) activeFilters.push('excluded_statuses');
 
     if (activeFilters.length > 0) {
@@ -132,7 +132,7 @@ export default function HomeScreen() {
         filter_types: activeFilters,
       });
     }
-  }, [timeRangeFilter, selectedFormats, selectedPageRanges, selectedSources, excludedStatuses]);
+  }, [timeRangeFilter, selectedFormats, selectedPageRanges, selectedTypes, excludedStatuses]);
 
   React.useEffect(() => {
     if (prevSortOrderRef.current !== sortOrder) {
@@ -170,13 +170,13 @@ export default function HomeScreen() {
         onFormatsChange={setSelectedFormats}
         selectedPageRanges={selectedPageRanges}
         onPageRangesChange={setSelectedPageRanges}
-        selectedSources={selectedSources}
-        onSourcesChange={setSelectedSources}
+        selectedTypes={selectedTypes}
+        onTypesChange={setSelectedTypes}
         excludedStatuses={excludedStatuses}
         onExcludedStatusesChange={setExcludedStatuses}
         sortOrder={sortOrder}
         onSortOrderChange={setSortOrder}
-        availableSources={availableSources}
+        availableTypes={availableTypes}
         animatedStyle={stickyFilterStyle}
       />
 
@@ -208,13 +208,13 @@ export default function HomeScreen() {
           onFormatsChange={setSelectedFormats}
           selectedPageRanges={selectedPageRanges}
           onPageRangesChange={setSelectedPageRanges}
-          selectedSources={selectedSources}
-          onSourcesChange={setSelectedSources}
+          selectedTypes={selectedTypes}
+          onTypesChange={setSelectedTypes}
           excludedStatuses={excludedStatuses}
           onExcludedStatusesChange={setExcludedStatuses}
           sortOrder={sortOrder}
           onSortOrderChange={setSortOrder}
-          availableSources={availableSources}
+          availableTypes={availableTypes}
           animatedStyle={scrollableFilterStyle}
           onLayout={handleFilterLayout}
         />
@@ -224,7 +224,7 @@ export default function HomeScreen() {
           timeRangeFilter={timeRangeFilter}
           selectedFormats={selectedFormats}
           selectedPageRanges={selectedPageRanges}
-          selectedSources={selectedSources}
+          selectedTypes={selectedTypes}
           excludedStatuses={excludedStatuses}
           sortOrder={sortOrder}
         />

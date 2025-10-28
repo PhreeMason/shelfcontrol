@@ -1,11 +1,11 @@
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react-native';
 import { Control } from 'react-hook-form';
-import SourceTypeaheadInput from '../SourceTypeaheadInput';
+import TypeTypeaheadInput from '../TypeTypeaheadInput';
 
 // Mock dependencies
-jest.mock('@/hooks/useDeadlineSources', () => ({
-  useDeadlineSources: jest.fn(),
+jest.mock('@/hooks/useDeadlineTypes', () => ({
+  useDeadlineTypes: jest.fn(),
 }));
 
 jest.mock('@/hooks/useTheme', () => ({
@@ -47,14 +47,14 @@ jest.mock('react-hook-form', () => ({
   useWatch: jest.fn(),
 }));
 
-describe('SourceTypeaheadInput', () => {
+describe('TypeTypeaheadInput', () => {
   const mockControl = {} as Control<any>;
   const mockSources = ['Fiction', 'Non-Fiction', 'Science Fiction'];
 
   beforeEach(() => {
     jest.clearAllMocks();
 
-    const { useDeadlineSources } = require('@/hooks/useDeadlineSources');
+    const { useDeadlineTypes } = require('@/hooks/useDeadlineTypes');
     const { Controller, useWatch } = require('react-hook-form');
     const {
       filterSuggestions,
@@ -63,7 +63,7 @@ describe('SourceTypeaheadInput', () => {
       shouldShowNoResults,
     } = require('@/utils/typeaheadUtils');
 
-    useDeadlineSources.mockReturnValue({
+    useDeadlineTypes.mockReturnValue({
       data: mockSources,
       isLoading: false,
     });
@@ -93,14 +93,14 @@ describe('SourceTypeaheadInput', () => {
 
   describe('rendering', () => {
     it('should render text input with default placeholder', () => {
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       expect(screen.getByPlaceholderText('Enter book type')).toBeTruthy();
     });
 
     it('should render text input with custom placeholder', () => {
       render(
-        <SourceTypeaheadInput
+        <TypeTypeaheadInput
           control={mockControl}
           name="source"
           placeholder="Custom placeholder"
@@ -112,7 +112,7 @@ describe('SourceTypeaheadInput', () => {
 
     it('should render with custom testID', () => {
       render(
-        <SourceTypeaheadInput
+        <TypeTypeaheadInput
           control={mockControl}
           name="source"
           testID="custom-test-id"
@@ -123,13 +123,13 @@ describe('SourceTypeaheadInput', () => {
     });
 
     it('should render loading indicator when loading', () => {
-      const { useDeadlineSources } = require('@/hooks/useDeadlineSources');
-      useDeadlineSources.mockReturnValue({
+      const { useDeadlineTypes } = require('@/hooks/useDeadlineTypes');
+      useDeadlineTypes.mockReturnValue({
         data: mockSources,
         isLoading: true,
       });
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       // ActivityIndicator doesn't have a testID by default, so check if it's rendered
       expect(screen.getByTestId('source-typeahead')).toBeTruthy();
@@ -141,7 +141,7 @@ describe('SourceTypeaheadInput', () => {
       const { shouldShowSuggestions } = require('@/utils/typeaheadUtils');
       shouldShowSuggestions.mockReturnValue(true);
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       expect(screen.getByTestId('suggestions-dropdown')).toBeTruthy();
     });
@@ -150,7 +150,7 @@ describe('SourceTypeaheadInput', () => {
       const { shouldShowSuggestions } = require('@/utils/typeaheadUtils');
       shouldShowSuggestions.mockReturnValue(false);
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       expect(screen.queryByTestId('suggestions-dropdown')).toBeNull();
     });
@@ -159,7 +159,7 @@ describe('SourceTypeaheadInput', () => {
       const { filterSuggestions } = require('@/utils/typeaheadUtils');
       filterSuggestions.mockReturnValue(['Fiction', 'Science Fiction']);
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       expect(screen.getByText('Fiction')).toBeTruthy();
       expect(screen.getByText('Science Fiction')).toBeTruthy();
@@ -173,7 +173,7 @@ describe('SourceTypeaheadInput', () => {
       );
       filterSuggestions.mockReturnValue(manySuggestions);
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       // Check that only first 5 items are rendered
       expect(screen.getByText('Item 1')).toBeTruthy();
@@ -187,7 +187,7 @@ describe('SourceTypeaheadInput', () => {
       const { shouldShowNoResults } = require('@/utils/typeaheadUtils');
       shouldShowNoResults.mockReturnValue(true);
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       fireEvent.changeText(
         screen.getByTestId('source-typeahead'),
@@ -201,7 +201,7 @@ describe('SourceTypeaheadInput', () => {
       const { shouldShowNoResults } = require('@/utils/typeaheadUtils');
       shouldShowNoResults.mockReturnValue(false);
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       expect(screen.queryByText(/No matches found/)).toBeNull();
     });
@@ -211,7 +211,7 @@ describe('SourceTypeaheadInput', () => {
     it('should call filterSuggestions when text changes', () => {
       const { filterSuggestions } = require('@/utils/typeaheadUtils');
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       fireEvent.changeText(screen.getByTestId('source-typeahead'), 'Fiction');
 
@@ -221,7 +221,7 @@ describe('SourceTypeaheadInput', () => {
     it('should call highlightMatch for each suggestion item', () => {
       const { highlightMatch } = require('@/utils/typeaheadUtils');
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       // Change text to trigger rendering
       fireEvent.changeText(screen.getByTestId('source-typeahead'), 'Fiction');
@@ -230,7 +230,7 @@ describe('SourceTypeaheadInput', () => {
     });
 
     it('should handle text input focus', () => {
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       const textInput = screen.getByTestId('source-typeahead');
       fireEvent(textInput, 'focus');
@@ -241,7 +241,7 @@ describe('SourceTypeaheadInput', () => {
     });
 
     it('should handle text input blur', () => {
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       const textInput = screen.getByTestId('source-typeahead');
       fireEvent(textInput, 'blur');
@@ -264,7 +264,7 @@ describe('SourceTypeaheadInput', () => {
         return render({ field: mockField, fieldState: mockFieldState });
       });
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       fireEvent.press(screen.getByText('Fiction'));
 
@@ -276,7 +276,7 @@ describe('SourceTypeaheadInput', () => {
     it('should call shouldShowSuggestions with correct parameters', () => {
       const { shouldShowSuggestions } = require('@/utils/typeaheadUtils');
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       fireEvent.changeText(screen.getByTestId('source-typeahead'), 'test');
       fireEvent(screen.getByTestId('source-typeahead'), 'focus');
@@ -291,7 +291,7 @@ describe('SourceTypeaheadInput', () => {
     it('should call shouldShowNoResults with correct parameters', () => {
       const { shouldShowNoResults } = require('@/utils/typeaheadUtils');
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       fireEvent.changeText(screen.getByTestId('source-typeahead'), 'test');
 
@@ -318,7 +318,7 @@ describe('SourceTypeaheadInput', () => {
         return render({ field: mockField, fieldState: mockFieldState });
       });
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       expect(screen.getByText('This field is required')).toBeTruthy();
     });
@@ -336,7 +336,7 @@ describe('SourceTypeaheadInput', () => {
         return render({ field: mockField, fieldState: mockFieldState });
       });
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       // The border styling is applied to a wrapper view, not directly to the TextInput
       // Just verify error message is shown as this indicates error state is working
@@ -349,13 +349,13 @@ describe('SourceTypeaheadInput', () => {
       const { shouldShowSuggestions } = require('@/utils/typeaheadUtils');
       shouldShowSuggestions.mockReturnValue(true);
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       expect(screen.getByTestId('suggestions-dropdown')).toBeTruthy();
     });
 
     it('should handle keyboard interactions properly', () => {
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       // Verify FlatList has keyboardShouldPersistTaps set to "handled"
       expect(screen.getByTestId('suggestions-dropdown')).toBeTruthy();
@@ -367,7 +367,7 @@ describe('SourceTypeaheadInput', () => {
       const { useWatch } = require('react-hook-form');
       useWatch.mockReturnValue('Initial Value');
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       expect(screen.getByDisplayValue('Initial Value')).toBeTruthy();
     });
@@ -376,7 +376,7 @@ describe('SourceTypeaheadInput', () => {
       const { useWatch } = require('react-hook-form');
       useWatch.mockReturnValue('Watched Value');
 
-      render(<SourceTypeaheadInput control={mockControl} name="source" />);
+      render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
       const textInput = screen.getByTestId('source-typeahead');
 

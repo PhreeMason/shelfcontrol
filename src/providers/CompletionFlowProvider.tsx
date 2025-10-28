@@ -80,7 +80,7 @@ export const CompletionFlowProvider: React.FC<CompletionFlowProviderProps> = ({
         totalPages,
         currentProgress,
         startDate,
-        source: deadline.source || 'Personal',
+        source: deadline.type || 'Unknown',
         bookId: deadline.book_id || '',
       },
       isDNF,

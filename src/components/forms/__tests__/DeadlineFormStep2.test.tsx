@@ -32,9 +32,9 @@ jest.mock('@/components/shared/CustomInput', () => {
   };
 });
 
-jest.mock('@/components/shared/SourceTypeaheadInput', () => {
+jest.mock('@/components/shared/TypeTypeaheadInput', () => {
   const React = require('react');
-  return function MockSourceTypeaheadInput(props: any) {
+  return function MockTypeTypeaheadInput(props: any) {
     return React.createElement(
       'View',
       {
@@ -369,7 +369,7 @@ describe('DeadlineFormStep2', () => {
       });
     });
 
-    it('should pass control prop to SourceTypeaheadInput', () => {
+    it('should pass control prop to TypeTypeaheadInput', () => {
       render(<DeadlineFormStep2 {...defaultProps} />);
 
       expect(screen.getByTestId('input-source')).toBeTruthy();

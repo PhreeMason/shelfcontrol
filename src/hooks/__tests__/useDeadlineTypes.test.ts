@@ -2,11 +2,11 @@ import { useAuth } from '@/providers/AuthProvider';
 import { deadlinesService } from '@/services';
 import { useQuery } from '@tanstack/react-query';
 
-import { useDeadlineSources } from '../useDeadlineSources';
+import { useDeadlineTypes } from '../useDeadlineTypes';
 
 jest.mock('@/services', () => ({
   deadlinesService: {
-    getUniqueSources: jest.fn(),
+    getUniqueDeadlineTypes: jest.fn(),
   },
 }));
 
@@ -25,7 +25,7 @@ const mockDeadlinesService = deadlinesService as jest.Mocked<
   typeof deadlinesService
 >;
 
-const DEFAULT_SOURCES = ['ARC', 'Library', 'Personal', 'Book Club'];
+const DEFAULT_TYPES = ['ARC', 'Library', 'Personal', 'Book Club'];
 
 const mockUser = {
   id: 'user-123',
@@ -42,7 +42,7 @@ const mockSession = {
   user: mockUser,
 };
 
-describe('useDeadlineSources', () => {
+describe('useDeadlineTypes', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseAuth.mockReturnValue({
@@ -52,52 +52,52 @@ describe('useDeadlineSources', () => {
   });
 
   describe('Unauthenticated User Scenarios', () => {
-    it('should return DEFAULT_SOURCES when no userId from profile', () => {
+    it('should return DEFAULT_TYPES when no userId from profile', () => {
       mockUseAuth.mockReturnValue({
         profile: null,
         session: null,
       });
 
-      const result = useDeadlineSources();
+      const result = useDeadlineTypes();
 
-      expect(result.data).toEqual(DEFAULT_SOURCES);
+      expect(result.data).toEqual(DEFAULT_TYPES);
       expect(mockUseQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          queryKey: ['deadline', 'sources', undefined],
+          queryKey: ['deadline', 'types', undefined],
           enabled: false,
         })
       );
     });
 
-    it('should return DEFAULT_SOURCES when no userId from session', () => {
+    it('should return DEFAULT_TYPES when no userId from session', () => {
       mockUseAuth.mockReturnValue({
         profile: { id: null },
         session: { user: { id: null } },
       });
 
-      const result = useDeadlineSources();
+      const result = useDeadlineTypes();
 
-      expect(result.data).toEqual(DEFAULT_SOURCES);
+      expect(result.data).toEqual(DEFAULT_TYPES);
       expect(mockUseQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          queryKey: ['deadline', 'sources', undefined],
+          queryKey: ['deadline', 'types', undefined],
           enabled: false,
         })
       );
     });
 
-    it('should return DEFAULT_SOURCES when both profile and session are missing', () => {
+    it('should return DEFAULT_TYPES when both profile and session are missing', () => {
       mockUseAuth.mockReturnValue({
         profile: undefined,
         session: undefined,
       });
 
-      const result = useDeadlineSources();
+      const result = useDeadlineTypes();
 
-      expect(result.data).toEqual(DEFAULT_SOURCES);
+      expect(result.data).toEqual(DEFAULT_TYPES);
       expect(mockUseQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          queryKey: ['deadline', 'sources', undefined],
+          queryKey: ['deadline', 'types', undefined],
           enabled: false,
         })
       );
@@ -106,11 +106,11 @@ describe('useDeadlineSources', () => {
 
   describe('Query Configuration Tests', () => {
     it('should configure query with correct parameters for authenticated user', () => {
-      useDeadlineSources();
+      useDeadlineTypes();
 
       expect(mockUseQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          queryKey: ['deadline', 'sources', 'profile-123'],
+          queryKey: ['deadline', 'types', 'profile-123'],
           queryFn: expect.any(Function),
           enabled: true,
           staleTime: 5 * 60 * 1000,
@@ -125,10 +125,10 @@ describe('useDeadlineSources', () => {
         session: mockSession,
       });
 
-      useDeadlineSources();
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      expect(queryConfig.queryKey).toEqual(['deadline', 'sources', profileId]);
+      expect(queryConfig.queryKey).toEqual(['deadline', 'types', profileId]);
     });
 
     it('should fall back to session user id when profile id missing', () => {
@@ -137,10 +137,10 @@ describe('useDeadlineSources', () => {
         session: mockSession,
       });
 
-      useDeadlineSources();
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      expect(queryConfig.queryKey).toEqual(['deadline', 'sources', 'user-123']);
+      expect(queryConfig.queryKey).toEqual(['deadline', 'types', 'user-123']);
     });
 
     it('should be disabled when user not authenticated', () => {
@@ -149,7 +149,7 @@ describe('useDeadlineSources', () => {
         session: null,
       });
 
-      useDeadlineSources();
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
       expect(queryConfig.enabled).toBe(false);
@@ -157,42 +157,42 @@ describe('useDeadlineSources', () => {
   });
 
   describe('QueryFn Logic Tests', () => {
-    it('should call deadlinesService.getUniqueSources with correct userId', async () => {
-      useDeadlineSources();
+    it('should call deadlinesService.getUniqueDeadlineTypes with correct userId', async () => {
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueSources.mockResolvedValue([
-        'Custom Source',
+      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue([
+        'Custom Type',
       ]);
 
       await queryConfig.queryFn();
 
-      expect(mockDeadlinesService.getUniqueSources).toHaveBeenCalledWith(
+      expect(mockDeadlinesService.getUniqueDeadlineTypes).toHaveBeenCalledWith(
         'profile-123'
       );
     });
 
-    it('should return DEFAULT_SOURCES when no userId', async () => {
+    it('should return DEFAULT_TYPES when no userId', async () => {
       mockUseAuth.mockReturnValue({
         profile: null,
         session: null,
       });
 
-      useDeadlineSources();
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
       const result = await queryConfig.queryFn();
 
-      expect(result).toEqual(DEFAULT_SOURCES);
-      expect(mockDeadlinesService.getUniqueSources).not.toHaveBeenCalled();
+      expect(result).toEqual(DEFAULT_TYPES);
+      expect(mockDeadlinesService.getUniqueDeadlineTypes).not.toHaveBeenCalled();
     });
 
-    it('should merge user sources with defaults correctly', async () => {
-      useDeadlineSources();
+    it('should merge user types with defaults correctly', async () => {
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userSources = ['Bookstore', 'Gift', 'Academic'];
-      mockDeadlinesService.getUniqueSources.mockResolvedValue(userSources);
+      const userTypes = ['Bookstore', 'Gift', 'Academic'];
+      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
 
       const result = await queryConfig.queryFn();
 
@@ -208,11 +208,11 @@ describe('useDeadlineSources', () => {
     });
 
     it('should deduplicate case-insensitive sources', async () => {
-      useDeadlineSources();
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userSources = ['library', 'PERSONAL', 'Book club', 'Bookstore'];
-      mockDeadlinesService.getUniqueSources.mockResolvedValue(userSources);
+      const userTypes = ['library', 'PERSONAL', 'Book club', 'Bookstore'];
+      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
 
       const result = await queryConfig.queryFn();
 
@@ -225,19 +225,19 @@ describe('useDeadlineSources', () => {
       ]);
     });
 
-    it('should sort user sources alphabetically before defaults', async () => {
-      useDeadlineSources();
+    it('should sort user types alphabetically before defaults', async () => {
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userSources = ['Zebra Source', 'Alpha Source', 'Beta Source'];
-      mockDeadlinesService.getUniqueSources.mockResolvedValue(userSources);
+      const userTypes = ['Zebra Type', 'Alpha Type', 'Beta Type'];
+      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
 
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
-        'Alpha Source',
-        'Beta Source',
-        'Zebra Source',
+        'Alpha Type',
+        'Beta Type',
+        'Zebra Type',
         'ARC',
         'Library',
         'Personal',
@@ -245,51 +245,51 @@ describe('useDeadlineSources', () => {
       ]);
     });
 
-    it('should handle empty user sources array', async () => {
-      useDeadlineSources();
+    it('should handle empty user types array', async () => {
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueSources.mockResolvedValue([]);
+      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue([]);
 
       const result = await queryConfig.queryFn();
 
-      expect(result).toEqual(DEFAULT_SOURCES);
+      expect(result).toEqual(DEFAULT_TYPES);
     });
   });
 
   describe('Error Handling Tests', () => {
-    it('should return DEFAULT_SOURCES when service throws error', async () => {
+    it('should return DEFAULT_TYPES when service throws error', async () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-      useDeadlineSources();
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueSources.mockRejectedValue(
+      mockDeadlinesService.getUniqueDeadlineTypes.mockRejectedValue(
         new Error('Database connection failed')
       );
 
       const result = await queryConfig.queryFn();
 
-      expect(result).toEqual(DEFAULT_SOURCES);
+      expect(result).toEqual(DEFAULT_TYPES);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error fetching deadline sources:',
+        'Error fetching deadline types:',
         expect.any(Error)
       );
 
       consoleErrorSpy.mockRestore();
     });
 
-    it('should return DEFAULT_SOURCES when service returns null', async () => {
+    it('should return DEFAULT_TYPES when service returns null', async () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-      useDeadlineSources();
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueSources.mockRejectedValue(null);
+      mockDeadlinesService.getUniqueDeadlineTypes.mockRejectedValue(null);
 
       const result = await queryConfig.queryFn();
 
-      expect(result).toEqual(DEFAULT_SOURCES);
+      expect(result).toEqual(DEFAULT_TYPES);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error fetching deadline sources:',
+        'Error fetching deadline types:',
         null
       );
 
@@ -298,18 +298,18 @@ describe('useDeadlineSources', () => {
 
     it('should handle network timeout errors', async () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-      useDeadlineSources();
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueSources.mockRejectedValue(
+      mockDeadlinesService.getUniqueDeadlineTypes.mockRejectedValue(
         new Error('Network timeout')
       );
 
       const result = await queryConfig.queryFn();
 
-      expect(result).toEqual(DEFAULT_SOURCES);
+      expect(result).toEqual(DEFAULT_TYPES);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error fetching deadline sources:',
+        'Error fetching deadline types:',
         expect.any(Error)
       );
 
@@ -318,12 +318,12 @@ describe('useDeadlineSources', () => {
   });
 
   describe('Edge Cases', () => {
-    it('should handle sources with special characters', async () => {
-      useDeadlineSources();
+    it('should handle typeswith special characters', async () => {
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userSources = ['Mom & Dad', 'B&N Store', 'Re-read'];
-      mockDeadlinesService.getUniqueSources.mockResolvedValue(userSources);
+      const userTypes = ['Mom & Dad', 'B&N Store', 'Re-read'];
+      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
 
       const result = await queryConfig.queryFn();
 
@@ -339,17 +339,17 @@ describe('useDeadlineSources', () => {
     });
 
     it('should handle very long source names', async () => {
-      useDeadlineSources();
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const longSourceName = 'A'.repeat(100);
-      const userSources = [longSourceName];
-      mockDeadlinesService.getUniqueSources.mockResolvedValue(userSources);
+      const longTypeName = 'A'.repeat(100);
+      const userTypes = [longTypeName];
+      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
 
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
-        longSourceName,
+        longTypeName,
         'ARC',
         'Library',
         'Personal',
@@ -357,45 +357,45 @@ describe('useDeadlineSources', () => {
       ]);
     });
 
-    it('should handle sources with numbers and mixed casing', async () => {
-      useDeadlineSources();
+    it('should handle typeswith numbers and mixed casing', async () => {
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userSources = ['Store123', 'store123', 'STORE123', 'Unique Source'];
-      mockDeadlinesService.getUniqueSources.mockResolvedValue(userSources);
+      const userTypes = ['Store123', 'store123', 'STORE123', 'Unique Type'];
+      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
 
       const result = await queryConfig.queryFn();
 
       expect(result.slice(0, 4)).toEqual(
-        [...userSources].sort((a, b) => a.localeCompare(b))
+        [...userTypes].sort((a, b) => a.localeCompare(b))
       );
-      expect(result.slice(4)).toEqual(DEFAULT_SOURCES);
+      expect(result.slice(4)).toEqual(DEFAULT_TYPES);
       expect(result).toHaveLength(8);
     });
 
-    it('should handle large number of user sources', async () => {
-      useDeadlineSources();
+    it('should handle large number of user types', async () => {
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userSources = Array.from(
+      const userTypes = Array.from(
         { length: 50 },
-        (_, i) => `Source ${i + 1}`
+        (_, i) => `Type ${i + 1}`
       );
-      mockDeadlinesService.getUniqueSources.mockResolvedValue(userSources);
+      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
 
       const result = await queryConfig.queryFn();
 
       expect(result).toHaveLength(54);
-      expect(result.slice(0, 50)).toEqual(userSources.sort());
-      expect(result.slice(50)).toEqual(DEFAULT_SOURCES);
+      expect(result.slice(0, 50)).toEqual(userTypes.sort());
+      expect(result.slice(50)).toEqual(DEFAULT_TYPES);
     });
 
-    it('should handle sources with only whitespace', async () => {
-      useDeadlineSources();
+    it('should handle typeswith only whitespace', async () => {
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userSources = ['   ', '\t', '\n', 'Valid Source'];
-      mockDeadlinesService.getUniqueSources.mockResolvedValue(userSources);
+      const userTypes = ['   ', '\t', '\n', 'Valid Type'];
+      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
 
       const result = await queryConfig.queryFn();
 
@@ -403,7 +403,7 @@ describe('useDeadlineSources', () => {
         '\t',
         '\n',
         '   ',
-        'Valid Source',
+        'Valid Type',
         'ARC',
         'Library',
         'Personal',
@@ -412,11 +412,11 @@ describe('useDeadlineSources', () => {
     });
 
     it('should handle unicode characters in source names', async () => {
-      useDeadlineSources();
+      useDeadlineTypes();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userSources = ['Librairie 📚', 'Café ☕', 'École 🏫'];
-      mockDeadlinesService.getUniqueSources.mockResolvedValue(userSources);
+      const userTypes = ['Librairie 📚', 'Café ☕', 'École 🏫'];
+      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
 
       const result = await queryConfig.queryFn();
 

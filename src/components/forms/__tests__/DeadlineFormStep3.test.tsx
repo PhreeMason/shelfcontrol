@@ -30,9 +30,9 @@ jest.mock('@/components/shared/CustomInput', () => {
   };
 });
 
-jest.mock('@/components/shared/SourceTypeaheadInput', () => {
+jest.mock('@/components/shared/TypeTypeaheadInput', () => {
   const React = require('react');
-  return function MockSourceTypeaheadInput(props: any) {
+  return function MockTypeTypeaheadInput(props: any) {
     return React.createElement(
       'View',
       {
@@ -136,7 +136,7 @@ describe('DeadlineFormStep3', () => {
       expect(useTheme).toHaveBeenCalled();
     });
 
-    it('should pass control prop to SourceTypeaheadInput', () => {
+    it('should pass control prop to TypeTypeaheadInput', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
       expect(screen.getByTestId('input-deadline-type')).toBeTruthy();
@@ -406,11 +406,11 @@ describe('DeadlineFormStep3', () => {
   });
 
   describe('Input Field Configuration', () => {
-    it('should configure deadline_type input with correct props', () => {
+    it('should configure type input with correct props', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
       const input = screen.getByTestId('input-deadline-type');
-      expect(input.props['data-name']).toBe('deadline_type');
+      expect(input.props['data-name']).toBe('type');
       expect(input.props['data-placeholder']).toBe('Enter book type');
     });
 

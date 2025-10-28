@@ -108,6 +108,17 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
     }
   };
 
+  const progressMessageTotalQuantity = 
+    formatProgressDisplay(deadline.format, totalQuantity);
+
+  const progressMessageCurrentProgress = formatProgressDisplay(
+    deadline.format,
+    currentProgress
+  );
+
+  const messageUnit =
+    deadline.format === 'audio' ? '' : ' pages';
+
   return (
     <Modal
       visible={visible}
@@ -135,7 +146,7 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
             <ThemedText style={styles.title}>
               {isToReview
                 ? 'Ready to complete this book?'
-                : `Did you finish all ${formatProgressDisplay(deadline.format, totalQuantity)}?`}
+                : `Did you finish all ${progressMessageTotalQuantity}${messageUnit}?`}
             </ThemedText>
 
             {!isToReview && (
@@ -143,8 +154,8 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
                 style={[styles.subtitle, { color: colors.text + '80' }]}
               >
                 You're currently at{' '}
-                {formatProgressDisplay(deadline.format, currentProgress)}/
-                {formatProgressDisplay(deadline.format, totalQuantity)}.
+                {progressMessageCurrentProgress}/
+                {progressMessageTotalQuantity}{messageUnit}.
               </ThemedText>
             )}
 

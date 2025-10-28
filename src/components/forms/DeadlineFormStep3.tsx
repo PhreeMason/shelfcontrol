@@ -1,5 +1,5 @@
 import CustomInput from '@/components/shared/CustomInput';
-import SourceTypeaheadInput from '@/components/shared/SourceTypeaheadInput';
+import TypeTypeaheadInput from '@/components/shared/TypeTypeaheadInput';
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTheme } from '@/hooks/useThemeColor';
@@ -51,11 +51,11 @@ export const DeadlineFormStep3 = ({
         <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
           Book Type <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
-        <SourceTypeaheadInput
+        <TypeTypeaheadInput
           control={control}
-          name="deadline_type"
+          name="type"
           placeholder="Enter book type"
-          testID="input-deadline-type"
+          testID="input-type"
         />
       </View>
 
@@ -118,7 +118,7 @@ export const DeadlineFormStep3 = ({
                   onPress={() => removePublisher(index)}
                   testID={`remove-publisher-${index}`}
                 >
-                  <IconSymbol name="trash" size={20} color={colors.danger} />
+                  <IconSymbol name="trash" size={30} color={colors.danger} />
                 </TouchableOpacity>
               </View>
             ))}
@@ -166,8 +166,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   removeButton: {
-    width: 48,
-    height: 48,
+    width: 56,
+    height: 56,
     borderWidth: 2,
     borderRadius: 12,
     alignItems: 'center',

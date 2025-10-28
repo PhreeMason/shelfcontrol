@@ -1,8 +1,8 @@
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useDeadlineCardState } from '@/hooks/useDeadlineCardState';
 import { useReviewTracking } from '@/hooks/useReviewTracking';
+import { analytics } from '@/lib/analytics/client';
 import { dayjs } from '@/lib/dayjs';
-import { posthog } from '@/lib/posthog';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { calculateLocalDaysLeft } from '@/utils/dateNormalization';
@@ -112,9 +112,10 @@ export function useDeadlineCardViewModel({
 
   const handleCardPress = () => {
     if (!disableNavigation) {
-      posthog.capture('deadline card clicked', {
-        deadline_status: latestStatus,
-        deadline_format: deadline.format,
+      analytics.track('deadline_card_clicked', {
+        deadline_status: latestStatus as 'pending' | 'reading' | 'completed' | 'paused' | 'dnf',
+        deadline_format: deadline.format as 'physical' | 'eBook' | 'audio',
+        deadline_title: deadline.book_title,
       });
       router.push(`/deadline/${deadline.id}`);
     }

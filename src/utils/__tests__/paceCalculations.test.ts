@@ -35,7 +35,7 @@ const createMockDeadline = (
   author: 'Test Author',
   source: 'test',
   acquisition_source: null,
-  deadline_type: null,
+  type: "Personal",
   publishers: null,
   deadline_date: '2024-12-31',
   total_quantity: 300,

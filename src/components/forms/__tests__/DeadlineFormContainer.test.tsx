@@ -1,10 +1,10 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { useDeadlines } from '@/providers/DeadlineProvider';
 import { useTheme } from '@/hooks/useThemeColor';
-import DeadlineFormContainer from '../DeadlineFormContainer';
+import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { fireEvent, render, screen } from '@testing-library/react-native';
+import { useLocalSearchParams } from 'expo-router';
+import React from 'react';
+import DeadlineFormContainer from '../DeadlineFormContainer';
 
 // Mock external boundaries only
 jest.mock('expo-router', () => ({
@@ -124,10 +124,10 @@ jest.mock('@/components/shared/CustomInput', () => {
   };
 });
 
-jest.mock('@/components/shared/SourceTypeaheadInput', () => {
+jest.mock('@/components/shared/TypeTypeaheadInput', () => {
   const React = require('react');
   const { TextInput } = require('react-native');
-  return function MockSourceTypeaheadInput({
+  return function MockTypeTypeaheadInput({
     testID,
     onChangeText,
     value,
@@ -330,7 +330,7 @@ describe('DeadlineFormContainer', () => {
     book_title: 'Test Book Title',
     author: 'Test Author',
     acquisition_source: null,
-    deadline_type: 'manual',
+    type: 'manual',
     deadline_date: '2024-12-31T00:00:00Z',
     flexibility: 'flexible',
     format: 'physical',
@@ -958,7 +958,7 @@ describe('DeadlineFormContainer', () => {
         book_id: 'book-456',
         bookTitle: 'Test Book',
         bookAuthor: 'Test Author',
-        deadline_type: 'Library',
+        type: 'Library',
         totalQuantity: '300',
         format: 'physical',
         page: '4',
@@ -1030,7 +1030,7 @@ describe('DeadlineFormContainer', () => {
       (useLocalSearchParams as jest.Mock).mockReturnValue({
         bookTitle: 'Test Book',
         bookAuthor: 'Test Author',
-        deadline_type: 'Library',
+        type: 'Library',
         totalQuantity: '300',
         format: 'physical',
         page: '4',

@@ -77,7 +77,7 @@ export const createFormNavigation = (
 
       // Step 3 -> Step 4: Validate additional details
       if (config.currentStep === 3) {
-        const fieldsToValidate: (keyof DeadlineFormData)[] = ['deadline_type'];
+        const fieldsToValidate: (keyof DeadlineFormData)[] = ['type'];
         const result = await triggerValidation(fieldsToValidate);
 
         if (result) {
@@ -130,7 +130,7 @@ export const getFormDefaultValues = (
     bookTitle: '',
     bookAuthor: '',
     format: 'eBook' as const,
-    deadline_type: '' as const,
+    type: '' as const,
     acquisition_source: '' as const,
     publishers: undefined as string[] | undefined,
     status: 'active' as const,
@@ -199,7 +199,7 @@ export const prepareDeadlineDetailsFromForm = (
     deadline_date: data.deadline.toISOString(),
     total_quantity: finalTotalQuantity,
     format: selectedFormat,
-    deadline_type: data.deadline_type,
+    deadline_type: data.type,
     acquisition_source: data.acquisition_source || null,
     publishers: filteredPublishers?.length ? filteredPublishers : null,
     flexibility: selectedPriority,
@@ -301,8 +301,8 @@ export const populateFormFromParams = (
   const bookAuthor = str(params.bookAuthor);
   if (bookAuthor) setValue('bookAuthor', bookAuthor);
 
-  const deadline_type = str(params.deadline_type);
-  if (deadline_type) setValue('deadline_type', deadline_type);
+  const type = str(params.type);
+  if (type) setValue('type', type);
 
   const acquisition_source = str(params.acquisition_source);
   if (acquisition_source) setValue('acquisition_source', acquisition_source);
@@ -342,7 +342,7 @@ export const populateFormFromDeadline = (
     setValue('bookTitle', deadline.book_title || '');
     setValue('bookAuthor', deadline.author || '');
     setValue('format', deadline.format || 'physical');
-    setValue('deadline_type', (deadline as any).deadline_type || '');
+    setValue('type', (deadline as any).type || '');
     setValue('acquisition_source', (deadline as any).acquisition_source || '');
     setValue('publishers', (deadline as any).publishers || undefined);
     setValue(
@@ -510,7 +510,7 @@ export const createValidationHandler = (
     }
 
     if (currentStep === 3) {
-      const fieldsToValidate: (keyof DeadlineFormData)[] = ['deadline_type'];
+      const fieldsToValidate: (keyof DeadlineFormData)[] = ['type'];
       return await trigger(fieldsToValidate);
     }
 
@@ -624,7 +624,7 @@ export const getFieldStep = (
       case 'totalMinutes':
       case 'status':
         return 2;
-      case 'deadline_type':
+      case 'type':
       case 'acquisition_source':
       case 'publishers':
         return 3;
@@ -645,7 +645,7 @@ export const getFieldStep = (
       case 'totalMinutes':
       case 'status':
         return 1;
-      case 'deadline_type':
+      case 'type':
       case 'acquisition_source':
       case 'publishers':
         return 2;

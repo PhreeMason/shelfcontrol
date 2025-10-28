@@ -1,13 +1,13 @@
 import { ThemedText } from '@/components/themed';
-import { useDeadlineSources } from '@/hooks/useDeadlineSources';
+import { useDeadlineTypes } from '@/hooks/useDeadlineTypes';
 import { useTheme } from '@/hooks/useTheme';
 import {
   filterSuggestions,
   highlightMatch,
-  shouldShowSuggestions,
   shouldShowNoResults,
+  shouldShowSuggestions,
 } from '@/utils/typeaheadUtils';
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Control,
   Controller,
@@ -24,21 +24,21 @@ import {
   View,
 } from 'react-native';
 
-type SourceTypeaheadInputProps<T extends FieldValues> = {
+type TypeTypeaheadInputProps<T extends FieldValues> = {
   control: Control<T>;
   name: Path<T>;
   placeholder?: string;
   testID?: string;
 };
 
-const SourceTypeaheadInput = <T extends FieldValues>({
+const TypeTypeaheadInput = <T extends FieldValues>({
   control,
   name,
   placeholder = 'Enter book type',
   testID = 'source-typeahead',
-}: SourceTypeaheadInputProps<T>) => {
+}: TypeTypeaheadInputProps<T>) => {
   const { colors } = useTheme();
-  const { data: sources = [], isLoading } = useDeadlineSources();
+  const { data: types = [], isLoading } = useDeadlineTypes();
   const [query, setQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -62,8 +62,8 @@ const SourceTypeaheadInput = <T extends FieldValues>({
 
   // Filter suggestions based on query
   const filteredSuggestions = useMemo(() => {
-    return filterSuggestions(query, sources);
-  }, [query, sources]);
+    return filterSuggestions(query, types);
+  }, [query, types]);
 
   const handleTextChange = (
     text: string,
@@ -303,4 +303,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SourceTypeaheadInput;
+export default TypeTypeaheadInput;

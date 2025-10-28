@@ -446,27 +446,32 @@ class DeadlinesService {
     if (error) throw error;
 
     const deadlines = data as unknown as ReadingDeadlineWithProgress[];
-    return deadlines.map(sortDeadlineArrays);
+    return deadlines.map(d => {
+      const normalized = {
+        ...d,
+        type: (d as any).deadline_type || 'Personal'
+      };
+      return sortDeadlineArrays(normalized);
+    });
   }
 
   /**
-   * Get unique source values used by the user
+   * Get unique type values used by the user
    */
-  async getUniqueSources(userId: string): Promise<string[]> {
+  async getUniqueDeadlineTypes(userId: string): Promise<string[]> {
     const { data, error } = await supabase
       .from(DB_TABLES.DEADLINES)
-      .select('source')
-      .eq('user_id', userId)
-      .order('source', { ascending: true });
+      .select('deadline_type')
+      .eq('user_id', userId);
 
     if (error) throw error;
 
-    const uniqueSources = [
+    const uniqueTypes = [
       ...new Set(
-        data?.map(d => d.source).filter((s): s is string => s !== null) || []
+        data?.map(d => d.deadline_type).filter((s): s is string => s !== null) || []
       ),
     ];
-    return uniqueSources.sort();
+    return uniqueTypes.sort();
   }
 
   /**
@@ -502,7 +507,11 @@ class DeadlinesService {
     }
 
     const deadline = data as unknown as ReadingDeadlineWithProgress;
-    return sortDeadlineArrays(deadline);
+    const normalizedDeadline = {
+      ...deadline,
+      type: (deadline as any).deadline_type || 'Personal'
+    };
+    return sortDeadlineArrays(normalizedDeadline);
   }
 
   /**
@@ -760,7 +769,7 @@ class DeadlinesService {
         format,
         total_quantity,
         deadline_date,
-        source,
+        deadline_type,
         flexibility,
         created_at,
         deadline_progress (
@@ -786,7 +795,11 @@ class DeadlinesService {
     const { data: deadlines, error } = await query;
 
     if (error) throw error;
-    return deadlines;
+
+    return deadlines?.map(d => ({
+      ...d,
+      type: (d as any).deadline_type || 'Personal'
+    })) || [];
   }
 
   async getUserProgressForToday(userId: string) {

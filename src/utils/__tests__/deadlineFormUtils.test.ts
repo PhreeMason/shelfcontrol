@@ -45,7 +45,7 @@ describe('deadlineFormUtils', () => {
       expect(defaults.bookTitle).toBe('');
       expect(defaults.bookAuthor).toBe('');
       expect(defaults.format).toBe('eBook');
-      expect(defaults.deadline_type).toBe('');
+      expect(defaults.type).toBe('');
       expect(defaults.status).toBe('active');
       expect(defaults.flexibility).toBe('flexible');
       expect(defaults.deadline).toBeInstanceOf(Date);
@@ -116,7 +116,7 @@ describe('deadlineFormUtils', () => {
       bookTitle: 'Test Book',
       bookAuthor: 'Test Author',
       format: 'eBook',
-      deadline_type: 'Library',
+      type: 'Library',
       deadline: new Date('2024-12-01'),
       totalQuantity: 300,
       flexibility: 'flexible',
@@ -134,7 +134,7 @@ describe('deadlineFormUtils', () => {
       expect(result.book_title).toBe('Test Book');
       expect(result.author).toBe('Test Author');
       expect(result.format).toBe('eBook');
-      expect(result.deadline_type).toBe('Library');
+      expect(result.type).toBe('Library');
       expect(result.total_quantity).toBe(300);
       expect(result.flexibility).toBe('flexible');
       expect(result.deadline_date).toBe('2024-12-01T00:00:00.000Z');
@@ -283,7 +283,7 @@ describe('deadlineFormUtils', () => {
     const mockFormData: DeadlineFormData = {
       bookTitle: 'Test Book',
       format: 'eBook',
-      deadline_type: 'Library',
+      type: 'Library',
       deadline: new Date(),
       totalQuantity: 300,
       currentProgress: 150,
@@ -597,7 +597,7 @@ describe('deadlineFormUtils', () => {
         book_title: 'Test Book',
         author: 'Test Author',
         format: 'physical',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline_date: '2024-12-01T00:00:00.000Z',
         flexibility: 'strict',
         book_id: 'book-123',
@@ -1405,8 +1405,8 @@ describe('deadlineFormUtils', () => {
         expect(getFieldStep('format', 'new')).toBe(2);
       });
 
-      it('should return step 3 for deadline_type', () => {
-        expect(getFieldStep('deadline_type', 'new')).toBe(3);
+      it('should return step 3 for type', () => {
+        expect(getFieldStep('type', 'new')).toBe(3);
       });
 
       it('should return step 3 for acquisition_source', () => {
@@ -1455,8 +1455,8 @@ describe('deadlineFormUtils', () => {
         expect(getFieldStep('format', 'edit')).toBe(1);
       });
 
-      it('should return step 2 for deadline_type', () => {
-        expect(getFieldStep('deadline_type', 'edit')).toBe(2);
+      it('should return step 2 for type', () => {
+        expect(getFieldStep('type', 'edit')).toBe(2);
       });
 
       it('should return step 2 for acquisition_source', () => {
@@ -1498,8 +1498,8 @@ describe('deadlineFormUtils', () => {
       expect(findEarliestErrorStep(undefined as any, 'new')).toBeNull();
     });
 
-    it('should find step 3 for deadline_type error in new mode', () => {
-      const errors = { deadline_type: { message: 'Required' } };
+    it('should find step 3 for type error in new mode', () => {
+      const errors = { type: { message: 'Required' } };
       expect(findEarliestErrorStep(errors, 'new')).toBe(3);
     });
 
@@ -1510,15 +1510,15 @@ describe('deadlineFormUtils', () => {
 
     it('should find earliest step with multiple errors in new mode', () => {
       const errors = {
-        deadline_type: { message: 'Required' },
+        type: { message: 'Required' },
         deadline: { message: 'Required' },
         flexibility: { message: 'Required' },
       };
       expect(findEarliestErrorStep(errors, 'new')).toBe(3);
     });
 
-    it('should find step 2 for deadline_type error in edit mode', () => {
-      const errors = { deadline_type: { message: 'Required' } };
+    it('should find step 2 for type error in edit mode', () => {
+      const errors = { type: { message: 'Required' } };
       expect(findEarliestErrorStep(errors, 'edit')).toBe(2);
     });
 
@@ -1538,7 +1538,7 @@ describe('deadlineFormUtils', () => {
     it('should handle multiple errors on same step', () => {
       const errors = {
         bookTitle: { message: 'Required' },
-        deadline_type: { message: 'Required' },
+        type: { message: 'Required' },
         totalQuantity: { message: 'Required' },
       };
       expect(findEarliestErrorStep(errors, 'new')).toBe(2);
@@ -1561,7 +1561,7 @@ describe('deadlineFormUtils', () => {
       const config = { currentStep: 4, totalSteps: 4, canGoBack: true };
       mockTrigger.mockResolvedValue(false);
       mockGetFormErrors.mockReturnValue({
-        deadline_type: { message: 'Required' },
+        type: { message: 'Required' },
       });
 
       const navigation = createFormNavigation(
@@ -1585,7 +1585,7 @@ describe('deadlineFormUtils', () => {
       const config = { currentStep: 3, totalSteps: 4, canGoBack: true };
       mockTrigger.mockResolvedValue(false);
       mockGetFormErrors.mockReturnValue({
-        deadline_type: { message: 'Required' },
+        type: { message: 'Required' },
       });
 
       const navigation = createFormNavigation(
@@ -1629,7 +1629,7 @@ describe('deadlineFormUtils', () => {
       const config = { currentStep: 3, totalSteps: 3, canGoBack: true };
       mockTrigger.mockResolvedValue(false);
       mockGetFormErrors.mockReturnValue({
-        deadline_type: { message: 'Required' },
+        type: { message: 'Required' },
       });
 
       const navigation = createFormNavigation(
@@ -1653,7 +1653,7 @@ describe('deadlineFormUtils', () => {
       const config = { currentStep: 4, totalSteps: 4, canGoBack: true };
       mockTrigger.mockResolvedValue(false);
       mockGetFormErrors.mockReturnValue({
-        deadline_type: { message: 'Required' },
+        type: { message: 'Required' },
         deadline: { message: 'Required' },
         flexibility: { message: 'Required' },
       });

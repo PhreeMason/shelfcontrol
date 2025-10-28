@@ -29,7 +29,7 @@ export const useAddDeadline = () => {
           queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
         });
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.DEADLINES.SOURCES(userId),
+          queryKey: QUERY_KEYS.DEADLINES.TYPES(userId),
         });
       }
     },
@@ -58,7 +58,7 @@ export const useUpdateDeadline = () => {
           queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
         });
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.DEADLINES.SOURCES(userId),
+          queryKey: QUERY_KEYS.DEADLINES.TYPES(userId),
         });
       }
     },
@@ -122,7 +122,7 @@ export const useDeleteDeadline = () => {
           queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
         });
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.DEADLINES.SOURCES(userId),
+          queryKey: QUERY_KEYS.DEADLINES.TYPES(userId),
         });
       }
     },
@@ -271,11 +271,20 @@ const useUpdateDeadlineStatus = (
       }
 
       try {
-        return await deadlinesService.updateDeadlineStatus(
+        const isTerminalStatus =
+          status === DEADLINE_STATUS.COMPLETE ||
+          status === DEADLINE_STATUS.DID_NOT_FINISH;
+
+        const result = await deadlinesService.updateDeadlineStatus(
           userId,
           deadlineId,
-          status
+          status,
+          isTerminalStatus
+            ? { skipValidation: true, skipRefetch: true }
+            : undefined
         );
+
+        return result;
       } catch (error) {
         console.error(`Error ${actionName} deadline:`, error);
         throw error;
@@ -301,11 +310,27 @@ export const useCompleteDeadline = () => {
 
   return useMutation({
     mutationKey: [MUTATION_KEYS.DEADLINES.COMPLETE],
-    mutationFn: async (deadlineId: string) => {
+    mutationFn: async ({
+      deadlineId,
+      deadline,
+    }: {
+      deadlineId: string;
+      deadline?: {
+        total_quantity: number;
+        progress?: { current_progress: number }[];
+      };
+    }) => {
       if (!userId) {
         throw new Error('User not authenticated');
       }
-      return deadlinesService.completeDeadline(userId, deadlineId);
+
+      const result = await deadlinesService.completeDeadline(
+        userId,
+        deadlineId,
+        deadline
+      );
+
+      return result;
     },
     onSuccess: () => {
       if (userId) {

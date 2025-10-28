@@ -424,13 +424,6 @@ const tracking = await reviewTrackingService.getReviewTrackingByDeadline(
   userId,
   'rd_123'
 );
-
-if (!tracking) {
-  console.log('No review tracking set up');
-} else {
-  console.log(`${tracking.completion_percentage}% complete`);
-  console.log(`Posted to: ${tracking.platforms.filter(p => p.posted).length} platforms`);
-}
 ```
 
 ## Deadline Services

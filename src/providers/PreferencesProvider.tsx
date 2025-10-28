@@ -28,8 +28,8 @@ interface PreferencesContextType {
   setSelectedFormats: (formats: BookFormat[]) => void;
   selectedPageRanges: PageRangeFilter[];
   setSelectedPageRanges: (ranges: PageRangeFilter[]) => void;
-  selectedSources: string[];
-  setSelectedSources: (sources: string[]) => void;
+  selectedTypes: string[];
+  setSelectedTypes: (types: string[]) => void;
   excludedStatuses: FilterType[];
   setExcludedStatuses: (statuses: FilterType[]) => void;
   sortOrder: SortOrder;
@@ -49,8 +49,8 @@ const PreferencesContext = createContext<PreferencesContextType>({
   setSelectedFormats: () => {},
   selectedPageRanges: [],
   setSelectedPageRanges: () => {},
-  selectedSources: [],
-  setSelectedSources: () => {},
+  selectedTypes: [],
+  setSelectedTypes: () => {},
   excludedStatuses: [],
   setExcludedStatuses: () => {},
   sortOrder: 'default',
@@ -66,7 +66,7 @@ const STORAGE_KEYS = {
   TIME_RANGE_FILTER: '@preferences/timeRangeFilter',
   SELECTED_FORMATS: '@preferences/selectedFormats',
   SELECTED_PAGE_RANGES: '@preferences/selectedPageRanges',
-  SELECTED_SOURCES: '@preferences/selectedSources',
+  SELECTED_TYPES: '@preferences/selectedTypes',
   EXCLUDED_STATUSES: '@preferences/excludedStatuses',
   SORT_ORDER: '@preferences/sortOrder',
   PROGRESS_INPUT_MODES: '@preferences/progressInputModes',
@@ -81,7 +81,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
   const [selectedPageRanges, setSelectedPageRangesState] = useState<
     PageRangeFilter[]
   >([]);
-  const [selectedSources, setSelectedSourcesState] = useState<string[]>([]);
+  const [selectedTypes, setSelectedTypesState] = useState<string[]>([]);
   const [excludedStatuses, setExcludedStatusesState] = useState<FilterType[]>(
     []
   );
@@ -98,7 +98,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           savedTimeRange,
           savedFormats,
           savedPageRanges,
-          savedSources,
+          savedTypes,
           savedExcludedStatuses,
           savedSortOrder,
           savedProgressInputModes,
@@ -107,7 +107,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           AsyncStorage.getItem(STORAGE_KEYS.TIME_RANGE_FILTER),
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FORMATS),
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_PAGE_RANGES),
-          AsyncStorage.getItem(STORAGE_KEYS.SELECTED_SOURCES),
+          AsyncStorage.getItem(STORAGE_KEYS.SELECTED_TYPES),
           AsyncStorage.getItem(STORAGE_KEYS.EXCLUDED_STATUSES),
           AsyncStorage.getItem(STORAGE_KEYS.SORT_ORDER),
           AsyncStorage.getItem(STORAGE_KEYS.PROGRESS_INPUT_MODES),
@@ -127,8 +127,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
             JSON.parse(savedPageRanges) as PageRangeFilter[]
           );
         }
-        if (savedSources) {
-          setSelectedSourcesState(JSON.parse(savedSources) as string[]);
+        if (savedTypes) {
+          setSelectedTypesState(JSON.parse(savedTypes) as string[]);
         }
         if (savedExcludedStatuses) {
           setExcludedStatusesState(
@@ -195,15 +195,15 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     }
   };
 
-  const setSelectedSources = async (sources: string[]) => {
+  const setSelectedTypes = async (types: string[]) => {
     try {
-      setSelectedSourcesState(sources);
+      setSelectedTypesState(types);
       await AsyncStorage.setItem(
-        STORAGE_KEYS.SELECTED_SOURCES,
-        JSON.stringify(sources)
+        STORAGE_KEYS.SELECTED_TYPES,
+        JSON.stringify(types)
       );
     } catch (error) {
-      console.error('Error saving source filter preference:', error);
+      console.error('Error saving type filter preference:', error);
     }
   };
 
@@ -257,8 +257,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     setSelectedFormats,
     selectedPageRanges,
     setSelectedPageRanges,
-    selectedSources,
-    setSelectedSources,
+    selectedTypes,
+    setSelectedTypes,
     excludedStatuses,
     setExcludedStatuses,
     sortOrder,

@@ -6,7 +6,7 @@ export const deadlineFormSchema = z.object({
   format: z.enum(['physical', 'eBook', 'audio'], {
     errorMap: () => ({ message: 'Please select a format' }),
   }),
-  deadline_type: z
+  type: z
     .string()
     .min(1, 'Please select or enter a source')
     .max(30, 'Source cannot exceed 30 characters'),

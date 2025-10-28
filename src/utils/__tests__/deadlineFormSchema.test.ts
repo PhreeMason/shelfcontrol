@@ -6,7 +6,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Valid Book Title',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -21,7 +21,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: '',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -38,7 +38,7 @@ describe('deadlineFormSchema', () => {
     it('should reject missing book title', () => {
       const data = {
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -56,7 +56,7 @@ describe('deadlineFormSchema', () => {
         bookTitle: 'Test Book',
         bookAuthor: 'Test Author',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -74,7 +74,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -90,7 +90,7 @@ describe('deadlineFormSchema', () => {
         bookTitle: 'Test Book',
         bookAuthor: '',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -110,7 +110,7 @@ describe('deadlineFormSchema', () => {
         const data = {
           bookTitle: 'Test Book',
           format,
-          deadline_type: 'Library',
+          type: 'Library',
           deadline: new Date(),
           totalQuantity: 300,
           flexibility: 'flexible',
@@ -129,7 +129,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'invalid',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -146,7 +146,7 @@ describe('deadlineFormSchema', () => {
     it('should reject missing format', () => {
       const data = {
         bookTitle: 'Test Book',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -163,7 +163,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -178,7 +178,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: '',
+        type: '',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -212,7 +212,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type:
+        type:
           'This is a very long source name that exceeds thirty characters',
         deadline: new Date(),
         totalQuantity: 300,
@@ -233,7 +233,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: '123456789012345678901234567890',
+        type: '123456789012345678901234567890',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -250,7 +250,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         acquisition_source: 'NetGalley',
         deadline: new Date(),
         totalQuantity: 300,
@@ -269,7 +269,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -287,7 +287,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         acquisition_source:
           'This is a very long acquisition source that exceeds thirty characters',
         deadline: new Date(),
@@ -309,7 +309,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         acquisition_source: '123456789012345678901234567890',
         deadline: new Date(),
         totalQuantity: 300,
@@ -327,7 +327,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         publishers: ['Penguin Random House', 'HarperCollins'],
         deadline: new Date(),
         totalQuantity: 300,
@@ -349,7 +349,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -367,7 +367,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         publishers: [],
         deadline: new Date(),
         totalQuantity: 300,
@@ -383,7 +383,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         publishers: [
           'Publisher 1',
           'Publisher 2',
@@ -405,7 +405,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         publishers: [
           'Publisher 1',
           'Publisher 2',
@@ -433,7 +433,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         publishers: [
           'This is a very long publisher name that exceeds thirty characters',
         ],
@@ -456,7 +456,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         publishers: ['123456789012345678901234567890'],
         deadline: new Date(),
         totalQuantity: 300,
@@ -474,7 +474,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date('2024-12-01'),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -489,7 +489,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: 'invalid-date',
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -504,7 +504,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         totalQuantity: 300,
         flexibility: 'flexible',
         status: 'active',
@@ -523,7 +523,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -538,7 +538,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: '300',
         flexibility: 'flexible',
@@ -557,7 +557,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300.5,
         flexibility: 'flexible',
@@ -577,7 +577,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 0,
         flexibility: 'flexible',
@@ -597,7 +597,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: -100,
         flexibility: 'flexible',
@@ -617,7 +617,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 'not-a-number',
         flexibility: 'flexible',
@@ -637,7 +637,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         flexibility: 'flexible',
         status: 'active',
@@ -658,7 +658,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         totalMinutes: 30,
@@ -674,7 +674,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         totalMinutes: 0,
@@ -690,7 +690,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         totalMinutes: '30',
@@ -710,7 +710,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         totalMinutes: -5,
@@ -731,7 +731,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         totalMinutes: 30.5,
@@ -752,7 +752,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -769,7 +769,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         currentMinutes: 15,
@@ -785,7 +785,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         currentMinutes: 0,
@@ -801,7 +801,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         currentMinutes: -5,
@@ -822,7 +822,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'audio',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 10,
         currentMinutes: 15.5,
@@ -845,7 +845,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         currentProgress: 150,
@@ -861,7 +861,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         currentProgress: 0,
@@ -877,7 +877,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         currentProgress: '150',
@@ -897,7 +897,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         currentProgress: -50,
@@ -918,7 +918,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         currentProgress: 150.5,
@@ -939,7 +939,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -959,7 +959,7 @@ describe('deadlineFormSchema', () => {
         const data = {
           bookTitle: 'Test Book',
           format: 'eBook',
-          deadline_type: 'Library',
+          type: 'Library',
           deadline: new Date(),
           totalQuantity: 300,
           flexibility,
@@ -978,7 +978,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'invalid',
@@ -998,7 +998,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         status: 'active',
@@ -1017,7 +1017,7 @@ describe('deadlineFormSchema', () => {
         const data = {
           bookTitle: 'Test Book',
           format: 'eBook',
-          deadline_type: 'Library',
+          type: 'Library',
           deadline: new Date(),
           totalQuantity: 300,
           flexibility: 'flexible',
@@ -1036,7 +1036,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -1054,7 +1054,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -1070,7 +1070,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -1089,7 +1089,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -1108,7 +1108,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -1129,7 +1129,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -1148,7 +1148,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -1167,7 +1167,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -1185,7 +1185,7 @@ describe('deadlineFormSchema', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',
@@ -1204,7 +1204,7 @@ describe('deadlineFormSchema', () => {
         bookTitle: 'The Great Gatsby',
         bookAuthor: 'F. Scott Fitzgerald',
         format: 'physical',
-        deadline_type: 'Library',
+        type: 'Library',
         deadline: new Date('2024-12-01'),
         totalQuantity: 180,
         totalMinutes: 0,
@@ -1229,7 +1229,7 @@ describe('deadlineFormSchema', () => {
         bookTitle: 'Audio Book Title',
         bookAuthor: 'Audio Author',
         format: 'audio',
-        deadline_type: 'Audible',
+        type: 'Audible',
         deadline: new Date('2024-12-01'),
         totalQuantity: 12,
         totalMinutes: 30,
@@ -1255,7 +1255,7 @@ describe('deadlineFormSchema', () => {
       const minimalData = {
         bookTitle: 'Minimal Book',
         format: 'eBook',
-        deadline_type: 'Store',
+        type: 'Store',
         deadline: new Date(),
         totalQuantity: 100,
         flexibility: 'flexible',

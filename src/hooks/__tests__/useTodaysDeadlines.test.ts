@@ -42,7 +42,7 @@ describe('useTodaysDeadlines', () => {
       total_quantity: 300,
       source: 'library',
       acquisition_source: null,
-      deadline_type: null,
+      type: "Personal",
       publishers: null,
       flexibility: 'flexible' as const,
       progress: [],

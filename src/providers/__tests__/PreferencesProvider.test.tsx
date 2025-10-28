@@ -25,7 +25,7 @@ describe('PreferencesProvider', () => {
       expect(result.current.selectedFilter).toBe('active');
       expect(result.current.timeRangeFilter).toBe('all');
       expect(result.current.selectedFormats).toEqual([]);
-      expect(result.current.selectedSources).toEqual([]);
+      expect(result.current.selectedTypes).toEqual([]);
       expect(result.current.isLoading).toBe(true);
     });
 
@@ -37,7 +37,7 @@ describe('PreferencesProvider', () => {
           return Promise.resolve('thisWeek');
         if (key === '@preferences/selectedFormats')
           return Promise.resolve('["physical"]');
-        if (key === '@preferences/selectedSources')
+        if (key === '@preferences/selectedTypes')
           return Promise.resolve('["Library"]');
         return Promise.resolve(null);
       });
@@ -53,7 +53,7 @@ describe('PreferencesProvider', () => {
       expect(result.current.selectedFilter).toBe('completed');
       expect(result.current.timeRangeFilter).toBe('thisWeek');
       expect(result.current.selectedFormats).toEqual(['physical']);
-      expect(result.current.selectedSources).toEqual(['Library']);
+      expect(result.current.selectedTypes).toEqual(['Library']);
     });
 
     it('should set isLoading to false after loading', async () => {
@@ -256,8 +256,8 @@ describe('PreferencesProvider', () => {
     });
   });
 
-  describe('setSelectedSources', () => {
-    it('should update selectedSources state', async () => {
+  describe('setSelectedTypes', () => {
+    it('should update selectedTypes state', async () => {
       const { result } = renderHook(() => usePreferences(), {
         wrapper: PreferencesProvider,
       });
@@ -267,13 +267,13 @@ describe('PreferencesProvider', () => {
       });
 
       await act(async () => {
-        await result.current.setSelectedSources(['Library', 'Bookstore']);
+        await result.current.setSelectedTypes(['Library', 'Bookstore']);
       });
 
-      expect(result.current.selectedSources).toEqual(['Library', 'Bookstore']);
+      expect(result.current.selectedTypes).toEqual(['Library', 'Bookstore']);
     });
 
-    it('should persist selectedSources to AsyncStorage', async () => {
+    it('should persist selectedTypes to AsyncStorage', async () => {
       const { result } = renderHook(() => usePreferences(), {
         wrapper: PreferencesProvider,
       });
@@ -283,11 +283,11 @@ describe('PreferencesProvider', () => {
       });
 
       await act(async () => {
-        await result.current.setSelectedSources(['Amazon']);
+        await result.current.setSelectedTypes(['Amazon']);
       });
 
       expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(
-        '@preferences/selectedSources',
+        '@preferences/selectedTypes',
         JSON.stringify(['Amazon'])
       );
     });
@@ -307,11 +307,11 @@ describe('PreferencesProvider', () => {
       });
 
       await act(async () => {
-        await result.current.setSelectedSources(['Library']);
+        await result.current.setSelectedTypes(['Library']);
       });
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Error saving source filter preference:',
+        'Error saving type filter preference:',
         expect.any(Error)
       );
 
@@ -358,11 +358,11 @@ describe('PreferencesProvider', () => {
       expect(typeof result.current.setSelectedFilter).toBe('function');
       expect(typeof result.current.setTimeRangeFilter).toBe('function');
       expect(typeof result.current.setSelectedFormats).toBe('function');
-      expect(typeof result.current.setSelectedSources).toBe('function');
+      expect(typeof result.current.setSelectedTypes).toBe('function');
       expect(result.current).toHaveProperty('selectedFilter');
       expect(result.current).toHaveProperty('timeRangeFilter');
       expect(result.current).toHaveProperty('selectedFormats');
-      expect(result.current).toHaveProperty('selectedSources');
+      expect(result.current).toHaveProperty('selectedTypes');
       expect(result.current).toHaveProperty('isLoading');
     });
   });
@@ -381,13 +381,13 @@ describe('PreferencesProvider', () => {
         await result.current.setSelectedFilter('completed');
         await result.current.setTimeRangeFilter('thisMonth');
         await result.current.setSelectedFormats(['physical']);
-        await result.current.setSelectedSources(['Library', 'Amazon']);
+        await result.current.setSelectedTypes(['Library', 'Amazon']);
       });
 
       expect(result.current.selectedFilter).toBe('completed');
       expect(result.current.timeRangeFilter).toBe('thisMonth');
       expect(result.current.selectedFormats).toEqual(['physical']);
-      expect(result.current.selectedSources).toEqual(['Library', 'Amazon']);
+      expect(result.current.selectedTypes).toEqual(['Library', 'Amazon']);
     });
 
     it('should handle empty arrays for formats', async () => {
@@ -406,7 +406,7 @@ describe('PreferencesProvider', () => {
       expect(result.current.selectedFormats).toEqual([]);
     });
 
-    it('should handle empty arrays for sources', async () => {
+    it('should handle empty arrays for types', async () => {
       const { result } = renderHook(() => usePreferences(), {
         wrapper: PreferencesProvider,
       });
@@ -416,10 +416,10 @@ describe('PreferencesProvider', () => {
       });
 
       await act(async () => {
-        await result.current.setSelectedSources([]);
+        await result.current.setSelectedTypes([]);
       });
 
-      expect(result.current.selectedSources).toEqual([]);
+      expect(result.current.selectedTypes).toEqual([]);
     });
   });
 });
