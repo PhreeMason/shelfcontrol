@@ -58,6 +58,7 @@ export const MAPPING = {
   'text.page': 'description',
   trash: 'delete',
   'star.fill': 'star',
+  at: 'alternate-email',
 } as IconMapping;
 
 /**

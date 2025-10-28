@@ -142,18 +142,18 @@ const styles = StyleSheet.create({
   },
   additionalInfo: {
     justifyContent: 'center',
-    gap: 4,
+    gap: 2,
   },
   capacityText: {
     color: '#2B3D4F',
     fontSize: 13,
-    lineHeight: 13,
+    lineHeight: 15,
     fontWeight: '600',
   },
   dueDate: {
     color: '#6B7280',
     fontSize: 12,
-    lineHeight: 12,
+    lineHeight: 14,
   },
   progressContainer: {
     flexDirection: 'row',
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     fontSize: 12,
-    lineHeight: 12,
+    lineHeight: 14,
     fontWeight: '500',
     minWidth: 30,
   },

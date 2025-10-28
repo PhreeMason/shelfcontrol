@@ -18,6 +18,9 @@ export type ReadingDeadlineWithProgress = ReadingDeadline & {
     publisher: string | null;
   } | null;
   publishers?: string[] | null;
+  disclosure_text?: string | null;
+  disclosure_source_name?: string | null;
+  disclosure_template_id?: string | null;
 };
 
 export type ReadingDeadlineInsertWithProgress = ReadingDeadlineInsert & {

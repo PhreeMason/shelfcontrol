@@ -178,6 +178,54 @@ export type Database = {
           },
         ];
       };
+      deadline_contacts: {
+        Row: {
+          contact_name: string | null;
+          created_at: string;
+          deadline_id: string;
+          email: string | null;
+          id: string;
+          updated_at: string;
+          user_id: string;
+          username: string | null;
+        };
+        Insert: {
+          contact_name?: string | null;
+          created_at?: string;
+          deadline_id: string;
+          email?: string | null;
+          id?: string;
+          updated_at?: string;
+          user_id: string;
+          username?: string | null;
+        };
+        Update: {
+          contact_name?: string | null;
+          created_at?: string;
+          deadline_id?: string;
+          email?: string | null;
+          id?: string;
+          updated_at?: string;
+          user_id?: string;
+          username?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'deadline_contacts_deadline_id_fkey';
+            columns: ['deadline_id'];
+            isOneToOne: false;
+            referencedRelation: 'deadlines';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'deadline_contacts_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       deadline_notes: {
         Row: {
           created_at: string | null;
@@ -301,12 +349,15 @@ export type Database = {
           book_title: string;
           created_at: string;
           deadline_date: string;
-          type: string;
-          deadline_type?: string | null;
+          deadline_type: string | null;
+          disclosure_source_name: string | null;
+          disclosure_template_id: string | null;
+          disclosure_text: string | null;
           flexibility: Database['public']['Enums']['deadline_flexibility'];
           format: Database['public']['Enums']['book_format_enum'];
           id: string;
           publishers: string[] | null;
+          source: string | null;
           total_quantity: number;
           updated_at: string;
           user_id: string;
@@ -318,12 +369,15 @@ export type Database = {
           book_title: string;
           created_at?: string;
           deadline_date: string;
-          type: string;
           deadline_type?: string | null;
+          disclosure_source_name?: string | null;
+          disclosure_template_id?: string | null;
+          disclosure_text?: string | null;
           flexibility: Database['public']['Enums']['deadline_flexibility'];
           format: Database['public']['Enums']['book_format_enum'];
           id?: string;
           publishers?: string[] | null;
+          source?: string | null;
           total_quantity: number;
           updated_at?: string;
           user_id: string;
@@ -335,12 +389,15 @@ export type Database = {
           book_title?: string;
           created_at?: string;
           deadline_date?: string;
-          type?: string;
           deadline_type?: string | null;
+          disclosure_source_name?: string | null;
+          disclosure_template_id?: string | null;
+          disclosure_text?: string | null;
           flexibility?: Database['public']['Enums']['deadline_flexibility'];
           format?: Database['public']['Enums']['book_format_enum'];
           id?: string;
           publishers?: string[] | null;
+          source?: string | null;
           total_quantity?: number;
           updated_at?: string;
           user_id?: string;
@@ -354,7 +411,52 @@ export type Database = {
             referencedColumns: ['id'];
           },
           {
+            foreignKeyName: 'deadlines_disclosure_template_id_fkey';
+            columns: ['disclosure_template_id'];
+            isOneToOne: false;
+            referencedRelation: 'disclosure_templates';
+            referencedColumns: ['id'];
+          },
+          {
             foreignKeyName: 'deadlines_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      disclosure_templates: {
+        Row: {
+          created_at: string;
+          disclosure_text: string;
+          id: string;
+          source_name: string;
+          template_name: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          disclosure_text: string;
+          id: string;
+          source_name: string;
+          template_name?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          disclosure_text?: string;
+          id?: string;
+          source_name?: string;
+          template_name?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'disclosure_templates_user_id_fkey';
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
@@ -583,7 +685,7 @@ export type Database = {
           format: string;
           last_progress_update: string;
           pages_per_day_needed: number;
-          type: string;
+          source: string;
           status: string;
           total_quantity: number;
           unit: string;
@@ -600,6 +702,8 @@ export type Database = {
         | 'paused'
         | 'to_review'
         | 'complete'
+        | 'rejected'
+        | 'withdrew'
         | 'did_not_finish';
       user_role: 'user' | 'admin' | 'super-admin';
     };
@@ -740,6 +844,8 @@ export const Constants = {
         'paused',
         'to_review',
         'complete',
+        'rejected',
+        'withdrew',
         'did_not_finish',
       ],
       user_role: ['user', 'admin', 'super-admin'],

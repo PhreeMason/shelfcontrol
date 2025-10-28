@@ -1,13 +1,15 @@
 import DailyReadingChart from '@/components/charts/DailyReadingChart';
 import BookDetailsSection from '@/components/features/deadlines/BookDetailsSection';
 import { DeadlineActionSheet } from '@/components/features/deadlines/DeadlineActionSheet';
+import { DeadlineContactsSection } from '@/components/features/deadlines/DeadlineContactsSection';
 import DeadlineHeroSection from '@/components/features/deadlines/DeadlineHeroSection';
 import DeadlineTabsSection from '@/components/features/deadlines/DeadlineTabsSection';
 import DeadlineViewHeader from '@/components/features/deadlines/DeadlineViewHeader';
+import { DisclosureSection } from '@/components/features/deadlines/DisclosureSection';
 import ReadingProgressUpdate from '@/components/progress/ReadingProgressUpdate';
 import {
   ThemedButton,
-  ThemedScrollView,
+  ThemedKeyboardAwareScrollView,
   ThemedText,
   ThemedView,
 } from '@/components/themed';
@@ -94,8 +96,11 @@ const DeadlineView = () => {
       style={[styles.container, { backgroundColor: colors.background }]}
     >
       <DeadlineViewHeader {...headerProps} />
-
-      <ThemedScrollView style={[styles.content, { backgroundColor: 'white' }]}>
+      <ThemedKeyboardAwareScrollView
+        contentContainerStyle={{ paddingBottom: 100 }}
+        keyboardShouldPersistTaps="handled"
+        style={[styles.content, { backgroundColor: 'white' }]}
+      >
         <DeadlineHeroSection isPending={isPending} deadline={deadline} />
 
         {shouldShowStats ? (
@@ -108,7 +113,11 @@ const DeadlineView = () => {
         ) : null}
 
         <BookDetailsSection deadline={deadline} />
-      </ThemedScrollView>
+
+        <DeadlineContactsSection deadline={deadline} />
+
+        <DisclosureSection deadline={deadline} />
+      </ThemedKeyboardAwareScrollView>
 
       <Pressable
         onPress={() => setShowActionSheet(true)}
@@ -137,7 +146,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 20,
     paddingHorizontal: 10,
-    marginBottom: 60,
   },
   fab: {
     position: 'absolute',

@@ -10,6 +10,17 @@ export const QUERY_KEYS = {
     BY_DEADLINE: (userId: string, deadlineId: string) =>
       ['notes', userId, deadlineId] as const,
   },
+  CONTACTS: {
+    BY_DEADLINE: (userId: string, deadlineId: string) =>
+      ['contacts', userId, deadlineId] as const,
+  },
+  DISCLOSURE_TEMPLATES: {
+    ALL: (userId: string) => ['disclosure_templates', userId] as const,
+    BY_SOURCE: (userId: string, sourceName?: string) =>
+      ['disclosure_templates', userId, sourceName] as const,
+    BY_ID: (userId: string, templateId: string) =>
+      ['disclosure_template', userId, templateId] as const,
+  },
   BOOKS: {
     SEARCH: (query: string) => ['books', 'search', query] as const,
     BY_API_ID: (apiId: string) => ['book', apiId] as const,
@@ -47,6 +58,17 @@ export const MUTATION_KEYS = {
     ADD: 'addNote',
     UPDATE: 'updateNote',
     DELETE: 'deleteNote',
+  },
+  CONTACTS: {
+    ADD: 'addContact',
+    UPDATE: 'updateContact',
+    DELETE: 'deleteContact',
+  },
+  DISCLOSURE_TEMPLATES: {
+    CREATE: 'createDisclosureTemplate',
+    UPDATE: 'updateDisclosureTemplate',
+    DELETE: 'deleteDisclosureTemplate',
+    UPDATE_DEADLINE: 'updateDeadlineDisclosure',
   },
   PROFILE: {
     UPDATE: 'updateProfile',
