@@ -28,13 +28,13 @@ interface FilterSectionProps {
   onFormatsChange: (formats: BookFormat[]) => void;
   selectedPageRanges: PageRangeFilter[];
   onPageRangesChange: (ranges: PageRangeFilter[]) => void;
-  selectedSources: string[];
-  onSourcesChange: (sources: string[]) => void;
+  selectedTypes: string[];
+  onTypesChange: (types: string[]) => void;
   excludedStatuses: FilterType[];
   onExcludedStatusesChange: (statuses: FilterType[]) => void;
   sortOrder: SortOrder;
   onSortOrderChange: (order: SortOrder) => void;
-  availableSources: string[];
+  availableTypes: string[];
   animatedStyle?: any;
   onLayout?: (event: LayoutChangeEvent) => void;
 }
@@ -59,13 +59,13 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   onFormatsChange,
   selectedPageRanges,
   onPageRangesChange,
-  selectedSources,
-  onSourcesChange,
+  selectedTypes,
+  onTypesChange,
   excludedStatuses,
   onExcludedStatusesChange,
   sortOrder,
   onSortOrderChange,
-  availableSources,
+  availableTypes,
   animatedStyle,
   onLayout,
 }) => {
@@ -136,7 +136,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     timeRangeFilter !== 'all' ||
     selectedFormats.length > 0 ||
     selectedPageRanges.length > 0 ||
-    selectedSources.length > 0 ||
+    selectedTypes.length > 0 ||
     excludedStatuses.length > 0 ||
     sortOrder !== 'default';
 
@@ -192,14 +192,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         onFormatsChange={onFormatsChange}
         selectedPageRanges={selectedPageRanges}
         onPageRangesChange={onPageRangesChange}
-        selectedSources={selectedSources}
-        onSourcesChange={onSourcesChange}
+        selectedTypes={selectedTypes}
+        onTypesChange={onTypesChange}
         excludedStatuses={excludedStatuses}
         onExcludedStatusesChange={onExcludedStatusesChange}
         sortOrder={sortOrder}
         onSortOrderChange={onSortOrderChange}
         statusCounts={statusCounts}
-        availableSources={availableSources}
+        availableTypes={availableTypes}
       />
     </Animated.View>
   );

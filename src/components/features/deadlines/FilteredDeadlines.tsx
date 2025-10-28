@@ -9,6 +9,7 @@ import {
 } from '@/types/deadline.types';
 import { isDateThisMonth, isDateThisWeek } from '@/utils/dateUtils';
 import { normalizeServerDate } from '@/utils/dateNormalization';
+import { sortByPace } from '@/utils/sortUtils';
 import React from 'react';
 import DeadlinesList from './DeadlinesList';
 
@@ -17,7 +18,7 @@ interface FilteredDeadlinesProps {
   timeRangeFilter: TimeRangeFilter;
   selectedFormats: BookFormat[];
   selectedPageRanges: PageRangeFilter[];
-  selectedSources: string[];
+  selectedTypes: string[];
   excludedStatuses: FilterType[];
   sortOrder: SortOrder;
 }
@@ -27,7 +28,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   timeRangeFilter,
   selectedFormats,
   selectedPageRanges,
-  selectedSources,
+  selectedTypes,
   excludedStatuses,
   sortOrder,
 }) => {
@@ -84,9 +85,9 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       });
     }
 
-    if (selectedSources.length > 0) {
+    if (selectedTypes.length > 0) {
       filtered = filtered.filter(
-        deadline => deadline.source && selectedSources.includes(deadline.source)
+        deadline => deadline.type && selectedTypes.includes(deadline.type)
       );
     }
 
@@ -130,6 +131,14 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   ): ReadingDeadlineWithProgress[] => {
     if (sortOrder === 'default') {
       return deadlines;
+    }
+
+    if (sortOrder === 'lowestPace') {
+      return [...deadlines].sort((a, b) => sortByPace(a, b, 'asc'));
+    }
+
+    if (sortOrder === 'highestPace') {
+      return [...deadlines].sort((a, b) => sortByPace(a, b, 'desc'));
     }
 
     return [...deadlines].sort((a, b) => {

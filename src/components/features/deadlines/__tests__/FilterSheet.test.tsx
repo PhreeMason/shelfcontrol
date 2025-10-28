@@ -84,7 +84,7 @@ describe('FilterSheet', () => {
       created_at: '2024-01-01',
       updated_at: '2024-01-01',
       acquisition_source: null,
-      deadline_type: null,
+      type: "Personal",
       publishers: null,
       status: [],
       progress: [],
@@ -103,7 +103,7 @@ describe('FilterSheet', () => {
       created_at: '2024-01-01',
       updated_at: '2024-01-01',
       acquisition_source: null,
-      deadline_type: null,
+      type: "Personal",
       publishers: null,
       status: [],
       progress: [],
@@ -122,7 +122,7 @@ describe('FilterSheet', () => {
       created_at: '2024-01-01',
       updated_at: '2024-01-01',
       acquisition_source: null,
-      deadline_type: null,
+      type: "Personal",
       publishers: null,
       status: [],
       progress: [],
@@ -140,8 +140,8 @@ describe('FilterSheet', () => {
     onFormatsChange: jest.fn(),
     selectedPageRanges: [] as ('under300' | '300to500' | 'over500')[],
     onPageRangesChange: jest.fn(),
-    selectedSources: [] as string[],
-    onSourcesChange: jest.fn(),
+    selectedTypes: [] as string[],
+    onTypesChange: jest.fn(),
     excludedStatuses: [] as (
       | 'active'
       | 'pending'
@@ -153,7 +153,7 @@ describe('FilterSheet', () => {
       | 'all'
     )[],
     onExcludedStatusesChange: jest.fn(),
-    sortOrder: 'default' as 'default' | 'soonest' | 'latest',
+    sortOrder: 'default' as 'default' | 'soonest' | 'latest' | 'lowestPace' | 'highestPace',
     onSortOrderChange: jest.fn(),
     statusCounts: {
       active: 5,
@@ -165,7 +165,7 @@ describe('FilterSheet', () => {
       didNotFinish: 2,
       all: 27,
     },
-    availableSources: ['Library', 'Amazon'],
+    availableTypes: ['Library', 'Amazon'],
   };
 
   beforeEach(() => {
@@ -187,7 +187,7 @@ describe('FilterSheet', () => {
 
       expect(screen.getByText('Time Range')).toBeTruthy();
       expect(screen.getByText('Format')).toBeTruthy();
-      expect(screen.getByText('Source')).toBeTruthy();
+      expect(screen.getByText('Type')).toBeTruthy();
     });
 
     it('should render Done button', () => {
@@ -295,43 +295,43 @@ describe('FilterSheet', () => {
     });
   });
 
-  describe('Source Filter', () => {
-    it('should render source options with counts', () => {
+  describe('Type Filter', () => {
+    it('should render type options with counts', () => {
       render(<FilterSheet {...defaultProps} />);
 
       expect(screen.getByText('Library 2')).toBeTruthy();
       expect(screen.getByText('Amazon 1')).toBeTruthy();
     });
 
-    it('should toggle source selection', () => {
-      const onSourcesChange = jest.fn();
+    it('should toggle typeselection', () => {
+      const onTypesChange = jest.fn();
 
       render(
         <FilterSheet
           {...defaultProps}
-          selectedSources={['Library']}
-          onSourcesChange={onSourcesChange}
+          selectedTypes={['Library']}
+          onTypesChange={onTypesChange}
         />
       );
 
       fireEvent.press(screen.getByText('Library 2'));
 
-      expect(onSourcesChange).toHaveBeenCalledWith([]);
+      expect(onTypesChange).toHaveBeenCalledWith([]);
     });
 
-    it('should add source when toggling unselected source', () => {
-      const onSourcesChange = jest.fn();
+    it('should add typewhen toggling unselected source', () => {
+      const onTypesChange = jest.fn();
 
       render(
-        <FilterSheet {...defaultProps} onSourcesChange={onSourcesChange} />
+        <FilterSheet {...defaultProps} onTypesChange={onTypesChange} />
       );
 
       fireEvent.press(screen.getByText('Amazon 1'));
 
-      expect(onSourcesChange).toHaveBeenCalledWith(['Amazon']);
+      expect(onTypesChange).toHaveBeenCalledWith(['Amazon']);
     });
 
-    it('should not render sources with zero count', () => {
+    it('should not render typeswith zero count', () => {
       render(
         <FilterSheet
           visible={true}
@@ -342,14 +342,14 @@ describe('FilterSheet', () => {
           onTimeRangeChange={jest.fn()}
           selectedFormats={[]}
           onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
+          selectedTypes={[]}
+          onTypesChange={jest.fn()}
           excludedStatuses={[]}
           onExcludedStatusesChange={jest.fn()}
           sortOrder="default"
           onSortOrderChange={jest.fn()}
           statusCounts={defaultProps.statusCounts}
-          availableSources={['Library', 'Amazon', 'Bookstore']}
+          availableTypes={['Library', 'Amazon', 'Bookstore']}
           selectedPageRanges={[]}
           onPageRangesChange={jest.fn()}
         />
@@ -376,7 +376,7 @@ describe('FilterSheet', () => {
       const onTimeRangeChange = jest.fn();
       const onFormatsChange = jest.fn();
       const onPageRangesChange = jest.fn();
-      const onSourcesChange = jest.fn();
+      const onTypesChange = jest.fn();
 
       render(
         <FilterSheet
@@ -386,8 +386,8 @@ describe('FilterSheet', () => {
           selectedFormats={['physical']}
           onFormatsChange={onFormatsChange}
           onPageRangesChange={onPageRangesChange}
-          selectedSources={['Library']}
-          onSourcesChange={onSourcesChange}
+          selectedTypes={['Library']}
+          onTypesChange={onTypesChange}
         />
       );
 
@@ -396,7 +396,7 @@ describe('FilterSheet', () => {
       expect(onTimeRangeChange).toHaveBeenCalledWith('all');
       expect(onFormatsChange).toHaveBeenCalledWith([]);
       expect(onPageRangesChange).toHaveBeenCalledWith([]);
-      expect(onSourcesChange).toHaveBeenCalledWith([]);
+      expect(onTypesChange).toHaveBeenCalledWith([]);
     });
   });
 
@@ -418,14 +418,14 @@ describe('FilterSheet', () => {
           onTimeRangeChange={jest.fn()}
           selectedFormats={['physical']}
           onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
+          selectedTypes={[]}
+          onTypesChange={jest.fn()}
           excludedStatuses={[]}
           onExcludedStatusesChange={jest.fn()}
           sortOrder="default"
           onSortOrderChange={jest.fn()}
           statusCounts={defaultProps.statusCounts}
-          availableSources={['Library', 'Amazon']}
+          availableTypes={['Library', 'Amazon']}
           selectedPageRanges={[]}
           onPageRangesChange={jest.fn()}
         />
@@ -480,14 +480,14 @@ describe('FilterSheet', () => {
           onTimeRangeChange={jest.fn()}
           selectedFormats={[]}
           onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
+          selectedTypes={[]}
+          onTypesChange={jest.fn()}
           excludedStatuses={[]}
           onExcludedStatusesChange={jest.fn()}
           sortOrder="default"
           onSortOrderChange={jest.fn()}
           statusCounts={defaultProps.statusCounts}
-          availableSources={[]}
+          availableTypes={[]}
           selectedPageRanges={[]}
           onPageRangesChange={jest.fn()}
         />
@@ -512,15 +512,15 @@ describe('FilterSheet', () => {
           onTimeRangeChange={jest.fn()}
           selectedFormats={[]}
           onFormatsChange={jest.fn()}
-          selectedSources={[]}
-          onSourcesChange={jest.fn()}
-          availableSources={[]}
+          selectedTypes={[]}
+          onTypesChange={jest.fn()}
+          availableTypes={[]}
           selectedPageRanges={[]}
           onPageRangesChange={jest.fn()}
         />
       );
 
-      expect(screen.getByText('Source')).toBeTruthy();
+      expect(screen.getByText('Type')).toBeTruthy();
     });
   });
 
@@ -615,6 +615,52 @@ describe('FilterSheet', () => {
       );
 
       expect(screen.getByText(/SHOW 3 DEADLINES/)).toBeTruthy();
+    });
+  });
+
+  describe('Sort Order', () => {
+    it('should render all sort order options on "all" tab', () => {
+      render(<FilterSheet {...defaultProps} selectedFilter="all" />);
+
+      expect(screen.getByText('Default')).toBeTruthy();
+      expect(screen.getByText('Soonest First')).toBeTruthy();
+      expect(screen.getByText('Latest First')).toBeTruthy();
+      expect(screen.getByText('Lowest Pace')).toBeTruthy();
+      expect(screen.getByText('Highest Pace')).toBeTruthy();
+    });
+
+    it('should render only pace sort options on non-"all" tabs', () => {
+      render(<FilterSheet {...defaultProps} selectedFilter="active" />);
+
+      expect(screen.getByText('Default')).toBeTruthy();
+      expect(screen.queryByText('Soonest First')).toBeNull();
+      expect(screen.queryByText('Latest First')).toBeNull();
+      expect(screen.getByText('Lowest Pace')).toBeTruthy();
+      expect(screen.getByText('Highest Pace')).toBeTruthy();
+    });
+
+    it('should call onSortOrderChange when lowest pace is selected', () => {
+      const onSortOrderChange = jest.fn();
+
+      render(
+        <FilterSheet {...defaultProps} onSortOrderChange={onSortOrderChange} />
+      );
+
+      fireEvent.press(screen.getByText('Lowest Pace'));
+
+      expect(onSortOrderChange).toHaveBeenCalledWith('lowestPace');
+    });
+
+    it('should call onSortOrderChange when highest pace is selected', () => {
+      const onSortOrderChange = jest.fn();
+
+      render(
+        <FilterSheet {...defaultProps} onSortOrderChange={onSortOrderChange} />
+      );
+
+      fireEvent.press(screen.getByText('Highest Pace'));
+
+      expect(onSortOrderChange).toHaveBeenCalledWith('highestPace');
     });
   });
 });

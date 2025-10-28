@@ -42,8 +42,8 @@ interface FilterSheetProps {
   selectedPageRanges: PageRangeFilter[];
   onPageRangesChange: (ranges: PageRangeFilter[]) => void;
 
-  selectedSources: string[];
-  onSourcesChange: (sources: string[]) => void;
+  selectedTypes: string[];
+  onTypesChange: (types: string[]) => void;
 
   excludedStatuses: FilterType[];
   onExcludedStatusesChange: (statuses: FilterType[]) => void;
@@ -53,7 +53,7 @@ interface FilterSheetProps {
 
   statusCounts?: Record<FilterType, number>;
 
-  availableSources: string[];
+  availableTypes: string[];
 }
 
 export const FilterSheet: React.FC<FilterSheetProps> = ({
@@ -67,14 +67,14 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   onFormatsChange,
   selectedPageRanges,
   onPageRangesChange,
-  selectedSources,
-  onSourcesChange,
+  selectedTypes,
+  onTypesChange,
   excludedStatuses,
   onExcludedStatusesChange,
   sortOrder,
   onSortOrderChange,
   statusCounts,
-  availableSources,
+  availableTypes,
 }) => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -122,11 +122,11 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     }
   };
 
-  const toggleSource = (source: string) => {
-    if (selectedSources.includes(source)) {
-      onSourcesChange(selectedSources.filter(s => s !== source));
+  const toggleType = (type: string) => {
+    if (selectedTypes.includes(type)) {
+      onTypesChange(selectedTypes.filter(t => t !== type));
     } else {
-      onSourcesChange([...selectedSources, source]);
+      onTypesChange([...selectedTypes, type]);
     }
   };
 
@@ -142,8 +142,8 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     return deadlines.filter(d => d.format === format).length;
   };
 
-  const getSourceCount = (source: string): number => {
-    return deadlines.filter(d => d.source === source).length;
+  const getTypeCount = (type: string): number => {
+    return deadlines.filter(d => d.type === type).length;
   };
 
   const getPageRangeCount = (range: PageRangeFilter): number => {
@@ -210,9 +210,9 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
       });
     }
 
-    if (selectedSources.length > 0) {
+    if (selectedTypes.length > 0) {
       filtered = filtered.filter(
-        deadline => deadline.source && selectedSources.includes(deadline.source)
+        deadline => deadline.type && selectedTypes.includes(deadline.type)
       );
     }
 
@@ -245,7 +245,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     timeRangeFilter !== 'all' ||
     selectedFormats.length > 0 ||
     selectedPageRanges.length > 0 ||
-    selectedSources.length > 0 ||
+    selectedTypes.length > 0 ||
     excludedStatuses.length > 0 ||
     sortOrder !== 'default';
 
@@ -253,7 +253,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     onTimeRangeChange('all');
     onFormatsChange([]);
     onPageRangesChange([]);
-    onSourcesChange([]);
+    onTypesChange([]);
     onExcludedStatusesChange([]);
     onSortOrderChange('default');
   };
@@ -412,26 +412,26 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             </View>
 
             <View style={styles.section}>
-              <ThemedText style={styles.sectionTitle}>Source</ThemedText>
+              <ThemedText style={styles.sectionTitle}>Type</ThemedText>
               <View style={styles.filterRow}>
                 <ThemedButton
                   title={`All ${deadlines.length}`}
                   style={styles.filterPill}
-                  variant={selectedSources.length === 0 ? 'primary' : 'outline'}
-                  onPress={() => onSourcesChange([])}
+                  variant={selectedTypes.length === 0 ? 'primary' : 'outline'}
+                  onPress={() => onTypesChange([])}
                 />
-                {availableSources.map(source => {
-                  const count = getSourceCount(source);
+                {availableTypes.map(type => {
+                  const count = getTypeCount(type);
                   if (count === 0) return null;
                   return (
                     <ThemedButton
-                      key={source}
-                      title={`${source} ${count}`}
+                      key={type}
+                      title={`${type} ${count}`}
                       style={styles.filterPill}
                       variant={
-                        selectedSources.includes(source) ? 'primary' : 'outline'
+                        selectedTypes.includes(type) ? 'primary' : 'outline'
                       }
-                      onPress={() => toggleSource(source)}
+                      onPress={() => toggleType(type)}
                     />
                   );
                 })}
@@ -486,20 +486,25 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             <View style={styles.section}>
               <ThemedText style={styles.sectionTitle}>Sort By</ThemedText>
               <View style={styles.filterRow}>
-                {(['default', 'soonest', 'latest'] as SortOrder[]).map(
+                {(selectedFilter === 'all'
+                  ? ['default', 'soonest', 'latest', 'lowestPace', 'highestPace']
+                  : ['default', 'lowestPace', 'highestPace']
+                ).map(
                   order => {
                     const sortLabels: Record<SortOrder, string> = {
                       default: 'Default',
                       soonest: 'Soonest First',
                       latest: 'Latest First',
+                      lowestPace: 'Lowest Pace',
+                      highestPace: 'Highest Pace',
                     };
                     return (
                       <ThemedButton
                         key={order}
-                        title={sortLabels[order]}
+                        title={sortLabels[order as SortOrder]}
                         style={styles.filterPill}
                         variant={sortOrder === order ? 'primary' : 'outline'}
-                        onPress={() => onSortOrderChange(order)}
+                        onPress={() => onSortOrderChange(order as SortOrder)}
                       />
                     );
                   }
