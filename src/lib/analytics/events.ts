@@ -112,7 +112,7 @@ export interface EventPropertiesMap {
   deadline_created: {
     format: ReadingFormat;
     status: DeadlineStatus;
-    source: string;
+    type: string;
   };
 
   deadline_updated: {

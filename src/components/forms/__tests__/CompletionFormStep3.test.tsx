@@ -124,7 +124,6 @@ describe('CompletionFormStep3', () => {
     book_id: 'test-book-id',
     book_title: 'Test Book Title',
     author: 'Test Author',
-    source: 'manual',
     deadline_date: '2024-12-31',
     flexibility: 'flexible',
     format: 'physical',
@@ -597,7 +596,6 @@ describe('CompletionFormStep3', () => {
     it('should set default review deadline for NetGalley source', () => {
       const netGalleyDeadline = {
         ...mockDeadline,
-        source: 'NetGalley',
       };
 
       render(<CompletionFormStep3 deadline={netGalleyDeadline} />);
@@ -608,7 +606,6 @@ describe('CompletionFormStep3', () => {
     it('should set default review deadline for Publisher ARC source', () => {
       const publisherDeadline = {
         ...mockDeadline,
-        source: 'Publisher ARC',
       };
 
       render(<CompletionFormStep3 deadline={publisherDeadline} />);
@@ -665,7 +662,6 @@ describe('CompletionFormStep3', () => {
 
       const netGalleyDeadline = {
         ...mockDeadline,
-        source: 'NetGalley',
       };
 
       mockCreateReviewTracking.mockImplementation((_params, callbacks) => {

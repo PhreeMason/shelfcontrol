@@ -11,6 +11,7 @@ import {
   useUpdateDeadlineDate,
 } from '@/hooks/useDeadlines';
 import { analytics } from '@/lib/analytics/client';
+import type { DeadlineStatus as AnalyticsDeadlineStatus } from '@/lib/analytics/events';
 import {
   ReadingDeadlineInsert,
   ReadingDeadlineProgressInsert,
@@ -345,9 +346,9 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
       addDeadlineMutation(params, {
         onSuccess: () => {
           analytics.track('deadline_created', {
-            format: params.deadlineDetails.format as 'physical' | 'eBook' | 'audio',
-            status: (params.status || 'active') as 'pending' | 'reading' | 'completed' | 'paused' | 'dnf',
-            type: params.deadlineDetails.type || 'manual',
+            format: params.deadlineDetails.format,
+            status: params.status as AnalyticsDeadlineStatus,
+            type: params.deadlineDetails.type,
           });
           onSuccess?.();
         },

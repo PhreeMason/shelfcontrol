@@ -112,7 +112,6 @@ describe('DailyReadingChart', () => {
     book_id: 'book-1',
     book_title: 'Test Book',
     author: 'Test Author',
-    source: 'manual',
     flexibility: 'fixed' as Database['public']['Enums']['deadline_flexibility'],
     status: [],
     created_at: '2024-01-10T10:00:00Z',
@@ -327,7 +326,6 @@ describe('DailyReadingChart', () => {
         book_id: 'book-2',
         book_title: 'Audio Book',
         author: 'Audio Author',
-        source: 'manual',
         flexibility:
           'flexible' as Database['public']['Enums']['deadline_flexibility'],
         status: [],

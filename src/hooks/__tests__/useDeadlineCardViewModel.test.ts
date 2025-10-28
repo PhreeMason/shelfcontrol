@@ -81,7 +81,6 @@ describe('useDeadlineCardViewModel', () => {
     book_id: 'book-123',
     book_title: 'Test Book',
     author: 'Test Author',
-    source: 'Library',
     format: 'physical',
     deadline_date: '2024-02-01',
     flexibility: 'flexible',

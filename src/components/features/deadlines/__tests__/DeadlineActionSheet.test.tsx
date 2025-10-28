@@ -9,7 +9,6 @@ const mockDeadline: ReadingDeadlineWithProgress = {
   book_id: 'book-1',
   book_title: 'Test Book',
   author: 'Test Author',
-  source: 'source-1',
   deadline_date: '2025-12-31',
   flexibility: 'flexible',
   total_quantity: 300,

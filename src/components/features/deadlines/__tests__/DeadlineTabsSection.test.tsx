@@ -66,7 +66,6 @@ const createMockDeadline = (
   format: 'physical',
   deadline_date: '2025-01-20',
   flexibility: 'flexible',
-  source: 'NetGalley',
   created_at: '2025-01-01T00:00:00Z',
   updated_at: '2025-01-15T00:00:00Z',
   acquisition_source: null,

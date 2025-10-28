@@ -125,7 +125,6 @@ describe('CompletionFormContainer', () => {
     book_id: 'test-book-id',
     book_title: 'Test Book Title',
     author: 'Test Author',
-    source: 'manual',
     deadline_date: '2024-12-31',
     flexibility: 'flexible',
     format: 'physical',

@@ -33,7 +33,6 @@ const createMockDeadline = (
   book_id: 'book-123',
   book_title: 'Test Book',
   author: 'Test Author',
-  source: 'test',
   acquisition_source: null,
   type: "Personal",
   publishers: null,

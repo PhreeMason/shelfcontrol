@@ -796,9 +796,9 @@ class DeadlinesService {
 
     if (error) throw error;
 
-    return deadlines?.map(d => ({
+    return deadlines?.map((d: any) => ({
       ...d,
-      type: (d as any).deadline_type || 'Personal'
+      type: d.deadline_type
     })) || [];
   }
 
