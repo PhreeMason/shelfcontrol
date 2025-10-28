@@ -74,6 +74,10 @@ describe('DeadlineCard', () => {
       secondaryText: 'Due: Jan 15, 2024',
       coverImageUrl: null,
     },
+    progress: {
+      progressPercentage: 45,
+      currentProgress: 135,
+    },
     styling: {
       borderColor: '#4CAF50',
       countdownColor: '#4CAF50',
@@ -235,6 +239,88 @@ describe('DeadlineCard', () => {
       }
 
       expect(mockOnCardPress).toHaveBeenCalled();
+    });
+  });
+
+  describe('Progress Bar', () => {
+    it('should render progress bar on active deadlines', () => {
+      render(<DeadlineCard deadline={mockDeadline} />);
+
+      expect(screen.getByText('45%')).toBeTruthy();
+    });
+
+    it('should NOT render progress bar on archived deadlines', () => {
+      (useDeadlineCardViewModel as jest.Mock).mockReturnValue(
+        createMockViewModel({
+          flags: { isArchived: true },
+        })
+      );
+
+      render(<DeadlineCard deadline={mockDeadline} />);
+
+      expect(screen.queryByText('45%')).toBeNull();
+    });
+
+    it('should display correct progress percentage', () => {
+      (useDeadlineCardViewModel as jest.Mock).mockReturnValue(
+        createMockViewModel({
+          progress: {
+            progressPercentage: 73.5,
+            currentProgress: 220,
+          },
+        })
+      );
+
+      render(<DeadlineCard deadline={mockDeadline} />);
+
+      expect(screen.getByText('74%')).toBeTruthy();
+    });
+
+    it('should render progress bar with overdue urgency color', () => {
+      (useDeadlineCardViewModel as jest.Mock).mockReturnValue(
+        createMockViewModel({
+          styling: {
+            borderColor: '#c8696e',
+            countdownColor: '#c8696e',
+            shadowStyle: {},
+            cardContainerStyle: { borderColor: '#c8696e' },
+          },
+        })
+      );
+
+      render(<DeadlineCard deadline={mockDeadline} />);
+
+      expect(screen.getByText('45%')).toBeTruthy();
+    });
+
+    it('should render progress bar with 0% progress', () => {
+      (useDeadlineCardViewModel as jest.Mock).mockReturnValue(
+        createMockViewModel({
+          progress: {
+            progressPercentage: 0,
+            currentProgress: 0,
+          },
+        })
+      );
+
+      render(<DeadlineCard deadline={mockDeadline} />);
+
+      expect(screen.getByText('0%')).toBeTruthy();
+    });
+
+    it('should render progress bar with 100% progress', () => {
+      (useDeadlineCardViewModel as jest.Mock).mockReturnValue(
+        createMockViewModel({
+          progress: {
+            progressPercentage: 100,
+            currentProgress: 300,
+          },
+        })
+      );
+
+      render(<DeadlineCard deadline={mockDeadline} />);
+
+      expect(screen.getByText('100%')).toBeTruthy();
     });
   });
 });

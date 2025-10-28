@@ -39,21 +39,42 @@ export function DeadlineCard({
               <ThemedText style={styles.bookTitle} numberOfLines={2}>
                 {viewModel.display.title}
               </ThemedText>
-              {!viewModel.flags.isArchived && (
-                <ThemedText style={styles.capacityText}>
-                  {viewModel.display.primaryText}
-                </ThemedText>
-              )}
-              {viewModel.flags.isArchived && (
-                <ThemedText style={styles.capacityText}>
-                  {viewModel.display.secondaryText}
-                </ThemedText>
-              )}
-              {!viewModel.flags.isArchived && (
-                <ThemedText style={styles.dueDate}>
-                  {viewModel.display.secondaryText}
-                </ThemedText>
-              )}
+
+              <View style={styles.additionalInfo}>
+                {!viewModel.flags.isArchived && (
+                  <ThemedText style={styles.capacityText}>
+                    {viewModel.display.primaryText}
+                  </ThemedText>
+                )}
+                {viewModel.flags.isArchived && (
+                  <ThemedText style={styles.capacityText}>
+                    {viewModel.display.secondaryText}
+                  </ThemedText>
+                )}
+                {!viewModel.flags.isArchived && (
+                  <ThemedText style={styles.dueDate}>
+                    {viewModel.display.secondaryText}
+                  </ThemedText>
+                )}
+                {!viewModel.flags.isArchived && (
+                  <View style={styles.progressContainer}>
+                    <View style={styles.progressTrack}>
+                      <View
+                        style={[
+                          styles.progressFill,
+                          {
+                            width: `${viewModel.progress.progressPercentage}%`,
+                            backgroundColor: viewModel.styling.countdownColor,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <ThemedText variant='muted' style={styles.progressLabel}>
+                      {Math.round(viewModel.progress.progressPercentage)}%
+                    </ThemedText>
+                  </View>
+                )}
+              </View>
             </View>
           </View>
           <DeadlineCountdownDisplay {...viewModel.componentProps.countdown} />
@@ -112,24 +133,49 @@ const styles = StyleSheet.create({
   },
   bookInfo: {
     flex: 1,
-    marginBottom: 4,
   },
   bookTitle: {
     color: '#2B3D4F',
-    paddingVertical: 10,
-    marginLeft: 1,
+    marginBottom: 10,
     ...Typography.titleMedium,
     fontSize: 18,
+  },
+  additionalInfo: {
+    justifyContent: 'center',
+    gap: 4,
   },
   capacityText: {
     color: '#2B3D4F',
     fontSize: 13,
+    lineHeight: 13,
     fontWeight: '600',
-    marginBottom: 1,
   },
   dueDate: {
     color: '#6B7280',
     fontSize: 12,
+    lineHeight: 12,
+  },
+  progressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  progressTrack: {
+    flex: 1,
+    height: 6,
+    backgroundColor: 'rgba(232, 194, 185, 0.2)',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  progressLabel: {
+    fontSize: 12,
+    lineHeight: 12,
+    fontWeight: '500',
+    minWidth: 30,
   },
 });
 

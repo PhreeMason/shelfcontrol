@@ -21,6 +21,10 @@ interface DeadlineCardViewModel {
     secondaryText: string;
     coverImageUrl: string | null | undefined;
   };
+  progress: {
+    progressPercentage: number;
+    currentProgress: number;
+  };
   styling: {
     borderColor: string;
     countdownColor: string;
@@ -75,8 +79,14 @@ export function useDeadlineCardViewModel({
 
   const { data: bookData } = useFetchBookById(deadline.book_id);
 
-  const { daysLeft, unitsPerDay, urgencyLevel, remaining } =
-    getDeadlineCalculations(deadline);
+  const {
+    daysLeft,
+    unitsPerDay,
+    urgencyLevel,
+    remaining,
+    progressPercentage,
+    currentProgress,
+  } = getDeadlineCalculations(deadline);
 
   const {
     latestStatus,
@@ -209,6 +219,10 @@ export function useDeadlineCardViewModel({
       primaryText,
       secondaryText,
       coverImageUrl: bookData?.cover_image_url,
+    },
+    progress: {
+      progressPercentage,
+      currentProgress,
     },
     styling: {
       borderColor,
