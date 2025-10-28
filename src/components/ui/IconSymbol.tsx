@@ -57,6 +57,7 @@ export const MAPPING = {
   'doc.on.clipboard': 'content-copy',
   'text.page': 'description',
   'trash': 'delete',
+  'star.fill': 'star',
 } as IconMapping;
 
 /**

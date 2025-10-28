@@ -1,5 +1,6 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
   BookFormat,
@@ -162,20 +163,29 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
           {visibleOptions.map(option => {
             const count = getFilterCount(option.key);
+            const isSelected = selectedFilter === option.key;
+            const shouldShowStar = isSelected && hasActiveFilters;
+
             return (
-              <ThemedButton
-                key={option.key}
-                title={`${option.label} (${count})`}
-                style={styles.filterButton}
-                variant={selectedFilter === option.key ? 'primary' : 'outline'}
-                onPress={() => {
-                  if (selectedFilter === option.key) {
-                    setShowFilterSheet(true);
-                  } else {
-                    onFilterChange(option.key);
-                  }
-                }}
-              />
+              <View key={option.key} style={styles.tabContainer}>
+                {shouldShowStar && (
+                  <View style={styles.starIndicator}>
+                    <IconSymbol name="star.fill" size={12} color="#ef4444" />
+                  </View>
+                )}
+                <ThemedButton
+                  title={`${option.label} (${count})`}
+                  style={styles.filterButton}
+                  variant={isSelected ? 'primary' : 'outline'}
+                  onPress={() => {
+                    if (isSelected) {
+                      setShowFilterSheet(true);
+                    } else {
+                      onFilterChange(option.key);
+                    }
+                  }}
+                />
+              </View>
             );
           })}
         </ScrollView>
@@ -230,6 +240,15 @@ const styles = StyleSheet.create({
   iconFilterButton: {
     width: 40,
     height: 40,
+  },
+  tabContainer: {
+    position: 'relative',
+  },
+  starIndicator: {
+    position: 'absolute',
+    top: 3,
+    right: 3,
+    zIndex: 1,
   },
 });
 
