@@ -33,6 +33,8 @@ export default function HomeScreen() {
     setSelectedPageRanges,
     selectedTypes,
     setSelectedTypes,
+    selectedTags,
+    setSelectedTags,
     excludedStatuses,
     setExcludedStatuses,
     sortOrder,
@@ -49,6 +51,7 @@ export default function HomeScreen() {
     if (selectedFormats.length > 0) activeFilters.push('formats');
     if (selectedPageRanges.length > 0) activeFilters.push('page_ranges');
     if (selectedTypes.length > 0) activeFilters.push('types');
+    if (selectedTags.length > 0) activeFilters.push('tags');
     if (excludedStatuses.length > 0) activeFilters.push('excluded_statuses');
 
     analytics.track('home_screen_viewed', {
@@ -107,6 +110,7 @@ export default function HomeScreen() {
       setSelectedFormats([]);
       setSelectedPageRanges([]);
       setSelectedTypes([]);
+      setSelectedTags([]);
       setExcludedStatuses([]);
     }
     prevSelectedFilterRef.current = selectedFilter;
@@ -116,6 +120,7 @@ export default function HomeScreen() {
     setSelectedFormats,
     setSelectedPageRanges,
     setSelectedTypes,
+    setSelectedTags,
     setExcludedStatuses,
   ]);
 
@@ -125,6 +130,7 @@ export default function HomeScreen() {
     if (selectedFormats.length > 0) activeFilters.push('formats');
     if (selectedPageRanges.length > 0) activeFilters.push('page_ranges');
     if (selectedTypes.length > 0) activeFilters.push('types');
+    if (selectedTags.length > 0) activeFilters.push('tags');
     if (excludedStatuses.length > 0) activeFilters.push('excluded_statuses');
 
     if (activeFilters.length > 0) {
@@ -137,6 +143,7 @@ export default function HomeScreen() {
     selectedFormats,
     selectedPageRanges,
     selectedTypes,
+    selectedTags,
     excludedStatuses,
   ]);
 
@@ -178,6 +185,8 @@ export default function HomeScreen() {
         onPageRangesChange={setSelectedPageRanges}
         selectedTypes={selectedTypes}
         onTypesChange={setSelectedTypes}
+        selectedTags={selectedTags}
+        onTagsChange={setSelectedTags}
         excludedStatuses={excludedStatuses}
         onExcludedStatusesChange={setExcludedStatuses}
         sortOrder={sortOrder}
@@ -216,6 +225,8 @@ export default function HomeScreen() {
           onPageRangesChange={setSelectedPageRanges}
           selectedTypes={selectedTypes}
           onTypesChange={setSelectedTypes}
+          selectedTags={selectedTags}
+          onTagsChange={setSelectedTags}
           excludedStatuses={excludedStatuses}
           onExcludedStatusesChange={setExcludedStatuses}
           sortOrder={sortOrder}
@@ -231,6 +242,7 @@ export default function HomeScreen() {
           selectedFormats={selectedFormats}
           selectedPageRanges={selectedPageRanges}
           selectedTypes={selectedTypes}
+          selectedTags={selectedTags}
           excludedStatuses={excludedStatuses}
           sortOrder={sortOrder}
         />

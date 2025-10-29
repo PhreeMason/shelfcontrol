@@ -1,6 +1,7 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { useTheme } from '@/hooks/useThemeColor';
+import { useGetAllDeadlineTags, useGetAllTags } from '@/hooks/useTags';
 import {
   BookFormat,
   FilterType,
@@ -45,6 +46,9 @@ interface FilterSheetProps {
   selectedTypes: string[];
   onTypesChange: (types: string[]) => void;
 
+  selectedTags: string[];
+  onTagsChange: (tags: string[]) => void;
+
   excludedStatuses: FilterType[];
   onExcludedStatusesChange: (statuses: FilterType[]) => void;
 
@@ -69,6 +73,8 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   onPageRangesChange,
   selectedTypes,
   onTypesChange,
+  selectedTags,
+  onTagsChange,
   excludedStatuses,
   onExcludedStatusesChange,
   sortOrder,
@@ -79,6 +85,8 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const translateY = useSharedValue(1000);
+  const { data: allTags = [] } = useGetAllTags();
+  const { data: deadlineTags = [] } = useGetAllDeadlineTags();
 
   const getFilterDisplayName = (filter: string): string => {
     const displayNames: Record<string, string> = {
@@ -130,6 +138,14 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     }
   };
 
+  const toggleTag = (tagId: string) => {
+    if (selectedTags.includes(tagId)) {
+      onTagsChange(selectedTags.filter(t => t !== tagId));
+    } else {
+      onTagsChange([...selectedTags, tagId]);
+    }
+  };
+
   const toggleExcludedStatus = (status: FilterType) => {
     if (excludedStatuses.includes(status)) {
       onExcludedStatusesChange(excludedStatuses.filter(s => s !== status));
@@ -144,6 +160,15 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
 
   const getTypeCount = (type: string): number => {
     return deadlines.filter(d => d.type === type).length;
+  };
+
+  const getTagCount = (tagId: string): number => {
+    const deadlineIdsWithTag = new Set(
+      deadlineTags
+        .filter(dt => dt.tag_id === tagId)
+        .map(dt => dt.deadline_id)
+    );
+    return deadlines.filter(d => deadlineIdsWithTag.has(d.id)).length;
   };
 
   const getPageRangeCount = (range: PageRangeFilter): number => {
@@ -216,6 +241,23 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
       );
     }
 
+    if (selectedTags.length > 0) {
+      const deadlineIdsByTag = new Map<string, Set<string>>();
+      selectedTags.forEach(tagId => {
+        const deadlineIds = deadlineTags
+          .filter(dt => dt.tag_id === tagId)
+          .map(dt => dt.deadline_id);
+        deadlineIdsByTag.set(tagId, new Set(deadlineIds));
+      });
+
+      filtered = filtered.filter(deadline => {
+        return selectedTags.some(tagId => {
+          const deadlineIds = deadlineIdsByTag.get(tagId);
+          return deadlineIds?.has(deadline.id);
+        });
+      });
+    }
+
     return filtered;
   };
 
@@ -246,6 +288,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     selectedFormats.length > 0 ||
     selectedPageRanges.length > 0 ||
     selectedTypes.length > 0 ||
+    selectedTags.length > 0 ||
     excludedStatuses.length > 0 ||
     sortOrder !== 'default';
 
@@ -254,6 +297,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     onFormatsChange([]);
     onPageRangesChange([]);
     onTypesChange([]);
+    onTagsChange([]);
     onExcludedStatusesChange([]);
     onSortOrderChange('default');
   };
@@ -438,6 +482,41 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
               </View>
             </View>
 
+            <View style={styles.section}>
+              <ThemedText style={styles.sectionTitle}>Tags</ThemedText>
+              <ScrollView
+                style={styles.tagsScrollView}
+                showsVerticalScrollIndicator={true}
+                nestedScrollEnabled={true}
+              >
+                <View style={styles.filterRow}>
+                  <ThemedButton
+                    title={`All ${deadlines.length}`}
+                    style={styles.filterPill}
+                    variant={selectedTags.length === 0 ? 'primary' : 'outline'}
+                    onPress={() => onTagsChange([])}
+                  />
+                  {[...allTags]
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map(tag => {
+                      const count = getTagCount(tag.id);
+                      if (count === 0) return null;
+                      return (
+                        <ThemedButton
+                          key={tag.id}
+                          title={`${tag.name} ${count}`}
+                          style={styles.filterPill}
+                          variant={
+                            selectedTags.includes(tag.id) ? 'primary' : 'outline'
+                          }
+                          onPress={() => toggleTag(tag.id)}
+                        />
+                      );
+                    })}
+                </View>
+              </ScrollView>
+            </View>
+
             {selectedFilter === 'all' && (
               <View style={styles.section}>
                 <ThemedText style={styles.sectionTitle}>
@@ -598,6 +677,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     minWidth: 'auto',
+  },
+  tagsScrollView: {
+    maxHeight: 150,
   },
   footer: {
     paddingHorizontal: 20,

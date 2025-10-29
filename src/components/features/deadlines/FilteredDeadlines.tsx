@@ -1,3 +1,4 @@
+import { useGetAllDeadlineTags } from '@/hooks/useTags';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
   BookFormat,
@@ -19,6 +20,7 @@ interface FilteredDeadlinesProps {
   selectedFormats: BookFormat[];
   selectedPageRanges: PageRangeFilter[];
   selectedTypes: string[];
+  selectedTags: string[];
   excludedStatuses: FilterType[];
   sortOrder: SortOrder;
 }
@@ -29,6 +31,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   selectedFormats,
   selectedPageRanges,
   selectedTypes,
+  selectedTags,
   excludedStatuses,
   sortOrder,
 }) => {
@@ -44,6 +47,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     isLoading,
     error,
   } = useDeadlines();
+  const { data: deadlineTags = [] } = useGetAllDeadlineTags();
 
   const applyAllFilters = (
     deadlines: ReadingDeadlineWithProgress[]
@@ -89,6 +93,23 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       filtered = filtered.filter(
         deadline => deadline.type && selectedTypes.includes(deadline.type)
       );
+    }
+
+    if (selectedTags.length > 0) {
+      const deadlineIdsByTag = new Map<string, Set<string>>();
+      selectedTags.forEach(tagId => {
+        const deadlineIds = deadlineTags
+          .filter(dt => dt.tag_id === tagId)
+          .map(dt => dt.deadline_id);
+        deadlineIdsByTag.set(tagId, new Set(deadlineIds));
+      });
+
+      filtered = filtered.filter(deadline => {
+        return selectedTags.some(tagId => {
+          const deadlineIds = deadlineIdsByTag.get(tagId);
+          return deadlineIds?.has(deadline.id);
+        });
+      });
     }
 
     return filtered;

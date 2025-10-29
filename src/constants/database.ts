@@ -6,6 +6,8 @@ export const DB_TABLES = {
   DEADLINE_STATUS: 'deadline_status',
   DEADLINE_NOTES: 'deadline_notes',
   DEADLINE_CONTACTS: 'deadline_contacts',
+  TAGS: 'tags',
+  DEADLINE_TAGS: 'deadline_tags',
   DISCLOSURE_TEMPLATES: 'disclosure_templates',
   USER_ACTIVITIES: 'user_activities',
   REVIEW_TRACKING: 'review_tracking',

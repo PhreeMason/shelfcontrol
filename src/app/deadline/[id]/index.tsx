@@ -4,6 +4,7 @@ import { DeadlineActionSheet } from '@/components/features/deadlines/DeadlineAct
 import { DeadlineContactsSection } from '@/components/features/deadlines/DeadlineContactsSection';
 import DeadlineHeroSection from '@/components/features/deadlines/DeadlineHeroSection';
 import DeadlineTabsSection from '@/components/features/deadlines/DeadlineTabsSection';
+import { DeadlineTagsSection } from '@/components/features/deadlines/DeadlineTagsSection';
 import DeadlineViewHeader from '@/components/features/deadlines/DeadlineViewHeader';
 import { DisclosureSection } from '@/components/features/deadlines/DisclosureSection';
 import ReadingProgressUpdate from '@/components/progress/ReadingProgressUpdate';
@@ -114,6 +115,8 @@ const DeadlineView = () => {
             <DailyReadingChart deadline={deadline} />
           </>
         ) : null}
+
+        <DeadlineTagsSection deadline={deadline} />
 
         <DeadlineContactsSection deadline={deadline} />
 

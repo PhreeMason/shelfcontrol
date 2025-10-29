@@ -30,6 +30,8 @@ interface PreferencesContextType {
   setSelectedPageRanges: (ranges: PageRangeFilter[]) => void;
   selectedTypes: string[];
   setSelectedTypes: (types: string[]) => void;
+  selectedTags: string[];
+  setSelectedTags: (tags: string[]) => void;
   excludedStatuses: FilterType[];
   setExcludedStatuses: (statuses: FilterType[]) => void;
   sortOrder: SortOrder;
@@ -51,6 +53,8 @@ const PreferencesContext = createContext<PreferencesContextType>({
   setSelectedPageRanges: () => {},
   selectedTypes: [],
   setSelectedTypes: () => {},
+  selectedTags: [],
+  setSelectedTags: () => {},
   excludedStatuses: [],
   setExcludedStatuses: () => {},
   sortOrder: 'default',
@@ -67,6 +71,7 @@ const STORAGE_KEYS = {
   SELECTED_FORMATS: '@preferences/selectedFormats',
   SELECTED_PAGE_RANGES: '@preferences/selectedPageRanges',
   SELECTED_TYPES: '@preferences/selectedTypes',
+  SELECTED_TAGS: '@preferences/selectedTags',
   EXCLUDED_STATUSES: '@preferences/excludedStatuses',
   SORT_ORDER: '@preferences/sortOrder',
   PROGRESS_INPUT_MODES: '@preferences/progressInputModes',
@@ -82,6 +87,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     PageRangeFilter[]
   >([]);
   const [selectedTypes, setSelectedTypesState] = useState<string[]>([]);
+  const [selectedTags, setSelectedTagsState] = useState<string[]>([]);
   const [excludedStatuses, setExcludedStatusesState] = useState<FilterType[]>(
     []
   );
@@ -99,6 +105,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           savedFormats,
           savedPageRanges,
           savedTypes,
+          savedTags,
           savedExcludedStatuses,
           savedSortOrder,
           savedProgressInputModes,
@@ -108,6 +115,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FORMATS),
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_PAGE_RANGES),
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_TYPES),
+          AsyncStorage.getItem(STORAGE_KEYS.SELECTED_TAGS),
           AsyncStorage.getItem(STORAGE_KEYS.EXCLUDED_STATUSES),
           AsyncStorage.getItem(STORAGE_KEYS.SORT_ORDER),
           AsyncStorage.getItem(STORAGE_KEYS.PROGRESS_INPUT_MODES),
@@ -129,6 +137,9 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
         }
         if (savedTypes) {
           setSelectedTypesState(JSON.parse(savedTypes) as string[]);
+        }
+        if (savedTags) {
+          setSelectedTagsState(JSON.parse(savedTags) as string[]);
         }
         if (savedExcludedStatuses) {
           setExcludedStatusesState(
@@ -207,6 +218,18 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     }
   };
 
+  const setSelectedTags = async (tags: string[]) => {
+    try {
+      setSelectedTagsState(tags);
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.SELECTED_TAGS,
+        JSON.stringify(tags)
+      );
+    } catch (error) {
+      console.error('Error saving tag filter preference:', error);
+    }
+  };
+
   const setExcludedStatuses = async (statuses: FilterType[]) => {
     try {
       setExcludedStatusesState(statuses);
@@ -259,6 +282,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     setSelectedPageRanges,
     selectedTypes,
     setSelectedTypes,
+    selectedTags,
+    setSelectedTags,
     excludedStatuses,
     setExcludedStatuses,
     sortOrder,

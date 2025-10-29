@@ -1,6 +1,7 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Colors } from '@/constants/Colors';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
   BookFormat,
@@ -31,6 +32,8 @@ interface FilterSectionProps {
   onPageRangesChange: (ranges: PageRangeFilter[]) => void;
   selectedTypes: string[];
   onTypesChange: (types: string[]) => void;
+  selectedTags: string[];
+  onTagsChange: (tags: string[]) => void;
   excludedStatuses: FilterType[];
   onExcludedStatusesChange: (statuses: FilterType[]) => void;
   sortOrder: SortOrder;
@@ -62,6 +65,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   onPageRangesChange,
   selectedTypes,
   onTypesChange,
+  selectedTags,
+  onTagsChange,
   excludedStatuses,
   onExcludedStatusesChange,
   sortOrder,
@@ -138,6 +143,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     selectedFormats.length > 0 ||
     selectedPageRanges.length > 0 ||
     selectedTypes.length > 0 ||
+    selectedTags.length > 0 ||
     excludedStatuses.length > 0 ||
     sortOrder !== 'default';
 
@@ -170,7 +176,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               <View key={option.key} style={styles.tabContainer}>
                 {shouldShowStar && (
                   <View style={styles.starIndicator}>
-                    <IconSymbol name="star.fill" size={12} color="#ef4444" />
+                    <IconSymbol name="star.fill" size={12} color={Colors.light.urgent} />
                   </View>
                 )}
                 <ThemedButton
@@ -204,6 +210,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         onPageRangesChange={onPageRangesChange}
         selectedTypes={selectedTypes}
         onTypesChange={onTypesChange}
+        selectedTags={selectedTags}
+        onTagsChange={onTagsChange}
         excludedStatuses={excludedStatuses}
         onExcludedStatusesChange={onExcludedStatusesChange}
         sortOrder={sortOrder}

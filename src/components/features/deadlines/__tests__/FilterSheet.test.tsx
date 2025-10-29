@@ -14,6 +14,14 @@ jest.mock('@/utils/dateUtils', () => ({
   isDateThisMonth: jest.fn(),
 }));
 
+const mockUseGetAllTags = jest.fn();
+const mockUseGetAllDeadlineTags = jest.fn();
+
+jest.mock('@/hooks/useTags', () => ({
+  useGetAllTags: () => mockUseGetAllTags(),
+  useGetAllDeadlineTags: () => mockUseGetAllDeadlineTags(),
+}));
+
 jest.mock('@/components/themed/ThemedButton', () => ({
   ThemedButton: ({ title, onPress, ...props }: any) => {
     const React = require('react');
@@ -139,6 +147,8 @@ describe('FilterSheet', () => {
     onPageRangesChange: jest.fn(),
     selectedTypes: [] as string[],
     onTypesChange: jest.fn(),
+    selectedTags: [] as string[],
+    onTagsChange: jest.fn(),
     excludedStatuses: [] as (
       | 'active'
       | 'pending'
@@ -175,6 +185,8 @@ describe('FilterSheet', () => {
     (useTheme as jest.Mock).mockReturnValue(mockTheme);
     (isDateThisWeek as jest.Mock).mockReturnValue(false);
     (isDateThisMonth as jest.Mock).mockReturnValue(true);
+    mockUseGetAllTags.mockReturnValue({ data: [] });
+    mockUseGetAllDeadlineTags.mockReturnValue({ data: [] });
   });
 
   describe('Component Structure', () => {
@@ -344,6 +356,8 @@ describe('FilterSheet', () => {
           onFormatsChange={jest.fn()}
           selectedTypes={[]}
           onTypesChange={jest.fn()}
+          selectedTags={[]}
+          onTagsChange={jest.fn()}
           excludedStatuses={[]}
           onExcludedStatusesChange={jest.fn()}
           sortOrder="default"
@@ -420,6 +434,8 @@ describe('FilterSheet', () => {
           onFormatsChange={jest.fn()}
           selectedTypes={[]}
           onTypesChange={jest.fn()}
+          selectedTags={[]}
+          onTagsChange={jest.fn()}
           excludedStatuses={[]}
           onExcludedStatusesChange={jest.fn()}
           sortOrder="default"
@@ -482,6 +498,8 @@ describe('FilterSheet', () => {
           onFormatsChange={jest.fn()}
           selectedTypes={[]}
           onTypesChange={jest.fn()}
+          selectedTags={[]}
+          onTagsChange={jest.fn()}
           excludedStatuses={[]}
           onExcludedStatusesChange={jest.fn()}
           sortOrder="default"
@@ -514,6 +532,8 @@ describe('FilterSheet', () => {
           onFormatsChange={jest.fn()}
           selectedTypes={[]}
           onTypesChange={jest.fn()}
+          selectedTags={[]}
+          onTagsChange={jest.fn()}
           availableTypes={[]}
           selectedPageRanges={[]}
           onPageRangesChange={jest.fn()}
