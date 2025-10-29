@@ -46,6 +46,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
     source: string;
     templateId: string | null;
   } | null>(null);
+  const [shouldSaveAsTemplate, setShouldSaveAsTemplate] = useState(false);
 
   const sourceOptions = getDeadlineSourceOptions(deadline);
   const { data: templates = [] } = useGetTemplates(selectedSource || undefined);
@@ -136,6 +137,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             });
           }
           setIsEditing(false);
+          setShouldSaveAsTemplate(false);
         },
         onError: () => {
           Alert.alert('Error', 'Failed to save disclosure');
@@ -147,6 +149,11 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
   const handleSaveDisclosure = () => {
     if (!selectedSource) {
       Alert.alert('Error', 'Please select a source');
+      return;
+    }
+
+    if (!shouldSaveAsTemplate) {
+      saveDisclosure(disclosureText, selectedSource, null);
       return;
     }
 
@@ -209,6 +216,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
     setDisclosureText('');
     setSelectedSource(deadline.disclosure_source_name || null);
     setSelectedTemplateId(deadline.disclosure_template_id || null);
+    setShouldSaveAsTemplate(false);
   };
 
   const handleCopyDisclosure = async () => {
@@ -370,7 +378,43 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             ]}
           />
 
+          {!currentDisclosure && (
+            <Pressable
+              onPress={() => setShouldSaveAsTemplate(!shouldSaveAsTemplate)}
+              style={styles.checkboxRow}
+            >
+              <View
+                style={[
+                  styles.checkbox,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: shouldSaveAsTemplate
+                      ? colors.primary
+                      : 'transparent',
+                  },
+                ]}
+              >
+                {shouldSaveAsTemplate && (
+                  <IconSymbol name="checkmark" size={14} color="#FFFFFF" />
+                )}
+              </View>
+              <ThemedText style={styles.checkboxLabel}>
+                Save this message as a template
+              </ThemedText>
+            </Pressable>
+          )}
+
           <View style={styles.buttonRow}>
+            <ThemedButton
+              title="Cancel"
+              onPress={handleCancelDisclosure}
+              variant="outline"
+              disabled={
+                updateDeadlineDisclosureMutation.isPending ||
+                createTemplateMutation.isPending
+              }
+              style={styles.cancelButton}
+            />
             <ThemedButton
               title={
                 updateDeadlineDisclosureMutation.isPending ||
@@ -384,16 +428,6 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                 createTemplateMutation.isPending
               }
               style={styles.saveButton}
-            />
-            <ThemedButton
-              title="Cancel"
-              onPress={handleCancelDisclosure}
-              variant="outline"
-              disabled={
-                updateDeadlineDisclosureMutation.isPending ||
-                createTemplateMutation.isPending
-              }
-              style={styles.cancelButton}
             />
           </View>
         </View>
@@ -557,5 +591,21 @@ const styles = StyleSheet.create({
   helpText: {
     fontSize: 12,
     textAlign: 'center',
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxLabel: {
+    fontSize: 14,
   },
 });

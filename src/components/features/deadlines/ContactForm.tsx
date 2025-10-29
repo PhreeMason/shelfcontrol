@@ -96,15 +96,15 @@ export const ContactForm = ({
 
       <View style={styles.buttonRow}>
         <ThemedButton
-          title={submitLabel}
-          onPress={handleSubmit(onSubmit)}
-          style={styles.submitButton}
-        />
-        <ThemedButton
           title="Cancel"
           onPress={onCancel}
           variant="outline"
           style={styles.cancelButton}
+        />
+        <ThemedButton
+          title={submitLabel}
+          onPress={handleSubmit(onSubmit)}
+          style={styles.submitButton}
         />
       </View>
     </ThemedView>
