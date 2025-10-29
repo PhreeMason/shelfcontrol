@@ -112,19 +112,20 @@ export const processBookProgress = (
 
   if (sortedProgress.length === 0) return;
 
-  const baselineProgress = 0;
+  let baselineProgress = 0;
   if (sortedProgress[0].ignore_in_calcs) {
+    baselineProgress = sortedProgress[0].current_progress;
     sortedProgress.shift();
   }
 
-  const progress = sortedProgress.filter(p => !p.ignore_in_calcs);
+  const progresses = sortedProgress.filter(p => !p.ignore_in_calcs);
 
-  if (progress.length === 0) return;
+  if (progresses.length === 0) return;
 
   // Handle the first remaining progress entry separately because it has no previous entry
   // to compare to (baseline was removed). The loop below calculates differences between
   // consecutive entries, so we need this to capture the first entry's progress vs baseline.
-  const firstProgress = progress[0];
+  const firstProgress = progresses[0];
   const firstDate = normalizeServerDate(firstProgress.created_at);
 
   if (firstDate.valueOf() >= cutoffTime) {
@@ -136,9 +137,9 @@ export const processBookProgress = (
   }
 
   // Calculate differences between consecutive progress entries
-  for (let i = 1; i < progress.length; i++) {
-    const prev = progress[i - 1];
-    const curr = progress[i];
+  for (let i = 1; i < progresses.length; i++) {
+    const prev = progresses[i - 1];
+    const curr = progresses[i];
 
     const endDate = normalizeServerDate(curr.created_at).valueOf();
 
