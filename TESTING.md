@@ -56,7 +56,7 @@ src/
     │       └── ReadingProgressUpdate.test.tsx    # Integration tests - NEW!
     └── shared/
         └── __tests__/
-            └── SourceTypeaheadInput.test.tsx     # Component tests
+            └── TypeTypeaheadInput.test.tsx     # Component tests
 ```
 
 ## Test Infrastructure
@@ -257,7 +257,7 @@ jest.mock('@/components/shared/LinearProgressBar', () => {
 - [DONE] **Major breakthrough**: React Query hooks testing implementation
 - [DONE] `useDeadlines.ts` hook tested with comprehensive mutation coverage
 - [DONE] New utility functions: `typeaheadUtils.ts` (100%), `dateNormalization.ts` (85%)
-- [DONE] Component integration: `SourceTypeaheadInput.test.tsx`
+- [DONE] Component integration: `TypeTypeaheadInput.test.tsx`
 - [DONE] **Total Coverage**: 37.88% overall (130% improvement from Phase 3!)
 - [DONE] **Test Count**: 549 tests passing (118% increase from Phase 3)
 ### Completed Services:
@@ -613,7 +613,7 @@ expect(mockFormatFunction).toHaveBeenCalledWith('2024-01-20');
 ### Hook & Component Progress
 1. **Complete Hook Coverage**: `useDeadlines.ts` (mutations & queries including `useStartReadingDeadline`), `useDeadlineSources.ts`
 2. **New Utility Functions**: `typeaheadUtils.ts` (100%), `dateNormalization.ts` (85%)
-3. **Component Integration**: `SourceTypeaheadInput.test.tsx` with user interaction testing
+3. **Component Integration**: `TypeTypeaheadInput.test.tsx` with user interaction testing
 4. **Provider Testing**: `DeadlineProvider.test.tsx` with complete mock coverage
 5. **Error Handling**: Comprehensive edge cases for hooks and async operations
 6. **Mock Strategies**: Advanced React Query and hook testing patterns

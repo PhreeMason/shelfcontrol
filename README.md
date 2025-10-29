@@ -230,3 +230,5 @@ Rationale:
 This approach prevents subtle off-by-one issues caused by implicit timezone shifts on date-only values while preserving correct instant-based ordering for true timestamps.
 
 If user selects that they need to post links. Update mark complete to be all links submitted mark complete button.
+Add script to empty cache before doing a new build.
+search bar for book
