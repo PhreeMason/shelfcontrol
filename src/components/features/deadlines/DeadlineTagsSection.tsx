@@ -7,10 +7,11 @@ import {
   useGetDeadlineTags,
   useRemoveTagFromDeadline,
 } from '@/hooks/useTags';
+import { analytics } from '@/lib/analytics/client';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { TagWithDetails } from '@/types/tags.types';
 import { getNextTagColor } from '@/utils/tagColors';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { TagChip } from './TagChip';
 
@@ -31,11 +32,19 @@ export const DeadlineTagsSection = ({
   const addTagMutation = useAddTagToDeadline();
   const removeTagMutation = useRemoveTagFromDeadline();
 
+  useEffect(() => {
+    analytics.track('tags_section_opened', {
+      has_existing_tags: deadlineTags.length > 0,
+    });
+  }, [deadlineTags.length]);
+
   const handleSelectTag = async (
     selectedTag: TagWithDetails | { name: string }
   ) => {
     try {
       let tagId: string;
+      const isNewTag = !('id' in selectedTag);
+      const tagName = selectedTag.name;
 
       if ('id' in selectedTag) {
         tagId = selectedTag.id;
@@ -55,6 +64,11 @@ export const DeadlineTagsSection = ({
         deadlineId: deadline.id,
         tagId,
       });
+
+      analytics.track('tag_added_to_deadline', {
+        tag_name: tagName,
+        is_new_tag: isNewTag,
+      });
     } catch (error) {
       console.error('Error adding tag:', error);
       Alert.alert('Error', 'Failed to add tag. Please try again.');
@@ -72,6 +86,10 @@ export const DeadlineTagsSection = ({
             await removeTagMutation.mutateAsync({
               deadlineId: deadline.id,
               tagId: tag.id,
+            });
+
+            analytics.track('tag_removed_from_deadline', {
+              tag_name: tag.name,
             });
           } catch (error) {
             console.error('Error removing tag:', error);

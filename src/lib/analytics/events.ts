@@ -217,6 +217,19 @@ export interface EventPropertiesMap {
     character_count: number;
   };
 
+  tags_section_opened: {
+    has_existing_tags: boolean;
+  };
+
+  tag_added_to_deadline: {
+    tag_name: string;
+    is_new_tag: boolean;
+  };
+
+  tag_removed_from_deadline: {
+    tag_name: string;
+  };
+
   completion_flow_started: {
     format: ReadingFormat;
     status: DeadlineStatus;
