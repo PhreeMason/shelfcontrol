@@ -403,8 +403,6 @@ class DeadlinesService {
         deadline_id: params.deadlineId,
         current_progress: params.currentProgress,
         time_spent_reading: params.timeSpentReading || null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
       })
       .select()
       .limit(1);

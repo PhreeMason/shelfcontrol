@@ -379,6 +379,12 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     );
   }
 
+  const hasExistingProgressRecords = Boolean(
+    mode === 'edit' &&
+      existingDeadline?.progress &&
+      existingDeadline.progress.length > 1
+  );
+
   return (
     <SafeAreaView
       edges={['right', 'bottom', 'left']}
@@ -434,6 +440,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
               deadlineFromPublicationDate={
                 mode === 'new' ? deadlineFromPublicationDate : false
               }
+              hasExistingProgressRecords={hasExistingProgressRecords}
             />
           )}
         </ThemedView>

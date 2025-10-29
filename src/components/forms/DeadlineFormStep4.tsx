@@ -22,6 +22,7 @@ interface DeadlineFormStep4Props {
   watchedValues: any;
   setValue: (name: keyof DeadlineFormData, value: any) => void;
   deadlineFromPublicationDate?: boolean;
+  hasExistingProgressRecords?: boolean;
 }
 
 export const DeadlineFormStep4 = ({
@@ -36,6 +37,7 @@ export const DeadlineFormStep4 = ({
   paceEstimate,
   watchedValues,
   deadlineFromPublicationDate = false,
+  hasExistingProgressRecords = false,
 }: DeadlineFormStep4Props) => {
   const { colors } = useTheme();
 
@@ -126,6 +128,8 @@ export const DeadlineFormStep4 = ({
               inputType="integer"
               placeholder={getTotalQuantityPlaceholder()}
               keyboardType="numeric"
+              editable={!hasExistingProgressRecords}
+              style={{ opacity: hasExistingProgressRecords ? 0.5 : 1 }}
             />
           </View>
           {selectedFormat === 'audio' ? (
@@ -136,10 +140,17 @@ export const DeadlineFormStep4 = ({
                 inputType="integer"
                 placeholder="Minutes"
                 keyboardType="numeric"
+                editable={!hasExistingProgressRecords}
+                style={{ opacity: hasExistingProgressRecords ? 0.5 : 1 }}
               />
             </View>
           ) : null}
         </View>
+        {hasExistingProgressRecords && (
+          <ThemedText color="textMuted" style={{ marginTop: 6, lineHeight: 18 }}>
+            Starting progress cannot be changed after progress records have been added
+          </ThemedText>
+        )}
         {(watchedValues.currentProgress > 0 ||
           watchedValues.currentMinutes > 0) && (
           <View>

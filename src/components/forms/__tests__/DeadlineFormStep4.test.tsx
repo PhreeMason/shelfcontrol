@@ -28,6 +28,8 @@ jest.mock('@/components/shared/CustomInput', () => {
         'data-placeholder': props.placeholder,
         'data-keyboard': props.keyboardType,
         'data-input-type': props.inputType,
+        'data-editable': props.editable,
+        style: props.style,
       },
       null
     );
@@ -891,6 +893,137 @@ describe('DeadlineFormStep4', () => {
       expect(() => {
         render(<DeadlineFormStep4 {...minimalProps} />);
       }).not.toThrow();
+    });
+  });
+
+  describe('Progress Field Disabling in Edit Mode', () => {
+    it('should disable currentProgress input when hasExistingProgressRecords=true', () => {
+      render(
+        <DeadlineFormStep4
+          {...{ ...defaultProps, hasExistingProgressRecords: true }}
+        />
+      );
+
+      const input = screen.getByTestId('input-currentProgress');
+      expect(input.props['data-editable']).toBe(false);
+    });
+
+    it('should enable currentProgress input when hasExistingProgressRecords=false', () => {
+      render(
+        <DeadlineFormStep4
+          {...{ ...defaultProps, hasExistingProgressRecords: false }}
+        />
+      );
+
+      const input = screen.getByTestId('input-currentProgress');
+      expect(input.props['data-editable']).toBe(true);
+    });
+
+    it('should enable currentProgress input when hasExistingProgressRecords is undefined', () => {
+      render(<DeadlineFormStep4 {...defaultProps} />);
+
+      const input = screen.getByTestId('input-currentProgress');
+      expect(input.props['data-editable']).toBe(true);
+    });
+
+    it('should disable currentMinutes input for audio format when hasExistingProgressRecords=true', () => {
+      render(
+        <DeadlineFormStep4
+          {...{
+            ...defaultProps,
+            selectedFormat: 'audio',
+            hasExistingProgressRecords: true,
+          }}
+        />
+      );
+
+      const input = screen.getByTestId('input-currentMinutes');
+      expect(input.props['data-editable']).toBe(false);
+    });
+
+    it('should enable currentMinutes input for audio format when hasExistingProgressRecords=false', () => {
+      render(
+        <DeadlineFormStep4
+          {...{
+            ...defaultProps,
+            selectedFormat: 'audio',
+            hasExistingProgressRecords: false,
+          }}
+        />
+      );
+
+      const input = screen.getByTestId('input-currentMinutes');
+      expect(input.props['data-editable']).toBe(true);
+    });
+
+    it('should show helper text when field is disabled', () => {
+      render(
+        <DeadlineFormStep4
+          {...{ ...defaultProps, hasExistingProgressRecords: true }}
+        />
+      );
+
+      expect(
+        screen.getByText(
+          'Starting progress cannot be changed after progress records have been added'
+        )
+      ).toBeTruthy();
+    });
+
+    it('should not show helper text when field is enabled', () => {
+      render(
+        <DeadlineFormStep4
+          {...{ ...defaultProps, hasExistingProgressRecords: false }}
+        />
+      );
+
+      expect(
+        screen.queryByText(
+          'Starting progress cannot be changed after progress records have been added'
+        )
+      ).toBeNull();
+    });
+
+    it('should apply disabled styling (opacity: 0.5) when disabled', () => {
+      render(
+        <DeadlineFormStep4
+          {...{ ...defaultProps, hasExistingProgressRecords: true }}
+        />
+      );
+
+      const input = screen.getByTestId('input-currentProgress');
+      expect(input.props.style).toEqual({ opacity: 0.5 });
+    });
+
+    it('should apply enabled styling (opacity: 1) when enabled', () => {
+      render(
+        <DeadlineFormStep4
+          {...{ ...defaultProps, hasExistingProgressRecords: false }}
+        />
+      );
+
+      const input = screen.getByTestId('input-currentProgress');
+      expect(input.props.style).toEqual({ opacity: 1 });
+    });
+
+    it('should disable both progress inputs for audio format when hasExistingProgressRecords=true', () => {
+      render(
+        <DeadlineFormStep4
+          {...{
+            ...defaultProps,
+            selectedFormat: 'audio',
+            hasExistingProgressRecords: true,
+          }}
+        />
+      );
+
+      const progressInput = screen.getByTestId('input-currentProgress');
+      const minutesInput = screen.getByTestId('input-currentMinutes');
+
+      expect(progressInput.props['data-editable']).toBe(false);
+      expect(minutesInput.props['data-editable']).toBe(false);
+      expect(progressInput.props.style).toEqual({ opacity: 0.5 });
+      expect(minutesInput.props.style).toEqual({ opacity: 0.5 });
     });
   });
 });
