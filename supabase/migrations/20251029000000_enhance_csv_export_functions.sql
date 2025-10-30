@@ -116,7 +116,7 @@ BEGIN
     COALESCE(ls.status::text, 'reading') as status,
     TO_CHAR(d.deadline_date AT TIME ZONE 'UTC', 'YYYY-MM-DD') as deadline_date,
     d.flexibility::text,
-    d.type,
+    COALESCE(d.type, d.deadline_type) as type,
     COALESCE(d.acquisition_source, '') as acquisition_source,
     COALESCE(array_to_string(d.publishers, '|'), '') as publishers,
     COALESCE(dta.tags, '') as tags,
