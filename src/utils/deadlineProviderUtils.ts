@@ -13,7 +13,7 @@ import {
   calculateProgress,
   calculateProgressPercentage,
   getUnitForFormat,
-} from '@/utils/deadlineUtils';
+} from '@/utils/deadlineCore';
 import {
   PaceBasedStatus,
   UserListeningPaceData,

@@ -10,7 +10,7 @@ import {
 } from '@/types/deadline.types';
 import { isDateThisMonth, isDateThisWeek } from '@/utils/dateUtils';
 import { normalizeServerDate } from '@/utils/dateNormalization';
-import { sortByPace } from '@/utils/sortUtils';
+import { sortByPace } from '@/utils/deadlineSortingAdvanced';
 import React from 'react';
 import DeadlinesList from './DeadlinesList';
 

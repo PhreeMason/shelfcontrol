@@ -1,7 +1,6 @@
 import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
-  calculateLocalDaysLeft,
   normalizeServerDate,
   normalizeServerDateStartOfDay,
 } from './dateNormalization';
@@ -19,6 +18,19 @@ import {
   UserPaceData,
 } from './paceCalculations';
 import { BOOK_FORMAT } from '@/constants/status';
+import {
+  calculateDaysLeft,
+  calculateProgress,
+  calculateProgressPercentage,
+  getUnitForFormat,
+} from './deadlineCore';
+
+export {
+  calculateDaysLeft,
+  calculateProgress,
+  calculateProgressPercentage,
+  getUnitForFormat,
+};
 
 /**
  * Separation Strategy
@@ -83,68 +95,6 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
     pending,
     paused,
   };
-};
-
-/**
- * Days Left Calculation
- * ---------------------
- * Delegates to calculateLocalDaysLeft which uses normalization rules.
- */
-export const calculateDaysLeft = (deadlineDate: string): number =>
-  calculateLocalDaysLeft(deadlineDate);
-
-/**
- * Calculates the current progress for a deadline by finding the most recent progress entry.
- * @param deadline - The deadline with its progress entries
- * @returns The current progress value, or 0 if no progress entries exist
- */
-export const calculateProgress = (
-  deadline: ReadingDeadlineWithProgress
-): number => {
-  if (!deadline.progress || deadline.progress.length === 0) return 0;
-
-  const latestProgress = deadline.progress.reduce((latest, current) => {
-    const latestTs = normalizeServerDate(latest.created_at || '').valueOf();
-    const currentTs = normalizeServerDate(current.created_at || '').valueOf();
-    return currentTs > latestTs ? current : latest;
-  });
-
-  return latestProgress.current_progress || 0;
-};
-
-/**
- * Calculates the progress percentage for a deadline based on current progress and total quantity.
- * @param deadline - The deadline to calculate percentage for
- * @returns Progress percentage rounded to the nearest whole number
- */
-export const calculateProgressPercentage = (
-  deadline: ReadingDeadlineWithProgress
-): number => {
-  const currentProgress = calculateProgress(deadline);
-  const totalQuantity = calculateTotalQuantity(
-    deadline.format,
-    deadline.total_quantity
-  );
-  if (!totalQuantity) return 0;
-  return Math.round((currentProgress / totalQuantity) * 100);
-};
-
-/**
- * Returns the appropriate unit for display based on the reading format.
- * @param format - The reading format (physical, eBook, or audio)
- * @returns The unit string ('minutes' for audio, 'pages' for physical/eBook)
- */
-export const getUnitForFormat = (
-  format: 'physical' | 'eBook' | 'audio'
-): string => {
-  switch (format) {
-    case 'audio':
-      return 'minutes';
-    case 'physical':
-    case 'eBook':
-    default:
-      return 'pages';
-  }
 };
 
 /**
