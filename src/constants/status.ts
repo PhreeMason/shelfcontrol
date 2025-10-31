@@ -12,6 +12,8 @@ export const DEADLINE_STATUS: Record<
   PENDING: 'pending',
   TO_REVIEW: 'to_review',
   PAUSED: 'paused',
+  REJECTED: 'rejected',
+  WITHDREW: 'withdrew',
 } as const;
 
 export const ACTIVITY_STATE = {

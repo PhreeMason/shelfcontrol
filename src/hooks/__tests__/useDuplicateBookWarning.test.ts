@@ -155,7 +155,7 @@ describe('showDuplicateBookWarning', () => {
   });
 
   it('should handle deadline without status', () => {
-    const { status, ...deadlineWithoutStatus } = mockDeadline;
+    const { status: _status, ...deadlineWithoutStatus } = mockDeadline;
 
     showDuplicateBookWarning({
       selectedBook: mockSelectedBook,

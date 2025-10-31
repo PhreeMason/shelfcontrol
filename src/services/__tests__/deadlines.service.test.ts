@@ -52,7 +52,7 @@ describe('DeadlinesService', () => {
         total_quantity: 300,
         format: 'physical',
         flexibility: 'flexible',
-        type: 'Personal',
+        deadline_type: 'Personal',
       },
       progressDetails: {
         current_progress: 0,
@@ -426,7 +426,7 @@ describe('DeadlinesService', () => {
         format: 'eBook',
         flexibility: 'strict',
         user_id: userId,
-        type: 'Personal',
+        deadline_type: 'Personal',
       },
       progressDetails: {
         current_progress: 100,

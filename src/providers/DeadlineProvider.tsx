@@ -348,7 +348,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
           analytics.track('deadline_created', {
             format: params.deadlineDetails.format,
             status: params.status as AnalyticsDeadlineStatus,
-            type: params.deadlineDetails.type,
+            type: params.deadlineDetails.deadline_type || 'Personal',
           });
           onSuccess?.();
         },
