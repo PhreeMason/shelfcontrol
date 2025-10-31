@@ -3,7 +3,6 @@ import { Colors } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
-import { analytics } from '@/lib/analytics/client';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { parseServerDateTime } from '@/utils/dateNormalization';
 import { formatProgressDisplay } from '@/utils/deadlineUtils';
@@ -50,11 +49,6 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
   const buttonOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    analytics.track('celebration_screen_viewed', {
-      book_title: deadline.book_title,
-      format: deadline.format,
-    });
-
     if (confettiRef.current) {
       confettiRef.current.start();
     }

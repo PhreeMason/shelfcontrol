@@ -79,7 +79,6 @@ export default function EditProfile() {
         }
         avatarPath = uploadedPath;
         avatarUploaded = true;
-        analytics.track('avatar_uploaded');
       }
 
       const updates: any = {

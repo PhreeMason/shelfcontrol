@@ -222,16 +222,6 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
   const handleCopyDisclosure = async () => {
     try {
       await Clipboard.setStringAsync(currentDisclosure);
-      analytics.track('deadline_disclosure_copied', {
-        deadline_id: deadline.id,
-        deadline_status: latestStatus as
-          | 'pending'
-          | 'reading'
-          | 'completed'
-          | 'paused'
-          | 'dnf',
-        character_count: currentDisclosure.length,
-      });
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {

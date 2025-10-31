@@ -4,16 +4,40 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
+import { analytics } from '@/lib/analytics/client';
 import { useAuth } from '@/providers/AuthProvider';
-import { Redirect, Tabs } from 'expo-router';
+import { Redirect, Tabs, usePathname } from 'expo-router';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 export default function TabLayout() {
   const { session, profile } = useAuth();
   const { colors } = useTheme();
+  const pathname = usePathname();
+  const prevPathnameRef = React.useRef<string | null>(null);
+
+  React.useEffect(() => {
+    analytics.track('session_started');
+  }, []);
+
+  React.useEffect(() => {
+    if (prevPathnameRef.current && prevPathnameRef.current !== pathname) {
+      const getTabName = (path: string) => {
+        if (path === '/' || path === '') return 'home';
+        if (path.includes('new-deadline')) return 'new_deadline';
+        if (path.includes('profile')) return 'profile';
+        return path.replace(/^\//, '');
+      };
+
+      analytics.track('tab_switched', {
+        from_tab: getTabName(prevPathnameRef.current),
+        to_tab: getTabName(pathname),
+      });
+    }
+    prevPathnameRef.current = pathname;
+  }, [pathname]);
+
   if (!session) {
-    // If not signed in, don't render the tabs
     return <Redirect href="/(auth)/sign-in" />;
   }
 

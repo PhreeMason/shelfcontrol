@@ -123,6 +123,13 @@ const ReadingProgressUpdate = ({
 
   const handleProgressUpdate = useCallback(
     (newProgress: number) => {
+      const progressType =
+        inputMode === 'percentage'
+          ? 'percentage'
+          : deadline.format === 'audio'
+            ? 'time'
+            : 'pages';
+
       updateProgressMutation.mutate(
         {
           deadlineId: deadline.id,
@@ -130,7 +137,16 @@ const ReadingProgressUpdate = ({
           ...(timeSpentReading !== undefined && { timeSpentReading }),
         },
         {
-          onSuccess: () => handleProgressUpdateSuccess(newProgress),
+          onSuccess: () => {
+            analytics.track('reading_progress_updated', {
+              deadline_id: deadline.id,
+              progress_type: progressType,
+              previous_progress: currentProgress,
+              new_progress: newProgress,
+              delta: newProgress - currentProgress,
+            });
+            handleProgressUpdateSuccess(newProgress);
+          },
           onError: error => {
             const { title, message } = getErrorToastMessage('update');
             Toast.show({
@@ -147,7 +163,10 @@ const ReadingProgressUpdate = ({
     [
       updateProgressMutation,
       deadline.id,
+      deadline.format,
       timeSpentReading,
+      inputMode,
+      currentProgress,
       handleProgressUpdateSuccess,
     ]
   );

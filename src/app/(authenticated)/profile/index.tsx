@@ -38,7 +38,6 @@ export default function Profile() {
   const exportMutation = useExportReadingProgress();
 
   React.useEffect(() => {
-    analytics.track('profile_viewed');
     refreshProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

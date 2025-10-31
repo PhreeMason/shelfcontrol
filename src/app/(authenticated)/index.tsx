@@ -40,25 +40,10 @@ export default function HomeScreen() {
     sortOrder,
     setSortOrder,
   } = usePreferences();
-  const { refetch, isRefreshing, deadlines } = useDeadlines();
+  const { refetch, isRefreshing } = useDeadlines();
   const { data: availableTypes = [] } = useDeadlineTypes();
   const prevSelectedFilterRef = React.useRef<FilterType | null>(null);
   const prevSortOrderRef = React.useRef(sortOrder);
-
-  React.useEffect(() => {
-    const activeFilters: string[] = [];
-    if (timeRangeFilter !== 'all') activeFilters.push('time_range');
-    if (selectedFormats.length > 0) activeFilters.push('formats');
-    if (selectedPageRanges.length > 0) activeFilters.push('page_ranges');
-    if (selectedTypes.length > 0) activeFilters.push('types');
-    if (selectedTags.length > 0) activeFilters.push('tags');
-    if (excludedStatuses.length > 0) activeFilters.push('excluded_statuses');
-
-    analytics.track('home_screen_viewed', {
-      deadlines_count: deadlines.length,
-      active_filters: activeFilters,
-    });
-  }, []);
 
   const gradientHeight = Math.max(insets.top, 10);
 
@@ -105,7 +90,6 @@ export default function HomeScreen() {
       prevSelectedFilterRef.current !== null &&
       prevSelectedFilterRef.current !== selectedFilter
     ) {
-      analytics.track('filter_cleared');
       setTimeRangeFilter('all');
       setSelectedFormats([]);
       setSelectedPageRanges([]);
@@ -125,20 +109,41 @@ export default function HomeScreen() {
   ]);
 
   React.useEffect(() => {
-    const activeFilters: string[] = [];
-    if (timeRangeFilter !== 'all') activeFilters.push('time_range');
-    if (selectedFormats.length > 0) activeFilters.push('formats');
-    if (selectedPageRanges.length > 0) activeFilters.push('page_ranges');
-    if (selectedTypes.length > 0) activeFilters.push('types');
-    if (selectedTags.length > 0) activeFilters.push('tags');
-    if (excludedStatuses.length > 0) activeFilters.push('excluded_statuses');
+    const activeFilters: Record<string, any> = {};
+    let filterCount = 0;
 
-    if (activeFilters.length > 0) {
-      analytics.track('filter_combination_applied', {
-        filter_types: activeFilters,
-      });
+    if (timeRangeFilter !== 'all') {
+      activeFilters.time_range = timeRangeFilter;
+      filterCount++;
     }
+    if (selectedFormats.length > 0) {
+      activeFilters.formats = selectedFormats;
+      filterCount++;
+    }
+    if (selectedPageRanges.length > 0) {
+      activeFilters.page_ranges = selectedPageRanges;
+      filterCount++;
+    }
+    if (selectedTypes.length > 0) {
+      activeFilters.types = selectedTypes;
+      filterCount++;
+    }
+    if (selectedTags.length > 0) {
+      activeFilters.tags = selectedTags;
+      filterCount++;
+    }
+    if (excludedStatuses.length > 0) {
+      activeFilters.excluded_statuses = excludedStatuses;
+      filterCount++;
+    }
+
+    analytics.track('filters_applied', {
+      active_tab: selectedFilter,
+      active_filters: activeFilters,
+      filter_count: filterCount,
+    });
   }, [
+    selectedFilter,
     timeRangeFilter,
     selectedFormats,
     selectedPageRanges,
@@ -158,9 +163,6 @@ export default function HomeScreen() {
   }, [sortOrder]);
 
   const handleFilterChange = (filter: FilterType) => {
-    analytics.track('filter_changed', {
-      filter_type: filter,
-    });
     setSelectedFilter(filter);
   };
 
@@ -204,10 +206,7 @@ export default function HomeScreen() {
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
-            onRefresh={() => {
-              analytics.track('deadlines_refreshed');
-              refetch();
-            }}
+            onRefresh={refetch}
           />
         }
       >

@@ -17,11 +17,12 @@ import {
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
+import { analytics } from '@/lib/analytics/client';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
 import { getDeadlineSourceOptions } from '@/utils/getDeadlineSourceOptions';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -42,6 +43,26 @@ const DeadlineView = () => {
   if (!deadline && fallbackDeadline) {
     deadline = fallbackDeadline;
   }
+
+  useEffect(() => {
+    if (deadline && id) {
+      const latestStatus =
+        deadline.status && deadline.status.length > 0
+          ? (deadline.status[deadline.status.length - 1].status ?? 'reading')
+          : 'reading';
+
+      analytics.track('deadline_viewed', {
+        deadline_id: id,
+        deadline_status: latestStatus as
+          | 'pending'
+          | 'reading'
+          | 'completed'
+          | 'paused'
+          | 'dnf',
+        deadline_format: deadline.format,
+      });
+    }
+  }, [deadline, id]);
 
   if (!deadline && isFallbackLoading) {
     return (

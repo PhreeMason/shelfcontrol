@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { analytics } from '@/lib/analytics/client';
-import { EventProperties } from '@/lib/analytics/events';
 
 type FormFlowType = 'deadline_creation' | 'completion';
 
@@ -20,7 +19,6 @@ interface DeadlineCreationConfig extends BaseFormFlowConfig {
 
 interface CompletionFlowConfig extends BaseFormFlowConfig {
   flowType: 'completion';
-  additionalStartProperties?: EventProperties<'completion_flow_started'>;
 }
 
 type FormFlowConfig = DeadlineCreationConfig | CompletionFlowConfig;
@@ -43,18 +41,6 @@ export function useFormFlowTracking(
   }, [currentStep]);
 
   useEffect(() => {
-    if (flowType === 'deadline_creation' && mode === 'new') {
-      analytics.track('deadline_creation_started');
-    } else if (flowType === 'completion') {
-      const completionConfig = config as CompletionFlowConfig;
-      if (completionConfig.additionalStartProperties) {
-        analytics.track(
-          'completion_flow_started',
-          completionConfig.additionalStartProperties
-        );
-      }
-    }
-
     return () => {
       if (!hasSubmittedRef.current) {
         const timeSpent = Math.round(
@@ -83,45 +69,26 @@ export function useFormFlowTracking(
 
   useEffect(() => {
     const stepName = stepNames[currentStep - 1] || 'unknown';
-
-    if (flowType === 'deadline_creation' && mode === 'new') {
-      analytics.track('deadline_creation_step_viewed', {
-        step_number: currentStep,
-        step_name: stepName,
-      });
-    } else if (flowType === 'completion') {
-      analytics.track('completion_step_viewed', {
-        step_number: currentStep,
-        step_name: stepName as
-          | 'celebration'
-          | 'review_question'
-          | 'review_form',
-      });
-    }
-
     callbacks?.onStepChange?.(currentStep, stepName);
-  }, [currentStep, flowType, mode]);
+  }, [currentStep]);
 
-  const markCompleted = (additionalData?: Record<string, unknown>) => {
+  const markCompleted = () => {
     hasSubmittedRef.current = true;
+  };
 
-    if (flowType === 'deadline_creation' && mode === 'new') {
-      const completionTime = Math.round(
-        (Date.now() - mountTimeRef.current) / 1000
-      );
-      const baseData = {
-        time_spent_seconds: completionTime,
-        total_steps: stepNames.length,
-      };
-      analytics.track('deadline_creation_completed', {
-        ...baseData,
-        ...(additionalData as EventProperties<'deadline_creation_completed'>),
-      } as EventProperties<'deadline_creation_completed'>);
-    }
+  const getCreationContext = () => {
+    const completionTime = Math.round(
+      (Date.now() - mountTimeRef.current) / 1000
+    );
+    return {
+      creation_duration_seconds: completionTime,
+      total_steps: stepNames.length,
+    };
   };
 
   return {
     markCompleted,
+    getCreationContext,
     mountTime: mountTimeRef.current,
   };
 }

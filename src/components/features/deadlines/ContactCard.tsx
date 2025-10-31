@@ -1,7 +1,6 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTheme } from '@/hooks/useTheme';
-import { analytics } from '@/lib/analytics/client';
 import { DeadlineContact } from '@/types/contacts.types';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
@@ -27,18 +26,12 @@ export const ContactCard = ({
   const hasEmail = contact.email && contact.email.trim().length > 0;
   const hasUsername = contact.username && contact.username.trim().length > 0;
 
-  const handleLongPressCopy = async (
-    value: string | null,
-    fieldType: 'name' | 'email' | 'username'
-  ) => {
+  const handleLongPressCopy = async (value: string | null) => {
     if (!value || value.trim().length === 0) return;
 
     try {
       await Clipboard.setStringAsync(value);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      analytics.track('contact_field_copied', {
-        field_type: fieldType,
-      });
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 1000);
     } catch (err) {
@@ -54,7 +47,7 @@ export const ContactCard = ({
         {hasName && (
           <Pressable
             onLongPress={() =>
-              handleLongPressCopy(contact.contact_name, 'name')
+              handleLongPressCopy(contact.contact_name)
             }
             style={({ pressed }) => [
               styles.infoRow,
@@ -70,7 +63,7 @@ export const ContactCard = ({
 
         {hasEmail && (
           <Pressable
-            onLongPress={() => handleLongPressCopy(contact.email, 'email')}
+            onLongPress={() => handleLongPressCopy(contact.email)}
             style={({ pressed }) => [
               styles.infoRow,
               { opacity: pressed ? 0.7 : 1 },
@@ -84,7 +77,7 @@ export const ContactCard = ({
         {hasUsername && (
           <Pressable
             onLongPress={() =>
-              handleLongPressCopy(contact.username, 'username')
+              handleLongPressCopy(contact.username)
             }
             style={({ pressed }) => [
               styles.infoRow,

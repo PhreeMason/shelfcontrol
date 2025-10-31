@@ -6,8 +6,6 @@ import {
   ThemedView,
 } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
-import { dayjs } from '@/lib/dayjs';
-import { analytics } from '@/lib/analytics/client';
 import { useFormFlowTracking } from '@/hooks/analytics/useFormFlowTracking';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { SelectedBook } from '@/types/bookSearch';
@@ -179,35 +177,6 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     }),
   });
 
-  useEffect(() => {
-    if (mode === 'new' && selectedFormat) {
-      analytics.track('deadline_format_selected', {
-        format: selectedFormat as 'physical' | 'eBook' | 'audio',
-      });
-    }
-  }, [selectedFormat, mode]);
-
-  useEffect(() => {
-    if (mode === 'new' && selectedPriority) {
-      analytics.track('priority_set', {
-        priority_level: selectedPriority,
-      });
-    }
-  }, [selectedPriority, mode]);
-
-  useEffect(() => {
-    const deadline = watchedValues.deadline;
-    if (mode === 'new' && deadline) {
-      const daysFromNow = dayjs(deadline).diff(dayjs(), 'day');
-      const isFuture = daysFromNow >= 0;
-
-      analytics.track('deadline_date_set', {
-        days_from_now: daysFromNow,
-        is_future: isFuture,
-      });
-    }
-  }, [watchedValues.deadline, mode]);
-
   // Calculate pace estimate when relevant values change
   useEffect(() => {
     const deadline = watchedValues.deadline;
@@ -254,12 +223,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
 
     const successCallback = () => {
       if (mode === 'new') {
-        const bookSource = data.api_id ? 'search' : 'manual';
-        formFlowTracking.markCompleted({
-          book_source: bookSource,
-          format: selectedFormat,
-          status: statusValue,
-        });
+        formFlowTracking.markCompleted();
       }
 
       setIsSubmitting(false);
@@ -285,12 +249,19 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
             }
           : undefined;
 
+      const bookSource = data.api_id ? 'search' : 'manual';
+      const creationContext = formFlowTracking.getCreationContext();
+
       addDeadline(
         {
           deadlineDetails,
           progressDetails,
           status: statusValue,
           bookData,
+          analyticsContext: {
+            book_source: bookSource,
+            ...creationContext,
+          },
         } as any,
         successCallback,
         errorCallback

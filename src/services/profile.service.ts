@@ -140,8 +140,6 @@ class ProfileService {
 
       if (error) throw error;
 
-      activityService.trackUserActivity('avatar_uploaded', {});
-
       return data.path;
     } catch (err) {
       console.error('Avatar upload error:', err);

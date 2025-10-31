@@ -132,23 +132,6 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
 
     // Track successful load
     if (loadStartTimeRef.current > 0) {
-      const loadTime = Date.now() - loadStartTimeRef.current;
-      try {
-        const urlDomain = normalizedUrl
-          ? new URL(normalizedUrl).hostname
-          : 'unknown';
-        analytics.track('review_webview_loaded', {
-          platform_name: platformName,
-          load_time: loadTime,
-          url_domain: urlDomain,
-        });
-      } catch {
-        analytics.track('review_webview_loaded', {
-          platform_name: platformName,
-          load_time: loadTime,
-          url_domain: 'invalid',
-        });
-      }
     }
   };
 
@@ -165,24 +148,6 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
       const timeoutError =
         'Page took too long to load. Please check your connection and try again.';
       setError(timeoutError);
-
-      // Track timeout error
-      try {
-        const urlDomain = normalizedUrl
-          ? new URL(normalizedUrl).hostname
-          : 'unknown';
-        analytics.track('review_webview_error', {
-          platform_name: platformName,
-          error_message: timeoutError,
-          url_domain: urlDomain,
-        });
-      } catch {
-        analytics.track('review_webview_error', {
-          platform_name: platformName,
-          error_message: timeoutError,
-          url_domain: 'invalid',
-        });
-      }
     }, 30000); // 30 second timeout
   };
 
@@ -297,48 +262,12 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                   const errorMsg =
                     nativeEvent.description || 'Failed to load page';
                   setError(errorMsg);
-
-                  // Track load error
-                  try {
-                    const urlDomain = normalizedUrl
-                      ? new URL(normalizedUrl).hostname
-                      : 'unknown';
-                    analytics.track('review_webview_error', {
-                      platform_name: platformName,
-                      error_message: errorMsg,
-                      url_domain: urlDomain,
-                    });
-                  } catch {
-                    analytics.track('review_webview_error', {
-                      platform_name: platformName,
-                      error_message: errorMsg,
-                      url_domain: 'invalid',
-                    });
-                  }
                 }}
                 onHttpError={syntheticEvent => {
                   const { nativeEvent } = syntheticEvent;
                   setIsLoading(false);
                   const errorMsg = `HTTP Error: ${nativeEvent.statusCode}`;
                   setError(errorMsg);
-
-                  // Track HTTP error
-                  try {
-                    const urlDomain = normalizedUrl
-                      ? new URL(normalizedUrl).hostname
-                      : 'unknown';
-                    analytics.track('review_webview_error', {
-                      platform_name: platformName,
-                      error_message: errorMsg,
-                      url_domain: urlDomain,
-                    });
-                  } catch {
-                    analytics.track('review_webview_error', {
-                      platform_name: platformName,
-                      error_message: errorMsg,
-                      url_domain: 'invalid',
-                    });
-                  }
                 }}
                 allowsBackForwardNavigationGestures
                 sharedCookiesEnabled

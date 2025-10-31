@@ -10,14 +10,12 @@ interface SearchError {
 }
 
 interface UseSearchTrackingParams {
-  query: string;
   debouncedQuery: string;
   searchResults?: SearchResults | null | undefined;
   searchError?: SearchError | null;
 }
 
 export function useSearchTracking({
-  query,
   debouncedQuery,
   searchResults,
   searchError,
@@ -25,10 +23,7 @@ export function useSearchTracking({
   const searchStartTimeRef = useRef(0);
 
   useEffect(() => {
-    if (query.trim().length > 0) {
-      analytics.track('book_search_performed', {
-        query_length: query.trim().length,
-      });
+    if (debouncedQuery.trim().length > 0) {
       searchStartTimeRef.current = Date.now();
     }
   }, [debouncedQuery]);
@@ -36,7 +31,8 @@ export function useSearchTracking({
   useEffect(() => {
     if (searchResults?.bookList && searchStartTimeRef.current > 0) {
       const loadTime = Date.now() - searchStartTimeRef.current;
-      analytics.track('book_search_results_loaded', {
+      analytics.track('book_search_completed', {
+        query_length: debouncedQuery.trim().length,
         results_count: searchResults.bookList.length,
         search_term: debouncedQuery,
         load_time_ms: loadTime,

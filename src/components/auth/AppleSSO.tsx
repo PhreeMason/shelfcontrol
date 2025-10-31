@@ -1,5 +1,4 @@
 import { ThemedView } from '@/components/themed';
-import { analytics } from '@/lib/analytics/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { authService } from '@/services';
 import * as AppleAuthentication from 'expo-apple-authentication';
@@ -39,8 +38,6 @@ export function AppleSSO({
   }, []);
   const handleAppleSignIn = async () => {
     try {
-      analytics.track('apple_sso_started');
-
       const available = await AppleAuthentication.isAvailableAsync();
       if (!available) {
         throw new Error('Apple Authentication not available');
@@ -89,26 +86,18 @@ export function AppleSSO({
             );
           }
 
-          analytics.track('apple_sso_completed');
           onSuccess?.();
         }
       } else {
         const error = new Error('No identity token received from Apple');
         console.error('Apple sign-in error:', error);
-        analytics.track('apple_sso_failed', {
-          error_message: 'No identity token received',
-        });
         onError?.(error);
       }
     } catch (e: any) {
       if (e.code === 'ERR_REQUEST_CANCELED') {
         console.log('Apple sign-in canceled by user');
-        analytics.track('apple_sso_cancelled');
       } else {
         console.error('Apple sign-in error:', e);
-        analytics.track('apple_sso_failed', {
-          error_message: e.message || 'Unknown error',
-        });
         onError?.(e);
       }
     }

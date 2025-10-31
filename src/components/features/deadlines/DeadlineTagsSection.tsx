@@ -11,7 +11,7 @@ import { analytics } from '@/lib/analytics/client';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { TagWithDetails } from '@/types/tags.types';
 import { getNextTagColor } from '@/utils/tagColors';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { TagChip } from './TagChip';
 
@@ -31,12 +31,6 @@ export const DeadlineTagsSection = ({
   const createTagMutation = useCreateTag();
   const addTagMutation = useAddTagToDeadline();
   const removeTagMutation = useRemoveTagFromDeadline();
-
-  useEffect(() => {
-    analytics.track('tags_section_opened', {
-      has_existing_tags: deadlineTags.length > 0,
-    });
-  }, [deadlineTags.length]);
 
   const handleSelectTag = async (
     selectedTag: TagWithDetails | { name: string }

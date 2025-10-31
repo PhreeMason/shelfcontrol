@@ -132,14 +132,9 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
     });
   };
 
-  const handleCopyUrl = async (url: string, platformName: string) => {
+  const handleCopyUrl = async (url: string) => {
     try {
       await Clipboard.setStringAsync(url);
-
-      analytics.track('review_link_copied', {
-        platform_name: platformName,
-        source: 'platform_checklist',
-      });
 
       Toast.show({
         type: 'success',
@@ -223,12 +218,7 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
                           {currentUrl && (
                             <ThemedIconButton
                               icon="doc.on.clipboard"
-                              onPress={() =>
-                                handleCopyUrl(
-                                  currentUrl,
-                                  platform.platform_name
-                                )
-                              }
+                              onPress={() => handleCopyUrl(currentUrl)}
                               variant="ghost"
                               size="sm"
                               hapticsOnPress

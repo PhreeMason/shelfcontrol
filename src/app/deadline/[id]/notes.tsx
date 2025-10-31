@@ -43,11 +43,6 @@ const Notes = () => {
   const deleteNoteMutation = useDeleteNote();
 
   useEffect(() => {
-    analytics.track('notes_screen_viewed', {
-      deadline_id: id,
-      existing_notes_count: notes?.length || 0,
-    });
-
     return () => {
       if (noteText.trim().length > 0 && !editingNoteId) {
         analytics.track('note_creation_cancelled');
@@ -146,7 +141,6 @@ const Notes = () => {
   const handleCopyNote = async (note: DeadlineNote) => {
     await Clipboard.setStringAsync(note.note_text);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    analytics.track('note_copied');
   };
 
   const renderNote = ({

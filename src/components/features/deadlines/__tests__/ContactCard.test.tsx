@@ -6,7 +6,6 @@ import React from 'react';
 import { Alert } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
-import { analytics } from '@/lib/analytics/client';
 
 jest.mock('@/hooks/useTheme', () => ({
   useTheme: jest.fn(),
@@ -213,52 +212,6 @@ describe('ContactCard', () => {
       expect(Haptics.notificationAsync).toHaveBeenCalledWith('success');
     });
 
-    it('should track analytics on field copy', async () => {
-      render(
-        <ContactCard
-          contact={mockContactComplete}
-          onEdit={mockOnEdit}
-          onDelete={mockOnDelete}
-        />
-      );
-
-      const nameField = screen.getByText('John Doe').parent;
-      fireEvent(nameField!, 'longPress');
-
-      await Promise.resolve();
-
-      expect(analytics.track).toHaveBeenCalledWith('contact_field_copied', {
-        field_type: 'name',
-      });
-    });
-
-    it('should track different field types in analytics', async () => {
-      render(
-        <ContactCard
-          contact={mockContactComplete}
-          onEdit={mockOnEdit}
-          onDelete={mockOnDelete}
-        />
-      );
-
-      const emailField = screen.getByText('john@example.com').parent;
-      fireEvent(emailField!, 'longPress');
-
-      await Promise.resolve();
-
-      expect(analytics.track).toHaveBeenCalledWith('contact_field_copied', {
-        field_type: 'email',
-      });
-
-      const usernameField = screen.getByText('@johndoe').parent;
-      fireEvent(usernameField!, 'longPress');
-
-      await Promise.resolve();
-
-      expect(analytics.track).toHaveBeenCalledWith('contact_field_copied', {
-        field_type: 'username',
-      });
-    });
   });
 
   describe('Copy Success Badge', () => {

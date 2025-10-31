@@ -50,30 +50,10 @@ export interface EventPropertiesMap {
     error_message: string;
   };
 
-  apple_sso_started: Record<string, never>;
-
-  apple_sso_completed: Record<string, never>;
-
-  apple_sso_failed: {
-    error_message: string;
-  };
-
-  apple_sso_cancelled: Record<string, never>;
-
   user_signed_out: Record<string, never>;
 
-  deadline_creation_started: Record<string, never>;
-
-  deadline_creation_step_viewed: {
-    step_number: number;
-    step_name: string;
-  };
-
-  book_search_performed: {
+  book_search_completed: {
     query_length: number;
-  };
-
-  book_search_results_loaded: {
     results_count: number;
     search_term: string;
     load_time_ms: number;
@@ -91,39 +71,20 @@ export interface EventPropertiesMap {
     has_publication_date: boolean;
   };
 
-  manual_book_entry_started: Record<string, never>;
-
-  deadline_format_selected: {
-    format: ReadingFormat;
-  };
-
-  priority_set: {
-    priority_level: string | number;
-  };
-
-  deadline_date_set: {
-    days_from_now: number;
-    is_future: boolean;
-  };
-
   deadline_creation_abandoned: {
     last_step: number;
     time_spent: number;
     book_selected: boolean;
   };
 
-  deadline_creation_completed: {
-    time_spent_seconds: number;
-    total_steps: number;
-    book_source: BookSource;
-    format: ReadingFormat;
-    status: DeadlineStatus;
-  };
-
   deadline_created: {
     format: ReadingFormat;
     status: DeadlineStatus;
     type: string;
+    book_source: BookSource;
+    has_deadline_date: boolean;
+    creation_duration_seconds: number;
+    total_steps: number;
   };
 
   deadline_updated: {
@@ -177,10 +138,6 @@ export interface EventPropertiesMap {
     deadline_status: DeadlineStatus;
   };
 
-  contact_field_copied: {
-    field_type: 'name' | 'email' | 'username';
-  };
-
   deadline_disclosure_added: {
     deadline_id: string;
     deadline_status: DeadlineStatus;
@@ -201,12 +158,6 @@ export interface EventPropertiesMap {
     deadline_status: DeadlineStatus;
   };
 
-  deadline_disclosure_copied: {
-    deadline_id: string;
-    deadline_status: DeadlineStatus;
-    character_count: number;
-  };
-
   deadline_disclosure_template_selected: {
     deadline_id: string;
     template_name: string;
@@ -217,10 +168,6 @@ export interface EventPropertiesMap {
     character_count: number;
   };
 
-  tags_section_opened: {
-    has_existing_tags: boolean;
-  };
-
   tag_added_to_deadline: {
     tag_name: string;
     is_new_tag: boolean;
@@ -228,23 +175,6 @@ export interface EventPropertiesMap {
 
   tag_removed_from_deadline: {
     tag_name: string;
-  };
-
-  completion_flow_started: {
-    format: ReadingFormat;
-    status: DeadlineStatus;
-    days_to_complete: number;
-    is_dnf: boolean;
-  };
-
-  completion_step_viewed: {
-    step_number: number;
-    step_name: 'celebration' | 'review_question' | 'review_form';
-  };
-
-  celebration_screen_viewed: {
-    book_title: string;
-    format: ReadingFormat;
   };
 
   did_not_finish_selected: {
@@ -277,11 +207,6 @@ export interface EventPropertiesMap {
     source: string;
   };
 
-  review_link_copied: {
-    platform_name: string;
-    source: string;
-  };
-
   review_webview_opened: {
     platform_name: string;
     url_domain: string;
@@ -297,23 +222,6 @@ export interface EventPropertiesMap {
     platform_name: string;
     duration: number;
     closed_via: WebViewClosedVia;
-  };
-
-  review_webview_loaded: {
-    platform_name: string;
-    load_time: number;
-    url_domain: string;
-  };
-
-  review_webview_error: {
-    platform_name: string;
-    error_message: string;
-    url_domain: string;
-  };
-
-  notes_screen_viewed: {
-    deadline_id: string;
-    existing_notes_count: number;
   };
 
   note_created: {
@@ -332,21 +240,17 @@ export interface EventPropertiesMap {
 
   note_creation_cancelled: Record<string, never>;
 
-  note_copied: Record<string, never>;
-
-  home_screen_viewed: {
-    deadlines_count: number;
-    active_filters: string[];
-  };
-
-  filter_changed: {
-    filter_type: string;
-  };
-
-  filter_cleared: Record<string, never>;
-
-  filter_combination_applied: {
-    filter_types: string[];
+  filters_applied: {
+    active_tab: string;
+    active_filters: {
+      time_range?: string;
+      formats?: string[];
+      page_ranges?: string[];
+      types?: string[];
+      tags?: string[];
+      excluded_statuses?: string[];
+    };
+    filter_count: number;
   };
 
   sort_changed: {
@@ -354,15 +258,39 @@ export interface EventPropertiesMap {
     new_sort: string;
   };
 
-  deadlines_refreshed: Record<string, never>;
+  session_started: Record<string, never>;
 
-  profile_viewed: Record<string, never>;
+  reading_progress_updated: {
+    deadline_id: string;
+    progress_type: 'pages' | 'percentage' | 'time';
+    previous_progress: number;
+    new_progress: number;
+    delta: number;
+  };
+
+  tab_switched: {
+    from_tab: string;
+    to_tab: string;
+  };
+
+  deadline_viewed: {
+    deadline_id: string;
+    deadline_status: DeadlineStatus;
+    deadline_format: ReadingFormat;
+  };
+
+  engagement_milestone: {
+    milestone_type:
+      | 'deadlines_completed'
+      | 'reading_streak'
+      | 'total_pages_read'
+      | 'books_reviewed';
+    count: number;
+  };
 
   profile_updated: {
     avatar_changed: boolean;
   };
-
-  avatar_uploaded: Record<string, never>;
 
   export_data_initiated: Record<string, never>;
 

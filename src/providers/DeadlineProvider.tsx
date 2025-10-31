@@ -339,6 +339,11 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         progressDetails: ReadingDeadlineProgressInsert;
         status?: string;
         bookData?: { api_id: string; book_id?: string };
+        analyticsContext?: {
+          book_source: 'search' | 'manual';
+          creation_duration_seconds: number;
+          total_steps: number;
+        };
       },
       onSuccess?: () => void,
       onError?: (error: Error) => void
@@ -349,6 +354,11 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
             format: params.deadlineDetails.format,
             status: params.status as AnalyticsDeadlineStatus,
             type: params.deadlineDetails.deadline_type || 'Personal',
+            book_source: params.analyticsContext?.book_source || 'manual',
+            has_deadline_date: !!params.deadlineDetails.deadline_date,
+            creation_duration_seconds:
+              params.analyticsContext?.creation_duration_seconds || 0,
+            total_steps: params.analyticsContext?.total_steps || 0,
           });
           onSuccess?.();
         },
@@ -446,6 +456,17 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         {
           onSuccess: () => {
             analytics.track('deadline_completed');
+
+            const newCompletedCount = completedDeadlines.length + 1;
+            const milestones = [5, 10, 25, 50, 100, 250, 500, 1000];
+
+            if (milestones.includes(newCompletedCount)) {
+              analytics.track('engagement_milestone', {
+                milestone_type: 'deadlines_completed',
+                count: newCompletedCount,
+              });
+            }
+
             onSuccess?.();
           },
           onError: (error: Error) => {
@@ -455,7 +476,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         }
       );
     },
-    [completeDeadlineMutation]
+    [completeDeadlineMutation, completedDeadlines.length]
   );
 
   const startReadingDeadline = useCallback(

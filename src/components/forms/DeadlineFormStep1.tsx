@@ -53,7 +53,6 @@ export const DeadlineFormStep1 = ({
   } = useSearchBooksList(debouncedQuery);
 
   useSearchTracking({
-    query,
     debouncedQuery,
     searchResults,
     searchError,
@@ -246,10 +245,7 @@ export const DeadlineFormStep1 = ({
           </ThemedText>
           <TouchableOpacity
             style={[styles.manualEntryButton, { borderColor: colors.primary }]}
-            onPress={() => {
-              analytics.track('manual_book_entry_started');
-              onManualEntry();
-            }}
+            onPress={onManualEntry}
           >
             <IconSymbol name="pencil" size={20} color={colors.primary} />
             <ThemedText color="primary" style={styles.manualEntryText}>

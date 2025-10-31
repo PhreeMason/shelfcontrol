@@ -6,7 +6,6 @@ import {
   useCompleteDeadline,
   useDidNotFinishDeadline,
 } from '@/hooks/useDeadlines';
-import { dayjs } from '@/lib/dayjs';
 import { analytics } from '@/lib/analytics/client';
 import { useFormFlowTracking } from '@/hooks/analytics/useFormFlowTracking';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -18,7 +17,6 @@ import {
   shouldShowReviewForm,
   shouldShowReviewQuestion,
 } from '@/utils/completionFlowUtils';
-import { normalizeServerDateStartOfDay } from '@/utils/dateNormalization';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import Toast from 'react-native-toast-message';
@@ -39,24 +37,10 @@ const CompletionFormContainer: React.FC<CompletionFormContainerProps> = ({
   const { mutate: completeDeadline } = useCompleteDeadline();
   const { mutate: didNotFinishDeadline } = useDidNotFinishDeadline();
 
-  const createdDate = normalizeServerDateStartOfDay(deadline.created_at);
-  const daysToComplete = dayjs().diff(createdDate, 'day');
-
   useFormFlowTracking({
     flowType: 'completion',
     currentStep,
     stepNames: ['celebration', 'review_question', 'review_form'],
-    additionalStartProperties: {
-      format: deadline.format as 'physical' | 'eBook' | 'audio',
-      status: (deadline.status || 'unknown') as
-        | 'pending'
-        | 'reading'
-        | 'completed'
-        | 'paused'
-        | 'dnf',
-      days_to_complete: daysToComplete,
-      is_dnf: isDNF,
-    },
   });
 
   const handleCelebrationContinue = () => {
