@@ -79,7 +79,7 @@ const DeadlineView = () => {
     );
   }
 
-  const { isToReview, isArchived, isPending } = getDeadlineStatus(deadline);
+  const { isToReview, isArchived, isPending, isPaused } = getDeadlineStatus(deadline);
 
   const handleBack = () => {
     router.back();
@@ -105,7 +105,7 @@ const DeadlineView = () => {
         keyboardShouldPersistTaps="handled"
         style={[styles.content, { backgroundColor: 'white' }]}
       >
-        <DeadlineHeroSection isPending={isPending} deadline={deadline} />
+        <DeadlineHeroSection isPending={isPending} isPaused={isPaused} deadline={deadline} />
 
         {shouldShowStats ? (
           <DeadlineTabsSection deadline={deadline} />

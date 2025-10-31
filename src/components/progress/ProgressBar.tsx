@@ -11,6 +11,7 @@ interface ProgressBarProps {
   deadlineDate: string;
   urgencyLevel: 'overdue' | 'urgent' | 'good' | 'approaching' | 'impossible';
   startDate: string;
+  beginMessage: string;
 }
 
 const ProgressBar: React.FC<ProgressBarProps> = ({
@@ -18,6 +19,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   deadlineDate,
   urgencyLevel,
   startDate,
+  beginMessage,
 }) => {
   const [isDateFromNow, setIsDateFromNow] = React.useState(true);
 
@@ -36,7 +38,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
           variant="muted"
           onPress={() => setIsDateFromNow(!isDateFromNow)}
         >
-          Started:{' '}
+          {beginMessage}{' '}
           {isDateFromNow
             ? dayjs(startDate).fromNow()
             : dayjs(startDate).format('MM D, YYYY')}

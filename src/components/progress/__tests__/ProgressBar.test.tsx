@@ -35,6 +35,7 @@ describe('ProgressBar', () => {
     deadlineDate: '2024-01-20',
     urgencyLevel: 'good' as const,
     startDate: '2024-01-01',
+    beginMessage: 'Started reading',
   };
 
   beforeEach(() => {

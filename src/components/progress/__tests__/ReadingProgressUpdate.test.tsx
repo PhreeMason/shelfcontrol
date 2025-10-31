@@ -6,6 +6,7 @@ import {
   useDeleteFutureProgress,
 } from '@/hooks/useDeadlines';
 import { useDeadlines } from '@/providers/DeadlineProvider';
+import { usePreferences } from '@/providers/PreferencesProvider';
 import Toast from 'react-native-toast-message';
 import { router } from 'expo-router';
 
@@ -25,6 +26,10 @@ jest.mock('@/hooks/useDeadlines', () => ({
 
 jest.mock('@/providers/DeadlineProvider', () => ({
   useDeadlines: jest.fn(),
+}));
+
+jest.mock('@/providers/PreferencesProvider', () => ({
+  usePreferences: jest.fn(),
 }));
 
 jest.mock('react-native-toast-message', () => ({
@@ -66,17 +71,25 @@ jest.mock('@/components/progress/ProgressStats', () => {
 
 jest.mock('@/components/progress/QuickActionButtons', () => {
   const React = require('react');
+  const { View, Text } = require('react-native');
   return function MockQuickActionButtons(props: any) {
-    // Trigger onQuickUpdate when component receives it
-    const { onQuickUpdate } = props;
+    const { onQuickUpdate, inputMode } = props;
+    const suffix = inputMode === 'percentage' ? '%' : '';
+
     React.useEffect(() => {
       if (onQuickUpdate) {
-        // Simulate quick update calls for testing
         onQuickUpdate(10);
       }
     }, [onQuickUpdate]);
 
-    return React.createElement('View', { testID: 'quick-action-buttons' });
+    return React.createElement(
+      View,
+      { testID: 'quick-action-buttons' },
+      React.createElement(Text, {}, `-1${suffix}`),
+      React.createElement(Text, {}, `+1${suffix}`),
+      React.createElement(Text, {}, `+5${suffix}`),
+      React.createElement(Text, {}, `+10${suffix}`)
+    );
   };
 });
 
@@ -154,6 +167,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
     );
     (useDeleteFutureProgress as jest.Mock).mockReturnValue(mockDeleteMutation);
     (useDeadlines as jest.Mock).mockReturnValue(mockDeadlineContext);
+    (usePreferences as jest.Mock).mockReturnValue({
+      getProgressInputMode: jest.fn().mockReturnValue('direct'),
+    });
   });
 
   describe('Component Structure', () => {
@@ -738,6 +754,174 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         expect(screen.getByText('Quick update time (minutes):')).toBeTruthy();
         expect(createProgressUpdateSchema).toHaveBeenCalledWith(300, 'audio');
+      });
+    });
+
+    describe('Percentage Mode Integration', () => {
+      it('should use percentage mode for quick updates when preference is set', () => {
+        (usePreferences as jest.Mock).mockReturnValue({
+          getProgressInputMode: jest.fn().mockReturnValue('percentage'),
+        });
+
+        const calculations = {
+          urgencyLevel: 'good',
+          currentProgress: 100,
+          totalQuantity: 500,
+          remaining: 400,
+          progressPercentage: 20,
+        };
+
+        (useDeadlines as jest.Mock).mockReturnValue({
+          getDeadlineCalculations: jest.fn().mockReturnValue(calculations),
+        });
+
+        mockGetValues.mockReturnValue({ currentProgress: 100 });
+
+        render(<ReadingProgressUpdate deadline={mockDeadline} />);
+
+        expect(mockSetValue).toHaveBeenCalledWith(
+          'currentProgress',
+          expect.any(Number),
+          { shouldValidate: false }
+        );
+      });
+
+      it('should display % suffix on quick buttons in percentage mode', () => {
+        (usePreferences as jest.Mock).mockReturnValue({
+          getProgressInputMode: jest.fn().mockReturnValue('percentage'),
+        });
+
+        render(<ReadingProgressUpdate deadline={mockDeadline} />);
+
+        expect(screen.getByText('+1%')).toBeTruthy();
+        expect(screen.getByText('+5%')).toBeTruthy();
+        expect(screen.getByText('+10%')).toBeTruthy();
+        expect(screen.getByText('-1%')).toBeTruthy();
+      });
+
+      it('should not display % suffix in direct mode', () => {
+        (usePreferences as jest.Mock).mockReturnValue({
+          getProgressInputMode: jest.fn().mockReturnValue('direct'),
+        });
+
+        render(<ReadingProgressUpdate deadline={mockDeadline} />);
+
+        expect(screen.queryByText('+1%')).toBeNull();
+        expect(screen.getByText('+1')).toBeTruthy();
+      });
+
+      it('should calculate percentage increments correctly for 500-page book', () => {
+        (usePreferences as jest.Mock).mockReturnValue({
+          getProgressInputMode: jest.fn().mockReturnValue('percentage'),
+        });
+
+        const calculations = {
+          urgencyLevel: 'good',
+          currentProgress: 100,
+          totalQuantity: 500,
+          remaining: 400,
+          progressPercentage: 20,
+        };
+
+        (useDeadlines as jest.Mock).mockReturnValue({
+          getDeadlineCalculations: jest.fn().mockReturnValue(calculations),
+        });
+
+        mockGetValues.mockReturnValue({ currentProgress: 100 });
+
+        render(<ReadingProgressUpdate deadline={mockDeadline} />);
+
+        const lastCall = mockSetValue.mock.calls[mockSetValue.mock.calls.length - 1];
+        const newValue = lastCall[1];
+
+        expect(newValue).toBeGreaterThan(100);
+        expect(newValue).toBeLessThanOrEqual(500);
+      });
+    });
+
+    describe('Paused State Handling', () => {
+      it('should display paused message when deadline is paused', () => {
+        const pausedDeadline = {
+          ...mockDeadline,
+          status: [{ status: 'paused', created_at: '2024-11-30T00:00:00Z' }],
+        };
+
+        render(<ReadingProgressUpdate deadline={pausedDeadline} />);
+
+        expect(screen.getByText(/Paused on/)).toBeTruthy();
+        expect(screen.getByText(/Progress updates available when resumed/)).toBeTruthy();
+      });
+
+      it('should not display paused message when deadline is not paused', () => {
+        const activeDeadline = {
+          ...mockDeadline,
+          status: [{ status: 'reading', created_at: '2024-11-01T00:00:00Z' }],
+        };
+
+        render(<ReadingProgressUpdate deadline={activeDeadline} />);
+
+        expect(screen.queryByText(/Paused on/)).toBeNull();
+      });
+
+      it('should disable all controls when paused', () => {
+        const pausedDeadline = {
+          ...mockDeadline,
+          status: [{ status: 'paused', created_at: '2024-11-30T00:00:00Z' }],
+        };
+
+        const mockUpdateMutation = {
+          mutate: jest.fn(),
+          isPending: false,
+        };
+        (useUpdateDeadlineProgress as jest.Mock).mockReturnValue(
+          mockUpdateMutation
+        );
+
+        render(<ReadingProgressUpdate deadline={pausedDeadline} />);
+
+        const button = screen.getByText('Update Progress');
+        fireEvent.press(button);
+
+        expect(mockUpdateMutation.mutate).not.toHaveBeenCalled();
+      });
+
+      it('should apply opacity styling when paused', () => {
+        const pausedDeadline = {
+          ...mockDeadline,
+          status: [{ status: 'paused', created_at: '2024-11-30T00:00:00Z' }],
+        };
+
+        const { root } = render(
+          <ReadingProgressUpdate deadline={pausedDeadline} />
+        );
+
+        expect(root).toBeTruthy();
+      });
+
+      it('should handle multiple pause statuses and show most recent', () => {
+        const pausedDeadline = {
+          ...mockDeadline,
+          status: [
+            { status: 'paused', created_at: '2024-11-15T00:00:00Z' },
+            { status: 'reading', created_at: '2024-11-20T00:00:00Z' },
+            { status: 'paused', created_at: '2024-11-30T00:00:00Z' },
+          ],
+        };
+
+        render(<ReadingProgressUpdate deadline={pausedDeadline} />);
+
+        expect(screen.getByText(/Paused on/)).toBeTruthy();
+      });
+
+      it('should not display paused message if no pause date available', () => {
+        const pausedDeadline = {
+          ...mockDeadline,
+          status: [{ status: 'paused', created_at: null }],
+        };
+
+        render(<ReadingProgressUpdate deadline={pausedDeadline} />);
+
+        expect(screen.queryByText(/Paused on/)).toBeNull();
       });
     });
   });

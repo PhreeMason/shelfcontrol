@@ -10,7 +10,9 @@ import {
 } from '@/hooks/useDeadlines';
 import { analytics } from '@/lib/analytics/client';
 import { useDeadlines } from '@/providers/DeadlineProvider';
+import { usePreferences } from '@/providers/PreferencesProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { getDeadlineStatus, getPausedDate } from '@/utils/deadlineProviderUtils';
 import { createProgressUpdateSchema } from '@/utils/progressUpdateSchema';
 import {
   calculateNewProgress,
@@ -39,6 +41,7 @@ const ReadingProgressUpdate = ({
   onProgressSubmitted?: () => void;
 }) => {
   const { getDeadlineCalculations } = useDeadlines();
+  const { getProgressInputMode } = usePreferences();
   const calculations = getDeadlineCalculations(deadline);
   const {
     urgencyLevel,
@@ -47,6 +50,8 @@ const ReadingProgressUpdate = ({
     remaining,
     progressPercentage,
   } = calculations;
+
+  const inputMode = getProgressInputMode(deadline.format);
 
   const progressSchema = createProgressUpdateSchema(
     totalQuantity,
@@ -224,60 +229,87 @@ const ReadingProgressUpdate = ({
       currentFormValue as string | number | undefined,
       increment,
       currentProgress,
-      totalQuantity
+      totalQuantity,
+      inputMode
     );
     setValue('currentProgress', newProgress, { shouldValidate: false });
   };
 
+  const beginDate = deadline.status?.find(status => status.status === 'reading')?.created_at;
+  let beginMessage = beginDate ? 'Started: ' : 'Added: ';
+  let startDate = beginDate || deadline.created_at;
+  if (currentProgress === 0) {
+    beginMessage = 'Added: ';
+    startDate = deadline.created_at;
+  }
+
+  const { isPaused } = getDeadlineStatus(deadline);
+  const pausedDate = isPaused ? getPausedDate(deadline) : null;
+
+  const DISABLED_OPACITY = 0.6;
+
   return (
     <ThemedView style={[styles.section]}>
       <ProgressHeader />
-
-      <ThemedView style={{ gap: 12 }}>
-        <ProgressInput
-          format={deadline.format}
-          control={control}
-          totalQuantity={totalQuantity}
-        />
-
-        <ProgressStats
-          currentProgress={currentProgress}
-          totalQuantity={totalQuantity}
-          remaining={remaining}
-          format={deadline.format}
-          urgencyLevel={urgencyLevel}
-          progressPercentage={progressPercentage}
-        />
-
-        <ProgressBar
-          progressPercentage={progressPercentage}
-          deadlineDate={deadline.deadline_date}
-          urgencyLevel={urgencyLevel}
-          startDate={deadline.created_at}
-        />
-      </ThemedView>
-
-      <View style={styles.updateSection}>
-        <View
-          style={{ height: 1, backgroundColor: '#cccccc30', marginVertical: 8 }}
-        />
-        <ThemedText variant="muted" style={styles.quickActionLabel}>
-          {deadline.format === 'audio'
-            ? 'Quick update time (minutes):'
-            : 'Quick update pages:'}
+      {isPaused && pausedDate && (
+        <ThemedText variant="muted" style={styles.pausedMessage}>
+          Paused on {pausedDate} {'\n'}
+          Progress updates available when resumed
         </ThemedText>
+      )}
+      <ThemedView style={[isPaused && { opacity: DISABLED_OPACITY }]}>
+        <ThemedView style={{ gap: 12 }}>
+          <ProgressInput
+            format={deadline.format}
+            control={control}
+            totalQuantity={totalQuantity}
+            disabled={isPaused}
+          />
 
-        <QuickActionButtons onQuickUpdate={handleQuickUpdate} />
+          <ProgressStats
+            currentProgress={currentProgress}
+            totalQuantity={totalQuantity}
+            remaining={remaining}
+            format={deadline.format}
+            urgencyLevel={urgencyLevel}
+            progressPercentage={progressPercentage}
+          />
 
-        <ThemedButton
-          title={
-            updateProgressMutation.isPending ? 'Updating...' : 'Update Progress'
-          }
-          variant="primary"
-          onPress={handleSubmit(onSubmitProgress)}
-          disabled={updateProgressMutation.isPending}
-        />
-      </View>
+          <ProgressBar
+            progressPercentage={progressPercentage}
+            deadlineDate={deadline.deadline_date}
+            urgencyLevel={urgencyLevel}
+            startDate={startDate}
+            beginMessage={beginMessage}
+          />
+        </ThemedView>
+
+        <View style={styles.updateSection}>
+          <View
+            style={{ height: 1, backgroundColor: '#cccccc30', marginVertical: 8 }}
+          />
+          <ThemedText variant="muted" style={styles.quickActionLabel}>
+            {deadline.format === 'audio'
+              ? 'Quick update time (minutes):'
+              : 'Quick update pages:'}
+          </ThemedText>
+
+          <QuickActionButtons
+            onQuickUpdate={handleQuickUpdate}
+            disabled={isPaused}
+            inputMode={inputMode}
+          />
+
+          <ThemedButton
+            title={
+              updateProgressMutation.isPending ? 'Updating...' : 'Update Progress'
+            }
+            variant="primary"
+            onPress={handleSubmit(onSubmitProgress)}
+            disabled={updateProgressMutation.isPending || isPaused}
+          />
+        </View>
+      </ThemedView>
     </ThemedView>
   );
 };
@@ -296,5 +328,10 @@ const styles = StyleSheet.create({
   quickActionLabel: {
     fontWeight: '700',
     textAlign: 'center',
+  },
+  pausedMessage: {
+    textAlign: 'center',
+    fontSize: 13,
+    fontStyle: 'italic',
   },
 });

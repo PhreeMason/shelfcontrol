@@ -13,12 +13,14 @@ interface ProgressInputProps {
   format: 'physical' | 'eBook' | 'audio';
   control: Control<any>;
   totalQuantity: number;
+  disabled?: boolean;
 }
 
 const ProgressInput: React.FC<ProgressInputProps> = ({
   format,
   control,
   totalQuantity,
+  disabled = false,
 }) => {
   const { getProgressInputMode, setProgressInputMode } = usePreferences();
   const selectedMode = getProgressInputMode(format);
@@ -60,6 +62,7 @@ const ProgressInput: React.FC<ProgressInputProps> = ({
         {...(onBlur && { onBlur })}
         totalQuantity={totalQuantity}
         testID={testID}
+        disabled={disabled}
       />
     );
   };
@@ -71,6 +74,7 @@ const ProgressInput: React.FC<ProgressInputProps> = ({
           modes={modeOptions}
           selectedMode={selectedMode}
           onModeChange={mode => setProgressInputMode(format, mode)}
+          disabled={disabled}
         />
       </View>
       <Controller

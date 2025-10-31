@@ -31,6 +31,7 @@ export interface DeadlineStatus {
   isToReview: boolean;
   isArchived: boolean;
   isPending: boolean;
+  isPaused: boolean;
 }
 
 export interface DeadlineMetrics {
@@ -69,6 +70,7 @@ export function getDeadlineStatus(
   const isDnf = latestStatus === 'did_not_finish';
   const isToReview = latestStatus === 'to_review';
   const isPending = latestStatus === 'pending';
+  const isPaused = latestStatus === 'paused';
   const isArchived = isCompleted || isDnf;
 
   return {
@@ -77,7 +79,30 @@ export function getDeadlineStatus(
     isToReview,
     isArchived,
     isPending,
+    isPaused,
   };
+}
+
+export function getPausedDate(
+  deadline: ReadingDeadlineWithProgress
+): string | null {
+  if (!deadline.status || deadline.status.length === 0) {
+    return null;
+  }
+
+  const pausedStatus = deadline.status
+    .filter(s => s.status === 'paused')
+    .sort((a, b) => {
+      const dateA = normalizeServerDate(a.created_at || '1970-01-01').valueOf();
+      const dateB = normalizeServerDate(b.created_at || '1970-01-01').valueOf();
+      return dateB - dateA;
+    })[0];
+
+  if (!pausedStatus || !pausedStatus.created_at) {
+    return null;
+  }
+
+  return normalizeServerDate(pausedStatus.created_at).format('MMMM D');
 }
 
 // Calculate basic deadline metrics

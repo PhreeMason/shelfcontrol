@@ -9,12 +9,14 @@ interface InputModeToggleProps {
   modes: { key: ProgressInputMode; label: string }[];
   selectedMode: ProgressInputMode;
   onModeChange: (mode: ProgressInputMode) => void;
+  disabled?: boolean;
 }
 
 const InputModeToggle: React.FC<InputModeToggleProps> = ({
   modes,
   selectedMode,
   onModeChange,
+  disabled = false,
 }) => {
   const { colors } = useTheme();
   const primaryColor = colors.success;
@@ -35,6 +37,7 @@ const InputModeToggle: React.FC<InputModeToggleProps> = ({
         { borderColor: primaryColor, backgroundColor: 'transparent' },
       ]}
       onPress={handleCycle}
+      disabled={disabled}
     >
       <ThemedText style={[styles.label, { color: primaryColor }]}>
         {currentLabel}

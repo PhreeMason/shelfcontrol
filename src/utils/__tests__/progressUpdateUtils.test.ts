@@ -158,6 +158,137 @@ describe('progressUpdateUtils', () => {
       );
       expect(result2).toBe(totalQuantity);
     });
+
+    it('should handle percentage mode correctly - increment by 1%', () => {
+      const result = calculateNewProgress(
+        100,
+        1,
+        currentProgress,
+        totalQuantity,
+        'percentage'
+      );
+      expect(result).toBe(105);
+    });
+
+    it('should handle percentage mode correctly - increment by 5%', () => {
+      const result = calculateNewProgress(
+        100,
+        5,
+        currentProgress,
+        totalQuantity,
+        'percentage'
+      );
+      expect(result).toBe(125);
+    });
+
+    it('should handle percentage mode correctly - increment by 10%', () => {
+      const result = calculateNewProgress(
+        100,
+        10,
+        currentProgress,
+        totalQuantity,
+        'percentage'
+      );
+      expect(result).toBe(150);
+    });
+
+    it('should handle percentage mode correctly - decrement by 1%', () => {
+      const result = calculateNewProgress(
+        100,
+        -1,
+        currentProgress,
+        totalQuantity,
+        'percentage'
+      );
+      expect(result).toBe(95);
+    });
+
+    it('should handle percentage mode with boundary - max at totalQuantity', () => {
+      const result = calculateNewProgress(
+        490,
+        5,
+        490,
+        totalQuantity,
+        'percentage'
+      );
+      expect(result).toBe(500);
+    });
+
+    it('should handle percentage mode with boundary - min at 0', () => {
+      const result = calculateNewProgress(
+        10,
+        -5,
+        10,
+        totalQuantity,
+        'percentage'
+      );
+      expect(result).toBe(0);
+    });
+
+    it('should use direct mode when inputMode is direct', () => {
+      const result = calculateNewProgress(
+        100,
+        5,
+        currentProgress,
+        totalQuantity,
+        'direct'
+      );
+      expect(result).toBe(105);
+    });
+
+    it('should use direct mode when inputMode is not provided', () => {
+      const result = calculateNewProgress(
+        100,
+        5,
+        currentProgress,
+        totalQuantity
+      );
+      expect(result).toBe(105);
+    });
+
+    it('should handle odd page counts in percentage mode - 497 pages', () => {
+      const result = calculateNewProgress(
+        100,
+        1,
+        100,
+        497,
+        'percentage'
+      );
+      expect(result).toBe(105);
+    });
+
+    it('should handle odd page counts in percentage mode - 501 pages', () => {
+      const result = calculateNewProgress(
+        100,
+        1,
+        100,
+        501,
+        'percentage'
+      );
+      expect(result).toBe(105);
+    });
+
+    it('should handle odd page counts in percentage mode - 333 pages', () => {
+      const result = calculateNewProgress(
+        100,
+        1,
+        100,
+        333,
+        'percentage'
+      );
+      expect(result).toBe(103);
+    });
+
+    it('should handle fractional percentages with rounding - 5% of 497', () => {
+      const result = calculateNewProgress(
+        100,
+        5,
+        100,
+        497,
+        'percentage'
+      );
+      expect(result).toBe(125);
+    });
   });
 
   describe('shouldShowBackwardProgressWarning', () => {

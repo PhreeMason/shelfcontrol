@@ -12,6 +12,7 @@ interface ProgressInputBaseProps {
   onBlur?: () => void;
   totalQuantity: number;
   testID?: string;
+  disabled?: boolean;
 }
 
 const ProgressInputBase: React.FC<ProgressInputBaseProps> = props => {
@@ -32,6 +33,7 @@ const ProgressInputBase: React.FC<ProgressInputBaseProps> = props => {
           placeholder={viewModel.props.placeholder}
           placeholderTextColor="#666666"
           keyboardType={viewModel.props.keyboardType}
+          editable={!props.disabled}
           style={[
             styles.input,
             viewModel.styling.inputStyle,

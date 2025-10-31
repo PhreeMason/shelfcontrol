@@ -1,13 +1,12 @@
+import { ProgressInputMode } from '@/types/progressInput.types';
 import { formatProgressDisplay } from './deadlineUtils';
 
-/**
- * Calculates the new progress value after applying an increment
- */
 export const calculateNewProgress = (
   currentFormValue: string | number | undefined,
   increment: number,
   currentProgress: number,
-  totalQuantity: number
+  totalQuantity: number,
+  inputMode: ProgressInputMode = 'direct'
 ): number => {
   let numericValue: number;
 
@@ -20,7 +19,13 @@ export const calculateNewProgress = (
     numericValue = currentProgress;
   }
 
-  const newProgress = numericValue + increment;
+  let actualIncrement = increment;
+
+  if (inputMode === 'percentage') {
+    actualIncrement = Math.round((increment / 100) * totalQuantity);
+  }
+
+  const newProgress = numericValue + actualIncrement;
   return Math.max(0, Math.min(totalQuantity, newProgress));
 };
 
