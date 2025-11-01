@@ -18,8 +18,7 @@ export const QUERY_KEYS = {
     ALL: (userId: string) => ['tags', userId] as const,
     BY_DEADLINE: (userId: string, deadlineId: string) =>
       ['tags', userId, deadlineId] as const,
-    ALL_DEADLINE_TAGS: (userId: string) =>
-      ['deadline_tags', userId] as const,
+    ALL_DEADLINE_TAGS: (userId: string) => ['deadline_tags', userId] as const,
   },
   DISCLOSURE_TEMPLATES: {
     ALL: (userId: string) => ['disclosure_templates', userId] as const,

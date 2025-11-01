@@ -44,72 +44,70 @@ export const ContactCard = ({
     <View style={styles.cardWrapper}>
       <ThemedView style={[styles.card, { borderColor: colors.border }]}>
         <View style={styles.contentContainer}>
-        {hasName && (
+          {hasName && (
+            <Pressable
+              onLongPress={() => handleLongPressCopy(contact.contact_name)}
+              style={({ pressed }) => [
+                styles.infoRow,
+                { opacity: pressed ? 0.7 : 1 },
+              ]}
+            >
+              <IconSymbol name="person.fill" size={16} color={colors.primary} />
+              <ThemedText style={styles.infoText}>
+                {contact.contact_name}
+              </ThemedText>
+            </Pressable>
+          )}
+
+          {hasEmail && (
+            <Pressable
+              onLongPress={() => handleLongPressCopy(contact.email)}
+              style={({ pressed }) => [
+                styles.infoRow,
+                { opacity: pressed ? 0.7 : 1 },
+              ]}
+            >
+              <IconSymbol name="envelope" size={16} color={colors.primary} />
+              <ThemedText style={styles.infoText}>{contact.email}</ThemedText>
+            </Pressable>
+          )}
+
+          {hasUsername && (
+            <Pressable
+              onLongPress={() => handleLongPressCopy(contact.username)}
+              style={({ pressed }) => [
+                styles.infoRow,
+                { opacity: pressed ? 0.7 : 1 },
+              ]}
+            >
+              <IconSymbol name="at" size={16} color={colors.primary} />
+              <ThemedText style={styles.infoText}>
+                {contact.username}
+              </ThemedText>
+            </Pressable>
+          )}
+        </View>
+
+        <View style={styles.actions}>
           <Pressable
-            onLongPress={() =>
-              handleLongPressCopy(contact.contact_name)
-            }
+            onPress={onEdit}
             style={({ pressed }) => [
-              styles.infoRow,
-              { opacity: pressed ? 0.7 : 1 },
+              styles.actionButton,
+              { opacity: pressed ? 0.5 : 1 },
             ]}
           >
-            <IconSymbol name="person.fill" size={16} color={colors.primary} />
-            <ThemedText style={styles.infoText}>
-              {contact.contact_name}
-            </ThemedText>
+            <IconSymbol name="pencil" size={16} color={colors.textMuted} />
           </Pressable>
-        )}
-
-        {hasEmail && (
           <Pressable
-            onLongPress={() => handleLongPressCopy(contact.email)}
+            onPress={onDelete}
             style={({ pressed }) => [
-              styles.infoRow,
-              { opacity: pressed ? 0.7 : 1 },
+              styles.actionButton,
+              { opacity: pressed ? 0.5 : 1 },
             ]}
           >
-            <IconSymbol name="envelope" size={16} color={colors.primary} />
-            <ThemedText style={styles.infoText}>{contact.email}</ThemedText>
+            <IconSymbol name="trash.fill" size={16} color={colors.danger} />
           </Pressable>
-        )}
-
-        {hasUsername && (
-          <Pressable
-            onLongPress={() =>
-              handleLongPressCopy(contact.username)
-            }
-            style={({ pressed }) => [
-              styles.infoRow,
-              { opacity: pressed ? 0.7 : 1 },
-            ]}
-          >
-            <IconSymbol name="at" size={16} color={colors.primary} />
-            <ThemedText style={styles.infoText}>{contact.username}</ThemedText>
-          </Pressable>
-        )}
-      </View>
-
-      <View style={styles.actions}>
-        <Pressable
-          onPress={onEdit}
-          style={({ pressed }) => [
-            styles.actionButton,
-            { opacity: pressed ? 0.5 : 1 },
-          ]}
-        >
-          <IconSymbol name="pencil" size={16} color={colors.textMuted} />
-        </Pressable>
-        <Pressable
-          onPress={onDelete}
-          style={({ pressed }) => [
-            styles.actionButton,
-            { opacity: pressed ? 0.5 : 1 },
-          ]}
-        >
-          <IconSymbol name="trash.fill" size={16} color={colors.danger} />
-        </Pressable>
-      </View>
+        </View>
       </ThemedView>
       {copySuccess && (
         <View

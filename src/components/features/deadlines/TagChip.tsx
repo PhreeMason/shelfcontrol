@@ -15,12 +15,7 @@ export const TagChip = ({ tag, onRemove, showRemove = true }: TagChipProps) => {
   const borderColor = tag.color;
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor, borderColor },
-      ]}
-    >
+    <View style={[styles.container, { backgroundColor, borderColor }]}>
       <ThemedText style={[styles.text, { color: tag.color }]}>
         {tag.name}
       </ThemedText>

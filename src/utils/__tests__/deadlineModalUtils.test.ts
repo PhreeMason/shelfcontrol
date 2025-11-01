@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {
   getQuickSelectDate,
   calculateDeadlineImpact,
@@ -1053,16 +1054,14 @@ describe('deadlineModalUtils', () => {
     });
 
     it('should return "1 month ago" for exactly one month', () => {
-      const oneMonthAgo = new Date();
-      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-      const result = formatTimeAgo(oneMonthAgo.toISOString());
+      const oneMonthAgo = dayjs().subtract(1, 'month').toISOString();
+      const result = formatTimeAgo(oneMonthAgo);
       expect(result).toMatch(/^(1 month ago|[34] weeks ago)$/);
     });
 
     it('should return "X months ago" for multiple months', () => {
-      const threeMonthsAgo = new Date();
-      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-      expect(formatTimeAgo(threeMonthsAgo.toISOString())).toBe('3 months ago');
+      const threeMonthsAgo = dayjs().subtract(3, 'month').toISOString();
+      expect(formatTimeAgo(threeMonthsAgo)).toBe('3 months ago');
     });
   });
 

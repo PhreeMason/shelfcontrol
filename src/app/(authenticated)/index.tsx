@@ -204,10 +204,7 @@ export default function HomeScreen() {
         contentContainerStyle={[styles.scrollContent]}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={refetch}
-          />
+          <RefreshControl refreshing={isRefreshing} onRefresh={refetch} />
         }
       >
         <Header />

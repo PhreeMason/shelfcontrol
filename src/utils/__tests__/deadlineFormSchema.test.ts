@@ -456,7 +456,9 @@ describe('deadlineFormSchema', () => {
         bookTitle: 'Test Book',
         format: 'eBook',
         type: 'Library',
-        publishers: ['123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789'],
+        publishers: [
+          '123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789',
+        ],
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',

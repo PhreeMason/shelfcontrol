@@ -62,7 +62,9 @@ const BookDetailsSection = ({
             Type
           </ThemedText>
           <ThemedText style={styles.detailsValue}>
-            {deadline.type || deadline.source ? makeUpperCaseFirstLetter(deadline.type || deadline.source) : ''}
+            {deadline.type || deadline.source
+              ? makeUpperCaseFirstLetter(deadline.type || deadline.source)
+              : ''}
           </ThemedText>
         </ThemedView>
         <ThemedView style={styles.detailRow}>

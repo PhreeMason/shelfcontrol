@@ -100,4 +100,3 @@ export const sortByPagesRemaining = (
 
   return sortDeadlines(a, b);
 };
-

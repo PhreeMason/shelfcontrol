@@ -831,7 +831,8 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
-        const lastCall = mockSetValue.mock.calls[mockSetValue.mock.calls.length - 1];
+        const lastCall =
+          mockSetValue.mock.calls[mockSetValue.mock.calls.length - 1];
         const newValue = lastCall[1];
 
         expect(newValue).toBeGreaterThan(100);
@@ -849,7 +850,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
         render(<ReadingProgressUpdate deadline={pausedDeadline} />);
 
         expect(screen.getByText(/Paused on/)).toBeTruthy();
-        expect(screen.getByText(/Progress updates available when resumed/)).toBeTruthy();
+        expect(
+          screen.getByText(/Progress updates available when resumed/)
+        ).toBeTruthy();
       });
 
       it('should not display paused message when deadline is not paused', () => {

@@ -12,7 +12,10 @@ import { analytics } from '@/lib/analytics/client';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { usePreferences } from '@/providers/PreferencesProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { getDeadlineStatus, getPausedDate } from '@/utils/deadlineProviderUtils';
+import {
+  getDeadlineStatus,
+  getPausedDate,
+} from '@/utils/deadlineProviderUtils';
 import { createProgressUpdateSchema } from '@/utils/progressUpdateSchema';
 import {
   calculateNewProgress,
@@ -254,7 +257,9 @@ const ReadingProgressUpdate = ({
     setValue('currentProgress', newProgress, { shouldValidate: false });
   };
 
-  const beginDate = deadline.status?.find(status => status.status === 'reading')?.created_at;
+  const beginDate = deadline.status?.find(
+    status => status.status === 'reading'
+  )?.created_at;
   let beginMessage = beginDate ? 'Started: ' : 'Added: ';
   let startDate = beginDate || deadline.created_at;
   if (currentProgress === 0) {
@@ -305,7 +310,11 @@ const ReadingProgressUpdate = ({
 
         <View style={styles.updateSection}>
           <View
-            style={{ height: 1, backgroundColor: '#cccccc30', marginVertical: 8 }}
+            style={{
+              height: 1,
+              backgroundColor: '#cccccc30',
+              marginVertical: 8,
+            }}
           />
           <ThemedText variant="muted" style={styles.quickActionLabel}>
             {deadline.format === 'audio'
@@ -321,7 +330,9 @@ const ReadingProgressUpdate = ({
 
           <ThemedButton
             title={
-              updateProgressMutation.isPending ? 'Updating...' : 'Update Progress'
+              updateProgressMutation.isPending
+                ? 'Updating...'
+                : 'Update Progress'
             }
             variant="primary"
             onPress={handleSubmit(onSubmitProgress)}

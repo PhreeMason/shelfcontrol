@@ -164,9 +164,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
 
   const getTagCount = (tagId: string): number => {
     const deadlineIdsWithTag = new Set(
-      deadlineTags
-        .filter(dt => dt.tag_id === tagId)
-        .map(dt => dt.deadline_id)
+      deadlineTags.filter(dt => dt.tag_id === tagId).map(dt => dt.deadline_id)
     );
     return deadlines.filter(d => deadlineIdsWithTag.has(d.id)).length;
   };
@@ -507,7 +505,9 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
                           title={`${tag.name} ${count}`}
                           style={styles.filterPill}
                           variant={
-                            selectedTags.includes(tag.id) ? 'primary' : 'outline'
+                            selectedTags.includes(tag.id)
+                              ? 'primary'
+                              : 'outline'
                           }
                           onPress={() => toggleTag(tag.id)}
                         />

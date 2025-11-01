@@ -19,9 +19,7 @@ interface DeadlineTagsSectionProps {
   deadline: ReadingDeadlineWithProgress;
 }
 
-export const DeadlineTagsSection = ({
-  deadline,
-}: DeadlineTagsSectionProps) => {
+export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
   const [isAdding, setIsAdding] = useState(false);
 
   const { data: deadlineTags = [], isLoading } = useGetDeadlineTags(

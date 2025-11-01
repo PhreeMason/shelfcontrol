@@ -147,8 +147,12 @@ export const DeadlineFormStep4 = ({
           ) : null}
         </View>
         {hasExistingProgressRecords && (
-          <ThemedText color="textMuted" style={{ marginTop: 6, lineHeight: 18 }}>
-            Starting progress cannot be changed after progress records have been added
+          <ThemedText
+            color="textMuted"
+            style={{ marginTop: 6, lineHeight: 18 }}
+          >
+            Starting progress cannot be changed after progress records have been
+            added
           </ThemedText>
         )}
         {(watchedValues.currentProgress > 0 ||

@@ -247,46 +247,22 @@ describe('progressUpdateUtils', () => {
     });
 
     it('should handle odd page counts in percentage mode - 497 pages', () => {
-      const result = calculateNewProgress(
-        100,
-        1,
-        100,
-        497,
-        'percentage'
-      );
+      const result = calculateNewProgress(100, 1, 100, 497, 'percentage');
       expect(result).toBe(105);
     });
 
     it('should handle odd page counts in percentage mode - 501 pages', () => {
-      const result = calculateNewProgress(
-        100,
-        1,
-        100,
-        501,
-        'percentage'
-      );
+      const result = calculateNewProgress(100, 1, 100, 501, 'percentage');
       expect(result).toBe(105);
     });
 
     it('should handle odd page counts in percentage mode - 333 pages', () => {
-      const result = calculateNewProgress(
-        100,
-        1,
-        100,
-        333,
-        'percentage'
-      );
+      const result = calculateNewProgress(100, 1, 100, 333, 'percentage');
       expect(result).toBe(103);
     });
 
     it('should handle fractional percentages with rounding - 5% of 497', () => {
-      const result = calculateNewProgress(
-        100,
-        5,
-        100,
-        497,
-        'percentage'
-      );
+      const result = calculateNewProgress(100, 5, 100, 497, 'percentage');
       expect(result).toBe(125);
     });
   });

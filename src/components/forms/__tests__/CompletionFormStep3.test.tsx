@@ -312,7 +312,12 @@ describe('CompletionFormStep3', () => {
 
       render(<CompletionFormStep3 deadline={mockDeadline} />);
 
-      expect(useReviewPlatforms).toHaveBeenCalledWith([], 'Personal', undefined, []);
+      expect(useReviewPlatforms).toHaveBeenCalledWith(
+        [],
+        'Personal',
+        undefined,
+        []
+      );
     });
 
     it('should pass useReviewPlatforms data to PlatformSelectionSection', () => {
@@ -621,7 +626,12 @@ describe('CompletionFormStep3', () => {
 
       render(<CompletionFormStep3 deadline={netGalleyDeadline} />);
 
-      expect(useReviewPlatforms).toHaveBeenCalledWith([], 'Personal', undefined, []);
+      expect(useReviewPlatforms).toHaveBeenCalledWith(
+        [],
+        'Personal',
+        undefined,
+        []
+      );
     });
 
     it('should set default review deadline for Publisher ARC source', () => {
@@ -631,13 +641,23 @@ describe('CompletionFormStep3', () => {
 
       render(<CompletionFormStep3 deadline={publisherDeadline} />);
 
-      expect(useReviewPlatforms).toHaveBeenCalledWith([], 'Personal', undefined, []);
+      expect(useReviewPlatforms).toHaveBeenCalledWith(
+        [],
+        'Personal',
+        undefined,
+        []
+      );
     });
 
     it('should not set default deadline for manual source', () => {
       render(<CompletionFormStep3 deadline={mockDeadline} />);
 
-      expect(useReviewPlatforms).toHaveBeenCalledWith([], 'Personal', undefined, []);
+      expect(useReviewPlatforms).toHaveBeenCalledWith(
+        [],
+        'Personal',
+        undefined,
+        []
+      );
     });
   });
 

@@ -13,7 +13,11 @@ export type ReadingDeadlineStatusInsert = TablesInsert<'deadline_status'>;
 // Type for reading deadline with progress - matches the actual data structure from useGetDeadlines
 export type ReadingDeadlineWithProgress = Omit<
   ReadingDeadline,
-  'deadline_type' | 'source' | 'disclosure_text' | 'disclosure_source_name' | 'disclosure_template_id'
+  | 'deadline_type'
+  | 'source'
+  | 'disclosure_text'
+  | 'disclosure_source_name'
+  | 'disclosure_template_id'
 > & {
   progress: ReadingDeadlineProgress[];
   status?: ReadingDeadlineStatus[];

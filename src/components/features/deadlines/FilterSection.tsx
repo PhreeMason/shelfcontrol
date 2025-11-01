@@ -176,7 +176,11 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               <View key={option.key} style={styles.tabContainer}>
                 {shouldShowStar && (
                   <View style={styles.starIndicator}>
-                    <IconSymbol name="star.fill" size={12} color={Colors.light.urgent} />
+                    <IconSymbol
+                      name="star.fill"
+                      size={12}
+                      color={Colors.light.urgent}
+                    />
                   </View>
                 )}
                 <ThemedButton

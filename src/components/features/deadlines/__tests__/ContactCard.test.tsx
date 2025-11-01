@@ -1,7 +1,12 @@
 import { ContactCard } from '../ContactCard';
 import { useTheme } from '@/hooks/useTheme';
 import { DeadlineContact } from '@/types/contacts.types';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import React from 'react';
 import { Alert } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
@@ -211,7 +216,6 @@ describe('ContactCard', () => {
 
       expect(Haptics.notificationAsync).toHaveBeenCalledWith('success');
     });
-
   });
 
   describe('Copy Success Badge', () => {
