@@ -95,7 +95,7 @@ describe('DeadlineFormStep3', () => {
 
       expect(screen.getByText('Book Type', { exact: false })).toBeTruthy();
       expect(screen.getByText('*')).toBeTruthy();
-      expect(screen.getByTestId('input-deadline-type')).toBeTruthy();
+      expect(screen.getByTestId('input-type')).toBeTruthy();
     });
 
     it('should render Source field without required indicator', () => {
@@ -139,7 +139,7 @@ describe('DeadlineFormStep3', () => {
     it('should pass control prop to TypeTypeaheadInput', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByTestId('input-deadline-type')).toBeTruthy();
+      expect(screen.getByTestId('input-type')).toBeTruthy();
     });
 
     it('should pass control prop to CustomInput for acquisition_source', () => {
@@ -409,7 +409,7 @@ describe('DeadlineFormStep3', () => {
     it('should configure type input with correct props', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      const input = screen.getByTestId('input-deadline-type');
+      const input = screen.getByTestId('input-type');
       expect(input.props['data-name']).toBe('type');
       expect(input.props['data-placeholder']).toBe('Enter book type');
     });
@@ -445,7 +445,7 @@ describe('DeadlineFormStep3', () => {
     it('should pass control to all inputs', () => {
       render(<DeadlineFormStep3 {...defaultProps} />);
 
-      expect(screen.getByTestId('input-deadline-type')).toBeTruthy();
+      expect(screen.getByTestId('input-type')).toBeTruthy();
       expect(screen.getByTestId('input-acquisition-source')).toBeTruthy();
     });
 

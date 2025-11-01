@@ -474,6 +474,7 @@ describe('DeadlineActionButtons', () => {
           flexibility: 'strict',
           totalQuantity: '300',
           book_id: 'book-123',
+          source: 'Personal',
         },
       });
     });

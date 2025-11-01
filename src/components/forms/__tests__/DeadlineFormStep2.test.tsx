@@ -152,14 +152,6 @@ describe('DeadlineFormStep2', () => {
       expect(screen.getByTestId('format-selector')).toBeTruthy();
     });
 
-    it('should render Book Type label and typeahead input', () => {
-      render(<DeadlineFormStep2 {...defaultProps} />);
-
-      // Check that book type label exists (split across multiple text components)
-      expect(screen.getByText('Book Type', { exact: false })).toBeTruthy();
-      expect(screen.getByTestId('input-source')).toBeTruthy();
-    });
-
     it('should render Total Pages label for physical/eBook formats', () => {
       render(<DeadlineFormStep2 {...defaultProps} />);
 
@@ -369,12 +361,6 @@ describe('DeadlineFormStep2', () => {
       });
     });
 
-    it('should pass control prop to TypeTypeaheadInput', () => {
-      render(<DeadlineFormStep2 {...defaultProps} />);
-
-      expect(screen.getByTestId('input-source')).toBeTruthy();
-    });
-
     it('should call onFormatChange when format is selected', () => {
       render(<DeadlineFormStep2 {...defaultProps} />);
 
@@ -416,7 +402,6 @@ describe('DeadlineFormStep2', () => {
 
       expect(screen.getByTestId('input-bookTitle')).toBeTruthy();
       expect(screen.getByTestId('input-bookAuthor')).toBeTruthy();
-      expect(screen.getByTestId('input-source')).toBeTruthy();
       expect(screen.getByTestId('input-totalQuantity')).toBeTruthy();
     });
 
@@ -443,14 +428,6 @@ describe('DeadlineFormStep2', () => {
       const input = screen.getByTestId('input-bookAuthor');
       expect(input.props['data-name']).toBe('bookAuthor');
       expect(input.props['data-placeholder']).toBe('Author name (optional)');
-    });
-
-    it('should configure source typeahead with correct name and testID', () => {
-      render(<DeadlineFormStep2 {...defaultProps} />);
-
-      const input = screen.getByTestId('input-source');
-      expect(input.props['data-name']).toBe('source');
-      expect(input.props['data-placeholder']).toBe('Enter book type');
     });
 
     it('should configure totalQuantity input with numeric keyboard and integer type', () => {
@@ -487,14 +464,10 @@ describe('DeadlineFormStep2', () => {
       const authorLabel = screen.getByText('Author');
       const statusLabel = screen.getByText('Status');
       const formatLabel = screen.getByText('Format');
-      const bookTypeLabel = screen.getByText('Book Type', { exact: false });
 
-      // These should not contain asterisks
       expect(authorLabel.props.children).toBe('Author');
       expect(statusLabel.props.children).toBe('Status');
       expect(formatLabel.props.children).toBe('Format');
-      // Book Type now has nested components, so we just check it exists
-      expect(bookTypeLabel).toBeTruthy();
     });
   });
 
@@ -556,7 +529,6 @@ describe('DeadlineFormStep2', () => {
       // Verify all inputs are present and no linked indicators
       expect(screen.getByTestId('input-bookTitle')).toBeTruthy();
       expect(screen.getByTestId('input-bookAuthor')).toBeTruthy();
-      expect(screen.getByTestId('input-source')).toBeTruthy();
       expect(screen.getByTestId('input-totalQuantity')).toBeTruthy();
       expect(screen.queryByText('✓ Linked from library')).toBeNull();
 

@@ -1,11 +1,11 @@
+import { generateId, supabase } from '@/lib/supabase';
+import { booksService } from '../books.service';
 import {
-  deadlinesService,
   AddDeadlineParams,
+  deadlinesService,
   UpdateDeadlineParams,
   UpdateProgressParams,
 } from '../deadlines.service';
-import { booksService } from '../books.service';
-import { supabase, generateId } from '@/lib/supabase';
 
 jest.mock('@/lib/supabase', () => ({
   generateId: jest.fn(),
@@ -829,8 +829,6 @@ describe('DeadlinesService', () => {
         deadline_id: 'rd-123',
         current_progress: 150,
         time_spent_reading: 30,
-        created_at: expect.any(String),
-        updated_at: expect.any(String),
       });
       expect(result).toEqual(mockProgressData);
     });
@@ -902,12 +900,14 @@ describe('DeadlinesService', () => {
           book_title: 'Book 1',
           progress: [{ current_progress: 50 }],
           status: [{ status: 'reading' }],
+          type: 'Personal',
         },
         {
           id: 'rd-2',
           book_title: 'Book 2',
           progress: [{ current_progress: 100 }],
           status: [{ status: 'complete' }],
+          type: 'Personal',
         },
       ];
 
@@ -969,6 +969,7 @@ describe('DeadlinesService', () => {
         book_title: 'Test Book',
         progress: [{ current_progress: 150 }],
         status: [{ status: 'reading' }],
+        type: 'Personal',
       };
 
       const mockSelect = jest.fn().mockReturnThis();

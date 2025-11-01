@@ -440,9 +440,10 @@ describe('useDeadlineCardViewModel', () => {
 
       result.current.handlers.onCardPress();
 
-      expect(posthog.capture).toHaveBeenCalledWith('deadline card clicked', {
+      expect(posthog.capture).toHaveBeenCalledWith('deadline_card_clicked', {
         deadline_status: 'reading',
         deadline_format: 'physical',
+        deadline_title: 'Test Book',
       });
     });
 

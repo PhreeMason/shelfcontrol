@@ -428,13 +428,13 @@ describe('deadlineFormSchema', () => {
       }
     });
 
-    it('should reject publisher name exceeding 30 characters', () => {
+    it('should reject publisher name exceeding 99 characters', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
         type: 'Library',
         publishers: [
-          'This is a very long publisher name that exceeds thirty characters',
+          'This is a very long publisher name that definitely exceeds ninety-nine characters and should be rejected by validation',
         ],
         deadline: new Date(),
         totalQuantity: 300,
@@ -446,17 +446,17 @@ describe('deadlineFormSchema', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.issues[0].message).toBe(
-          'Publisher name cannot exceed 30 characters'
+          'Publisher name cannot exceed 99 characters'
         );
       }
     });
 
-    it('should accept publisher name at exactly 30 characters', () => {
+    it('should accept publisher name at exactly 99 characters', () => {
       const data = {
         bookTitle: 'Test Book',
         format: 'eBook',
         type: 'Library',
-        publishers: ['123456789012345678901234567890'],
+        publishers: ['123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789'],
         deadline: new Date(),
         totalQuantity: 300,
         flexibility: 'flexible',

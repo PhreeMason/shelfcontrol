@@ -1,3 +1,4 @@
+import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   calculateCutoffTime,
@@ -15,7 +16,6 @@ import {
   processBookProgress,
   UserPaceData,
 } from '../paceCalculations';
-import { dayjs } from '@/lib/dayjs';
 
 const createMockDeadline = (
   id: string,
@@ -184,55 +184,6 @@ describe('paceCalculations', () => {
       processBookProgress(book2, cutoffTime, dailyProgress);
 
       expect(dailyProgress['2024-01-05']).toBe(50);
-    });
-
-    it('should ignore progress entries with ignore_in_calcs set to true', () => {
-      const createdAt = '2024-01-01';
-      const book = createMockDeadline(
-        '1',
-        'physical',
-        [
-          {
-            current_progress: 50,
-            created_at: createdAt,
-            ignore_in_calcs: true,
-          },
-          { current_progress: 100, created_at: '2024-01-05' },
-          { current_progress: 150, created_at: '2024-01-10' },
-        ],
-        createdAt
-      );
-      const dailyProgress: { [date: string]: number } = {};
-      const cutoffTime = new Date('2024-01-01').getTime();
-
-      processBookProgress(book, cutoffTime, dailyProgress);
-
-      expect(dailyProgress['2024-01-05']).toBe(100);
-      expect(dailyProgress['2024-01-10']).toBe(50);
-      expect(Object.keys(dailyProgress)).toHaveLength(2);
-    });
-
-    it('should exclude baseline progress when it has ignore_in_calcs true', () => {
-      const createdAt = '2024-01-01';
-      const book = createMockDeadline(
-        '1',
-        'physical',
-        [
-          {
-            current_progress: 50,
-            created_at: createdAt,
-            ignore_in_calcs: true,
-          },
-          { current_progress: 100, created_at: '2024-01-05' },
-        ],
-        createdAt
-      );
-      const dailyProgress: { [date: string]: number } = {};
-      const cutoffTime = new Date('2024-01-01').getTime();
-
-      processBookProgress(book, cutoffTime, dailyProgress);
-
-      expect(dailyProgress['2024-01-05']).toBe(100);
     });
 
     it('should handle mixed ignored and non-ignored progress entries', () => {

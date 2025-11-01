@@ -134,7 +134,7 @@ describe('deadlineFormUtils', () => {
       expect(result.book_title).toBe('Test Book');
       expect(result.author).toBe('Test Author');
       expect(result.format).toBe('eBook');
-      expect(result.type).toBe('Library');
+      expect(result.deadline_type).toBe('Library');
       expect(result.total_quantity).toBe(300);
       expect(result.flexibility).toBe('flexible');
       expect(result.deadline_date).toBe('2024-12-01T00:00:00.000Z');
@@ -1037,7 +1037,7 @@ describe('deadlineFormUtils', () => {
         id: 'book-1',
         api_id: 'api-1',
         title: 'Future Book',
-        publication_date: '2025-10-28 07:00:00+00',
+        publication_date: '2026-03-15 07:00:00+00',
       };
 
       handleBookSelection(
@@ -1047,7 +1047,7 @@ describe('deadlineFormUtils', () => {
         mockSetDeadlineFromPublicationDate
       );
 
-      const expectedDate = new Date('2025-10-28 07:00:00+00:00');
+      const expectedDate = new Date('2026-03-15 07:00:00+00:00');
       expect(mockSetValue).toHaveBeenCalledWith('deadline', expectedDate);
       expect(mockSetDeadlineFromPublicationDate).toHaveBeenCalledWith(true);
       expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
@@ -1058,7 +1058,7 @@ describe('deadlineFormUtils', () => {
         id: 'book-1',
         api_id: 'api-1',
         title: 'Future Book',
-        publication_date: '2025-10-28T07:00:00+00:00',
+        publication_date: '2026-03-15T07:00:00+00:00',
       };
 
       handleBookSelection(
@@ -1068,7 +1068,7 @@ describe('deadlineFormUtils', () => {
         mockSetDeadlineFromPublicationDate
       );
 
-      const expectedDate = new Date('2025-10-28T07:00:00+00:00');
+      const expectedDate = new Date('2026-03-15T07:00:00+00:00');
       expect(mockSetValue).toHaveBeenCalledWith('deadline', expectedDate);
       expect(mockSetDeadlineFromPublicationDate).toHaveBeenCalledWith(true);
       expect(mockSetCurrentStep).toHaveBeenCalledWith(2);

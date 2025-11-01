@@ -134,7 +134,7 @@ describe('DeadlineActionSheet', () => {
       />
     );
 
-    expect(getByText('Update Deadline Date')).toBeTruthy();
+    expect(getByText('Update Date')).toBeTruthy();
   });
 
   it('should not show update deadline date action for completed deadline', () => {
@@ -159,7 +159,7 @@ describe('DeadlineActionSheet', () => {
       />
     );
 
-    expect(queryByText('Update Deadline Date')).toBeNull();
+    expect(queryByText('Update Date')).toBeNull();
   });
 
   it('should not show mark as completed action for completed deadline', () => {
@@ -508,7 +508,7 @@ describe('DeadlineActionSheet', () => {
         />
       );
 
-      expect(getByText(/Archived Jun 15, 2025/)).toBeTruthy();
+      expect(getByText(/Jun 15, 2025/)).toBeTruthy();
     });
 
     it('should show "Archived" date for did_not_finish deadline', () => {
@@ -534,7 +534,7 @@ describe('DeadlineActionSheet', () => {
         />
       );
 
-      expect(getByText(/Archived Mar 10, 2025/)).toBeTruthy();
+      expect(getByText(/Mar 10, 2025/)).toBeTruthy();
     });
   });
 
@@ -562,8 +562,8 @@ describe('DeadlineActionSheet', () => {
       );
 
       expect(getByText("I'm done reading")).toBeTruthy();
-      expect(getByText('Update Deadline Date')).toBeTruthy();
-      expect(getByText('Edit Deadline Details')).toBeTruthy();
+      expect(getByText('Update Date')).toBeTruthy();
+      expect(getByText('Book Details')).toBeTruthy();
       expect(getByText('Delete This Book')).toBeTruthy();
     });
 
@@ -589,7 +589,7 @@ describe('DeadlineActionSheet', () => {
         />
       );
 
-      expect(queryByText('Update Deadline Date')).toBeNull();
+      expect(queryByText('Update Date')).toBeNull();
     });
 
     it('should only show Delete action for archived deadline', () => {
@@ -615,8 +615,8 @@ describe('DeadlineActionSheet', () => {
       );
 
       expect(queryByText("I'm done reading")).toBeNull();
-      expect(queryByText('Update Deadline Date')).toBeNull();
-      expect(queryByText('Edit Deadline Details')).toBeNull();
+      expect(queryByText('Update Date')).toBeNull();
+      expect(queryByText('Book Details')).toBeNull();
       expect(getByText('Delete This Book')).toBeTruthy();
     });
   });

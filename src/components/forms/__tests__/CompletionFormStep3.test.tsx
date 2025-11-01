@@ -16,8 +16,10 @@ import {
 } from '@/hooks/useDeadlines';
 import {
   useCreateReviewTracking,
+  useUpdateReviewTracking,
   useUserPlatforms,
 } from '@/hooks/useReviewTracking';
+import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { useAuth } from '@/providers/AuthProvider';
 import Toast from 'react-native-toast-message';
 import { router } from 'expo-router';
@@ -26,10 +28,12 @@ jest.mock('@/hooks/useBooks');
 jest.mock('@/hooks/useReviewPlatforms');
 jest.mock('@/hooks/useDeadlines');
 jest.mock('@/hooks/useReviewTracking');
+jest.mock('@/hooks/useReviewTrackingData');
 jest.mock('@/providers/AuthProvider');
 jest.mock('expo-router', () => ({
   router: {
     replace: jest.fn(),
+    back: jest.fn(),
   },
 }));
 jest.mock('react-native-toast-message', () => ({
@@ -106,6 +110,7 @@ jest.mock('@/components/features/completion/ReviewNotesSection', () => {
 
 describe('CompletionFormStep3', () => {
   const mockCreateReviewTracking = jest.fn();
+  const mockUpdateReviewTracking = jest.fn();
   const mockUpdateToReview = jest.fn();
   const mockCompleteDeadline = jest.fn();
   const mockDidNotFinishDeadline = jest.fn();
@@ -181,6 +186,14 @@ describe('CompletionFormStep3', () => {
 
     (useCreateReviewTracking as jest.Mock).mockReturnValue({
       mutate: mockCreateReviewTracking,
+    });
+
+    (useReviewTrackingData as jest.Mock).mockReturnValue({
+      data: null,
+    });
+
+    (useUpdateReviewTracking as jest.Mock).mockReturnValue({
+      mutate: mockUpdateReviewTracking,
     });
 
     (useToReviewDeadline as jest.Mock).mockReturnValue({
@@ -286,7 +299,9 @@ describe('CompletionFormStep3', () => {
 
       expect(useReviewPlatforms).toHaveBeenCalledWith(
         mockUserPlatforms,
-        'manual'
+        'Personal',
+        undefined,
+        []
       );
     });
 
@@ -297,7 +312,7 @@ describe('CompletionFormStep3', () => {
 
       render(<CompletionFormStep3 deadline={mockDeadline} />);
 
-      expect(useReviewPlatforms).toHaveBeenCalledWith([], 'manual');
+      expect(useReviewPlatforms).toHaveBeenCalledWith([], 'Personal', undefined, []);
     });
 
     it('should pass useReviewPlatforms data to PlatformSelectionSection', () => {
@@ -503,7 +518,7 @@ describe('CompletionFormStep3', () => {
 
   describe('Skip Flow', () => {
     it('should call completeDeadline for non-DNF when skip pressed', async () => {
-      mockCompleteDeadline.mockImplementation((_id, callbacks) => {
+      mockCompleteDeadline.mockImplementation((_params, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -513,7 +528,13 @@ describe('CompletionFormStep3', () => {
 
       await waitFor(() => {
         expect(mockCompleteDeadline).toHaveBeenCalledWith(
-          'test-deadline-id',
+          expect.objectContaining({
+            deadlineId: 'test-deadline-id',
+            deadline: expect.objectContaining({
+              total_quantity: 300,
+              progress: [],
+            }),
+          }),
           expect.any(Object)
         );
         expect(mockDidNotFinishDeadline).not.toHaveBeenCalled();
@@ -539,7 +560,7 @@ describe('CompletionFormStep3', () => {
     });
 
     it('should show success toast and navigate home on skip success', async () => {
-      mockCompleteDeadline.mockImplementation((_id, callbacks) => {
+      mockCompleteDeadline.mockImplementation((_params, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -557,7 +578,7 @@ describe('CompletionFormStep3', () => {
     });
 
     it('should show error toast on skip failure', async () => {
-      mockCompleteDeadline.mockImplementation((_id, callbacks) => {
+      mockCompleteDeadline.mockImplementation((_params, callbacks) => {
         callbacks.onError(new Error('Update failed'));
       });
 
@@ -600,7 +621,7 @@ describe('CompletionFormStep3', () => {
 
       render(<CompletionFormStep3 deadline={netGalleyDeadline} />);
 
-      expect(useReviewPlatforms).toHaveBeenCalledWith([], 'NetGalley');
+      expect(useReviewPlatforms).toHaveBeenCalledWith([], 'Personal', undefined, []);
     });
 
     it('should set default review deadline for Publisher ARC source', () => {
@@ -610,13 +631,13 @@ describe('CompletionFormStep3', () => {
 
       render(<CompletionFormStep3 deadline={publisherDeadline} />);
 
-      expect(useReviewPlatforms).toHaveBeenCalledWith([], 'Publisher ARC');
+      expect(useReviewPlatforms).toHaveBeenCalledWith([], 'Personal', undefined, []);
     });
 
     it('should not set default deadline for manual source', () => {
       render(<CompletionFormStep3 deadline={mockDeadline} />);
 
-      expect(useReviewPlatforms).toHaveBeenCalledWith([], 'manual');
+      expect(useReviewPlatforms).toHaveBeenCalledWith([], 'Personal', undefined, []);
     });
   });
 
@@ -642,7 +663,7 @@ describe('CompletionFormStep3', () => {
     });
 
     it('should accept isDNF false explicitly', async () => {
-      mockCompleteDeadline.mockImplementation((_id, callbacks) => {
+      mockCompleteDeadline.mockImplementation((_params, callbacks) => {
         callbacks.onSuccess();
       });
 
@@ -657,29 +678,31 @@ describe('CompletionFormStep3', () => {
   });
 
   describe('Review Form Data Submission', () => {
-    it('should include review due date when hasReviewDeadline is true', async () => {
+    it('should include review due date when hasReviewDeadline is true in edit mode', async () => {
       mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads']);
 
-      const netGalleyDeadline = {
-        ...mockDeadline,
-      };
+      const existingReviewDueDate = '2025-01-15T00:00:00Z';
+      (useReviewTrackingData as jest.Mock).mockReturnValue({
+        reviewTracking: {
+          id: 'test-review-tracking-id',
+          review_due_date: existingReviewDueDate,
+          needs_link_submission: false,
+        },
+        platforms: [{ platform_name: 'Goodreads', posted: false }],
+      });
 
-      mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
+      mockUpdateReviewTracking.mockImplementation((_params, callbacks) => {
         expect(_params.review_due_date).toBeDefined();
         expect(typeof _params.review_due_date).toBe('string');
         callbacks.onSuccess();
       });
 
-      mockUpdateToReview.mockImplementation((_id, callbacks) => {
-        callbacks.onSuccess();
-      });
-
-      render(<CompletionFormStep3 deadline={netGalleyDeadline} />);
+      render(<CompletionFormStep3 deadline={mockDeadline} mode="edit" />);
 
       fireEvent.press(screen.getByTestId('save-and-finish-button'));
 
       await waitFor(() => {
-        expect(mockCreateReviewTracking).toHaveBeenCalled();
+        expect(mockUpdateReviewTracking).toHaveBeenCalled();
       });
     });
 
