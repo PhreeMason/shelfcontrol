@@ -50,3 +50,11 @@ GoogleService-Info.plist
 google-services.json
 
 coverage/
+
+# Documentation and testing artifacts
+DEADLINE_LIFECYCLE_DOCUMENTATION.html
+DEADLINE_FORM_REFACTOR.md
+NEXT_SESSION_START_HERE.md
+PHASE*.md
+plan.md
+maestro/screenshots/
