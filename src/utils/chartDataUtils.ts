@@ -1,5 +1,5 @@
-import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { parseServerDateOnly } from '@/utils/dateNormalization';
 import {
   calculateCutoffTime,
   calculateRequiredPace,
@@ -50,6 +50,37 @@ export const getBookReadingDays = (
   return result;
 };
 
+export const getAllUserReadingDays = (
+  deadlines: ReadingDeadlineWithProgress[]
+): ReadingDay[] => {
+  const dailyProgress: { [date: string]: number } = {};
+
+  const readingDeadlines = deadlines.filter(
+    d => d.format !== 'audio'
+  );
+
+  if (readingDeadlines.length === 0) return [];
+
+  const cutoffTime = calculateCutoffTime(readingDeadlines);
+  if (cutoffTime === null) {
+    return [];
+  }
+
+  readingDeadlines.forEach(deadline => {
+    processBookProgress(deadline, cutoffTime, dailyProgress, deadline.format);
+  });
+
+  const result = Object.entries(dailyProgress)
+    .map(([date, progressRead]) => ({
+      date,
+      progressRead: Number(progressRead.toFixed(2)),
+      format: 'physical' as const,
+    }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  return result;
+};
+
 export const getUnitLabel = (format: string): string => {
   switch (format) {
     case 'audio':
@@ -74,7 +105,7 @@ export const transformReadingDaysToChartData = (
   topLabelComponentFactory: (value: number) => React.ReactElement
 ): ChartDataItem[] => {
   return readingDays.map(day => {
-    const label = dayjs(day.date).format('M/DD');
+    const label = parseServerDateOnly(day.date).format('M/DD');
     return {
       value: Math.round(day.progressRead),
       label: label,

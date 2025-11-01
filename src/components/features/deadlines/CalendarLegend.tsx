@@ -11,7 +11,7 @@ export function CalendarLegend({ style }: CalendarLegendProps) {
   const { colors } = useTheme();
   const legendItems = [
     { color: colors.good, label: 'On track' },
-    { color: colors.approaching, label: 'Approaching' },
+    { color: colors.approaching, label: 'Tight' },
     { color: colors.urgent, label: 'Urgent' },
     { color: colors.pending, label: 'Pending' },
   ];

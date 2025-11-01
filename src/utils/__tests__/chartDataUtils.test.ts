@@ -11,6 +11,7 @@ import {
   calculateDaysLeft,
   calculateDynamicBarWidth,
   ChartDataItem,
+  getAllUserReadingDays,
   getCurrentProgressFromDeadline,
   getBookReadingDays,
   getChartTitle,
@@ -820,6 +821,252 @@ describe('chartDataUtils', () => {
         'physical' // format
       );
       expect(result).toBe(200);
+    });
+  });
+
+  describe('getAllUserReadingDays', () => {
+    const mockPhysicalDeadline: ReadingDeadlineWithProgress = {
+      id: 'physical-1',
+      deadline_date: '2024-01-30',
+      format: 'physical',
+      total_quantity: 300,
+      progress: [
+        {
+          id: '1',
+          deadline_id: 'physical-1',
+          current_progress: 50,
+          created_at: '2024-01-15T10:00:00Z',
+          updated_at: '2024-01-15T10:00:00Z',
+          time_spent_reading: null,
+          ignore_in_calcs: false,
+        },
+      ],
+      user_id: 'user-1',
+      book_id: 'book-1',
+      book_title: 'Physical Book',
+      author: 'Test Author',
+      acquisition_source: null,
+      type: 'Personal',
+      publishers: null,
+      flexibility:
+        'fixed' as Database['public']['Enums']['deadline_flexibility'],
+      status: [],
+      created_at: '2024-01-10T10:00:00Z',
+      updated_at: '2024-01-20T10:00:00Z',
+    };
+
+    const mockEBookDeadline: ReadingDeadlineWithProgress = {
+      id: 'ebook-1',
+      deadline_date: '2024-01-30',
+      format: 'eBook',
+      total_quantity: 250,
+      progress: [
+        {
+          id: '2',
+          deadline_id: 'ebook-1',
+          current_progress: 30,
+          created_at: '2024-01-15T10:00:00Z',
+          updated_at: '2024-01-15T10:00:00Z',
+          time_spent_reading: null,
+          ignore_in_calcs: false,
+        },
+      ],
+      user_id: 'user-1',
+      book_id: 'book-2',
+      book_title: 'eBook',
+      author: 'Test Author',
+      acquisition_source: null,
+      type: 'Personal',
+      publishers: null,
+      flexibility:
+        'fixed' as Database['public']['Enums']['deadline_flexibility'],
+      status: [],
+      created_at: '2024-01-10T10:00:00Z',
+      updated_at: '2024-01-20T10:00:00Z',
+    };
+
+    const mockAudioDeadline: ReadingDeadlineWithProgress = {
+      id: 'audio-1',
+      deadline_date: '2024-01-30',
+      format: 'audio',
+      total_quantity: 500,
+      progress: [
+        {
+          id: '3',
+          deadline_id: 'audio-1',
+          current_progress: 120,
+          created_at: '2024-01-15T10:00:00Z',
+          updated_at: '2024-01-15T10:00:00Z',
+          time_spent_reading: null,
+          ignore_in_calcs: false,
+        },
+      ],
+      user_id: 'user-1',
+      book_id: 'book-3',
+      book_title: 'Audiobook',
+      author: 'Test Author',
+      acquisition_source: null,
+      type: 'Personal',
+      publishers: null,
+      flexibility:
+        'fixed' as Database['public']['Enums']['deadline_flexibility'],
+      status: [],
+      created_at: '2024-01-10T10:00:00Z',
+      updated_at: '2024-01-20T10:00:00Z',
+    };
+
+    it('should return empty array when no deadlines provided', () => {
+      const result = getAllUserReadingDays([]);
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array when only audio deadlines provided', () => {
+      const result = getAllUserReadingDays([mockAudioDeadline]);
+      expect(result).toEqual([]);
+    });
+
+    it('should filter out audio deadlines and process only reading deadlines', () => {
+      const cutoffTime = new Date('2024-01-14T00:00:00Z');
+      mockCalculateCutoffTime.mockReturnValue(cutoffTime);
+      mockProcessBookProgress.mockImplementation(
+        (_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-15'] = 50;
+        }
+      );
+
+      const result = getAllUserReadingDays([
+        mockPhysicalDeadline,
+        mockAudioDeadline,
+      ]);
+
+      expect(mockCalculateCutoffTime).toHaveBeenCalledWith([
+        mockPhysicalDeadline,
+      ]);
+      expect(mockProcessBookProgress).toHaveBeenCalledTimes(1);
+      expect(mockProcessBookProgress).toHaveBeenCalledWith(
+        mockPhysicalDeadline,
+        cutoffTime,
+        expect.any(Object),
+        'physical'
+      );
+      expect(result).toEqual([
+        { date: '2024-01-15', progressRead: 50, format: 'physical' },
+      ]);
+    });
+
+    it('should aggregate progress from multiple books on the same day', () => {
+      const cutoffTime = new Date('2024-01-14T00:00:00Z');
+      mockCalculateCutoffTime.mockReturnValue(cutoffTime);
+      mockProcessBookProgress
+        .mockImplementationOnce((_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-15'] = 50;
+          dailyProgress['2024-01-16'] = 25;
+        })
+        .mockImplementationOnce((_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-15'] = (dailyProgress['2024-01-15'] || 0) + 30;
+          dailyProgress['2024-01-17'] = 40;
+        });
+
+      const result = getAllUserReadingDays([
+        mockPhysicalDeadline,
+        mockEBookDeadline,
+      ]);
+
+      expect(result).toEqual([
+        { date: '2024-01-15', progressRead: 80, format: 'physical' },
+        { date: '2024-01-16', progressRead: 25, format: 'physical' },
+        { date: '2024-01-17', progressRead: 40, format: 'physical' },
+      ]);
+    });
+
+    it('should return empty array when cutoffTime is null', () => {
+      mockCalculateCutoffTime.mockReturnValue(null);
+      const result = getAllUserReadingDays([mockPhysicalDeadline]);
+      expect(result).toEqual([]);
+    });
+
+    it('should sort dates chronologically', () => {
+      const cutoffTime = new Date('2024-01-14T00:00:00Z');
+      mockCalculateCutoffTime.mockReturnValue(cutoffTime);
+      mockProcessBookProgress.mockImplementation(
+        (_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-17'] = 30;
+          dailyProgress['2024-01-15'] = 50;
+          dailyProgress['2024-01-16'] = 25;
+        }
+      );
+
+      const result = getAllUserReadingDays([mockPhysicalDeadline]);
+
+      expect(result[0].date).toBe('2024-01-15');
+      expect(result[1].date).toBe('2024-01-16');
+      expect(result[2].date).toBe('2024-01-17');
+    });
+
+    it('should round progress to 2 decimal places', () => {
+      const cutoffTime = new Date('2024-01-14T00:00:00Z');
+      mockCalculateCutoffTime.mockReturnValue(cutoffTime);
+      mockProcessBookProgress.mockImplementation(
+        (_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-15'] = 50.123456789;
+          dailyProgress['2024-01-16'] = 25.999999;
+        }
+      );
+
+      const result = getAllUserReadingDays([mockPhysicalDeadline]);
+
+      expect(result[0].progressRead).toBe(50.12);
+      expect(result[1].progressRead).toBe(26.0);
+    });
+
+    it('should process both physical and eBook formats', () => {
+      const cutoffTime = new Date('2024-01-14T00:00:00Z');
+      mockCalculateCutoffTime.mockReturnValue(cutoffTime);
+      mockProcessBookProgress
+        .mockImplementationOnce((_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-15'] = 50;
+        })
+        .mockImplementationOnce((_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-16'] = 30;
+        });
+
+      const result = getAllUserReadingDays([
+        mockPhysicalDeadline,
+        mockEBookDeadline,
+      ]);
+
+      expect(mockCalculateCutoffTime).toHaveBeenCalledWith([
+        mockPhysicalDeadline,
+        mockEBookDeadline,
+      ]);
+      expect(mockProcessBookProgress).toHaveBeenCalledTimes(2);
+      expect(result).toHaveLength(2);
+    });
+
+    it('should handle mixed format deadlines correctly', () => {
+      const cutoffTime = new Date('2024-01-14T00:00:00Z');
+      mockCalculateCutoffTime.mockReturnValue(cutoffTime);
+      mockProcessBookProgress
+        .mockImplementationOnce((_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-15'] = 50;
+        })
+        .mockImplementationOnce((_deadline, _cutoff, dailyProgress, _format) => {
+          dailyProgress['2024-01-15'] = (dailyProgress['2024-01-15'] || 0) + 30;
+        });
+
+      const result = getAllUserReadingDays([
+        mockPhysicalDeadline,
+        mockEBookDeadline,
+        mockAudioDeadline,
+      ]);
+
+      expect(mockCalculateCutoffTime).toHaveBeenCalledWith([
+        mockPhysicalDeadline,
+        mockEBookDeadline,
+      ]);
+      expect(result).toEqual([
+        { date: '2024-01-15', progressRead: 80, format: 'physical' },
+      ]);
     });
   });
 });

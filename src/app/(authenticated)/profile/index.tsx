@@ -1,3 +1,4 @@
+import UserReadingLineChart from '@/components/charts/UserReadingLineChart';
 import { CalendarLegend } from '@/components/features/deadlines/CalendarLegend';
 import { DeadlineCalendar } from '@/components/features/deadlines/DeadlineCalendar';
 import { CompletedBooksCarousel } from '@/components/features/profile/CompletedBooksCarousel';
@@ -212,6 +213,8 @@ export default function Profile() {
             <DeadlineCalendar />
             <CalendarLegend />
           </ThemedView>
+
+          <UserReadingLineChart deadlines={deadlines} />
 
           <ThemedView style={paceStyles.section}>
             <View style={styles.paceSectionHeader}>

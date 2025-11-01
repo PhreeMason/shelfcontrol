@@ -1,11 +1,11 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useSearchTracking } from '@/hooks/analytics/useSearchTracking';
 import { useFetchBookData, useSearchBooksList } from '@/hooks/useBooks';
 import { useGetDeadlines } from '@/hooks/useDeadlines';
 import { showDuplicateBookWarning } from '@/hooks/useDuplicateBookWarning';
 import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
-import { useSearchTracking } from '@/hooks/analytics/useSearchTracking';
 import { BookSearchResult, SelectedBook } from '@/types/bookSearch';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -41,7 +41,7 @@ export const DeadlineFormStep1 = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(query);
-    }, 300);
+    }, 350);
 
     return () => clearTimeout(timer);
   }, [query]);
