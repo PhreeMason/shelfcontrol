@@ -52,7 +52,7 @@ const UserReadingLineChart: React.FC<UserReadingLineChartProps> = ({
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText style={[styles.title, { color: colors.text }]}>
+      <ThemedText variant='title' style={[styles.title, { color: colors.text }]}>
           Pages Read Per Day
         </ThemedText>
       <View style={styles.chartContainer}  testID="user-reading-line-chart">
@@ -168,9 +168,9 @@ const styles = StyleSheet.create({
     transform: [{translateX: -10}],
   },
   title: {
-    fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
+    paddingLeft: 10,
   },
   chartContainer: {
     paddingBottom: 10,
