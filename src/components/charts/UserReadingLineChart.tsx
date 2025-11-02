@@ -5,7 +5,7 @@ import { getAllUserReadingDays } from '@/utils/chartDataUtils';
 import { parseServerDateOnly } from '@/utils/dateNormalization';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { LineChart } from 'react-native-gifted-charts';
+import { CurveType, LineChart } from 'react-native-gifted-charts';
 
 interface UserReadingLineChartProps {
   deadlines: ReadingDeadlineWithProgress[];
@@ -61,6 +61,8 @@ const UserReadingLineChart: React.FC<UserReadingLineChartProps> = ({
             width={320}
             height={180}
             adjustToWidth
+            curved
+            curveType={CurveType.QUADRATIC}
             initialSpacing={15}
             areaChart
             color={colors.primary}
