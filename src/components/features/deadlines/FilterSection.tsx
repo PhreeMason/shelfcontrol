@@ -233,7 +233,6 @@ const styles = StyleSheet.create({
   },
   filterContainer: {
     maxHeight: 60,
-    paddingVertical: 10,
     paddingHorizontal: 12,
   },
   filterScrollView: {

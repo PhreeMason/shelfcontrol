@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
     paddingHorizontal: 12,
-    paddingBottom: 13,
   },
   dateRow: {
     backgroundColor: 'transparent',
@@ -40,7 +39,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingBottom: 10,
-    paddingTop: 18,
   },
   dateText: {
     ...Typography.titleLarge,
