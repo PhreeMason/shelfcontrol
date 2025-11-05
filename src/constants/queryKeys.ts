@@ -4,6 +4,8 @@ export const QUERY_KEYS = {
     DETAIL: (userId: string, deadlineId: string) =>
       ['deadline', userId, deadlineId] as const,
     TYPES: (userId: string) => ['deadline', 'types', userId] as const,
+    ACQUISITION_SOURCES: (userId: string) =>
+      ['deadline', 'acquisition_sources', userId] as const,
     PROGRESS: (userId: string) => ['deadline_progress', userId] as const,
   },
   NOTES: {

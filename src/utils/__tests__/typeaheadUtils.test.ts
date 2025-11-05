@@ -1,6 +1,7 @@
 import {
   filterSuggestions,
   highlightMatch,
+  mergeWithDefaults,
   shouldShowSuggestions,
   shouldShowNoResults,
 } from '../typeaheadUtils';
@@ -263,6 +264,206 @@ describe('typeaheadUtils', () => {
 
     it('should handle query with leading/trailing spaces', () => {
       expect(shouldShowNoResults(true, ' query ', [], false)).toBe(true);
+    });
+  });
+
+  describe('mergeWithDefaults', () => {
+    const DEFAULT_ITEMS = ['Apple', 'Banana', 'Cherry'];
+
+    describe('Basic Functionality', () => {
+      it('should return only defaults when user items are empty', () => {
+        const result = mergeWithDefaults([], DEFAULT_ITEMS);
+        expect(result).toEqual(['Apple', 'Banana', 'Cherry']);
+      });
+
+      it('should merge user items with defaults correctly', () => {
+        const userItems = ['Mango', 'Orange'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result).toEqual(['Mango', 'Orange', 'Apple', 'Banana', 'Cherry']);
+      });
+
+      it('should sort user items alphabetically', () => {
+        const userItems = ['Zebra', 'Aardvark', 'Monkey'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result).toEqual([
+          'Aardvark',
+          'Monkey',
+          'Zebra',
+          'Apple',
+          'Banana',
+          'Cherry',
+        ]);
+      });
+
+      it('should place user items before defaults', () => {
+        const userItems = ['Custom'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result[0]).toBe('Custom');
+        expect(result.slice(1)).toEqual(['Apple', 'Banana', 'Cherry']);
+      });
+    });
+
+    describe('Deduplication', () => {
+      it('should remove case-insensitive duplicates', () => {
+        const userItems = ['apple', 'BANANA', 'cherry', 'Mango'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result).toEqual(['Mango', 'Apple', 'Banana', 'Cherry']);
+      });
+
+      it('should handle mixed case duplicates', () => {
+        const userItems = ['aPpLe', 'bAnAnA', 'Custom'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result).toEqual(['Custom', 'Apple', 'Banana', 'Cherry']);
+      });
+
+      it('should keep user version when exact match exists', () => {
+        const userItems = ['Apple', 'Custom'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result).toEqual(['Custom', 'Apple', 'Banana', 'Cherry']);
+      });
+
+      it('should handle multiple duplicates in user items', () => {
+        const userItems = ['apple', 'Apple', 'APPLE', 'Custom'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result).toEqual(['Custom', 'Apple', 'Banana', 'Cherry']);
+      });
+    });
+
+    describe('Edge Cases', () => {
+      it('should handle empty defaults array', () => {
+        const userItems = ['Item1', 'Item2'];
+        const result = mergeWithDefaults(userItems, []);
+        expect(result).toEqual(['Item1', 'Item2']);
+      });
+
+      it('should handle both arrays empty', () => {
+        const result = mergeWithDefaults([], []);
+        expect(result).toEqual([]);
+      });
+
+      it('should handle items with special characters', () => {
+        const userItems = ['Item & Co', 'Item-1', 'Item_2'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result).toEqual([
+          'Item & Co',
+          'Item_2',
+          'Item-1',
+          'Apple',
+          'Banana',
+          'Cherry',
+        ]);
+      });
+
+      it('should handle items with numbers', () => {
+        const userItems = ['Item123', 'item456', 'Item789'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result).toEqual([
+          'Item123',
+          'item456',
+          'Item789',
+          'Apple',
+          'Banana',
+          'Cherry',
+        ]);
+      });
+
+      it('should handle items with whitespace', () => {
+        const userItems = ['  Space  ', '\tTab\t', 'Normal'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result).toEqual([
+          '\tTab\t',
+          '  Space  ',
+          'Normal',
+          'Apple',
+          'Banana',
+          'Cherry',
+        ]);
+      });
+
+      it('should handle unicode characters', () => {
+        const userItems = ['Café ☕', 'École 🏫', 'Naïve'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result).toEqual([
+          'Café ☕',
+          'École 🏫',
+          'Naïve',
+          'Apple',
+          'Banana',
+          'Cherry',
+        ]);
+      });
+
+      it('should handle very long strings', () => {
+        const longString = 'A'.repeat(1000);
+        const userItems = [longString, 'Short'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result).toEqual([
+          longString,
+          'Short',
+          'Apple',
+          'Banana',
+          'Cherry',
+        ]);
+      });
+
+      it('should handle large number of items', () => {
+        const userItems = Array.from({ length: 100 }, (_, i) => `Item${i}`);
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result).toHaveLength(103);
+        expect(result.slice(-3)).toEqual(['Apple', 'Banana', 'Cherry']);
+      });
+    });
+
+    describe('Sorting Behavior', () => {
+      it('should use locale-aware sorting', () => {
+        const userItems = ['Äpfel', 'Zebra', 'Café'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result.slice(0, 3)).toEqual(['Äpfel', 'Café', 'Zebra']);
+      });
+
+      it('should sort case-insensitively', () => {
+        const userItems = ['zebra', 'Apple Tree', 'aardvark'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result[0]).toBe('aardvark');
+        expect(result[1]).toBe('Apple Tree');
+        expect(result[2]).toBe('zebra');
+      });
+
+      it('should preserve original case in sorted results', () => {
+        const userItems = ['ZeBrA', 'AaRdVaRk'];
+        const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
+        expect(result[0]).toBe('AaRdVaRk');
+        expect(result[1]).toBe('ZeBrA');
+      });
+    });
+
+    describe('Real-World Scenarios', () => {
+      it('should handle deadline types scenario', () => {
+        const defaults = ['ARC', 'Library', 'Personal', 'Book Club'];
+        const userItems = ['Store', 'Gift', 'arc'];
+        const result = mergeWithDefaults(userItems, defaults);
+        expect(result).toEqual([
+          'Gift',
+          'Store',
+          'ARC',
+          'Library',
+          'Personal',
+          'Book Club',
+        ]);
+      });
+
+      it('should handle acquisition sources scenario', () => {
+        const defaults = ['NetGalley', 'Edelweiss', 'Direct'];
+        const userItems = ['Amazon', 'Publisher', 'netgalley'];
+        const result = mergeWithDefaults(userItems, defaults);
+        expect(result).toEqual([
+          'Amazon',
+          'Publisher',
+          'NetGalley',
+          'Edelweiss',
+          'Direct',
+        ]);
+      });
     });
   });
 });

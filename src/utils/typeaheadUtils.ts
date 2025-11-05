@@ -74,3 +74,19 @@ export const shouldShowNoResults = (
     !isLoading
   );
 };
+
+export const mergeWithDefaults = (
+  userItems: string[],
+  defaultItems: string[]
+): string[] => {
+  const uniqueUserItems = userItems
+    .filter(
+      item =>
+        !defaultItems.some(
+          defaultItem => defaultItem.toLowerCase() === item.toLowerCase()
+        )
+    )
+    .sort((a, b) => a.localeCompare(b));
+
+  return [...uniqueUserItems, ...defaultItems];
+};

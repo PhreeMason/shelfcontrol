@@ -1,3 +1,4 @@
+import AcquisitionSourceTypeaheadInput from '@/components/shared/AcquisitionSourceTypeaheadInput';
 import CustomInput from '@/components/shared/CustomInput';
 import TypeTypeaheadInput from '@/components/shared/TypeTypeaheadInput';
 import { ThemedText } from '@/components/themed';
@@ -47,7 +48,7 @@ export const DeadlineFormStep3 = ({
         Add additional details about the book source and publishers.
       </ThemedText>
 
-      <View>
+      <View style={{ zIndex: 3 }}>
         <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
           Book Type <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
@@ -59,11 +60,11 @@ export const DeadlineFormStep3 = ({
         />
       </View>
 
-      <View>
+      <View style={{ zIndex: 2 }}>
         <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
           Source
         </ThemedText>
-        <CustomInput
+        <AcquisitionSourceTypeaheadInput
           control={control}
           name="acquisition_source"
           testID="input-acquisition-source"
@@ -71,7 +72,7 @@ export const DeadlineFormStep3 = ({
         />
       </View>
 
-      <View>
+      <View style={{ zIndex: 1 }}>
         <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
           Publishers
         </ThemedText>

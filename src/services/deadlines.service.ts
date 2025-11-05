@@ -472,6 +472,27 @@ class DeadlinesService {
   }
 
   /**
+   * Get unique acquisition source values used by the user
+   */
+  async getUniqueAcquisitionSources(userId: string): Promise<string[]> {
+    const { data, error } = await supabase
+      .from(DB_TABLES.DEADLINES)
+      .select('acquisition_source')
+      .eq('user_id', userId);
+
+    if (error) throw error;
+
+    const uniqueSources = [
+      ...new Set(
+        data
+          ?.map(d => d.acquisition_source)
+          .filter((s): s is string => s !== null) || []
+      ),
+    ];
+    return uniqueSources.sort();
+  }
+
+  /**
    * Get a single deadline by ID
    *
    * @returns Deadline with status and progress arrays ordered by created_at asc (oldest first, newest last)

@@ -8,6 +8,7 @@ import {
 } from '@/services';
 import { Database } from '@/types/database.types';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { mergeWithDefaults } from '@/utils/typeaheadUtils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useAddDeadline = () => {
@@ -445,4 +446,77 @@ export const useGetReadingProgressForToday = () => {
       record => record.deadline.format !== BOOK_FORMAT.AUDIO
     ),
   };
+};
+
+const DEFAULT_TYPES = ['ARC', 'Library', 'Personal', 'Book Club'];
+
+export const useDeadlineTypes = () => {
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
+
+  const result = useQuery({
+    queryKey: userId
+      ? QUERY_KEYS.DEADLINES.TYPES(userId)
+      : ['deadline', 'types', undefined],
+    queryFn: async () => {
+      try {
+        if (!userId) {
+          return DEFAULT_TYPES;
+        }
+        const userTypes = await deadlinesService.getUniqueDeadlineTypes(userId);
+        return mergeWithDefaults(userTypes, DEFAULT_TYPES);
+      } catch (error) {
+        console.error('Error fetching deadline types:', error);
+        return DEFAULT_TYPES;
+      }
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  if (!userId) {
+    return {
+      ...result,
+      data: DEFAULT_TYPES,
+    };
+  }
+
+  return result;
+};
+
+const DEFAULT_SOURCES = ['NetGalley', 'Edelweiss', 'Direct'];
+
+export const useAcquisitionSources = () => {
+  const { profile, session } = useAuth();
+  const userId = profile?.id || session?.user?.id;
+
+  const result = useQuery({
+    queryKey: userId
+      ? QUERY_KEYS.DEADLINES.ACQUISITION_SOURCES(userId)
+      : ['deadline', 'acquisition_sources', undefined],
+    queryFn: async () => {
+      try {
+        if (!userId) {
+          return DEFAULT_SOURCES;
+        }
+        const userSources =
+          await deadlinesService.getUniqueAcquisitionSources(userId);
+        return mergeWithDefaults(userSources, DEFAULT_SOURCES);
+      } catch (error) {
+        console.error('Error fetching acquisition sources:', error);
+        return DEFAULT_SOURCES;
+      }
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  if (!userId) {
+    return {
+      ...result,
+      data: DEFAULT_SOURCES,
+    };
+  }
+
+  return result;
 };

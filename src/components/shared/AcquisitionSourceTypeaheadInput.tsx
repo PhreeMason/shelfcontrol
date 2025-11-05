@@ -1,31 +1,30 @@
-import { useDeadlineTypes } from '@/hooks/useDeadlines';
+import { useAcquisitionSources } from '@/hooks/useDeadlines';
 import React from 'react';
 import { Control, Controller, FieldValues, Path } from 'react-hook-form';
 import Typeahead from './Typeahead';
 
-type TypeTypeaheadInputProps<T extends FieldValues> = {
+type AcquisitionSourceTypeaheadInputProps<T extends FieldValues> = {
   control: Control<T>;
   name: Path<T>;
   placeholder?: string;
   testID?: string;
 };
 
-const TypeTypeaheadInput = <T extends FieldValues>({
+const AcquisitionSourceTypeaheadInput = <T extends FieldValues>({
   control,
   name,
-  placeholder = 'Enter book type',
-  testID = 'source-typeahead',
-}: TypeTypeaheadInputProps<T>) => {
-  const { data: types = [], isLoading } = useDeadlineTypes();
+  placeholder = 'Enter acquisition source',
+  testID = 'acquisition-source-typeahead',
+}: AcquisitionSourceTypeaheadInputProps<T>) => {
+  const { data: sources = [], isLoading } = useAcquisitionSources();
 
   return (
     <Controller
       control={control}
       name={name}
-      defaultValue={'ARC' as any}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <Typeahead
-          suggestions={types}
+          suggestions={sources}
           isLoading={isLoading}
           placeholder={placeholder}
           testID={testID}
@@ -40,4 +39,4 @@ const TypeTypeaheadInput = <T extends FieldValues>({
   );
 };
 
-export default TypeTypeaheadInput;
+export default AcquisitionSourceTypeaheadInput;

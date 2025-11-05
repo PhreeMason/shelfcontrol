@@ -2,11 +2,11 @@ import { useAuth } from '@/providers/AuthProvider';
 import { deadlinesService } from '@/services';
 import { useQuery } from '@tanstack/react-query';
 
-import { useDeadlineTypes } from '../useDeadlines';
+import { useAcquisitionSources } from '../useDeadlines';
 
 jest.mock('@/services', () => ({
   deadlinesService: {
-    getUniqueDeadlineTypes: jest.fn(),
+    getUniqueAcquisitionSources: jest.fn(),
   },
 }));
 
@@ -25,7 +25,7 @@ const mockDeadlinesService = deadlinesService as jest.Mocked<
   typeof deadlinesService
 >;
 
-const DEFAULT_TYPES = ['ARC', 'Library', 'Personal', 'Book Club'];
+const DEFAULT_SOURCES = ['NetGalley', 'Edelweiss', 'Direct'];
 
 const mockUser = {
   id: 'user-123',
@@ -42,7 +42,7 @@ const mockSession = {
   user: mockUser,
 };
 
-describe('useDeadlineTypes', () => {
+describe('useAcquisitionSources', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseAuth.mockReturnValue({
@@ -52,52 +52,52 @@ describe('useDeadlineTypes', () => {
   });
 
   describe('Unauthenticated User Scenarios', () => {
-    it('should return DEFAULT_TYPES when no userId from profile', () => {
+    it('should return DEFAULT_SOURCES when no userId from profile', () => {
       mockUseAuth.mockReturnValue({
         profile: null,
         session: null,
       });
 
-      const result = useDeadlineTypes();
+      const result = useAcquisitionSources();
 
-      expect(result.data).toEqual(DEFAULT_TYPES);
+      expect(result.data).toEqual(DEFAULT_SOURCES);
       expect(mockUseQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          queryKey: ['deadline', 'types', undefined],
+          queryKey: ['deadline', 'acquisition_sources', undefined],
           enabled: false,
         })
       );
     });
 
-    it('should return DEFAULT_TYPES when no userId from session', () => {
+    it('should return DEFAULT_SOURCES when no userId from session', () => {
       mockUseAuth.mockReturnValue({
         profile: { id: null },
         session: { user: { id: null } },
       });
 
-      const result = useDeadlineTypes();
+      const result = useAcquisitionSources();
 
-      expect(result.data).toEqual(DEFAULT_TYPES);
+      expect(result.data).toEqual(DEFAULT_SOURCES);
       expect(mockUseQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          queryKey: ['deadline', 'types', undefined],
+          queryKey: ['deadline', 'acquisition_sources', undefined],
           enabled: false,
         })
       );
     });
 
-    it('should return DEFAULT_TYPES when both profile and session are missing', () => {
+    it('should return DEFAULT_SOURCES when both profile and session are missing', () => {
       mockUseAuth.mockReturnValue({
         profile: undefined,
         session: undefined,
       });
 
-      const result = useDeadlineTypes();
+      const result = useAcquisitionSources();
 
-      expect(result.data).toEqual(DEFAULT_TYPES);
+      expect(result.data).toEqual(DEFAULT_SOURCES);
       expect(mockUseQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          queryKey: ['deadline', 'types', undefined],
+          queryKey: ['deadline', 'acquisition_sources', undefined],
           enabled: false,
         })
       );
@@ -106,11 +106,11 @@ describe('useDeadlineTypes', () => {
 
   describe('Query Configuration Tests', () => {
     it('should configure query with correct parameters for authenticated user', () => {
-      useDeadlineTypes();
+      useAcquisitionSources();
 
       expect(mockUseQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          queryKey: ['deadline', 'types', 'profile-123'],
+          queryKey: ['deadline', 'acquisition_sources', 'profile-123'],
           queryFn: expect.any(Function),
           enabled: true,
           staleTime: 5 * 60 * 1000,
@@ -125,10 +125,14 @@ describe('useDeadlineTypes', () => {
         session: mockSession,
       });
 
-      useDeadlineTypes();
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      expect(queryConfig.queryKey).toEqual(['deadline', 'types', profileId]);
+      expect(queryConfig.queryKey).toEqual([
+        'deadline',
+        'acquisition_sources',
+        profileId,
+      ]);
     });
 
     it('should fall back to session user id when profile id missing', () => {
@@ -137,10 +141,14 @@ describe('useDeadlineTypes', () => {
         session: mockSession,
       });
 
-      useDeadlineTypes();
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      expect(queryConfig.queryKey).toEqual(['deadline', 'types', 'user-123']);
+      expect(queryConfig.queryKey).toEqual([
+        'deadline',
+        'acquisition_sources',
+        'user-123',
+      ]);
     });
 
     it('should be disabled when user not authenticated', () => {
@@ -149,7 +157,7 @@ describe('useDeadlineTypes', () => {
         session: null,
       });
 
-      useDeadlineTypes();
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
       expect(queryConfig.enabled).toBe(false);
@@ -157,141 +165,144 @@ describe('useDeadlineTypes', () => {
   });
 
   describe('QueryFn Logic Tests', () => {
-    it('should call deadlinesService.getUniqueDeadlineTypes with correct userId', async () => {
-      useDeadlineTypes();
+    it('should call deadlinesService.getUniqueAcquisitionSources with correct userId', async () => {
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue([
-        'Custom Type',
+      mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue([
+        'Custom Source',
       ]);
 
       await queryConfig.queryFn();
 
-      expect(mockDeadlinesService.getUniqueDeadlineTypes).toHaveBeenCalledWith(
-        'profile-123'
-      );
+      expect(
+        mockDeadlinesService.getUniqueAcquisitionSources
+      ).toHaveBeenCalledWith('profile-123');
     });
 
-    it('should return DEFAULT_TYPES when no userId', async () => {
+    it('should return DEFAULT_SOURCES when no userId', async () => {
       mockUseAuth.mockReturnValue({
         profile: null,
         session: null,
       });
 
-      useDeadlineTypes();
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
       const result = await queryConfig.queryFn();
 
-      expect(result).toEqual(DEFAULT_TYPES);
+      expect(result).toEqual(DEFAULT_SOURCES);
       expect(
-        mockDeadlinesService.getUniqueDeadlineTypes
+        mockDeadlinesService.getUniqueAcquisitionSources
       ).not.toHaveBeenCalled();
     });
 
-    it('should merge user types with defaults correctly', async () => {
-      useDeadlineTypes();
+    it('should merge user sources with defaults correctly', async () => {
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userTypes = ['Bookstore', 'Gift', 'Academic'];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
+      const userSources = ['Amazon', 'Publisher', 'BookBub'];
+      mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue(
+        userSources
+      );
 
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
-        'Academic',
-        'Bookstore',
-        'Gift',
-        'ARC',
-        'Library',
-        'Personal',
-        'Book Club',
+        'Amazon',
+        'BookBub',
+        'Publisher',
+        'NetGalley',
+        'Edelweiss',
+        'Direct',
       ]);
     });
 
     it('should deduplicate case-insensitive sources', async () => {
-      useDeadlineTypes();
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userTypes = ['library', 'PERSONAL', 'Book club', 'Bookstore'];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
+      const userSources = ['netgalley', 'DIRECT', 'Edelweiss', 'Amazon'];
+      mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue(
+        userSources
+      );
 
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
-        'Bookstore',
-        'ARC',
-        'Library',
-        'Personal',
-        'Book Club',
+        'Amazon',
+        'NetGalley',
+        'Edelweiss',
+        'Direct',
       ]);
     });
 
-    it('should sort user types alphabetically before defaults', async () => {
-      useDeadlineTypes();
+    it('should sort user sources alphabetically before defaults', async () => {
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userTypes = ['Zebra Type', 'Alpha Type', 'Beta Type'];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
+      const userSources = ['Zebra Source', 'Alpha Source', 'Beta Source'];
+      mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue(
+        userSources
+      );
 
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
-        'Alpha Type',
-        'Beta Type',
-        'Zebra Type',
-        'ARC',
-        'Library',
-        'Personal',
-        'Book Club',
+        'Alpha Source',
+        'Beta Source',
+        'Zebra Source',
+        'NetGalley',
+        'Edelweiss',
+        'Direct',
       ]);
     });
 
-    it('should handle empty user types array', async () => {
-      useDeadlineTypes();
+    it('should handle empty user sources array', async () => {
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue([]);
+      mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue([]);
 
       const result = await queryConfig.queryFn();
 
-      expect(result).toEqual(DEFAULT_TYPES);
+      expect(result).toEqual(DEFAULT_SOURCES);
     });
   });
 
   describe('Error Handling Tests', () => {
-    it('should return DEFAULT_TYPES when service throws error', async () => {
+    it('should return DEFAULT_SOURCES when service throws error', async () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-      useDeadlineTypes();
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockRejectedValue(
+      mockDeadlinesService.getUniqueAcquisitionSources.mockRejectedValue(
         new Error('Database connection failed')
       );
 
       const result = await queryConfig.queryFn();
 
-      expect(result).toEqual(DEFAULT_TYPES);
+      expect(result).toEqual(DEFAULT_SOURCES);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error fetching deadline types:',
+        'Error fetching acquisition sources:',
         expect.any(Error)
       );
 
       consoleErrorSpy.mockRestore();
     });
 
-    it('should return DEFAULT_TYPES when service returns null', async () => {
+    it('should return DEFAULT_SOURCES when service returns null', async () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-      useDeadlineTypes();
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockRejectedValue(null);
+      mockDeadlinesService.getUniqueAcquisitionSources.mockRejectedValue(null);
 
       const result = await queryConfig.queryFn();
 
-      expect(result).toEqual(DEFAULT_TYPES);
+      expect(result).toEqual(DEFAULT_SOURCES);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error fetching deadline types:',
+        'Error fetching acquisition sources:',
         null
       );
 
@@ -300,18 +311,18 @@ describe('useDeadlineTypes', () => {
 
     it('should handle network timeout errors', async () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-      useDeadlineTypes();
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockRejectedValue(
+      mockDeadlinesService.getUniqueAcquisitionSources.mockRejectedValue(
         new Error('Network timeout')
       );
 
       const result = await queryConfig.queryFn();
 
-      expect(result).toEqual(DEFAULT_TYPES);
+      expect(result).toEqual(DEFAULT_SOURCES);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error fetching deadline types:',
+        'Error fetching acquisition sources:',
         expect.any(Error)
       );
 
@@ -320,81 +331,94 @@ describe('useDeadlineTypes', () => {
   });
 
   describe('Edge Cases', () => {
-    it('should handle typeswith special characters', async () => {
-      useDeadlineTypes();
+    it('should handle sources with special characters', async () => {
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userTypes = ['Mom & Dad', 'B&N Store', 'Re-read'];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
+      const userSources = ['Barnes & Noble', 'B&N Online', 'Re-sell Shop'];
+      mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue(
+        userSources
+      );
 
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
-        'B&N Store',
-        'Mom & Dad',
-        'Re-read',
-        'ARC',
-        'Library',
-        'Personal',
-        'Book Club',
+        'B&N Online',
+        'Barnes & Noble',
+        'Re-sell Shop',
+        'NetGalley',
+        'Edelweiss',
+        'Direct',
       ]);
     });
 
     it('should handle very long source names', async () => {
-      useDeadlineTypes();
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const longTypeName = 'A'.repeat(100);
-      const userTypes = [longTypeName];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
+      const longSourceName = 'A'.repeat(100);
+      const userSources = [longSourceName];
+      mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue(
+        userSources
+      );
 
       const result = await queryConfig.queryFn();
 
       expect(result).toEqual([
-        longTypeName,
-        'ARC',
-        'Library',
-        'Personal',
-        'Book Club',
+        longSourceName,
+        'NetGalley',
+        'Edelweiss',
+        'Direct',
       ]);
     });
 
-    it('should handle typeswith numbers and mixed casing', async () => {
-      useDeadlineTypes();
+    it('should handle sources with numbers and mixed casing', async () => {
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userTypes = ['Store123', 'store123', 'STORE123', 'Unique Type'];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
+      const userSources = [
+        'Store123',
+        'store123',
+        'STORE123',
+        'Unique Source',
+      ];
+      mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue(
+        userSources
+      );
 
       const result = await queryConfig.queryFn();
 
       expect(result.slice(0, 4)).toEqual(
-        [...userTypes].sort((a, b) => a.localeCompare(b))
+        [...userSources].sort((a, b) => a.localeCompare(b))
       );
-      expect(result.slice(4)).toEqual(DEFAULT_TYPES);
-      expect(result).toHaveLength(8);
+      expect(result.slice(4)).toEqual(DEFAULT_SOURCES);
+      expect(result).toHaveLength(7);
     });
 
-    it('should handle large number of user types', async () => {
-      useDeadlineTypes();
+    it('should handle large number of user sources', async () => {
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userTypes = Array.from({ length: 50 }, (_, i) => `Type ${i + 1}`);
-      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
+      const userSources = Array.from({ length: 50 }, (_, i) => `Source ${i + 1}`);
+      mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue(
+        userSources
+      );
 
       const result = await queryConfig.queryFn();
 
-      expect(result).toHaveLength(54);
-      expect(result.slice(0, 50)).toEqual(userTypes.sort());
-      expect(result.slice(50)).toEqual(DEFAULT_TYPES);
+      expect(result).toHaveLength(53);
+      expect(result.slice(0, 50)).toEqual(userSources.sort());
+      expect(result.slice(50)).toEqual(DEFAULT_SOURCES);
     });
 
-    it('should handle typeswith only whitespace', async () => {
-      useDeadlineTypes();
+    it('should handle sources with only whitespace', async () => {
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userTypes = ['   ', '\t', '\n', 'Valid Type'];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
+      const userSources = ['   ', '\t', '\n', 'Valid Source'];
+      mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue(
+        userSources
+      );
 
       const result = await queryConfig.queryFn();
 
@@ -402,20 +426,21 @@ describe('useDeadlineTypes', () => {
         '\t',
         '\n',
         '   ',
-        'Valid Type',
-        'ARC',
-        'Library',
-        'Personal',
-        'Book Club',
+        'Valid Source',
+        'NetGalley',
+        'Edelweiss',
+        'Direct',
       ]);
     });
 
     it('should handle unicode characters in source names', async () => {
-      useDeadlineTypes();
+      useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userTypes = ['Librairie 📚', 'Café ☕', 'École 🏫'];
-      mockDeadlinesService.getUniqueDeadlineTypes.mockResolvedValue(userTypes);
+      const userSources = ['Librairie 📚', 'Café ☕', 'École 🏫'];
+      mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue(
+        userSources
+      );
 
       const result = await queryConfig.queryFn();
 
@@ -423,10 +448,9 @@ describe('useDeadlineTypes', () => {
         'Café ☕',
         'École 🏫',
         'Librairie 📚',
-        'ARC',
-        'Library',
-        'Personal',
-        'Book Club',
+        'NetGalley',
+        'Edelweiss',
+        'Direct',
       ]);
     });
   });

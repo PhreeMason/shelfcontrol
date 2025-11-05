@@ -4,7 +4,7 @@ import { Control } from 'react-hook-form';
 import TypeTypeaheadInput from '../TypeTypeaheadInput';
 
 // Mock dependencies
-jest.mock('@/hooks/useDeadlineTypes', () => ({
+jest.mock('@/hooks/useDeadlines', () => ({
   useDeadlineTypes: jest.fn(),
 }));
 
@@ -54,7 +54,7 @@ describe('TypeTypeaheadInput', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    const { useDeadlineTypes } = require('@/hooks/useDeadlineTypes');
+    const { useDeadlineTypes } = require('@/hooks/useDeadlines');
     const { Controller, useWatch } = require('react-hook-form');
     const {
       filterSuggestions,
@@ -73,6 +73,7 @@ describe('TypeTypeaheadInput', () => {
     Controller.mockImplementation(({ render }: any) => {
       const mockField = {
         onChange: jest.fn(),
+        value: '',
       };
       const mockFieldState = {
         error: null,
@@ -123,7 +124,7 @@ describe('TypeTypeaheadInput', () => {
     });
 
     it('should render loading indicator when loading', () => {
-      const { useDeadlineTypes } = require('@/hooks/useDeadlineTypes');
+      const { useDeadlineTypes } = require('@/hooks/useDeadlines');
       useDeadlineTypes.mockReturnValue({
         data: mockSources,
         isLoading: true,
@@ -364,8 +365,17 @@ describe('TypeTypeaheadInput', () => {
 
   describe('watched value integration', () => {
     it('should set initial query from watched value', () => {
-      const { useWatch } = require('react-hook-form');
-      useWatch.mockReturnValue('Initial Value');
+      const { Controller } = require('react-hook-form');
+      Controller.mockImplementation(({ render }: any) => {
+        const mockField = {
+          onChange: jest.fn(),
+          value: 'Initial Value',
+        };
+        const mockFieldState = {
+          error: null,
+        };
+        return render({ field: mockField, fieldState: mockFieldState });
+      });
 
       render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
@@ -373,8 +383,17 @@ describe('TypeTypeaheadInput', () => {
     });
 
     it('should not override query when input is focused', () => {
-      const { useWatch } = require('react-hook-form');
-      useWatch.mockReturnValue('Watched Value');
+      const { Controller } = require('react-hook-form');
+      Controller.mockImplementation(({ render }: any) => {
+        const mockField = {
+          onChange: jest.fn(),
+          value: 'Watched Value',
+        };
+        const mockFieldState = {
+          error: null,
+        };
+        return render({ field: mockField, fieldState: mockFieldState });
+      });
 
       render(<TypeTypeaheadInput control={mockControl} name="source" />);
 

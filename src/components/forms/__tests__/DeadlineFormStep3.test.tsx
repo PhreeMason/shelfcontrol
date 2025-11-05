@@ -45,6 +45,21 @@ jest.mock('@/components/shared/TypeTypeaheadInput', () => {
   };
 });
 
+jest.mock('@/components/shared/AcquisitionSourceTypeaheadInput', () => {
+  const React = require('react');
+  return function MockAcquisitionSourceTypeaheadInput(props: any) {
+    return React.createElement(
+      'View',
+      {
+        testID: props.testID || `input-${props.name}`,
+        'data-name': props.name,
+        'data-placeholder': props.placeholder,
+      },
+      null
+    );
+  };
+});
+
 jest.mock('@/components/themed', () => ({
   ThemedText: ({ children }: any) => {
     const React = require('react');

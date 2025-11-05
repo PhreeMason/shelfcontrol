@@ -3,7 +3,7 @@ import FilteredDeadlines from '@/components/features/deadlines/FilteredDeadlines
 import { Header } from '@/components/navigation';
 import { ThemedView } from '@/components/themed';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
-import { useDeadlineTypes } from '@/hooks/useDeadlineTypes';
+import { useDeadlineTypes } from '@/hooks/useDeadlines';
 import { analytics } from '@/lib/analytics/client';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { usePreferences } from '@/providers/PreferencesProvider';
