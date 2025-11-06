@@ -1,6 +1,5 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Colors } from '@/constants/Colors';
 import {
   useCreateTemplate,
   useGetTemplates,
@@ -309,10 +308,12 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             <IconSymbol
               name="plus.circle.fill"
               size={20}
-              color={Colors.light.darkPurple }
+              color={colors.darkPurple}
               style={styles.addIcon}
             />
-            <ThemedText style={styles.addButtonText}>Add</ThemedText>
+            <ThemedText style={[styles.addButtonText, { color: colors.darkPurple }]}>
+              Add
+            </ThemedText>
           </Pressable>
         )}
         {!isEditing && currentDisclosure && (
@@ -475,18 +476,50 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             </View>
           ) : (
             <Pressable
-              style={styles.emptyStateCard}
+              style={[
+                styles.emptyStateCard,
+                {
+                  backgroundColor: colors.cardEmptyState,
+                  borderColor: colors.primary,
+                },
+              ]}
               onPress={handleEditDisclosure}
             >
               <View style={styles.ghostBadgeContainer}>
-                <View style={styles.ghostBadge}>
-                  <ThemedText style={styles.ghostBadgeText}>NetGalley</ThemedText>
+                <View
+                  style={[styles.ghostBadge, { backgroundColor: colors.primary }]}>
+                  <ThemedText
+                    style={[styles.ghostBadgeText, { color: colors.primary }]}>
+                    NetGalley
+                  </ThemedText>
                 </View>
               </View>
-              <View style={styles.ghostDisclosure}>
-                <View style={[styles.ghostDisclosureLine, { width: '100%' }]} />
-                <View style={[styles.ghostDisclosureLine, { width: '80%' }]} />
-                <View style={[styles.ghostDisclosureLine, { width: '60%' }]} />
+              <View
+                style={[
+                  styles.ghostDisclosure,
+                  {
+                    backgroundColor: colors.primary,
+                    borderColor: colors.primary,
+                  },
+                ]}>
+                <View
+                  style={[
+                    styles.ghostDisclosureLine,
+                    { width: '100%', backgroundColor: colors.primary },
+                  ]}
+                />
+                <View
+                  style={[
+                    styles.ghostDisclosureLine,
+                    { width: '80%', backgroundColor: colors.primary },
+                  ]}
+                />
+                <View
+                  style={[
+                    styles.ghostDisclosureLine,
+                    { width: '60%', backgroundColor: colors.primary },
+                  ]}
+                />
               </View>
               <ThemedText variant="secondary" style={styles.emptyCta}>
                 Add required disclosure language
@@ -560,7 +593,6 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   addButtonText: {
-    color: Colors.light.darkPurple,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -618,12 +650,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   emptyStateCard: {
-    backgroundColor: Colors.light.cardEmptyState,
     borderRadius: 12,
     padding: 20,
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderColor: Colors.light.primary,
     opacity: 0.7,
     marginBottom: 12,
   },
@@ -632,22 +662,18 @@ const styles = StyleSheet.create({
   },
   ghostBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: Colors.light.primary,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
     opacity: 0.3,
   },
   ghostBadgeText: {
-    color: Colors.light.primary,
     fontSize: 13,
     fontWeight: '600',
   },
   ghostDisclosure: {
-    backgroundColor: Colors.light.primary,
     opacity: 0.1,
     borderWidth: 1,
-    borderColor: Colors.light.primary,
     borderRadius: 8,
     padding: 16,
     marginBottom: 12,
@@ -655,7 +681,6 @@ const styles = StyleSheet.create({
   },
   ghostDisclosureLine: {
     height: 14,
-    backgroundColor: Colors.light.primary,
     borderRadius: 4,
     opacity: 0.15,
   },

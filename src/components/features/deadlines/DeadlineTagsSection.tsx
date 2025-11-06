@@ -1,7 +1,6 @@
 import TagTypeaheadInput from '@/components/shared/TagTypeaheadInput';
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Colors } from '@/constants/Colors';
 import {
   useAddTagToDeadline,
   useCreateTag,
@@ -9,6 +8,7 @@ import {
   useGetDeadlineTags,
   useRemoveTagFromDeadline,
 } from '@/hooks/useTags';
+import { useTheme } from '@/hooks/useTheme';
 import { analytics } from '@/lib/analytics/client';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { TagWithDetails } from '@/types/tags.types';
@@ -22,6 +22,7 @@ interface DeadlineTagsSectionProps {
 }
 
 export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
+  const { colors } = useTheme();
   const [isAdding, setIsAdding] = useState(false);
 
   const { data: deadlineTags = [], isLoading } = useGetDeadlineTags(
@@ -116,10 +117,12 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
             <IconSymbol
               name="plus.circle.fill"
               size={20}
-              color={Colors.light.darkPurple}
+              color={colors.darkPurple}
               style={styles.addIcon}
             />
-            <ThemedText style={styles.addButtonText}>Add</ThemedText>
+            <ThemedText style={[styles.addButtonText, { color: colors.darkPurple }]}>
+              Add
+            </ThemedText>
           </Pressable>
         )}
       </View>
@@ -143,7 +146,7 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
           {isAdding && (
             <View style={styles.addForm}>
               <TagTypeaheadInput
-                placeholder="Enter tag name"
+                placeholder="Select or add a tag"
                 onSelectTag={handleSelectTag}
                 excludeTagIds={excludeTagIds}
                 testID="tag-typeahead-input"
@@ -159,14 +162,38 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
 
           {!isAdding && deadlineTags.length === 0 && (
             <Pressable
-              style={styles.emptyStateCard}
+              style={[
+                styles.emptyStateCard,
+                {
+                  backgroundColor: colors.cardEmptyState,
+                  borderColor: colors.primary,
+                },
+              ]}
               onPress={() => setIsAdding(true)}>
               <View style={styles.ghostTags}>
-                <View style={styles.ghostTag}>
-                  <ThemedText style={styles.ghostTagText}>Fall reads</ThemedText>
+                <View
+                  style={[
+                    styles.ghostTag,
+                    {
+                      backgroundColor: colors.primary,
+                      borderColor: colors.primary,
+                    },
+                  ]}>
+                  <ThemedText style={[styles.ghostTagText, { color: colors.primary }]}>
+                    Fall reads
+                  </ThemedText>
                 </View>
-                <View style={styles.ghostTag}>
-                  <ThemedText style={styles.ghostTagText}>fantasy</ThemedText>
+                <View
+                  style={[
+                    styles.ghostTag,
+                    {
+                      backgroundColor: colors.primary,
+                      borderColor: colors.primary,
+                    },
+                  ]}>
+                  <ThemedText style={[styles.ghostTagText, { color: colors.primary }]}>
+                    fantasy
+                  </ThemedText>
                 </View>
               </View>
               <ThemedText variant="secondary" style={styles.emptyCta}>
@@ -217,7 +244,6 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   addButtonText: {
-    color: Colors.light.darkPurple,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -237,12 +263,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   emptyStateCard: {
-    backgroundColor: Colors.light.cardEmptyState,
     borderRadius: 12,
     padding: 20,
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderColor: Colors.light.primary,
     opacity: 0.7,
   },
   ghostTags: {
@@ -252,16 +276,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   ghostTag: {
-    backgroundColor: Colors.light.primary,
     opacity: 0.15,
     borderWidth: 1,
-    borderColor: Colors.light.primary,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
   },
   ghostTagText: {
-    color: Colors.light.primary,
     fontSize: 15,
     opacity: 0.5,
   },

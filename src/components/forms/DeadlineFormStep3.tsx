@@ -55,7 +55,7 @@ export const DeadlineFormStep3 = ({
         <TypeTypeaheadInput
           control={control}
           name="type"
-          placeholder="Enter book type"
+          placeholder="Select a type or add your own"
           testID="input-type"
         />
       </View>
@@ -68,7 +68,7 @@ export const DeadlineFormStep3 = ({
           control={control}
           name="acquisition_source"
           testID="input-acquisition-source"
-          placeholder="(e.g., NetGalley, Edelweiss, Direct, etc.)"
+          placeholder="Select a source or add a new new one"
         />
       </View>
 

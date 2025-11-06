@@ -64,8 +64,8 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
   // Determine steps and initial step
   const formSteps =
     mode === 'new'
-      ? ['Find Book', 'Book Details', 'Additional Details', 'Set Deadline']
-      : ['Book Details', 'Additional Details', 'Set Deadline'];
+      ? ['Find Book', 'Book Details', 'Additional Details', 'Set Due Date']
+      : ['Book Details', 'Additional Details', 'Set Due Date'];
   const totalSteps = formSteps.length;
 
   const initialStep = getInitialStepFromSearchParams(params, {

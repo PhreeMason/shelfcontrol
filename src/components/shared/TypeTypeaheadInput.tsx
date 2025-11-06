@@ -13,7 +13,7 @@ type TypeTypeaheadInputProps<T extends FieldValues> = {
 const TypeTypeaheadInput = <T extends FieldValues>({
   control,
   name,
-  placeholder = 'Enter book type',
+  placeholder = 'Select a type or add your own',
   testID = 'source-typeahead',
 }: TypeTypeaheadInputProps<T>) => {
   const { data: types = [], isLoading } = useDeadlineTypes();

@@ -52,9 +52,9 @@ export const DeadlineFormStep4 = ({
   const getTotalQuantityPlaceholder = () => {
     switch (selectedFormat) {
       case 'audio':
-        return 'Hours';
+        return 'Hours so far';
       default:
-        return 'How many pages total?';
+        return 'Pages so far?';
     }
   };
   return (

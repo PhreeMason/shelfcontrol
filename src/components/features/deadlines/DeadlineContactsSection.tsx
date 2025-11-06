@@ -1,12 +1,12 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Colors } from '@/constants/Colors';
 import {
   useAddContact,
   useDeleteContact,
   useGetContacts,
   useUpdateContact,
 } from '@/hooks/useContacts';
+import { useTheme } from '@/hooks/useTheme';
 import { analytics } from '@/lib/analytics/client';
 import { ContactFormData } from '@/schemas/contactFormSchema';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -22,6 +22,7 @@ interface DeadlineContactsSectionProps {
 export const DeadlineContactsSection = ({
   deadline,
 }: DeadlineContactsSectionProps) => {
+  const { colors } = useTheme();
   const [isAdding, setIsAdding] = useState(false);
   const [editingContactId, setEditingContactId] = useState<string | null>(null);
 
@@ -155,10 +156,12 @@ export const DeadlineContactsSection = ({
             <IconSymbol
               name="plus.circle.fill"
               size={20}
-              color={Colors.light.darkPurple}
+              color={colors.darkPurple}
               style={styles.addIcon}
             />
-            <ThemedText style={styles.addButtonText}>Add</ThemedText>
+            <ThemedText style={[styles.addButtonText, { color: colors.darkPurple }]}>
+              Add
+            </ThemedText>
           </Pressable>
         )}
       </View>
@@ -200,20 +203,38 @@ export const DeadlineContactsSection = ({
 
           {contacts.length === 0 && !isAdding && (
             <Pressable
-              style={styles.emptyStateCard}
+              style={[
+                styles.emptyStateCard,
+                {
+                  backgroundColor: colors.cardEmptyState,
+                  borderColor: colors.primary,
+                },
+              ]}
               onPress={() => setIsAdding(true)}>
               <View style={styles.ghostContact}>
                 <View style={styles.ghostIcon}>
                   <IconSymbol
                     name="person.circle.fill"
                     size={40}
-                    color={Colors.light.primary}
+                    color={colors.primary}
                     style={styles.ghostIconSymbol}
                   />
                 </View>
                 <View style={styles.ghostContactInfo}>
-                  <View style={[styles.ghostText, styles.ghostTextShort]} />
-                  <View style={[styles.ghostText, styles.ghostTextMedium]} />
+                  <View
+                    style={[
+                      styles.ghostText,
+                      styles.ghostTextShort,
+                      { backgroundColor: colors.primary },
+                    ]}
+                  />
+                  <View
+                    style={[
+                      styles.ghostText,
+                      styles.ghostTextMedium,
+                      { backgroundColor: colors.primary },
+                    ]}
+                  />
                 </View>
               </View>
               <ThemedText variant="secondary" style={styles.emptyCta}>
@@ -264,7 +285,6 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   addButtonText: {
-    color: Colors.light.darkPurple,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -276,12 +296,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   emptyStateCard: {
-    backgroundColor: Colors.light.cardEmptyState,
     borderRadius: 12,
     padding: 20,
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderColor: Colors.light.primary,
     opacity: 0.7,
   },
   ghostContact: {
@@ -306,7 +324,6 @@ const styles = StyleSheet.create({
   },
   ghostText: {
     height: 16,
-    backgroundColor: Colors.light.primary,
     borderRadius: 4,
     opacity: 0.15,
   },
