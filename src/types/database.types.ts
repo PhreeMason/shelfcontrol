@@ -341,6 +341,55 @@ export type Database = {
           },
         ];
       };
+      deadline_tags: {
+        Row: {
+          created_at: string;
+          deadline_id: string;
+          id: string;
+          tag_id: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          deadline_id: string;
+          id?: string;
+          tag_id: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          deadline_id?: string;
+          id?: string;
+          tag_id?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'deadline_tags_deadline_id_fkey';
+            columns: ['deadline_id'];
+            isOneToOne: false;
+            referencedRelation: 'deadlines';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'deadline_tags_tag_id_fkey';
+            columns: ['tag_id'];
+            isOneToOne: false;
+            referencedRelation: 'tags';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'deadline_tags_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       deadlines: {
         Row: {
           acquisition_source: string | null;
@@ -585,6 +634,41 @@ export type Database = {
           },
         ];
       };
+      tags: {
+        Row: {
+          color: string;
+          created_at: string;
+          id: string;
+          name: string;
+          updated_at: string;
+          user_id: string | null;
+        };
+        Insert: {
+          color: string;
+          created_at?: string;
+          id?: string;
+          name: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          color?: string;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'tags_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       user_activities: {
         Row: {
           activity_data: Json | null;
@@ -674,21 +758,41 @@ export type Database = {
       get_reading_progress_csv: {
         Args: { p_user_id: string };
         Returns: {
+          acquisition_source: string;
+          all_reviews_complete: boolean;
           author: string;
           book_title: string;
           completed_date: string;
+          contact_email: string;
+          contact_name: string;
+          contact_username: string;
           created_date: string;
           current_progress: number;
-          days_remaining: number;
           deadline_date: string;
+          disclosure_source_name: string;
+          disclosure_text: string;
           flexibility: string;
           format: string;
           last_progress_update: string;
-          pages_per_day_needed: number;
-          source: string;
+          needs_link_submission: boolean;
+          publishers: string;
+          review_due_date: string;
           status: string;
+          tags: string;
           total_quantity: number;
+          type: string;
           unit: string;
+        }[];
+      };
+      get_review_platforms_csv: {
+        Args: { p_user_id: string };
+        Returns: {
+          book_title: string;
+          deadline_id: string;
+          platform_name: string;
+          posted: boolean;
+          posted_date: string;
+          review_url: string;
         }[];
       };
       store_book_with_authors: { Args: { book_data: Json }; Returns: string };
