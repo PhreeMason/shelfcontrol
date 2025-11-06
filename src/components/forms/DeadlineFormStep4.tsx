@@ -66,7 +66,7 @@ export const DeadlineFormStep4 = ({
 
       <View>
         <ThemedText variant="default" style={{ marginBottom: 8 }}>
-          Deadline Date <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
+          Due Date <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
         <Controller
           control={control}
@@ -193,14 +193,14 @@ export const DeadlineFormStep4 = ({
 
       <View>
         <ThemedText variant="default" style={{ marginBottom: 8 }}>
-          Deadline Flexibility
+          Due Date Flexibility
         </ThemedText>
         <PrioritySelector
           selectedPriority={selectedPriority}
           onSelectPriority={onPriorityChange}
         />
         <ThemedText color="textMuted" style={{ marginTop: 6, lineHeight: 18 }}>
-          Can this deadline be adjusted if needed?
+          Can this date be adjusted if needed?
         </ThemedText>
       </View>
 

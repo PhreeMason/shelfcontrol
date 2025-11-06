@@ -1,7 +1,7 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedText } from '@/components/themed/ThemedText';
-import { useTheme } from '@/hooks/useThemeColor';
 import { useGetAllDeadlineTags, useGetAllTags } from '@/hooks/useTags';
+import { useTheme } from '@/hooks/useThemeColor';
 import {
   BookFormat,
   FilterType,
@@ -364,7 +364,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             </View>
 
             <View style={styles.section}>
-              <ThemedText style={styles.sectionTitle}>Time Range</ThemedText>
+              <ThemedText style={styles.sectionTitle}>Due Date</ThemedText>
               <View style={styles.filterRow}>
                 {(['all', 'thisWeek', 'thisMonth'] as TimeRangeFilter[]).map(
                   range => {

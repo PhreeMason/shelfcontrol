@@ -1,6 +1,6 @@
 import { dayjs } from '@/lib/dayjs';
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { SelectedBook } from '@/types/bookSearch';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import Toast from 'react-native-toast-message';
 
 interface DuplicateCheckParams {
@@ -35,7 +35,7 @@ export const showDuplicateBookWarning = ({
     'unknown';
   const dueDate = firstDeadline.deadline_date
     ? dayjs(firstDeadline.deadline_date).format('MMM D, YYYY')
-    : 'No deadline';
+    : 'No due dates';
 
   const latestProgress =
     firstDeadline.progress?.[firstDeadline.progress.length - 1];

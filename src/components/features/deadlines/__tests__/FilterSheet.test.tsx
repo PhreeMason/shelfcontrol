@@ -199,7 +199,7 @@ describe('FilterSheet', () => {
     it('should render all filter sections', () => {
       render(<FilterSheet {...defaultProps} />);
 
-      expect(screen.getByText('Time Range')).toBeTruthy();
+      expect(screen.getByText('Due Date')).toBeTruthy();
       expect(screen.getByText('Format')).toBeTruthy();
       expect(screen.getByText('Type')).toBeTruthy();
     });
@@ -211,8 +211,8 @@ describe('FilterSheet', () => {
     });
   });
 
-  describe('Time Range Filter', () => {
-    it('should render all time range options with counts', () => {
+  describe('Due Date Filter', () => {
+    it('should render all due date options with counts', () => {
       render(<FilterSheet {...defaultProps} />);
 
       expect(screen.getByText('All Time 3')).toBeTruthy();
@@ -220,7 +220,7 @@ describe('FilterSheet', () => {
       expect(screen.getByText(/This Month/)).toBeTruthy();
     });
 
-    it('should call onTimeRangeChange when time range is selected', () => {
+    it('should call onTimeRangeChange when due date is selected', () => {
       const onTimeRangeChange = jest.fn();
 
       render(
@@ -232,7 +232,7 @@ describe('FilterSheet', () => {
       expect(onTimeRangeChange).toHaveBeenCalledWith('thisWeek');
     });
 
-    it('should calculate time range counts correctly', () => {
+    it('should calculate due date counts correctly', () => {
       (isDateThisWeek as jest.Mock).mockImplementation((date: string) => {
         return date === '2024-01-15';
       });

@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   BookFormat,
   FilterType,
@@ -11,6 +10,7 @@ import {
   ProgressInputMode,
   ProgressInputModePreferences,
 } from '@/types/progressInput.types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   PropsWithChildren,
   createContext,
@@ -178,7 +178,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
       setTimeRangeFilterState(filter);
       await AsyncStorage.setItem(STORAGE_KEYS.TIME_RANGE_FILTER, filter);
     } catch (error) {
-      console.error('Error saving time range filter preference:', error);
+      console.error('Error saving due date filter preference:', error);
     }
   };
 

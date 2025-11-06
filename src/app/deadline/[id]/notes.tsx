@@ -10,8 +10,8 @@ import {
   useUpdateNote,
 } from '@/hooks/useNotes';
 import { useTheme } from '@/hooks/useThemeColor';
-import { dayjs } from '@/lib/dayjs';
 import { analytics } from '@/lib/analytics/client';
+import { dayjs } from '@/lib/dayjs';
 import { DeadlineNote } from '@/types/notes.types';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
@@ -207,7 +207,7 @@ const Notes = () => {
       <AppHeader title="Notes" onBack={() => router.back()} />
       <View style={styles.header}>
         <ThemedText style={styles.headerTitle}>
-          {deadline?.book_title || 'Deadline'}
+          {deadline?.book_title || 'Book'}
         </ThemedText>
       </View>
 

@@ -252,7 +252,7 @@ export const getPaceEstimate = (
   );
 
   if (daysLeft <= 0) {
-    return 'This deadline has already passed';
+    return 'This due date has already passed';
   }
 
   const unitsPerDay = Math.ceil(remaining / daysLeft);

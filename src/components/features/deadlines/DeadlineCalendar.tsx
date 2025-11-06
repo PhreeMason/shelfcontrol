@@ -173,7 +173,7 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
           <ThemedView style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <ThemedText variant="title">
-                Deadlines for{' '}
+                Due dates for{' '}
                 {selectedDate ? dayjs(selectedDate).format('MMM D, YYYY') : ''}
               </ThemedText>
               <Pressable onPress={closeModal} style={styles.closeButton}>
@@ -224,7 +224,7 @@ export function DeadlineCalendar({ style }: DeadlineCalendarProps) {
                             ? `${daysLeft} days left`
                             : daysLeft === 0
                               ? 'Due today'
-                              : `${Math.abs(daysLeft)} days overdue`}
+                              : `${Math.abs(daysLeft)} days past due`}
                         </ThemedText>
                       </View>
                       <IconSymbol

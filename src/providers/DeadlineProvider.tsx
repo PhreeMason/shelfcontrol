@@ -470,7 +470,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
             onSuccess?.();
           },
           onError: (error: Error) => {
-            console.error('Error completing deadline:', error);
+            console.error('Error completing book:', error);
             onError?.(error);
           },
         }
@@ -491,7 +491,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
           onSuccess?.();
         },
         onError: (error: Error) => {
-          console.error('Error starting reading deadline:', error);
+          console.error('Error starting reading book:', error);
           onError?.(error);
         },
       });
@@ -511,7 +511,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
           onSuccess?.();
         },
         onError: (error: Error) => {
-          console.error('Error marking deadline as did not finish:', error);
+          console.error('Error marking book as did not finish:', error);
           onError?.(error);
         },
       });
@@ -531,7 +531,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
           onSuccess?.();
         },
         onError: (error: Error) => {
-          console.error('Error pausing deadline:', error);
+          console.error('Error pausing book:', error);
           onError?.(error);
         },
       });
@@ -551,7 +551,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
           onSuccess?.();
         },
         onError: (error: Error) => {
-          console.error('Error resuming deadline:', error);
+          console.error('Error resuming book:', error);
           onError?.(error);
         },
       });

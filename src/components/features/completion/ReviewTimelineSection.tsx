@@ -79,7 +79,7 @@ export const ReviewTimelineSection: React.FC<ReviewTimelineSectionProps> = ({
               )}
             </View>
             <ThemedText style={styles.radioLabel}>
-              Yes, I have a review deadline
+              Yes, I have a review due date
             </ThemedText>
           </TouchableOpacity>
           <TouchableOpacity
@@ -115,7 +115,7 @@ export const ReviewTimelineSection: React.FC<ReviewTimelineSectionProps> = ({
               )}
             </View>
             <ThemedText style={styles.radioLabel}>
-              No deadline, review when I can
+              No due date, review when I can
             </ThemedText>
           </TouchableOpacity>
         </ThemedView>

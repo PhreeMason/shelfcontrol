@@ -5,12 +5,12 @@ import { dayjs } from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
-  getQuickSelectDate,
   calculateDeadlineImpact,
   getFeasibilityConfig,
+  getQuickSelectDate,
   QuickSelectType,
 } from '@/utils/deadlineModalUtils';
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -19,13 +19,13 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import { Calendar, DateData } from 'react-native-calendars';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Calendar, DateData } from 'react-native-calendars';
 
 interface UpdateDeadlineDateModalProps {
   deadline: ReadingDeadlineWithProgress;
@@ -121,7 +121,7 @@ export const UpdateDeadlineDateModal: React.FC<
       },
       error => {
         setIsUpdating(false);
-        console.error('Failed to update deadline date:', error);
+        console.error('Failed to update due date:', error);
       }
     );
   };
@@ -199,7 +199,7 @@ export const UpdateDeadlineDateModal: React.FC<
           ]}
         >
           <View style={[styles.header, { borderBottomColor: colors.border }]}>
-            <ThemedText style={styles.title}>Update Deadline Date</ThemedText>
+            <ThemedText style={styles.title}>Update due date</ThemedText>
           </View>
 
           <ScrollView

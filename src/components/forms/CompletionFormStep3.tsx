@@ -269,11 +269,11 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
         router.replace(ROUTES.HOME);
       },
       onError: (error: any) => {
-        console.error('Error updating deadline status:', error);
+        console.error('Error updating book status:', error);
         Toast.show({
           type: 'error',
           text1: 'Error',
-          text2: 'Failed to update deadline. Please try again.',
+          text2: 'Failed to update book. Please try again.',
         });
         setIsSubmitting(false);
       },

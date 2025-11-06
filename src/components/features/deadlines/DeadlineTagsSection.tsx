@@ -153,7 +153,7 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
       )}
 
       <ThemedText variant="secondary" style={styles.helpText}>
-        Organize your deadlines with tags for easy filtering
+        Organize your books with tags for easy filtering
       </ThemedText>
     </ThemedView>
   );

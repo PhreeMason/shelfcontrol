@@ -345,7 +345,7 @@ serve(async (req)=>{
         <h3>Export Details</h3>
         <ul>
           <li><strong>Generated:</strong> ${currentDate}</li>
-          <li><strong>Progress File:</strong> ${filename} (${recordCount} ${recordCount === 1 ? 'deadline' : 'deadlines'})</li>
+          <li><strong>Progress File:</strong> ${filename} (${recordCount} ${recordCount === 1 ? 'book' : 'books'})</li>
           ${notesCount > 0 ? `<li><strong>Notes File:</strong> ${notesFilename} (${notesCount} ${notesCount === 1 ? 'note' : 'notes'})</li>` : ''}
         </ul>
       </div>
@@ -359,17 +359,17 @@ serve(async (req)=>{
         <li>Book titles and authors</li>
         <li>Reading format (physical, eBook, audio)</li>
         <li>Current progress and total quantity</li>
-        <li>Deadline dates and status</li>
+        <li>Due dates and status</li>
         <li>Source and flexibility settings</li>
         <li>Creation and completion dates</li>
       </ul>
 
       ${notesCount > 0 ? `
       <h4>${notesFilename}</h4>
-      <p>Contains your deadline notes (${notesCount} total):</p>
+      <p>Contains your book notes (${notesCount} total):</p>
       <ul>
         <li>Book title for easy reference</li>
-        <li>Deadline ID to match with progress file</li>
+        <li>Book ID to match with progress file</li>
         <li>Note text and timestamps</li>
         <li>One row per note for easy filtering and searching</li>
       </ul>
@@ -383,7 +383,7 @@ serve(async (req)=>{
         <li><strong>Numbers (Mac):</strong> Drag and drop the file</li>
         <li><strong>Any spreadsheet app:</strong> Import as CSV</li>
       </ul>
-      ${notesCount > 0 ? `<p><strong>Tip:</strong> Use the deadline_id column to match notes with their corresponding deadlines in the progress file.</p>` : ''}
+      ${notesCount > 0 ? `<p><strong>Tip:</strong> Use the deadline_id column to match notes with their corresponding books in the progress file.</p>` : ''}
 
       <div class="footer">
         <p>This export was generated automatically from your reading progress data.</p>

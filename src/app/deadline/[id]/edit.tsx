@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useDeadlines } from '@/providers/DeadlineProvider';
 import DeadlineFormContainer from '@/components/forms/DeadlineFormContainer';
+import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
+import { useTheme } from '@/hooks/useThemeColor';
+import { useDeadlines } from '@/providers/DeadlineProvider';
 import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
-import { ThemedView, ThemedText, ThemedButton } from '@/components/themed';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme } from '@/hooks/useThemeColor';
 
 const EditDeadline = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -35,10 +35,10 @@ const EditDeadline = () => {
         >
           <ThemedView style={[styles.container, { padding: 20 }]}>
             <ThemedText variant="title">
-              Cannot Edit Completed Deadline
+              Cannot Edit Completed Books
             </ThemedText>
             <ThemedText style={{ marginTop: 8 }}>
-              This deadline has been marked as completed and cannot be edited.
+              This book has been marked as completed and cannot be edited.
             </ThemedText>
             <ThemedButton
               title="Go Back"

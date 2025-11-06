@@ -229,5 +229,5 @@ export const createSkipSuccessToast = (): ReviewFormToastConfig => ({
 export const createSkipErrorToast = (error?: Error): ReviewFormToastConfig => ({
   type: 'error',
   text1: 'Error',
-  text2: error?.message || 'Failed to update deadline. Please try again.',
+  text2: error?.message || 'Failed to update. Please try again.',
 });

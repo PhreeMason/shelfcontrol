@@ -36,7 +36,7 @@ export const createCompletionErrorToast = (
 ): CompletionToastConfig => ({
   type: 'error',
   text1: 'Error',
-  text2: error?.message || 'Failed to update deadline. Please try again.',
+  text2: error?.message || 'Failed to update book. Please try again.',
 });
 
 export interface StepComponentType {
@@ -81,7 +81,7 @@ export const createCompletionCallbacks = (
       navigateToHome();
     },
     onError: (error: Error) => {
-      console.error('Error updating deadline status:', error);
+      console.error('Error updating book status:', error);
       showToast(createCompletionErrorToast(error));
     },
   };

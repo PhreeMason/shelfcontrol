@@ -20,7 +20,7 @@ const DeadlinesList: React.FC<DeadlinesListProps> = ({
   if (isLoading) {
     return (
       <ThemedView style={styles.centerContainer}>
-        <ThemedText style={styles.loadingText}>Loading deadlines...</ThemedText>
+        <ThemedText style={styles.loadingText}>Loading books...</ThemedText>
       </ThemedView>
     );
   }

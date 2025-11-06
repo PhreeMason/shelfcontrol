@@ -8,8 +8,8 @@ import {
   SortOrder,
   TimeRangeFilter,
 } from '@/types/deadline.types';
-import { isDateThisMonth, isDateThisWeek } from '@/utils/dateUtils';
 import { normalizeServerDate } from '@/utils/dateNormalization';
+import { isDateThisMonth, isDateThisWeek } from '@/utils/dateUtils';
 import { sortByPace } from '@/utils/deadlineSortingAdvanced';
 import React from 'react';
 import DeadlinesList from './DeadlinesList';
@@ -204,20 +204,20 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
 
   const getEmptyMessage = (): string => {
     const emptyMessages = {
-      active: 'No active deadlines',
-      overdue: 'No overdue deadlines',
-      pending: 'No pending deadlines',
-      paused: 'No paused deadlines',
-      completed: 'No completed deadlines',
+      active: 'No active due dates',
+      overdue: 'No overdue due dates',
+      pending: 'No pending due dates',
+      paused: 'No paused due dates',
+      completed: 'No completed books',
       toReview: 'No books waiting for reviews',
-      didNotFinish: 'No deadlines marked as did not finish',
-      all: 'No deadlines found',
+      didNotFinish: 'No books marked as did not finish',
+      all: 'No books found',
     };
 
     if (emptyMessages[selectedFilter as keyof typeof emptyMessages]) {
       return emptyMessages[selectedFilter as keyof typeof emptyMessages];
     }
-    return 'No deadlines found';
+    return 'No books found';
   };
 
   const filteredDeadlines = getFilteredDeadlines();

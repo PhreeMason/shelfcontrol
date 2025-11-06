@@ -56,11 +56,11 @@ export const createSuccessToast = (
       text2: `"${bookTitle}" has been marked as complete`,
     },
     deleted: {
-      text1: 'Deadline deleted',
+      text1: 'Book deleted',
       text2: `"${bookTitle}" has been removed`,
     },
     reactivated: {
-      text1: 'Deadline reactivated!',
+      text1: 'Book reactivated!',
       text2: `"${bookTitle}" is now active again`,
     },
     started: {

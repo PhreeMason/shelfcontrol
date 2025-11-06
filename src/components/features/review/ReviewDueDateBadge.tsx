@@ -32,7 +32,7 @@ const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({
     });
   };
 
-  const label = isOverdue ? 'REVIEW OVERDUE' : 'REVIEW DEADLINE';
+  const label = isOverdue ? 'REVIEW PASTDUE' : 'REVIEW DUE DATE';
   const subtitle = isOverdue
     ? `${Math.abs(daysUntilDue)} ${Math.abs(daysUntilDue) === 1 ? 'day' : 'days'} overdue`
     : `${daysUntilDue} ${daysUntilDue === 1 ? 'day' : 'days'} left`;

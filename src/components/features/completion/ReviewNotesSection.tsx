@@ -39,7 +39,7 @@ export const ReviewNotesSection: React.FC<ReviewNotesSectionProps> = ({
           testID="review-notes-input"
         />
         <ThemedText variant="secondary" style={styles.noteExplanation}>
-          This will be saved to your Notes for this deadline.
+          This will be saved to your Notes for this book.
         </ThemedText>
       </ThemedView>
     </ThemedView>

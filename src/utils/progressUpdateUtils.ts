@@ -116,7 +116,7 @@ export const getErrorToastMessage = (
       };
     case 'complete':
       return {
-        title: 'Failed to complete deadline',
+        title: 'Failed to complete book',
         message: error?.message || 'Please try again',
       };
     case 'deleteFuture':

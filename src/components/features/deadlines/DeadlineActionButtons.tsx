@@ -37,7 +37,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
 
   const handleDelete = () => {
     Alert.alert(
-      'Delete Deadline',
+      'Delete Book',
       `Are you sure you want to delete "${deadline.book_title}"? This action cannot be undone.`,
       [
         {
@@ -57,7 +57,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                 Toast.show({
                   swipeable: true,
                   type: 'success',
-                  text1: 'Deadline deleted',
+                  text1: 'Book deleted',
                   text2: `"${deadline.book_title}" has been removed`,
                   autoHide: true,
                   visibilityTime: 1500,
@@ -69,7 +69,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
                 Toast.show({
                   swipeable: true,
                   type: 'error',
-                  text1: 'Failed to delete deadline',
+                  text1: 'Failed to delete book',
                   text2: error.message || 'Please try again',
                   autoHide: true,
                   visibilityTime: 1500,
@@ -86,7 +86,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
   const handleReadAgain = () => {
     Alert.alert(
       'Read Again?',
-      `Create a new deadline to read "${deadline.book_title}" again?`,
+      `Create a new due date to read "${deadline.book_title}" again?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -123,8 +123,8 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
 
         setTimeout(() => {
           Alert.alert(
-            'Update Deadline?',
-            'Would you like to update the deadline date?',
+            'Update Due date?',
+            'Would you like to update the due date?',
             [
               {
                 text: 'Not Now',
@@ -197,7 +197,7 @@ const DeadlineActionButtons: React.FC<DeadlineActionButtonsProps> = ({
 
       <ThemedButton
         hapticsOnPress
-        title={isDeleting ? 'Deleting...' : 'Delete Deadline'}
+        title={isDeleting ? 'Deleting...' : 'Delete Book'}
         variant="dangerOutline"
         style={styles.actionButton}
         onPress={handleDelete}

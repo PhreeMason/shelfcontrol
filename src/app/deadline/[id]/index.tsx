@@ -76,7 +76,7 @@ const DeadlineView = () => {
             { padding: 20, justifyContent: 'center', alignItems: 'center' },
           ]}
         >
-          <ThemedText>Loading deadline...</ThemedText>
+          <ThemedText>Loading due dates...</ThemedText>
         </ThemedView>
       </SafeAreaView>
     );
