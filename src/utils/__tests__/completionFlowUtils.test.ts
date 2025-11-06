@@ -86,7 +86,7 @@ describe('completionFlowUtils', () => {
       expect(toast).toEqual({
         type: 'error',
         text1: 'Error',
-        text2: 'Failed to update deadline. Please try again.',
+        text2: 'Failed to update book. Please try again.',
       });
     });
 
@@ -103,7 +103,7 @@ describe('completionFlowUtils', () => {
     it('should use default message when error message is empty', () => {
       const error = new Error('');
       const toast = createCompletionErrorToast(error);
-      expect(toast.text2).toBe('Failed to update deadline. Please try again.');
+      expect(toast.text2).toBe('Failed to update book. Please try again.');
     });
   });
 
@@ -208,7 +208,7 @@ describe('completionFlowUtils', () => {
       callbacks.onError(error);
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Error updating deadline status:',
+        'Error updating book status:',
         error
       );
       expect(showToast).toHaveBeenCalledWith({

@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   benefitText: {
-    fontSize: 13,
+    fontSize: 14,
     marginTop: 2,
   },
   addButton: {
@@ -291,6 +291,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: 16,
     fontWeight: '600',
+    transform: [{ translateY: 1 }]
   },
   contactsList: {
     gap: 12,
@@ -343,7 +344,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   helpText: {
-    fontSize: 12,
+    fontSize: 14,
     textAlign: 'center',
   },
 });

@@ -209,7 +209,7 @@ describe('showDuplicateBookWarning', () => {
 
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({
-        text2: expect.stringContaining('No deadline'),
+        text2: expect.stringContaining('No due dates'),
       })
     );
   });

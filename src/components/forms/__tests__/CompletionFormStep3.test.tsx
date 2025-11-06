@@ -595,7 +595,7 @@ describe('CompletionFormStep3', () => {
         expect(Toast.show).toHaveBeenCalledWith({
           type: 'error',
           text1: 'Error',
-          text2: 'Failed to update deadline. Please try again.',
+          text2: 'Failed to update book. Please try again.',
         });
       });
 

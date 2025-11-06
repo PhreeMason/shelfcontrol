@@ -424,14 +424,14 @@ describe('progressUpdateUtils', () => {
 
     it('should format complete error message without error object', () => {
       const result = getErrorToastMessage('complete');
-      expect(result.title).toBe('Failed to complete deadline');
+      expect(result.title).toBe('Failed to complete book');
       expect(result.message).toBe('Please try again');
     });
 
     it('should format complete error message with error object', () => {
       const error = new Error('Network error');
       const result = getErrorToastMessage('complete', error);
-      expect(result.title).toBe('Failed to complete deadline');
+      expect(result.title).toBe('Failed to complete book');
       expect(result.message).toBe('Network error');
     });
 
@@ -449,14 +449,14 @@ describe('progressUpdateUtils', () => {
 
     it('should handle null error object', () => {
       const result = getErrorToastMessage('complete', null);
-      expect(result.title).toBe('Failed to complete deadline');
+      expect(result.title).toBe('Failed to complete book');
       expect(result.message).toBe('Please try again');
     });
 
     it('should handle error without message', () => {
       const error = new Error();
       const result = getErrorToastMessage('complete', error);
-      expect(result.title).toBe('Failed to complete deadline');
+      expect(result.title).toBe('Failed to complete book');
       expect(result.message).toBe('Please try again');
     });
   });

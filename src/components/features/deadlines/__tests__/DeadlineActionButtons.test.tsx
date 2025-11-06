@@ -123,7 +123,7 @@ describe('DeadlineActionButtons', () => {
       const { rerender } = render(
         <DeadlineActionButtons deadline={baseDeadline} />
       );
-      expect(screen.getByTestId('button-delete-deadline')).toBeTruthy();
+      expect(screen.getByTestId('button-delete-book')).toBeTruthy();
 
       const completedDeadline = {
         ...baseDeadline,
@@ -138,7 +138,7 @@ describe('DeadlineActionButtons', () => {
         ],
       };
       rerender(<DeadlineActionButtons deadline={completedDeadline} />);
-      expect(screen.getByTestId('button-delete-deadline')).toBeTruthy();
+      expect(screen.getByTestId('button-delete-book')).toBeTruthy();
     });
   });
 
@@ -261,10 +261,10 @@ describe('DeadlineActionButtons', () => {
     it('should show delete confirmation alert when delete button is pressed', () => {
       render(<DeadlineActionButtons deadline={baseDeadline} />);
 
-      fireEvent.press(screen.getByTestId('button-delete-deadline'));
+      fireEvent.press(screen.getByTestId('button-delete-book'));
 
       expect(mockAlert).toHaveBeenCalledWith(
-        'Delete Deadline',
+        'Delete Book',
         'Are you sure you want to delete "Test Book"? This action cannot be undone.',
         expect.arrayContaining([
           expect.objectContaining({ text: 'Cancel', style: 'cancel' }),
@@ -276,7 +276,7 @@ describe('DeadlineActionButtons', () => {
     it('should call deleteDeadline when confirmation is accepted', () => {
       render(<DeadlineActionButtons deadline={baseDeadline} />);
 
-      fireEvent.press(screen.getByTestId('button-delete-deadline'));
+      fireEvent.press(screen.getByTestId('button-delete-book'));
 
       const confirmButton = mockAlert.mock.calls[0][2]?.[1];
       confirmButton?.onPress?.();
@@ -291,7 +291,7 @@ describe('DeadlineActionButtons', () => {
     it('should handle successful delete operation', () => {
       render(<DeadlineActionButtons deadline={baseDeadline} />);
 
-      fireEvent.press(screen.getByTestId('button-delete-deadline'));
+      fireEvent.press(screen.getByTestId('button-delete-book'));
       const confirmButton = mockAlert.mock.calls[0][2]?.[1];
       confirmButton?.onPress?.();
 
@@ -302,7 +302,7 @@ describe('DeadlineActionButtons', () => {
       expect(mockToast.show).toHaveBeenCalledWith({
         swipeable: true,
         type: 'success',
-        text1: 'Deadline deleted',
+        text1: 'Book deleted',
         text2: '"Test Book" has been removed',
         autoHide: true,
         visibilityTime: 1500,
@@ -313,7 +313,7 @@ describe('DeadlineActionButtons', () => {
     it('should handle delete error', () => {
       render(<DeadlineActionButtons deadline={baseDeadline} />);
 
-      fireEvent.press(screen.getByTestId('button-delete-deadline'));
+      fireEvent.press(screen.getByTestId('button-delete-book'));
       const confirmButton = mockAlert.mock.calls[0][2]?.[1];
       confirmButton?.onPress?.();
 
@@ -323,7 +323,7 @@ describe('DeadlineActionButtons', () => {
       expect(mockToast.show).toHaveBeenCalledWith({
         swipeable: true,
         type: 'error',
-        text1: 'Failed to delete deadline',
+        text1: 'Failed to delete book',
         text2: 'Network error',
         autoHide: true,
         visibilityTime: 1500,
@@ -404,8 +404,8 @@ describe('DeadlineActionButtons', () => {
 
       await waitFor(() => {
         expect(mockAlert).toHaveBeenLastCalledWith(
-          'Update Deadline?',
-          'Would you like to update the deadline date?',
+          'Update Due date?',
+          'Would you like to update the due date?',
           expect.arrayContaining([
             expect.objectContaining({ text: 'Not Now', style: 'cancel' }),
             expect.objectContaining({ text: 'Yes, Update' }),
@@ -435,7 +435,7 @@ describe('DeadlineActionButtons', () => {
 
       expect(mockAlert).toHaveBeenCalledWith(
         'Read Again?',
-        'Create a new deadline to read "Test Book" again?',
+        'Create a new due date to read "Test Book" again?',
         expect.arrayContaining([
           expect.objectContaining({ text: 'Cancel', style: 'cancel' }),
           expect.objectContaining({ text: 'Yes' }),
@@ -515,7 +515,7 @@ describe('DeadlineActionButtons', () => {
     it('should show loading text and disable delete button during delete operation', () => {
       render(<DeadlineActionButtons deadline={baseDeadline} />);
 
-      fireEvent.press(screen.getByTestId('button-delete-deadline'));
+      fireEvent.press(screen.getByTestId('button-delete-book'));
       const confirmButton = mockAlert.mock.calls[0][2]?.[1];
       confirmButton?.onPress?.();
 
@@ -600,7 +600,7 @@ describe('DeadlineActionButtons', () => {
       };
       render(<DeadlineActionButtons deadline={noAuthorDeadline} />);
 
-      const deleteButton = screen.getByTestId('button-delete-deadline');
+      const deleteButton = screen.getByTestId('button-delete-book');
       expect(deleteButton).toBeTruthy();
     });
 

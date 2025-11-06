@@ -148,7 +148,7 @@ describe('deadlineActionUtils', () => {
       expect(toast).toEqual({
         swipeable: true,
         type: 'success',
-        text1: 'Deadline deleted',
+        text1: 'Book deleted',
         text2: '"The Hobbit" has been removed',
         autoHide: true,
         visibilityTime: 1500,
@@ -161,7 +161,7 @@ describe('deadlineActionUtils', () => {
       expect(toast).toEqual({
         swipeable: true,
         type: 'success',
-        text1: 'Deadline reactivated!',
+        text1: 'Book reactivated!',
         text2: '"Dune" is now active again',
         autoHide: true,
         visibilityTime: 1500,

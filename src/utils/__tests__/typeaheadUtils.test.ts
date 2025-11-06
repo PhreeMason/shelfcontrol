@@ -279,7 +279,13 @@ describe('typeaheadUtils', () => {
       it('should merge user items with defaults correctly', () => {
         const userItems = ['Mango', 'Orange'];
         const result = mergeWithDefaults(userItems, DEFAULT_ITEMS);
-        expect(result).toEqual(['Mango', 'Orange', 'Apple', 'Banana', 'Cherry']);
+        expect(result).toEqual([
+          'Mango',
+          'Orange',
+          'Apple',
+          'Banana',
+          'Cherry',
+        ]);
       });
 
       it('should sort user items alphabetically', () => {

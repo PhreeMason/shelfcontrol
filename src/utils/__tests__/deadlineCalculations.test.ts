@@ -241,10 +241,10 @@ describe('deadlineCalculations', () => {
     it('should warn when deadline has passed', () => {
       const pastDeadline = new Date('2024-01-10T12:00:00Z'); // 5 days before mock date
       expect(getPaceEstimate('physical', pastDeadline, 100)).toBe(
-        'This deadline has already passed'
+        'This due date has already passed'
       );
       expect(getPaceEstimate('audio', pastDeadline, 300)).toBe(
-        'This deadline has already passed'
+        'This due date has already passed'
       );
     });
 

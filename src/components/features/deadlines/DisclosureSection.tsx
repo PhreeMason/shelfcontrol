@@ -437,7 +437,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             <ThemedButton
               title={
                 updateDeadlineDisclosureMutation.isPending ||
-                createTemplateMutation.isPending
+                  createTemplateMutation.isPending
                   ? 'Saving...'
                   : 'Save'
               }
@@ -578,7 +578,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   benefitText: {
-    fontSize: 13,
+    fontSize: 14,
     marginTop: 2,
   },
   sourceBadge: {
@@ -588,7 +588,7 @@ const styles = StyleSheet.create({
   },
   sourceBadgeText: {
     color: '#FFFFFF',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
   },
   addButton: {
@@ -607,6 +607,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: 16,
     fontWeight: '600',
+    transform: [{ translateY: 1 }]
   },
   actions: {
     flexDirection: 'row',
@@ -658,7 +659,7 @@ const styles = StyleSheet.create({
   },
   copySuccessText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
   },
   emptyStateCard: {
@@ -680,7 +681,7 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   ghostBadgeText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
   },
   ghostDisclosure: {
@@ -702,7 +703,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   helpText: {
-    fontSize: 12,
+    fontSize: 14,
     textAlign: 'center',
   },
   checkboxRow: {

@@ -185,7 +185,7 @@ describe('PreferencesProvider', () => {
       });
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Error saving due range filter preference:',
+        'Error saving due date filter preference:',
         expect.any(Error)
       );
 

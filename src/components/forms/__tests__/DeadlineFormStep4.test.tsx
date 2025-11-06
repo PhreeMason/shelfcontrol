@@ -145,11 +145,11 @@ describe('DeadlineFormStep4', () => {
       ).toBeTruthy();
     });
 
-    it('should render "Deadline Date *" label and date picker button', () => {
+    it('should render "Due Date *" label and date picker button', () => {
       render(<DeadlineFormStep4 {...defaultProps} />);
 
-      // Check that deadline date label exists (split across multiple text components)
-      expect(screen.getByText('Deadline Date', { exact: false })).toBeTruthy();
+      // Check that due date label exists (split across multiple text components)
+      expect(screen.getAllByText('Due Date', { exact: false }).length).toBeGreaterThan(0);
       expect(screen.getByTestId('date-picker-button')).toBeTruthy();
     });
 
@@ -165,10 +165,10 @@ describe('DeadlineFormStep4', () => {
       expect(screen.getByTestId('input-currentProgress')).toBeTruthy();
     });
 
-    it('should render "Deadline Flexibility" label and PrioritySelector', () => {
+    it('should render "Due Date Flexibility" label and PrioritySelector', () => {
       render(<DeadlineFormStep4 {...defaultProps} />);
 
-      expect(screen.getByText('Deadline Flexibility')).toBeTruthy();
+      expect(screen.getByText('Due Date Flexibility')).toBeTruthy();
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
     });
 
@@ -208,7 +208,7 @@ describe('DeadlineFormStep4', () => {
       render(<DeadlineFormStep4 {...defaultProps} />);
 
       expect(
-        screen.getByText('Can this deadline be adjusted if needed?')
+        screen.getByText('Can this date be adjusted if needed?')
       ).toBeTruthy();
     });
 
@@ -483,7 +483,7 @@ describe('DeadlineFormStep4', () => {
       expect(input.props['data-name']).toBe('currentProgress');
       expect(input.props['data-keyboard']).toBe('numeric');
       expect(input.props['data-input-type']).toBe('integer');
-      expect(input.props['data-placeholder']).toBe('How many pages total?');
+      expect(input.props['data-placeholder']).toBe('Pages so far?');
     });
 
     it('should configure currentMinutes input with numeric keyboard and integer type for audio', () => {
@@ -503,7 +503,7 @@ describe('DeadlineFormStep4', () => {
 
       let progressInput = screen.getByTestId('input-currentProgress');
       expect(progressInput.props['data-placeholder']).toBe(
-        'How many pages total?'
+        'Pages so far?'
       );
 
       rerender(
@@ -511,7 +511,7 @@ describe('DeadlineFormStep4', () => {
       );
 
       progressInput = screen.getByTestId('input-currentProgress');
-      expect(progressInput.props['data-placeholder']).toBe('Hours');
+      expect(progressInput.props['data-placeholder']).toBe('Hours so far');
 
       const minutesInput = screen.getByTestId('input-currentMinutes');
       expect(minutesInput.props['data-placeholder']).toBe('Minutes');
@@ -544,8 +544,8 @@ describe('DeadlineFormStep4', () => {
     it('should ensure required field indicators are present', () => {
       render(<DeadlineFormStep4 {...defaultProps} />);
 
-      // Check that deadline date label exists (split across multiple text components)
-      expect(screen.getByText('Deadline Date', { exact: false })).toBeTruthy();
+      // Check that due date label exists (split across multiple text components)
+      expect(screen.getAllByText('Due Date', { exact: false }).length).toBeGreaterThan(0);
     });
   });
 
