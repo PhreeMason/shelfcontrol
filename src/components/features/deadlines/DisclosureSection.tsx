@@ -1,5 +1,6 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Colors } from '@/constants/Colors';
 import {
   useCreateTemplate,
   useGetTemplates,
@@ -281,18 +282,39 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
   return (
     <ThemedView style={styles.section}>
       <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <ThemedText variant="title">Disclosure Language</ThemedText>
-          {deadline.disclosure_source_name && (
-            <View
-              style={[styles.sourceBadge, { backgroundColor: colors.primary }]}
-            >
-              <ThemedText style={styles.sourceBadgeText}>
-                {deadline.disclosure_source_name}
-              </ThemedText>
-            </View>
-          )}
+        <View style={styles.titleColumn}>
+          <View style={styles.titleRow}>
+            <ThemedText variant="title">Disclosure Language</ThemedText>
+            {deadline.disclosure_source_name && (
+              <View
+                style={[styles.sourceBadge, { backgroundColor: colors.primary }]}
+              >
+                <ThemedText style={styles.sourceBadgeText}>
+                  {deadline.disclosure_source_name}
+                </ThemedText>
+              </View>
+            )}
+          </View>
+          <ThemedText variant="secondary" style={styles.benefitText}>
+            Reuse required review language
+          </ThemedText>
         </View>
+        {!isEditing && !currentDisclosure && (
+          <Pressable
+            onPress={handleEditDisclosure}
+            style={({ pressed }) => [
+              styles.addButton,
+              pressed && styles.addButtonPressed,
+            ]}>
+            <IconSymbol
+              name="plus.circle.fill"
+              size={20}
+              color={Colors.light.darkPurple }
+              style={styles.addIcon}
+            />
+            <ThemedText style={styles.addButtonText}>Add</ThemedText>
+          </Pressable>
+        )}
         {!isEditing && currentDisclosure && (
           <View style={styles.actions}>
             <Pressable
@@ -453,17 +475,21 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             </View>
           ) : (
             <Pressable
+              style={styles.emptyStateCard}
               onPress={handleEditDisclosure}
-              style={({ pressed }) => [
-                styles.emptyState,
-                {
-                  borderColor: colors.border,
-                  opacity: pressed ? 0.7 : 1,
-                },
-              ]}
             >
-              <ThemedText variant="secondary" style={styles.emptyStateText}>
-                + Add disclosure language
+              <View style={styles.ghostBadgeContainer}>
+                <View style={styles.ghostBadge}>
+                  <ThemedText style={styles.ghostBadgeText}>NetGalley</ThemedText>
+                </View>
+              </View>
+              <View style={styles.ghostDisclosure}>
+                <View style={[styles.ghostDisclosureLine, { width: '100%' }]} />
+                <View style={[styles.ghostDisclosureLine, { width: '80%' }]} />
+                <View style={[styles.ghostDisclosureLine, { width: '60%' }]} />
+              </View>
+              <ThemedText variant="secondary" style={styles.emptyCta}>
+                Add required disclosure language
               </ThemedText>
             </Pressable>
           )}
@@ -488,21 +514,27 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
 const styles = StyleSheet.create({
   section: {
     borderRadius: 16,
-    padding: 20,
+    padding: 24,
     marginBottom: 16,
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 12,
+  },
+  titleColumn: {
+    flex: 1,
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    flex: 1,
     flexWrap: 'wrap',
+  },
+  benefitText: {
+    fontSize: 13,
+    marginTop: 2,
   },
   sourceBadge: {
     paddingHorizontal: 8,
@@ -512,6 +544,24 @@ const styles = StyleSheet.create({
   sourceBadgeText: {
     color: '#FFFFFF',
     fontSize: 12,
+    fontWeight: '600',
+  },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  addButtonPressed: {
+    opacity: 0.7,
+  },
+  addIcon: {
+    marginRight: 2,
+  },
+  addButtonText: {
+    color: Colors.light.darkPurple,
+    fontSize: 16,
     fontWeight: '600',
   },
   actions: {
@@ -567,16 +617,52 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
-  emptyState: {
-    paddingVertical: 40,
+  emptyStateCard: {
+    backgroundColor: Colors.light.cardEmptyState,
+    borderRadius: 12,
+    padding: 20,
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderRadius: 12,
-    alignItems: 'center',
+    borderColor: Colors.light.primary,
+    opacity: 0.7,
     marginBottom: 12,
   },
-  emptyStateText: {
+  ghostBadgeContainer: {
+    marginBottom: 12,
+  },
+  ghostBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.light.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    opacity: 0.3,
+  },
+  ghostBadgeText: {
+    color: Colors.light.primary,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  ghostDisclosure: {
+    backgroundColor: Colors.light.primary,
+    opacity: 0.1,
+    borderWidth: 1,
+    borderColor: Colors.light.primary,
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 12,
+    gap: 8,
+  },
+  ghostDisclosureLine: {
+    height: 14,
+    backgroundColor: Colors.light.primary,
+    borderRadius: 4,
+    opacity: 0.15,
+  },
+  emptyCta: {
+    textAlign: 'center',
     fontSize: 14,
+    fontWeight: '500',
   },
   helpText: {
     fontSize: 12,

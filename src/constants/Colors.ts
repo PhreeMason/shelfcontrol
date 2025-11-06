@@ -20,6 +20,7 @@ export const Colors = {
     surfaceVariant: '#F1F5F9',
     surfaceContainer: '#F8FAFC',
     surfaceContainerHighest: '#E2E8F0',
+    cardEmptyState: '#F5F1EA',
 
     // Primary colors
     primary: '#B8A9D9',
@@ -117,6 +118,7 @@ export const Colors = {
     surfaceVariant: '#F1F5F9',
     surfaceContainer: '#F8FAFC',
     surfaceContainerHighest: '#E2E8F0',
+    cardEmptyState: '#F5F1EA',
 
     // Primary colors
     primary: '#B8A9D9',

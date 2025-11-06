@@ -1,5 +1,7 @@
 import TagTypeaheadInput from '@/components/shared/TagTypeaheadInput';
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Colors } from '@/constants/Colors';
 import {
   useAddTagToDeadline,
   useCreateTag,
@@ -12,7 +14,7 @@ import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { TagWithDetails } from '@/types/tags.types';
 import { getNextTagColor } from '@/utils/tagColors';
 import React, { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { TagChip } from './TagChip';
 
 interface DeadlineTagsSectionProps {
@@ -97,17 +99,28 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
   return (
     <ThemedView style={styles.section}>
       <View style={styles.header}>
-        <View style={styles.titleRow}>
+        <View style={styles.titleColumn}>
           <ThemedText variant="title">Tags</ThemedText>
+          <ThemedText variant="secondary" style={styles.benefitText}>
+            Filter and organize quickly
+          </ThemedText>
         </View>
         {!isAdding && (
-          <ThemedButton
-            title="+ Add"
+          <Pressable
             onPress={() => setIsAdding(true)}
-            variant="ghost"
-            style={styles.addButton}
-            testID="add-tag-button"
-          />
+            style={({ pressed }) => [
+              styles.addButton,
+              pressed && styles.addButtonPressed,
+            ]}
+            testID="add-tag-button">
+            <IconSymbol
+              name="plus.circle.fill"
+              size={20}
+              color={Colors.light.darkPurple}
+              style={styles.addIcon}
+            />
+            <ThemedText style={styles.addButtonText}>Add</ThemedText>
+          </Pressable>
         )}
       </View>
 
@@ -145,9 +158,21 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
           )}
 
           {!isAdding && deadlineTags.length === 0 && (
-            <ThemedText variant="secondary" style={styles.emptyText}>
-              No tags added yet
-            </ThemedText>
+            <Pressable
+              style={styles.emptyStateCard}
+              onPress={() => setIsAdding(true)}>
+              <View style={styles.ghostTags}>
+                <View style={styles.ghostTag}>
+                  <ThemedText style={styles.ghostTagText}>Fall reads</ThemedText>
+                </View>
+                <View style={styles.ghostTag}>
+                  <ThemedText style={styles.ghostTagText}>fantasy</ThemedText>
+                </View>
+              </View>
+              <ThemedText variant="secondary" style={styles.emptyCta}>
+                Add your first tag to organize
+              </ThemedText>
+            </Pressable>
           )}
         </View>
       )}
@@ -162,23 +187,39 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
 const styles = StyleSheet.create({
   section: {
     borderRadius: 16,
-    padding: 20,
+    padding: 24,
     marginBottom: 16,
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 12,
   },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  titleColumn: {
+    flex: 1,
+  },
+  benefitText: {
+    fontSize: 13,
+    marginTop: 2,
   },
   addButton: {
-    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     paddingVertical: 8,
+    borderRadius: 8,
+  },
+  addButtonPressed: {
+    opacity: 0.7,
+  },
+  addIcon: {
+    marginRight: 2,
+  },
+  addButtonText: {
+    color: Colors.light.darkPurple,
+    fontSize: 16,
+    fontWeight: '600',
   },
   tagsList: {
     gap: 12,
@@ -195,9 +236,39 @@ const styles = StyleSheet.create({
   cancelButton: {
     marginTop: 8,
   },
-  emptyText: {
+  emptyStateCard: {
+    backgroundColor: Colors.light.cardEmptyState,
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    borderColor: Colors.light.primary,
+    opacity: 0.7,
+  },
+  ghostTags: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 12,
+  },
+  ghostTag: {
+    backgroundColor: Colors.light.primary,
+    opacity: 0.15,
+    borderWidth: 1,
+    borderColor: Colors.light.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  ghostTagText: {
+    color: Colors.light.primary,
+    fontSize: 15,
+    opacity: 0.5,
+  },
+  emptyCta: {
     textAlign: 'center',
-    paddingVertical: 20,
+    fontSize: 14,
+    fontWeight: '500',
   },
   helpText: {
     fontSize: 12,

@@ -142,11 +142,11 @@ const DeadlineView = () => {
           </>
         ) : null}
 
-        <DeadlineTagsSection deadline={deadline} />
-
         <DeadlineContactsSection deadline={deadline} />
 
         {shouldShowDisclosure && <DisclosureSection deadline={deadline} />}
+
+        <DeadlineTagsSection deadline={deadline} />
 
         <BookDetailsSection deadline={deadline} />
       </ThemedKeyboardAwareScrollView>
