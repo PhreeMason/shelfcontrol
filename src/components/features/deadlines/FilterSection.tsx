@@ -47,7 +47,7 @@ const filterOptions: FilterOption[] = [
   { key: 'pending', label: 'Pending' },
   { key: 'active', label: 'Active' },
   { key: 'paused', label: 'Paused' },
-  { key: 'overdue', label: 'Overdue' },
+  { key: 'overdue', label: 'Past due' },
   { key: 'toReview', label: 'To Review' },
   { key: 'completed', label: 'Completed' },
   { key: 'didNotFinish', label: 'DNF' },
