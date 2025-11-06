@@ -286,7 +286,10 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             <ThemedText variant="title">Disclosure Language</ThemedText>
             {deadline.disclosure_source_name && (
               <View
-                style={[styles.sourceBadge, { backgroundColor: colors.primary }]}
+                style={[
+                  styles.sourceBadge,
+                  { backgroundColor: colors.primary },
+                ]}
               >
                 <ThemedText style={styles.sourceBadgeText}>
                   {deadline.disclosure_source_name}
@@ -304,14 +307,17 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             style={({ pressed }) => [
               styles.addButton,
               pressed && styles.addButtonPressed,
-            ]}>
+            ]}
+          >
             <IconSymbol
               name="plus.circle.fill"
               size={20}
               color={colors.darkPurple}
               style={styles.addIcon}
             />
-            <ThemedText style={[styles.addButtonText, { color: colors.darkPurple }]}>
+            <ThemedText
+              style={[styles.addButtonText, { color: colors.darkPurple }]}
+            >
               Add
             </ThemedText>
           </Pressable>
@@ -487,9 +493,14 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             >
               <View style={styles.ghostBadgeContainer}>
                 <View
-                  style={[styles.ghostBadge, { backgroundColor: colors.primary }]}>
+                  style={[
+                    styles.ghostBadge,
+                    { backgroundColor: colors.primary },
+                  ]}
+                >
                   <ThemedText
-                    style={[styles.ghostBadgeText, { color: colors.primary }]}>
+                    style={[styles.ghostBadgeText, { color: colors.primary }]}
+                  >
                     NetGalley
                   </ThemedText>
                 </View>
@@ -501,7 +512,8 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                     backgroundColor: colors.primary,
                     borderColor: colors.primary,
                   },
-                ]}>
+                ]}
+              >
                 <View
                   style={[
                     styles.ghostDisclosureLine,

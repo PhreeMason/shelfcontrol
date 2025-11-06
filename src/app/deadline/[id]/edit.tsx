@@ -34,9 +34,7 @@ const EditDeadline = () => {
           style={{ flex: 1, backgroundColor: colors.background }}
         >
           <ThemedView style={[styles.container, { padding: 20 }]}>
-            <ThemedText variant="title">
-              Cannot Edit Completed Books
-            </ThemedText>
+            <ThemedText variant="title">Cannot Edit Completed Books</ThemedText>
             <ThemedText style={{ marginTop: 8 }}>
               This book has been marked as completed and cannot be edited.
             </ThemedText>

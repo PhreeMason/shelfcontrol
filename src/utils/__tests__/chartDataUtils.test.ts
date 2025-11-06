@@ -958,14 +958,19 @@ describe('chartDataUtils', () => {
       const cutoffTime = new Date('2024-01-14T00:00:00Z');
       mockCalculateCutoffTime.mockReturnValue(cutoffTime);
       mockProcessBookProgress
-        .mockImplementationOnce((_deadline, _cutoff, dailyProgress, _format) => {
-          dailyProgress['2024-01-15'] = 50;
-          dailyProgress['2024-01-16'] = 25;
-        })
-        .mockImplementationOnce((_deadline, _cutoff, dailyProgress, _format) => {
-          dailyProgress['2024-01-15'] = (dailyProgress['2024-01-15'] || 0) + 30;
-          dailyProgress['2024-01-17'] = 40;
-        });
+        .mockImplementationOnce(
+          (_deadline, _cutoff, dailyProgress, _format) => {
+            dailyProgress['2024-01-15'] = 50;
+            dailyProgress['2024-01-16'] = 25;
+          }
+        )
+        .mockImplementationOnce(
+          (_deadline, _cutoff, dailyProgress, _format) => {
+            dailyProgress['2024-01-15'] =
+              (dailyProgress['2024-01-15'] || 0) + 30;
+            dailyProgress['2024-01-17'] = 40;
+          }
+        );
 
       const result = getAllUserReadingDays([
         mockPhysicalDeadline,
@@ -1023,12 +1028,16 @@ describe('chartDataUtils', () => {
       const cutoffTime = new Date('2024-01-14T00:00:00Z');
       mockCalculateCutoffTime.mockReturnValue(cutoffTime);
       mockProcessBookProgress
-        .mockImplementationOnce((_deadline, _cutoff, dailyProgress, _format) => {
-          dailyProgress['2024-01-15'] = 50;
-        })
-        .mockImplementationOnce((_deadline, _cutoff, dailyProgress, _format) => {
-          dailyProgress['2024-01-16'] = 30;
-        });
+        .mockImplementationOnce(
+          (_deadline, _cutoff, dailyProgress, _format) => {
+            dailyProgress['2024-01-15'] = 50;
+          }
+        )
+        .mockImplementationOnce(
+          (_deadline, _cutoff, dailyProgress, _format) => {
+            dailyProgress['2024-01-16'] = 30;
+          }
+        );
 
       const result = getAllUserReadingDays([
         mockPhysicalDeadline,
@@ -1047,12 +1056,17 @@ describe('chartDataUtils', () => {
       const cutoffTime = new Date('2024-01-14T00:00:00Z');
       mockCalculateCutoffTime.mockReturnValue(cutoffTime);
       mockProcessBookProgress
-        .mockImplementationOnce((_deadline, _cutoff, dailyProgress, _format) => {
-          dailyProgress['2024-01-15'] = 50;
-        })
-        .mockImplementationOnce((_deadline, _cutoff, dailyProgress, _format) => {
-          dailyProgress['2024-01-15'] = (dailyProgress['2024-01-15'] || 0) + 30;
-        });
+        .mockImplementationOnce(
+          (_deadline, _cutoff, dailyProgress, _format) => {
+            dailyProgress['2024-01-15'] = 50;
+          }
+        )
+        .mockImplementationOnce(
+          (_deadline, _cutoff, dailyProgress, _format) => {
+            dailyProgress['2024-01-15'] =
+              (dailyProgress['2024-01-15'] || 0) + 30;
+          }
+        );
 
       const result = getAllUserReadingDays([
         mockPhysicalDeadline,

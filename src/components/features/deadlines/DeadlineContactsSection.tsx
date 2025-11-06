@@ -152,14 +152,17 @@ export const DeadlineContactsSection = ({
             style={({ pressed }) => [
               styles.addButton,
               pressed && styles.addButtonPressed,
-            ]}>
+            ]}
+          >
             <IconSymbol
               name="plus.circle.fill"
               size={20}
               color={colors.darkPurple}
               style={styles.addIcon}
             />
-            <ThemedText style={[styles.addButtonText, { color: colors.darkPurple }]}>
+            <ThemedText
+              style={[styles.addButtonText, { color: colors.darkPurple }]}
+            >
               Add
             </ThemedText>
           </Pressable>
@@ -210,7 +213,8 @@ export const DeadlineContactsSection = ({
                   borderColor: colors.primary,
                 },
               ]}
-              onPress={() => setIsAdding(true)}>
+              onPress={() => setIsAdding(true)}
+            >
               <View style={styles.ghostContact}>
                 <View style={styles.ghostIcon}>
                   <IconSymbol

@@ -113,14 +113,17 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
               styles.addButton,
               pressed && styles.addButtonPressed,
             ]}
-            testID="add-tag-button">
+            testID="add-tag-button"
+          >
             <IconSymbol
               name="plus.circle.fill"
               size={20}
               color={colors.darkPurple}
               style={styles.addIcon}
             />
-            <ThemedText style={[styles.addButtonText, { color: colors.darkPurple }]}>
+            <ThemedText
+              style={[styles.addButtonText, { color: colors.darkPurple }]}
+            >
               Add
             </ThemedText>
           </Pressable>
@@ -169,7 +172,8 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
                   borderColor: colors.primary,
                 },
               ]}
-              onPress={() => setIsAdding(true)}>
+              onPress={() => setIsAdding(true)}
+            >
               <View style={styles.ghostTags}>
                 <View
                   style={[
@@ -178,8 +182,11 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
                       backgroundColor: colors.primary,
                       borderColor: colors.primary,
                     },
-                  ]}>
-                  <ThemedText style={[styles.ghostTagText, { color: colors.primary }]}>
+                  ]}
+                >
+                  <ThemedText
+                    style={[styles.ghostTagText, { color: colors.primary }]}
+                  >
                     Fall reads
                   </ThemedText>
                 </View>
@@ -190,8 +197,11 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
                       backgroundColor: colors.primary,
                       borderColor: colors.primary,
                     },
-                  ]}>
-                  <ThemedText style={[styles.ghostTagText, { color: colors.primary }]}>
+                  ]}
+                >
+                  <ThemedText
+                    style={[styles.ghostTagText, { color: colors.primary }]}
+                  >
                     fantasy
                   </ThemedText>
                 </View>

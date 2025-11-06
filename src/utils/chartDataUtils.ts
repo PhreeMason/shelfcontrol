@@ -55,9 +55,7 @@ export const getAllUserReadingDays = (
 ): ReadingDay[] => {
   const dailyProgress: { [date: string]: number } = {};
 
-  const readingDeadlines = deadlines.filter(
-    d => d.format !== 'audio'
-  );
+  const readingDeadlines = deadlines.filter(d => d.format !== 'audio');
 
   if (readingDeadlines.length === 0) return [];
 

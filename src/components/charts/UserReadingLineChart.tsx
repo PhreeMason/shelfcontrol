@@ -52,109 +52,112 @@ const UserReadingLineChart: React.FC<UserReadingLineChartProps> = ({
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText variant='title' style={[styles.title, { color: colors.text }]}>
-          Pages Read Per Day
-        </ThemedText>
-      <View style={styles.chartContainer}  testID="user-reading-line-chart">
-          <LineChart
-            data={chartData}
-            width={320}
-            height={180}
-            adjustToWidth
-            curved
-            curveType={CurveType.QUADRATIC}
-            initialSpacing={15}
-            areaChart
-            color={colors.primary}
-            thickness={2}
-            startFillColor={colors.darkPurple}
-            endFillColor={colors.primary}
-            startOpacity={0.4}
-            endOpacity={0.1}
-            xAxisThickness={2}
-            yAxisThickness={2}
-            xAxisColor={colors.border}
-            yAxisColor={colors.border}
-            yAxisTextStyle={{
-              color: colors.textMuted,
-              fontSize: 11,
-            }}
-            xAxisLabelTextStyle={{
-              color: colors.textMuted,
-              fontSize: 8,
-              width: 30,
-            }}
-            noOfSections={5}
-            maxValue={yAxisMax > 0 ? yAxisMax : 10}
-            mostNegativeValue={0}
-            yAxisLabelSuffix=" pg"
-            yAxisLabelWidth={45}
-            yAxisOffset={10}
-            isAnimated
-            animationDuration={1000}
-            dataPointsColor={colors.primary}
-            dataPointsRadius={5}
-            dataPointsWidth={10}
-            dataPointsHeight={10}
-            textColor={colors.text}
-            textFontSize={10}
-            textShiftY={-8}
-            textShiftX={-5}
-            showVerticalLines
-            verticalLinesColor={colors.border}
-            hideDataPoints={false}
-            focusEnabled
-            showStripOnFocus
-            showTextOnFocus
-            stripColor={colors.primary}
-            stripOpacity={0.3}
-            stripWidth={2}
-            pointerConfig={{
-              pointerStripHeight: 200,
-              pointerStripColor: colors.textMuted,
-              pointerStripWidth: 1,
-              strokeDashArray: [4, 4],
-              pointerColor: colors.primary,
-              radius: 6,
-              pointerLabelWidth: 100,
-              pointerLabelHeight: 90,
-              // activatePointersOnLongPress: false,
-              autoAdjustPointerLabelPosition: true,
-              pointerLabelComponent: (items: any) => {
-                const item = items[0];
-                return (
-                  <ThemedView
+      <ThemedText
+        variant="title"
+        style={[styles.title, { color: colors.text }]}
+      >
+        Pages Read Per Day
+      </ThemedText>
+      <View style={styles.chartContainer} testID="user-reading-line-chart">
+        <LineChart
+          data={chartData}
+          width={320}
+          height={180}
+          adjustToWidth
+          curved
+          curveType={CurveType.QUADRATIC}
+          initialSpacing={15}
+          areaChart
+          color={colors.primary}
+          thickness={2}
+          startFillColor={colors.darkPurple}
+          endFillColor={colors.primary}
+          startOpacity={0.4}
+          endOpacity={0.1}
+          xAxisThickness={2}
+          yAxisThickness={2}
+          xAxisColor={colors.border}
+          yAxisColor={colors.border}
+          yAxisTextStyle={{
+            color: colors.textMuted,
+            fontSize: 11,
+          }}
+          xAxisLabelTextStyle={{
+            color: colors.textMuted,
+            fontSize: 8,
+            width: 30,
+          }}
+          noOfSections={5}
+          maxValue={yAxisMax > 0 ? yAxisMax : 10}
+          mostNegativeValue={0}
+          yAxisLabelSuffix=" pg"
+          yAxisLabelWidth={45}
+          yAxisOffset={10}
+          isAnimated
+          animationDuration={1000}
+          dataPointsColor={colors.primary}
+          dataPointsRadius={5}
+          dataPointsWidth={10}
+          dataPointsHeight={10}
+          textColor={colors.text}
+          textFontSize={10}
+          textShiftY={-8}
+          textShiftX={-5}
+          showVerticalLines
+          verticalLinesColor={colors.border}
+          hideDataPoints={false}
+          focusEnabled
+          showStripOnFocus
+          showTextOnFocus
+          stripColor={colors.primary}
+          stripOpacity={0.3}
+          stripWidth={2}
+          pointerConfig={{
+            pointerStripHeight: 200,
+            pointerStripColor: colors.textMuted,
+            pointerStripWidth: 1,
+            strokeDashArray: [4, 4],
+            pointerColor: colors.primary,
+            radius: 6,
+            pointerLabelWidth: 100,
+            pointerLabelHeight: 90,
+            // activatePointersOnLongPress: false,
+            autoAdjustPointerLabelPosition: true,
+            pointerLabelComponent: (items: any) => {
+              const item = items[0];
+              return (
+                <ThemedView
+                  style={{
+                    backgroundColor: colors.surface,
+                    borderRadius: 8,
+                    padding: 8,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                  }}
+                >
+                  <ThemedText
                     style={{
-                      backgroundColor: colors.surface,
-                      borderRadius: 8,
-                      padding: 8,
-                      borderWidth: 1,
-                      borderColor: colors.border,
+                      color: colors.text,
+                      fontSize: 12,
+                      fontWeight: 'bold',
                     }}
                   >
-                    <ThemedText
-                      style={{
-                        color: colors.text,
-                        fontSize: 12,
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      {item.dataPointText} pages
-                    </ThemedText>
-                    <ThemedText
-                      style={{
-                        color: colors.textMuted,
-                        fontSize: 10,
-                        marginTop: 2,
-                      }}
-                    >
-                      {item.date}
-                    </ThemedText>
-                  </ThemedView>
-                );
-              },
-            }}
-          />
+                    {item.dataPointText} pages
+                  </ThemedText>
+                  <ThemedText
+                    style={{
+                      color: colors.textMuted,
+                      fontSize: 10,
+                      marginTop: 2,
+                    }}
+                  >
+                    {item.date}
+                  </ThemedText>
+                </ThemedView>
+              );
+            },
+          }}
+        />
       </View>
     </ThemedView>
   );
@@ -165,7 +168,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     borderRadius: 12,
     width: '100%',
-    transform: [{translateX: -10}],
+    transform: [{ translateX: -10 }],
   },
   title: {
     fontWeight: '600',

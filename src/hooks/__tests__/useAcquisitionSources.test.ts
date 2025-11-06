@@ -229,12 +229,7 @@ describe('useAcquisitionSources', () => {
 
       const result = await queryConfig.queryFn();
 
-      expect(result).toEqual([
-        'Amazon',
-        'NetGalley',
-        'Edelweiss',
-        'Direct',
-      ]);
+      expect(result).toEqual(['Amazon', 'NetGalley', 'Edelweiss', 'Direct']);
     });
 
     it('should sort user sources alphabetically before defaults', async () => {
@@ -376,12 +371,7 @@ describe('useAcquisitionSources', () => {
       useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userSources = [
-        'Store123',
-        'store123',
-        'STORE123',
-        'Unique Source',
-      ];
+      const userSources = ['Store123', 'store123', 'STORE123', 'Unique Source'];
       mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue(
         userSources
       );
@@ -399,7 +389,10 @@ describe('useAcquisitionSources', () => {
       useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userSources = Array.from({ length: 50 }, (_, i) => `Source ${i + 1}`);
+      const userSources = Array.from(
+        { length: 50 },
+        (_, i) => `Source ${i + 1}`
+      );
       mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue(
         userSources
       );
