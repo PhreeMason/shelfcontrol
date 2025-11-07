@@ -107,11 +107,11 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
       hasReviewDeadline:
         mode === 'edit' && existingReviewTracking
           ? !!existingReviewTracking.review_due_date
-          : false,
+          : true,
       reviewDueDate:
         mode === 'edit' && existingReviewTracking?.review_due_date
           ? new Date(existingReviewTracking.review_due_date)
-          : null,
+          : new Date(deadline.deadline_date),
       needsLinkSubmission:
         mode === 'edit' && existingReviewTracking
           ? existingReviewTracking.needs_link_submission

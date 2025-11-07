@@ -726,11 +726,41 @@ describe('CompletionFormStep3', () => {
       });
     });
 
-    it('should not include review due date when hasReviewDeadline is false', async () => {
+    it('should use existing review tracking data in edit mode, not deadline defaults', async () => {
+      mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads']);
+
+      const existingReviewDueDate = '2025-01-15T00:00:00Z';
+      (useReviewTrackingData as jest.Mock).mockReturnValue({
+        reviewTracking: {
+          id: 'test-review-tracking-id',
+          review_due_date: existingReviewDueDate,
+          needs_link_submission: true,
+        },
+        platforms: [{ platform_name: 'Goodreads', posted: false }],
+      });
+
+      mockUpdateReviewTracking.mockImplementation((_params, callbacks) => {
+        // Should use existing date, not deadline.deadline_date
+        expect(_params.review_due_date).toBe(new Date(existingReviewDueDate).toISOString());
+        expect(_params.needs_link_submission).toBe(true);
+        callbacks.onSuccess();
+      });
+
+      render(<CompletionFormStep3 deadline={mockDeadline} mode="edit" />);
+
+      fireEvent.press(screen.getByTestId('save-and-finish-button'));
+
+      await waitFor(() => {
+        expect(mockUpdateReviewTracking).toHaveBeenCalled();
+      });
+    });
+
+    it('should include review due date by default in create mode', async () => {
       mockGetAllSelectedPlatforms.mockReturnValue(['Goodreads']);
 
       mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
-        expect(_params.review_due_date).toBeUndefined();
+        expect(_params.review_due_date).toBeDefined();
+        expect(_params.review_due_date).toBe(new Date('2024-12-31').toISOString());
         callbacks.onSuccess();
       });
 
@@ -744,8 +774,8 @@ describe('CompletionFormStep3', () => {
 
       await waitFor(() => {
         expect(mockCreateReviewTracking).toHaveBeenCalledWith(
-          expect.not.objectContaining({
-            review_due_date: expect.anything(),
+          expect.objectContaining({
+            review_due_date: new Date('2024-12-31').toISOString(),
           }),
           expect.any(Object)
         );

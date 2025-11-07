@@ -3,7 +3,6 @@ import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
-import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
@@ -28,30 +27,6 @@ const EditReviewTracking = () => {
           <ThemedText variant="title">Book Not Found</ThemedText>
           <ThemedText style={{ marginTop: 8 }}>
             The book you are trying to edit could not be found.
-          </ThemedText>
-          <ThemedButton
-            title="Go Back"
-            onPress={() => router.back()}
-            style={{ marginTop: 16 }}
-          />
-        </ThemedView>
-      </SafeAreaView>
-    );
-  }
-
-  const { isToReview } = getDeadlineStatus(deadline);
-
-  if (!isToReview) {
-    return (
-      <SafeAreaView
-        edges={['right', 'bottom', 'left']}
-        style={{ flex: 1, backgroundColor: colors.background }}
-      >
-        <ThemedView style={[styles.container, { padding: 20 }]}>
-          <ThemedText variant="title">Cannot Edit Review Tracking</ThemedText>
-          <ThemedText style={{ marginTop: 8 }}>
-            Review tracking can only be edited for books in the "to review"
-            status.
           </ThemedText>
           <ThemedButton
             title="Go Back"

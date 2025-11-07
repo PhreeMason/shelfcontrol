@@ -100,7 +100,7 @@ const DeadlineView = () => {
     );
   }
 
-  const { isToReview, isArchived, isPending, isPaused } =
+  const { isToReview, isArchived, isPending, isPaused, latestStatus } =
     getDeadlineStatus(deadline);
 
   const handleBack = () => {
@@ -111,7 +111,7 @@ const DeadlineView = () => {
     onBack: handleBack,
   };
 
-  const shouldShowStats = isToReview || isArchived;
+  const shouldShowStats = latestStatus !== 'pending' && latestStatus !== 'reading';
   const shouldShowProgress = !shouldShowStats && !isPending;
   const sourceOptions = getDeadlineSourceOptions(deadline);
   const shouldShowDisclosure = sourceOptions.length > 0;

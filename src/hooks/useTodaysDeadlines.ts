@@ -25,12 +25,12 @@ export const useTodaysDeadlines = (): TodaysDeadlines => {
         const status = d.status?.length && d.status[d.status.length - 1];
         if (!status) return false;
         const statusDate = normalizeServerDate(status.created_at);
-        return statusDate.isValid() && statusDate.isAfter(today);
+        return statusDate.isValid() && statusDate.isSameOrAfter(today);
       }),
     ].filter(d => {
       if (!d.deadline_date) return false;
       const deadlineDate = normalizeServerDateStartOfDay(d.deadline_date);
-      return deadlineDate.isValid() && deadlineDate.isAfter(today);
+      return deadlineDate.isValid() && deadlineDate.isSameOrAfter(today);
     });
   }, [activeDeadlines, completedDeadlines]);
 

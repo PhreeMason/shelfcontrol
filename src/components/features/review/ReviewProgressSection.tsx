@@ -127,7 +127,6 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
           onToggle={handleTogglePlatform}
           needsLinkSubmission={reviewTracking.needs_link_submission}
           onUpdateUrl={handleUpdateUrl}
-          readOnly={!isToReview}
         />
 
         {isToReview && (
