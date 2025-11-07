@@ -149,7 +149,9 @@ describe('DeadlineFormStep4', () => {
       render(<DeadlineFormStep4 {...defaultProps} />);
 
       // Check that due date label exists (split across multiple text components)
-      expect(screen.getAllByText('Due Date', { exact: false }).length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByText('Due Date', { exact: false }).length
+      ).toBeGreaterThan(0);
       expect(screen.getByTestId('date-picker-button')).toBeTruthy();
     });
 
@@ -502,9 +504,7 @@ describe('DeadlineFormStep4', () => {
       const { rerender } = render(<DeadlineFormStep4 {...defaultProps} />);
 
       let progressInput = screen.getByTestId('input-currentProgress');
-      expect(progressInput.props['data-placeholder']).toBe(
-        'Pages so far?'
-      );
+      expect(progressInput.props['data-placeholder']).toBe('Pages so far?');
 
       rerender(
         <DeadlineFormStep4 {...{ ...defaultProps, selectedFormat: 'audio' }} />
@@ -545,7 +545,9 @@ describe('DeadlineFormStep4', () => {
       render(<DeadlineFormStep4 {...defaultProps} />);
 
       // Check that due date label exists (split across multiple text components)
-      expect(screen.getAllByText('Due Date', { exact: false }).length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByText('Due Date', { exact: false }).length
+      ).toBeGreaterThan(0);
     });
   });
 

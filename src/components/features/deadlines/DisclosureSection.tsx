@@ -437,7 +437,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             <ThemedButton
               title={
                 updateDeadlineDisclosureMutation.isPending ||
-                  createTemplateMutation.isPending
+                createTemplateMutation.isPending
                   ? 'Saving...'
                   : 'Save'
               }
@@ -607,7 +607,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    transform: [{ translateY: 1 }]
+    transform: [{ translateY: 1 }],
   },
   actions: {
     flexDirection: 'row',

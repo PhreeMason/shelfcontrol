@@ -1,8 +1,13 @@
+import { NoteFilterSheet } from '@/components/features/notes/NoteFilterSheet';
 import AppHeader from '@/components/shared/AppHeader';
+import { HashtagText } from '@/components/shared/HashtagText';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
+import { useFetchBookById } from '@/hooks/useBooks';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
+import { useGetAllHashtags, useGetAllNoteHashtags } from '@/hooks/useHashtags';
 import {
   useAddNote,
   useDeleteNote,
@@ -13,16 +18,25 @@ import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
 import { dayjs } from '@/lib/dayjs';
 import { DeadlineNote } from '@/types/notes.types';
+import {
+  extractHashtags,
+  findHashtagAtCursor,
+  MAX_HASHTAGS_PER_NOTE,
+} from '@/utils/hashtagUtils';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -35,12 +49,21 @@ const Notes = () => {
   const [noteText, setNoteText] = useState('');
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const initialNoteTextRef = useRef('');
+  const [cursorPosition, setCursorPosition] = useState(0);
+  const [showTypeahead, setShowTypeahead] = useState(false);
+  const [selectedHashtagIds, setSelectedHashtagIds] = useState<string[]>([]);
+  const [showFilterSheet, setShowFilterSheet] = useState(false);
 
   const { data: deadline } = useGetDeadlineById(id);
+  const { data: bookData } = useFetchBookById(deadline?.book_id ?? null);
   const { data: notes, isLoading } = useGetNotes(id);
+  const { data: allHashtags = [] } = useGetAllHashtags();
+  const { data: noteHashtags = [] } = useGetAllNoteHashtags(id);
   const addNoteMutation = useAddNote();
   const updateNoteMutation = useUpdateNote();
   const deleteNoteMutation = useDeleteNote();
+  const isSubmitting =
+    addNoteMutation.isPending || updateNoteMutation.isPending;
 
   useEffect(() => {
     return () => {
@@ -50,17 +73,69 @@ const Notes = () => {
     };
   }, []);
 
-  const currentProgress =
-    deadline?.progress && deadline.progress.length > 0
-      ? Math.max(...deadline.progress.map(p => p.current_progress))
-      : 0;
+  // Detect hashtag typing for typeahead
+  const currentHashtag = useMemo(() => {
+    return findHashtagAtCursor(noteText, cursorPosition);
+  }, [noteText, cursorPosition]);
 
-  const currentProgressPercentage = deadline?.total_quantity
-    ? Math.round((currentProgress / deadline.total_quantity) * 100)
-    : 0;
+  // Filter hashtags for typeahead
+  const typeaheadHashtags = useMemo(() => {
+    if (!currentHashtag) return [];
+    return allHashtags.filter(h =>
+      h.name.toLowerCase().startsWith(currentHashtag.hashtag.toLowerCase())
+    );
+  }, [allHashtags, currentHashtag]);
+
+  // Show typeahead when typing hashtag
+  useEffect(() => {
+    setShowTypeahead(!!currentHashtag && typeaheadHashtags.length > 0);
+  }, [currentHashtag, typeaheadHashtags]);
+
+  // Count hashtags in current note text for validation
+  const currentHashtagCount = useMemo(() => {
+    return extractHashtags(noteText).length;
+  }, [noteText]);
+
+  const hasHashtagLimitError = currentHashtagCount > MAX_HASHTAGS_PER_NOTE;
+
+  // Filter notes by selected hashtags
+  const filteredNotes = useMemo(() => {
+    if (!notes || selectedHashtagIds.length === 0) return notes || [];
+
+    const noteIdsByHashtag = new Map<string, Set<string>>();
+    selectedHashtagIds.forEach(hashtagId => {
+      const noteIds = noteHashtags
+        .filter(nh => nh.hashtag_id === hashtagId)
+        .map(nh => nh.note_id);
+      noteIdsByHashtag.set(hashtagId, new Set(noteIds));
+    });
+
+    // OR logic: show note if it has ANY of the selected hashtags
+    return notes.filter(note => {
+      return selectedHashtagIds.some(hashtagId => {
+        const noteIds = noteIdsByHashtag.get(hashtagId);
+        return noteIds?.has(note.id);
+      });
+    });
+  }, [notes, noteHashtags, selectedHashtagIds]);
+
+  // Get unique hashtags used in this deadline's notes
+  const usedHashtags = useMemo(() => {
+    const hashtagIds = new Set(noteHashtags.map(nh => nh.hashtag_id));
+    return allHashtags.filter(h => hashtagIds.has(h.id));
+  }, [allHashtags, noteHashtags]);
 
   const handleSubmitNote = () => {
     if (!noteText.trim() || !id) return;
+
+    // Validate hashtag limit
+    if (hasHashtagLimitError) {
+      Alert.alert(
+        'Too Many Hashtags',
+        `Notes can have a maximum of ${MAX_HASHTAGS_PER_NOTE} hashtags. You have ${currentHashtagCount} hashtags. Please remove some before saving.`
+      );
+      return;
+    }
 
     if (editingNoteId) {
       updateNoteMutation.mutate(
@@ -84,17 +159,17 @@ const Notes = () => {
         }
       );
     } else {
+      // Progress is now automatically calculated and stored in notesService.addNote()
       addNoteMutation.mutate(
         {
           deadlineId: id,
           noteText: noteText.trim(),
-          deadlineProgress: currentProgressPercentage,
         },
         {
-          onSuccess: () => {
+          onSuccess: createdNote => {
             analytics.track('note_created', {
               note_length: noteText.trim().length,
-              progress_percentage: currentProgressPercentage,
+              progress_percentage: createdNote.deadline_progress,
             });
             setNoteText('');
           },
@@ -143,6 +218,30 @@ const Notes = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
+  const handleSelectHashtag = (hashtagName: string) => {
+    if (!currentHashtag) return;
+
+    const before = noteText.slice(0, currentHashtag.start);
+    const after = noteText.slice(cursorPosition);
+    const newText = `${before}#${hashtagName} ${after}`;
+
+    setNoteText(newText);
+    setCursorPosition(currentHashtag.start + hashtagName.length + 2); // +2 for # and space
+    setShowTypeahead(false);
+  };
+
+  const handleTextChange = (text: string) => {
+    setNoteText(text);
+  };
+
+  const handleSelectionChange = (event: any) => {
+    setCursorPosition(event.nativeEvent.selection.start);
+  };
+
+  const handleHashtagPress = (hashtagName: string, hashtagId: string) => {
+    setSelectedHashtagIds([hashtagId]);
+  };
+
   const renderNote = ({
     item,
     index,
@@ -157,7 +256,12 @@ const Notes = () => {
       <View
         style={[styles.noteItem, isLateItemInList && { borderBottomWidth: 0 }]}
       >
-        <ThemedText style={styles.noteText}>{item.note_text}</ThemedText>
+        <HashtagText
+          text={item.note_text}
+          hashtags={allHashtags}
+          style={[styles.noteText, { color: colors.text }]}
+          onHashtagPress={handleHashtagPress}
+        />
         <View style={styles.noteFooter}>
           <ThemedText style={styles.noteMetadata}>
             {formattedDate} • {progressText}
@@ -206,9 +310,37 @@ const Notes = () => {
     >
       <AppHeader title="Notes" onBack={() => router.back()} />
       <View style={styles.header}>
-        <ThemedText style={styles.headerTitle}>
-          {deadline?.book_title || 'Book'}
-        </ThemedText>
+        <View style={styles.headerContent}>
+          {bookData?.cover_image_url && (
+            <Image
+              source={{ uri: bookData.cover_image_url }}
+              style={styles.headerCover}
+              resizeMode="cover"
+            />
+          )}
+          <ThemedText style={styles.headerTitle}>
+            {deadline?.book_title || 'Book'}
+          </ThemedText>
+        </View>
+        {usedHashtags.length > 0 && (
+          <View style={styles.filterButtonContainer}>
+            {selectedHashtagIds.length > 0 && (
+              <View style={styles.starIndicator}>
+                <IconSymbol
+                  name="star.fill"
+                  size={12}
+                  color={Colors.light.urgent}
+                />
+              </View>
+            )}
+            <ThemedIconButton
+              icon="line.3.horizontal.decrease"
+              onPress={() => setShowFilterSheet(true)}
+              variant={selectedHashtagIds.length > 0 ? 'primary' : 'outline'}
+              size="sm"
+            />
+          </View>
+        )}
       </View>
 
       <KeyboardAvoidingView
@@ -217,7 +349,7 @@ const Notes = () => {
         keyboardVerticalOffset={100}
       >
         <FlatList
-          data={notes || []}
+          data={filteredNotes || []}
           inverted={true}
           renderItem={renderNote}
           keyExtractor={item => item.id}
@@ -226,6 +358,12 @@ const Notes = () => {
             isLoading ? (
               <ThemedView style={styles.emptyContainer}>
                 <ThemedText>Loading notes...</ThemedText>
+              </ThemedView>
+            ) : selectedHashtagIds.length > 0 ? (
+              <ThemedView style={styles.emptyContainer}>
+                <ThemedText style={styles.emptyText}>
+                  No notes match the selected hashtags.
+                </ThemedText>
               </ThemedView>
             ) : (
               <ThemedView style={styles.emptyContainer}>
@@ -237,41 +375,101 @@ const Notes = () => {
           }
         />
 
+        {showTypeahead && typeaheadHashtags.length > 0 && (
+          <View
+            style={[
+              styles.typeaheadContainer,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
+            <ScrollView
+              style={styles.typeaheadScroll}
+              keyboardShouldPersistTaps="handled"
+            >
+              {typeaheadHashtags.map(hashtag => (
+                <TouchableOpacity
+                  key={hashtag.id}
+                  style={[
+                    styles.typeaheadItem,
+                    { borderBottomColor: colors.border },
+                  ]}
+                  onPress={() => handleSelectHashtag(hashtag.name)}
+                >
+                  <Text
+                    style={[styles.typeaheadText, { color: hashtag.color }]}
+                  >
+                    #{hashtag.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
         <View
           style={[styles.inputContainer, { borderTopColor: colors.border }]}
         >
-          <TextInput
-            style={[
-              styles.input,
-              { backgroundColor: colors.surface, color: colors.text },
-            ]}
-            placeholder="Add notes about this book..."
-            placeholderTextColor={colors.textSecondary}
-            value={noteText}
-            onChangeText={setNoteText}
-            multiline
-            onSubmitEditing={handleSubmitNote}
-            returnKeyType="done"
-          />
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.surface,
+                  color: colors.text,
+                  borderColor: hasHashtagLimitError ? '#ef4444' : 'transparent',
+                  borderWidth: hasHashtagLimitError ? 1 : 0,
+                },
+              ]}
+              placeholder="Add notes about this book. Use #hashtag to organize"
+              placeholderTextColor={colors.textSecondary}
+              value={noteText}
+              onChangeText={handleTextChange}
+              onSelectionChange={handleSelectionChange}
+              multiline
+              onSubmitEditing={handleSubmitNote}
+              returnKeyType="done"
+            />
+            {hasHashtagLimitError && (
+              <Text style={styles.hashtagLimitError}>
+                Too many hashtags ({currentHashtagCount}/{MAX_HASHTAGS_PER_NOTE}
+                ). Remove {currentHashtagCount - MAX_HASHTAGS_PER_NOTE} to save.
+              </Text>
+            )}
+          </View>
           <TouchableOpacity
             style={[
               styles.sendButton,
-              !noteText.trim() && styles.sendButtonDisabled,
+              (!noteText.trim() || isSubmitting || hasHashtagLimitError) &&
+                styles.sendButtonDisabled,
             ]}
             onPress={handleSubmitNote}
-            disabled={!noteText.trim()}
+            disabled={!noteText.trim() || isSubmitting || hasHashtagLimitError}
           >
-            <ThemedText
-              style={[
-                styles.sendButtonText,
-                !noteText.trim() && styles.sendButtonTextDisabled,
-              ]}
-            >
-              {editingNoteId ? 'Update' : 'Add'}
-            </ThemedText>
+            {isSubmitting ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <ThemedText
+                style={[
+                  styles.sendButtonText,
+                  (!noteText.trim() || hasHashtagLimitError) &&
+                    styles.sendButtonTextDisabled,
+                ]}
+              >
+                {editingNoteId ? 'Update' : 'Add'}
+              </ThemedText>
+            )}
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+
+      <NoteFilterSheet
+        visible={showFilterSheet}
+        onClose={() => setShowFilterSheet(false)}
+        hashtags={usedHashtags}
+        selectedHashtagIds={selectedHashtagIds}
+        onHashtagsChange={setSelectedHashtagIds}
+        filteredCount={filteredNotes.length}
+      />
     </SafeAreaView>
   );
 };
@@ -287,10 +485,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 18,
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
     gap: 4,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  headerCover: {
+    width: 30,
+    height: 45,
+    borderRadius: 3,
   },
   headerTitle: {
     fontSize: 20,
@@ -349,13 +558,23 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     gap: 8,
   },
-  input: {
+  inputWrapper: {
     flex: 1,
+  },
+  input: {
     minHeight: 40,
     maxHeight: 100,
     borderRadius: 20,
     paddingVertical: 10,
+    paddingHorizontal: 16,
     fontSize: 16,
+  },
+  hashtagLimitError: {
+    color: '#ef4444',
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 16,
+    fontWeight: '500',
   },
   sendButton: {
     paddingHorizontal: 16,
@@ -380,5 +599,32 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: Colors.light.darkPurple,
     fontWeight: '600',
+  },
+  typeaheadContainer: {
+    maxHeight: 200,
+    borderWidth: 1,
+    borderRadius: 8,
+    marginHorizontal: 12,
+    marginBottom: 8,
+  },
+  typeaheadScroll: {
+    maxHeight: 200,
+  },
+  typeaheadItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+  },
+  typeaheadText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  filterButtonContainer: {
+    position: 'relative',
+  },
+  starIndicator: {
+    position: 'absolute',
+    top: 1,
+    right: 1,
+    zIndex: 1,
   },
 });

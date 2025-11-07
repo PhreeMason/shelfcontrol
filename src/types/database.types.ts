@@ -513,6 +513,90 @@ export type Database = {
           },
         ];
       };
+      hashtags: {
+        Row: {
+          color: string;
+          created_at: string;
+          id: string;
+          name: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          color: string;
+          created_at?: string;
+          id?: string;
+          name: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          color?: string;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'hashtags_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      note_hashtags: {
+        Row: {
+          created_at: string;
+          hashtag_id: string;
+          id: string;
+          note_id: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          hashtag_id: string;
+          id?: string;
+          note_id: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          hashtag_id?: string;
+          id?: string;
+          note_id?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'note_hashtags_hashtag_id_fkey';
+            columns: ['hashtag_id'];
+            isOneToOne: false;
+            referencedRelation: 'hashtags';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'note_hashtags_note_id_fkey';
+            columns: ['note_id'];
+            isOneToOne: false;
+            referencedRelation: 'deadline_notes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'note_hashtags_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -745,6 +829,17 @@ export type Database = {
     };
     Functions: {
       generate_prefixed_id: { Args: { prefix: string }; Returns: string };
+      get_daily_activities: {
+        Args: { p_end_date: string; p_start_date: string; p_user_id: string };
+        Returns: {
+          activity_date: string;
+          activity_timestamp: string;
+          activity_type: string;
+          book_title: string;
+          deadline_id: string;
+          metadata: Json;
+        }[];
+      };
       get_reading_notes_csv: {
         Args: { p_user_id: string };
         Returns: {

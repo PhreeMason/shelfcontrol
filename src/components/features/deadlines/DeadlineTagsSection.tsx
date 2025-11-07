@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    transform: [{ translateY: 1 }]
+    transform: [{ translateY: 1 }],
   },
   tagsList: {
     gap: 12,

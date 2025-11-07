@@ -1,7 +1,8 @@
-import { generateId, supabase } from '@/lib/supabase';
 import { DB_TABLES } from '@/constants/database';
+import { generateId, supabase } from '@/lib/supabase';
 import { DeadlineNote } from '@/types/notes.types';
 import { activityService } from './activity.service';
+import { hashtagsService } from './hashtags.service';
 
 class NotesService {
   async getNotes(userId: string, deadlineId: string): Promise<DeadlineNote[]> {
@@ -20,27 +21,69 @@ class NotesService {
     userId: string,
     deadlineId: string,
     noteText: string,
-    deadlineProgress: number
+    deadlineProgress?: number
   ): Promise<DeadlineNote> {
     const finalNoteId = generateId('dn');
 
+    // Fetch progress from database if not provided
+    let progressPercentage = deadlineProgress;
+
+    if (progressPercentage === undefined) {
+      // Fetch current progress from deadline_progress table
+      const { data: progressResults, error: progressError } = await supabase
+        .from(DB_TABLES.DEADLINE_PROGRESS)
+        .select('current_progress')
+        .eq('deadline_id', deadlineId)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      const currentProgress = progressResults?.[0]?.current_progress || 0;
+
+      // Get deadline to calculate percentage
+      const { data: deadlineData, error: deadlineError } = await supabase
+        .from(DB_TABLES.DEADLINES)
+        .select('total_quantity')
+        .eq('id', deadlineId)
+        .eq('user_id', userId)
+        .single();
+
+      const totalQuantity = deadlineData?.total_quantity || 0;
+
+      progressPercentage = totalQuantity
+        ? Math.round((currentProgress / totalQuantity) * 100)
+        : 0;
+    }
+
+    const insertPayload = {
+      id: finalNoteId,
+      user_id: userId,
+      deadline_id: deadlineId,
+      note_text: noteText,
+      deadline_progress: progressPercentage,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
     const { data: insertResults, error } = await supabase
       .from(DB_TABLES.DEADLINE_NOTES)
-      .insert({
-        id: finalNoteId,
-        user_id: userId,
-        deadline_id: deadlineId,
-        note_text: noteText,
-        deadline_progress: deadlineProgress,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+      .insert(insertPayload)
       .select()
       .limit(1);
 
     const data = insertResults?.[0];
 
-    if (error) throw error;
+    if (error) {
+      console.error('🔴 [notesService.addNote] Insert error:', error);
+      throw error;
+    }
+
+    // Sync hashtags from note text
+    try {
+      await hashtagsService.syncNoteHashtags(userId, finalNoteId, noteText);
+    } catch (hashtagError) {
+      // Log error but don't fail the note creation
+      console.error('Failed to sync hashtags for note:', hashtagError);
+    }
 
     activityService.trackUserActivity('note_created', {
       deadlineId,
@@ -67,6 +110,14 @@ class NotesService {
       .limit(1);
 
     if (error) throw error;
+
+    // Sync hashtags from updated note text
+    try {
+      await hashtagsService.syncNoteHashtags(userId, noteId, noteText);
+    } catch (hashtagError) {
+      // Log error but don't fail the note update
+      console.error('Failed to sync hashtags for note:', hashtagError);
+    }
 
     activityService.trackUserActivity('note_updated', {
       noteId,

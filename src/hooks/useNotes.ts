@@ -35,7 +35,7 @@ export const useAddNote = () => {
     }: {
       deadlineId: string;
       noteText: string;
-      deadlineProgress: number;
+      deadlineProgress?: number;
     }) => {
       if (!userId) {
         throw new Error('User not authenticated');
@@ -51,6 +51,15 @@ export const useAddNote = () => {
       if (userId) {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.NOTES.BY_DEADLINE(userId, variables.deadlineId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.HASHTAGS.ALL(userId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.HASHTAGS.ALL_NOTE_HASHTAGS(
+            userId,
+            variables.deadlineId
+          ),
         });
       }
     },
@@ -84,6 +93,15 @@ export const useUpdateNote = () => {
       if (userId) {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.NOTES.BY_DEADLINE(userId, variables.deadlineId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.HASHTAGS.ALL(userId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.HASHTAGS.ALL_NOTE_HASHTAGS(
+            userId,
+            variables.deadlineId
+          ),
         });
       }
     },

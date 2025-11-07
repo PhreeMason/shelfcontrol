@@ -8,6 +8,8 @@ export const DB_TABLES = {
   DEADLINE_CONTACTS: 'deadline_contacts',
   TAGS: 'tags',
   DEADLINE_TAGS: 'deadline_tags',
+  HASHTAGS: 'hashtags',
+  NOTE_HASHTAGS: 'note_hashtags',
   DISCLOSURE_TEMPLATES: 'disclosure_templates',
   USER_ACTIVITIES: 'user_activities',
   REVIEW_TRACKING: 'review_tracking',

@@ -7,6 +7,8 @@ export const QUERY_KEYS = {
     ACQUISITION_SOURCES: (userId: string) =>
       ['deadline', 'acquisition_sources', userId] as const,
     PROGRESS: (userId: string) => ['deadline_progress', userId] as const,
+    DAILY_ACTIVITIES: (userId: string, date: string) =>
+      ['daily_activities', userId, date] as const,
   },
   NOTES: {
     BY_DEADLINE: (userId: string, deadlineId: string) =>
@@ -21,6 +23,13 @@ export const QUERY_KEYS = {
     BY_DEADLINE: (userId: string, deadlineId: string) =>
       ['tags', userId, deadlineId] as const,
     ALL_DEADLINE_TAGS: (userId: string) => ['deadline_tags', userId] as const,
+  },
+  HASHTAGS: {
+    ALL: (userId: string) => ['hashtags', userId] as const,
+    BY_NOTE: (userId: string, noteId: string) =>
+      ['hashtags', userId, noteId] as const,
+    ALL_NOTE_HASHTAGS: (userId: string, deadlineId: string) =>
+      ['note_hashtags', userId, deadlineId] as const,
   },
   DISCLOSURE_TEMPLATES: {
     ALL: (userId: string) => ['disclosure_templates', userId] as const,
@@ -78,6 +87,13 @@ export const MUTATION_KEYS = {
     REMOVE_FROM_DEADLINE: 'removeTagFromDeadline',
     UPDATE: 'updateTag',
     DELETE: 'deleteTag',
+  },
+  HASHTAGS: {
+    CREATE: 'createHashtag',
+    ADD_TO_NOTE: 'addHashtagToNote',
+    REMOVE_FROM_NOTE: 'removeHashtagFromNote',
+    SYNC: 'syncNoteHashtags',
+    DELETE: 'deleteHashtag',
   },
   DISCLOSURE_TEMPLATES: {
     CREATE: 'createDisclosureTemplate',

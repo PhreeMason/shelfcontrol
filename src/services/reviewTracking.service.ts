@@ -1,5 +1,6 @@
 import { DB_TABLES } from '@/constants/database';
 import { generateId, supabase } from '@/lib/supabase';
+import { notesService } from './notes.service';
 
 export interface CreateReviewTrackingParams {
   deadline_id: string;
@@ -158,33 +159,10 @@ class ReviewTrackingService {
     if (platformsError) throw platformsError;
 
     if (review_notes) {
-      const { data: progressResults } = await supabase
-        .from(DB_TABLES.DEADLINE_PROGRESS)
-        .select('current_progress')
-        .eq('deadline_id', deadline_id)
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      const progressData = progressResults?.[0];
-      const currentProgress = progressData?.current_progress || 0;
-
-      const progressPercentage = deadline.total_quantity
-        ? Math.round((currentProgress / deadline.total_quantity) * 100)
-        : 0;
-
-      const { error: noteError } = await supabase
-        .from(DB_TABLES.DEADLINE_NOTES)
-        .insert({
-          id: generateId('note'),
-          deadline_id,
-          note_text: review_notes,
-          deadline_progress: progressPercentage,
-          user_id: userId,
-        })
-        .select()
-        .limit(1);
-
-      if (noteError) {
+      // Use notesService to create note - it handles progress calculation and hashtag sync automatically
+      try {
+        await notesService.addNote(userId, deadline_id, review_notes);
+      } catch (noteError) {
         console.warn('Failed to create review note:', noteError);
       }
     }
@@ -571,43 +549,14 @@ class ReviewTrackingService {
     if (updateError) throw updateError;
 
     if (review_notes) {
-      const { data: deadlineWithQuantityResults } = await supabase
-        .from(DB_TABLES.DEADLINES)
-        .select('total_quantity')
-        .eq('id', reviewTracking.deadline_id)
-        .limit(1);
-
-      const deadlineWithQuantity = deadlineWithQuantityResults?.[0];
-
-      const { data: progressResults } = await supabase
-        .from(DB_TABLES.DEADLINE_PROGRESS)
-        .select('current_progress')
-        .eq('deadline_id', reviewTracking.deadline_id)
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      const progressData = progressResults?.[0];
-      const currentProgress = progressData?.current_progress || 0;
-
-      const progressPercentage = deadlineWithQuantity?.total_quantity
-        ? Math.round(
-            (currentProgress / deadlineWithQuantity.total_quantity) * 100
-          )
-        : 0;
-
-      const { error: noteError } = await supabase
-        .from(DB_TABLES.DEADLINE_NOTES)
-        .insert({
-          id: generateId('note'),
-          deadline_id: reviewTracking.deadline_id,
-          note_text: review_notes,
-          deadline_progress: progressPercentage,
-          user_id: userId,
-        })
-        .select()
-        .limit(1);
-
-      if (noteError) {
+      // Use notesService to create note - it handles progress calculation and hashtag sync automatically
+      try {
+        await notesService.addNote(
+          userId,
+          reviewTracking.deadline_id,
+          review_notes
+        );
+      } catch (noteError) {
         console.warn('Failed to create review note:', noteError);
       }
     }
