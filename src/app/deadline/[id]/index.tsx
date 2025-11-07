@@ -100,8 +100,7 @@ const DeadlineView = () => {
     );
   }
 
-  const { isToReview, isArchived, isPending, isPaused, latestStatus } =
-    getDeadlineStatus(deadline);
+  const { isPending, isPaused, latestStatus } = getDeadlineStatus(deadline);
 
   const handleBack = () => {
     router.back();
