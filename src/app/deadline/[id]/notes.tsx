@@ -238,7 +238,7 @@ const Notes = () => {
     setCursorPosition(event.nativeEvent.selection.start);
   };
 
-  const handleHashtagPress = (hashtagName: string, hashtagId: string) => {
+  const handleHashtagPress = (_hashtagName: string, hashtagId: string) => {
     setSelectedHashtagIds([hashtagId]);
   };
 

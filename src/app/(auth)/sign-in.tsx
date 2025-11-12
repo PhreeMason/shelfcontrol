@@ -62,7 +62,6 @@ export default function SignInScreen() {
 
     try {
       const { error } = await signIn(data.email, data.password);
-      console.log('Sign in response error:', error);
       if (error) {
         analytics.track('sign_in_failed', {
           error_type: error.message.includes('Invalid login credentials')

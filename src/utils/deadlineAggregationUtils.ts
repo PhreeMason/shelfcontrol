@@ -108,35 +108,50 @@ export const calculateTodaysGoalUnitsForDeadlines = (
 /**
  * Calculates today's goal totals with stable daily goals that ignore completion status.
  * Uses the current progress calculation for accurate "current" values.
+ *
+ * @param deadlinesForGoals - Active deadlines only (used for calculating daily goal)
+ * @param deadlinesForProgress - All deadlines (used for calculating today's progress)
+ * @param getProgress - Function to get progress for a deadline
  */
 export const calculateTodaysGoalTotals = (
-  deadlines: ReadingDeadlineWithProgress[],
+  deadlinesForGoals: ReadingDeadlineWithProgress[],
+  deadlinesForProgress: ReadingDeadlineWithProgress[],
   getProgress: (deadline: ReadingDeadlineWithProgress) => number | null
 ): DeadlineTotals => ({
-  total: calculateTodaysGoalUnitsForDeadlines(deadlines),
-  current: calculateCurrentProgressForDeadlines(deadlines, getProgress),
+  total: calculateTodaysGoalUnitsForDeadlines(deadlinesForGoals),
+  current: calculateCurrentProgressForDeadlines(deadlinesForProgress, getProgress),
 });
 
 /**
  * Today's goal calculation for audio deadlines.
  * Maintains stable daily goals regardless of completion status.
+ *
+ * @param audioDeadlinesForGoals - Active audio deadlines (used for daily goal)
+ * @param audioDeadlinesForProgress - All audio deadlines (used for progress tracking)
+ * @param getProgress - Function to get progress for a deadline
  */
 export const calculateTodaysAudioTotals = (
-  audioDeadlines: ReadingDeadlineWithProgress[],
+  audioDeadlinesForGoals: ReadingDeadlineWithProgress[],
+  audioDeadlinesForProgress: ReadingDeadlineWithProgress[],
   getProgress: (deadline: ReadingDeadlineWithProgress) => number | null
 ): DeadlineTotals => {
-  return calculateTodaysGoalTotals(audioDeadlines, getProgress);
+  return calculateTodaysGoalTotals(audioDeadlinesForGoals, audioDeadlinesForProgress, getProgress);
 };
 
 /**
  * Today's goal calculation for reading deadlines.
  * Maintains stable daily goals regardless of completion status.
+ *
+ * @param readingDeadlinesForGoals - Active reading deadlines (used for daily goal)
+ * @param readingDeadlinesForProgress - All reading deadlines (used for progress tracking)
+ * @param getProgress - Function to get progress for a deadline
  */
 export const calculateTodaysReadingTotals = (
-  readingDeadlines: ReadingDeadlineWithProgress[],
+  readingDeadlinesForGoals: ReadingDeadlineWithProgress[],
+  readingDeadlinesForProgress: ReadingDeadlineWithProgress[],
   getProgress: (deadline: ReadingDeadlineWithProgress) => number | null
 ): DeadlineTotals => {
-  return calculateTodaysGoalTotals(readingDeadlines, getProgress);
+  return calculateTodaysGoalTotals(readingDeadlinesForGoals, readingDeadlinesForProgress, getProgress);
 };
 
 export interface DailyGoalImpact {
