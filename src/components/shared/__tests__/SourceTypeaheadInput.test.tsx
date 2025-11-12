@@ -96,7 +96,7 @@ describe('TypeTypeaheadInput', () => {
     it('should render text input with default placeholder', () => {
       render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
-      expect(screen.getByPlaceholderText('Enter book type')).toBeTruthy();
+      expect(screen.getByPlaceholderText('Select a type or add your own')).toBeTruthy();
     });
 
     it('should render text input with custom placeholder', () => {

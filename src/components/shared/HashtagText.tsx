@@ -14,6 +14,7 @@ interface HashtagTextProps {
   hashtags: Hashtag[];
   style?: StyleProp<TextStyle>;
   onHashtagPress?: (hashtagName: string, hashtagId: string) => void;
+  numberOfLines?: number | undefined;
 }
 
 /**
@@ -25,6 +26,7 @@ export const HashtagText: React.FC<HashtagTextProps> = ({
   hashtags,
   style,
   onHashtagPress,
+  numberOfLines,
 }) => {
   const hashtagsMap = useMemo(() => {
     const map = new Map<string, { color: string; id?: string }>();
@@ -39,7 +41,7 @@ export const HashtagText: React.FC<HashtagTextProps> = ({
   }, [text, hashtagsMap]);
 
   return (
-    <Text style={style}>
+    <Text style={style} numberOfLines={numberOfLines}>
       {segments.map((segment, index) => {
         if (segment.type === 'hashtag' && segment.color) {
           const hashtagContent = (

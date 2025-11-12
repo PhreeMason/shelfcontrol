@@ -452,6 +452,7 @@ describe('deadlineAggregationUtils', () => {
 
         const result = calculateTodaysGoalTotals(
           mockDeadlines,
+          mockDeadlines,
           mockGetProgress
         );
 
@@ -494,7 +495,7 @@ describe('deadlineAggregationUtils', () => {
 
         const mockGetProgress = jest.fn().mockReturnValue(50);
 
-        const result = calculateTodaysGoalTotals([deadline], mockGetProgress);
+        const result = calculateTodaysGoalTotals([deadline], [deadline], mockGetProgress);
 
         expect(result.current).toBe(50);
         expect(mockGetProgress).toHaveBeenCalledWith(deadline);
@@ -533,7 +534,7 @@ describe('deadlineAggregationUtils', () => {
 
         const mockGetProgress = jest.fn().mockReturnValue(0);
 
-        const result = calculateTodaysGoalTotals([deadline], mockGetProgress);
+        const result = calculateTodaysGoalTotals([deadline], [deadline], mockGetProgress);
 
         expect(result.current).toBe(0);
         expect(mockGetProgress).toHaveBeenCalledWith(deadline);
@@ -582,7 +583,7 @@ describe('deadlineAggregationUtils', () => {
 
         const mockGetProgress = jest.fn().mockReturnValue(50);
 
-        const result = calculateTodaysGoalTotals([deadline], mockGetProgress);
+        const result = calculateTodaysGoalTotals([deadline], [deadline], mockGetProgress);
 
         expect(result.current).toBe(50);
       });
@@ -601,6 +602,7 @@ describe('deadlineAggregationUtils', () => {
           .mockReturnValueOnce(60);
 
         const result = calculateTodaysAudioTotals(
+          audioDeadlines,
           audioDeadlines,
           mockGetProgress
         );
@@ -623,6 +625,7 @@ describe('deadlineAggregationUtils', () => {
           .mockReturnValueOnce(15);
 
         const result = calculateTodaysReadingTotals(
+          readingDeadlines,
           readingDeadlines,
           mockGetProgress
         );
@@ -654,12 +657,259 @@ describe('deadlineAggregationUtils', () => {
         // Today's goal function should return non-zero total
         const todaysGoalResult = calculateTodaysGoalTotals(
           deadlines,
+          deadlines,
           mockGetProgress
         );
 
         expect(originalResult.total).toBe(0); // Archive-aware returns 0
         expect(todaysGoalResult.total).toBeGreaterThan(0); // Today's goals ignore archive status
         expect(originalResult.current).toBe(todaysGoalResult.current); // Current progress should be same
+      });
+    });
+  });
+
+  describe('Separate goals and progress arrays (DNF/Paused exclusion)', () => {
+    const createDeadlineWithStatus = (
+      id: string,
+      format: 'audio' | 'physical' | 'eBook',
+      status: 'reading' | 'paused' | 'did_not_finish' | 'complete' | null = null
+    ): ReadingDeadlineWithProgress => ({
+      ...createMockDeadline(id, format),
+      deadline_date: '2024-12-31',
+      total_quantity: 300,
+      progress: [
+        {
+          id: `progress-${id}`,
+          deadline_id: id,
+          current_progress: 50,
+          time_spent_reading: null,
+          ignore_in_calcs: false,
+          created_at: '2024-01-20T08:00:00Z',
+          updated_at: '2024-01-20T08:00:00Z',
+        },
+      ],
+      status: status
+        ? [
+            {
+              id: `status-${id}`,
+              deadline_id: id,
+              status,
+              created_at: '2024-01-20T10:00:00Z',
+              updated_at: '2024-01-20T10:00:00Z',
+            },
+          ]
+        : [],
+    });
+
+    describe('calculateTodaysGoalTotals with separate arrays', () => {
+      it('should exclude paused books from goals but include their progress', () => {
+        const activeBook = createDeadlineWithStatus('1', 'physical', 'reading');
+        const pausedBook = createDeadlineWithStatus('2', 'physical', 'paused');
+
+        const activeDeadlines = [activeBook];
+        const allDeadlines = [activeBook, pausedBook];
+
+        const mockGetProgress = jest
+          .fn()
+          .mockReturnValueOnce(20) // Active book progress
+          .mockReturnValueOnce(10); // Paused book progress
+
+        const result = calculateTodaysGoalTotals(
+          activeDeadlines,
+          allDeadlines,
+          mockGetProgress
+        );
+
+        // Goal should only include active book
+        expect(result.total).toBeGreaterThan(0);
+        // Progress should include both books
+        expect(result.current).toBe(30);
+        expect(mockGetProgress).toHaveBeenCalledTimes(2);
+      });
+
+      it('should exclude DNF books from goals but include their progress', () => {
+        const activeBook = createDeadlineWithStatus('1', 'physical', 'reading');
+        const dnfBook = createDeadlineWithStatus('2', 'physical', 'did_not_finish');
+
+        const activeDeadlines = [activeBook];
+        const allDeadlines = [activeBook, dnfBook];
+
+        const mockGetProgress = jest
+          .fn()
+          .mockReturnValueOnce(25) // Active book progress
+          .mockReturnValueOnce(15); // DNF book progress
+
+        const result = calculateTodaysGoalTotals(
+          activeDeadlines,
+          allDeadlines,
+          mockGetProgress
+        );
+
+        // Goal should only include active book
+        expect(result.total).toBeGreaterThan(0);
+        // Progress should include both books
+        expect(result.current).toBe(40);
+        expect(mockGetProgress).toHaveBeenCalledTimes(2);
+      });
+
+      it('should include completed books in goals and their progress', () => {
+        const activeBook = createDeadlineWithStatus('1', 'physical', 'reading');
+        const completedBook = createDeadlineWithStatus('2', 'physical', 'complete');
+
+        const activeDeadlines = [activeBook, completedBook];
+        const allDeadlines = [activeBook, completedBook];
+
+        const mockGetProgress = jest
+          .fn()
+          .mockReturnValueOnce(10) // Active book progress
+          .mockReturnValueOnce(20); // Completed book progress
+
+        const result = calculateTodaysGoalTotals(
+          activeDeadlines,
+          allDeadlines,
+          mockGetProgress
+        );
+
+        // Goal should include both books
+        expect(result.total).toBeGreaterThan(0);
+        // Progress should include both books
+        expect(result.current).toBe(30);
+        expect(mockGetProgress).toHaveBeenCalledTimes(2);
+      });
+
+      it('should handle multiple paused and DNF books', () => {
+        const activeBook = createDeadlineWithStatus('1', 'physical', 'reading');
+        const pausedBook1 = createDeadlineWithStatus('2', 'physical', 'paused');
+        const pausedBook2 = createDeadlineWithStatus('3', 'physical', 'paused');
+        const dnfBook = createDeadlineWithStatus('4', 'physical', 'did_not_finish');
+
+        const activeDeadlines = [activeBook];
+        const allDeadlines = [activeBook, pausedBook1, pausedBook2, dnfBook];
+
+        const mockGetProgress = jest
+          .fn()
+          .mockReturnValueOnce(10) // Active
+          .mockReturnValueOnce(5)  // Paused 1
+          .mockReturnValueOnce(8)  // Paused 2
+          .mockReturnValueOnce(12); // DNF
+
+        const result = calculateTodaysGoalTotals(
+          activeDeadlines,
+          allDeadlines,
+          mockGetProgress
+        );
+
+        // Goal should only include active book
+        expect(result.total).toBeGreaterThan(0);
+        // Progress should include all books (10 + 5 + 8 + 12 = 35)
+        expect(result.current).toBe(35);
+        expect(mockGetProgress).toHaveBeenCalledTimes(4);
+      });
+    });
+
+    describe('calculateTodaysAudioTotals with separate arrays', () => {
+      it('should exclude paused audio books from goals but include their progress', () => {
+        const activeAudio = createDeadlineWithStatus('1', 'audio', 'reading');
+        const pausedAudio = createDeadlineWithStatus('2', 'audio', 'paused');
+
+        const activeDeadlines = [activeAudio];
+        const allDeadlines = [activeAudio, pausedAudio];
+
+        const mockGetProgress = jest
+          .fn()
+          .mockReturnValueOnce(45) // Active
+          .mockReturnValueOnce(30); // Paused
+
+        const result = calculateTodaysAudioTotals(
+          activeDeadlines,
+          allDeadlines,
+          mockGetProgress
+        );
+
+        // Goal should only include active book
+        expect(result.total).toBeGreaterThan(0);
+        // Progress should include both (45 + 30 = 75)
+        expect(result.current).toBe(75);
+      });
+    });
+
+    describe('calculateTodaysReadingTotals with separate arrays', () => {
+      it('should exclude DNF reading books from goals but include their progress', () => {
+        const activeReading = createDeadlineWithStatus('1', 'physical', 'reading');
+        const dnfReading = createDeadlineWithStatus('2', 'eBook', 'did_not_finish');
+
+        const activeDeadlines = [activeReading];
+        const allDeadlines = [activeReading, dnfReading];
+
+        const mockGetProgress = jest
+          .fn()
+          .mockReturnValueOnce(50) // Active
+          .mockReturnValueOnce(25); // DNF
+
+        const result = calculateTodaysReadingTotals(
+          activeDeadlines,
+          allDeadlines,
+          mockGetProgress
+        );
+
+        // Goal should only include active book
+        expect(result.total).toBeGreaterThan(0);
+        // Progress should include both (50 + 25 = 75)
+        expect(result.current).toBe(75);
+      });
+    });
+
+    describe('Real-world scenario tests', () => {
+      it('should handle user completing a book then pausing another', () => {
+        const completedBook = createDeadlineWithStatus('1', 'physical', 'complete');
+        const pausedBook = createDeadlineWithStatus('2', 'physical', 'paused');
+        const activeBook = createDeadlineWithStatus('3', 'physical', 'reading');
+
+        // For goals: include completed and active, exclude paused
+        const activeDeadlines = [completedBook, activeBook];
+        // For progress: include all
+        const allDeadlines = [completedBook, pausedBook, activeBook];
+
+        const mockGetProgress = jest
+          .fn()
+          .mockReturnValueOnce(30) // Completed book progress
+          .mockReturnValueOnce(10) // Paused book progress
+          .mockReturnValueOnce(15); // Active book progress
+
+        const result = calculateTodaysGoalTotals(
+          activeDeadlines,
+          allDeadlines,
+          mockGetProgress
+        );
+
+        // Goal includes completed + active
+        expect(result.total).toBeGreaterThan(0);
+        // Progress includes all three (30 + 10 + 15 = 55)
+        expect(result.current).toBe(55);
+      });
+
+      it('should work when all books are paused/DNF', () => {
+        const pausedBook = createDeadlineWithStatus('1', 'physical', 'paused');
+        const dnfBook = createDeadlineWithStatus('2', 'physical', 'did_not_finish');
+
+        const activeDeadlines: ReadingDeadlineWithProgress[] = [];
+        const allDeadlines = [pausedBook, dnfBook];
+
+        const mockGetProgress = jest
+          .fn()
+          .mockReturnValueOnce(20) // Paused
+          .mockReturnValueOnce(15); // DNF
+
+        const result = calculateTodaysGoalTotals(
+          activeDeadlines,
+          allDeadlines,
+          mockGetProgress
+        );
+
+        // Goal should be 0 (no active books)
+        expect(result.total).toBe(0);
+        // Progress should still count (20 + 15 = 35)
+        expect(result.current).toBe(35);
       });
     });
   });

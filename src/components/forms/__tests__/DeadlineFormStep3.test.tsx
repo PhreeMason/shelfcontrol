@@ -131,7 +131,7 @@ describe('DeadlineFormStep3', () => {
 
       const input = screen.getByTestId('input-acquisition-source');
       expect(input.props['data-placeholder']).toBe(
-        '(e.g., NetGalley, Edelweiss, Direct, etc.)'
+        'Select a source or add a new new one'
       );
     });
 
@@ -426,7 +426,7 @@ describe('DeadlineFormStep3', () => {
 
       const input = screen.getByTestId('input-type');
       expect(input.props['data-name']).toBe('type');
-      expect(input.props['data-placeholder']).toBe('Enter book type');
+      expect(input.props['data-placeholder']).toBe('Select a type or add your own');
     });
 
     it('should configure acquisition_source input with correct props', () => {
@@ -435,7 +435,7 @@ describe('DeadlineFormStep3', () => {
       const input = screen.getByTestId('input-acquisition-source');
       expect(input.props['data-name']).toBe('acquisition_source');
       expect(input.props['data-placeholder']).toBe(
-        '(e.g., NetGalley, Edelweiss, Direct, etc.)'
+        'Select a source or add a new new one'
       );
     });
 

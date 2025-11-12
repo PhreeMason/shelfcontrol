@@ -59,6 +59,13 @@ export const MAPPING = {
   trash: 'delete',
   'star.fill': 'star',
   at: 'alternate-email',
+  'chart.bar.fill': 'bar-chart',
+  'arrow.up.forward.square': 'send',
+  'books.vertical.fill': 'library-books',
+  'arrow.left.arrow.right': 'swap-horiz',
+  'arrow.up.right': 'trending-up',
+  'star.leadinghalf.filled': 'star-half',
+  'plus.circle.fill': 'add-circle'
 } as IconMapping;
 
 /**

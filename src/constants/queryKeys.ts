@@ -42,6 +42,8 @@ export const QUERY_KEYS = {
     SEARCH: (query: string) => ['books', 'search', query] as const,
     BY_API_ID: (apiId: string) => ['book', apiId] as const,
     BY_ID: (bookId: string) => ['book', 'id', bookId] as const,
+    BY_IDS: (bookIds: string[]) =>
+      ['books', 'ids', bookIds.sort().join(',')] as const,
   },
   PROFILE: {
     DETAIL: (userId: string) => ['profile', userId] as const,

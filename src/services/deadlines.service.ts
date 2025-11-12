@@ -835,6 +835,34 @@ class DeadlinesService {
     if (error) throw error;
     return data;
   }
+
+  /**
+   * Get daily activities for calendar view
+   * Fetches all activity types (deadlines due, created, progress, status, notes, reviews) for a date range
+   * @param userId - User ID
+   * @param startDate - Start date in YYYY-MM-DD format
+   * @param endDate - End date in YYYY-MM-DD format
+   * @returns Array of daily activities grouped by date
+   */
+  async getDailyActivities(userId: string, startDate: string, endDate: string) {
+    try {
+      const { data, error } = await supabase.rpc('get_daily_activities', {
+        p_user_id: userId,
+        p_start_date: startDate,
+        p_end_date: endDate,
+      });
+
+      if (error) {
+        console.error('Error fetching daily activities:', error);
+        throw error;
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Failed to get daily activities:', error);
+      return [];
+    }
+  }
 }
 
 export const deadlinesService = new DeadlinesService();

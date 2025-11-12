@@ -1,7 +1,7 @@
 import { generateId, supabase } from '@/lib/supabase';
-import { notesService } from '../notes.service';
-import { hashtagsService } from '../hashtags.service';
 import { activityService } from '../activity.service';
+import { hashtagsService } from '../hashtags.service';
+import { notesService } from '../notes.service';
 
 jest.mock('@/lib/supabase', () => ({
   generateId: jest.fn(),
@@ -59,7 +59,6 @@ describe('NotesService', () => {
       ];
 
       const mockSelect = jest.fn().mockReturnThis();
-      const mockEq = jest.fn().mockReturnThis();
       const mockOrder = jest
         .fn()
         .mockResolvedValue({ data: mockNotes, error: null });
@@ -125,16 +124,13 @@ describe('NotesService', () => {
       });
 
       let callCount = 0;
-      mockSupabaseFrom.mockImplementation(table => {
+      mockSupabaseFrom.mockImplementation(() => {
         callCount++;
         if (callCount === 1) {
-          // First call: deadline_progress table
           return { select: mockProgressSelect };
         } else if (callCount === 2) {
-          // Second call: reading_deadlines table
           return { select: mockDeadlineSelect };
         } else {
-          // Third call: deadline_notes insert
           return { insert: mockNoteInsert };
         }
       });

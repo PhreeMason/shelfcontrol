@@ -1,0 +1,136 @@
+import { ThemedText } from '@/components/themed';
+import { useFetchBookById } from '@/hooks/useBooks';
+import { useTheme } from '@/hooks/useTheme';
+import { dayjs } from '@/lib/dayjs';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { getProgressAsOfDate } from '@/utils/chartDataUtils';
+import { parseServerDateOnly, parseServerDateTime } from '@/utils/dateNormalization';
+import { formatProgressDisplay } from '@/utils/deadlineUtils';
+import { getBookCoverIcon, getGradientBackground } from '@/utils/deadlineDisplayUtils';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
+
+interface DeadlineInFlightItemProps {
+  deadline: ReadingDeadlineWithProgress;
+  selectedDate: string;
+}
+
+/**
+ * Presentational component for a single in-flight deadline
+ * Displays book cover, title, remaining work, and days left until deadline
+ */
+export const DeadlineInFlightItem: React.FC<DeadlineInFlightItemProps> = ({
+  deadline,
+  selectedDate,
+}) => {
+  const { colors } = useTheme();
+  const router = useRouter();
+  const { data: bookData } = useFetchBookById(deadline.book_id);
+
+  // Calculate remaining work at start of selected day
+  const previousDay = dayjs(selectedDate).subtract(1, 'day').format('YYYY-MM-DD');
+  const progressAsOfStartOfDay = getProgressAsOfDate(deadline.progress, previousDay);
+  const remaining = Math.max(0, deadline.total_quantity - progressAsOfStartOfDay);
+
+  // Calculate days left
+  const selectedDateDayjs = parseServerDateOnly(selectedDate);
+  const deadlineDateDayjs = parseServerDateTime(deadline.deadline_date);
+  const daysLeft = deadlineDateDayjs.diff(selectedDateDayjs, 'day');
+
+  // Format display text with proper time formatting for audio books
+  const formattedRemaining = formatProgressDisplay(deadline.format, remaining);
+  const remainingText = deadline.format === 'audio'
+    ? `${formattedRemaining} left`
+    : `${formattedRemaining} pgs left`;
+
+  let daysText: string;
+  if (daysLeft === 0) {
+    daysText = 'Due today';
+  } else if (daysLeft < 0) {
+    daysText = 'Overdue';
+  } else {
+    daysText = `${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`;
+  }
+
+  const handlePress = () => {
+    router.push(`/deadline/${deadline.id}`);
+  };
+
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        styles.container,
+        { backgroundColor: colors.surface },
+        pressed && styles.pressed,
+      ]}
+      onPress={handlePress}
+    >
+      {/* Book Cover */}
+      {bookData?.cover_image_url ? (
+        <Image
+          source={{ uri: bookData.cover_image_url }}
+          style={styles.cover}
+          resizeMode="cover"
+        />
+      ) : (
+        <LinearGradient
+          colors={getGradientBackground(deadline, 0)}
+          style={styles.cover}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <ThemedText style={styles.coverIcon}>
+            {getBookCoverIcon(deadline, 0)}
+          </ThemedText>
+        </LinearGradient>
+      )}
+
+      {/* Content */}
+      <View style={styles.content}>
+        <ThemedText style={styles.title} numberOfLines={1}>
+          {bookData?.title || 'Unknown Book'}
+        </ThemedText>
+        <ThemedText variant='muted' style={[styles.info]}>
+          {remainingText} • {daysText}
+        </ThemedText>
+      </View>
+    </Pressable>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  pressed: {
+    opacity: 0.7,
+  },
+  cover: {
+    width: 40,
+    height: 60,
+    borderRadius: 4,
+    marginRight: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  coverIcon: {
+    fontSize: 20,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  info: {
+    fontSize: 14,
+  },
+});

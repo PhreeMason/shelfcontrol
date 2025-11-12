@@ -25,12 +25,10 @@ class NotesService {
   ): Promise<DeadlineNote> {
     const finalNoteId = generateId('dn');
 
-    // Fetch progress from database if not provided
     let progressPercentage = deadlineProgress;
 
     if (progressPercentage === undefined) {
-      // Fetch current progress from deadline_progress table
-      const { data: progressResults, error: progressError } = await supabase
+      const { data: progressResults } = await supabase
         .from(DB_TABLES.DEADLINE_PROGRESS)
         .select('current_progress')
         .eq('deadline_id', deadlineId)
@@ -39,8 +37,7 @@ class NotesService {
 
       const currentProgress = progressResults?.[0]?.current_progress || 0;
 
-      // Get deadline to calculate percentage
-      const { data: deadlineData, error: deadlineError } = await supabase
+      const { data: deadlineData } = await supabase
         .from(DB_TABLES.DEADLINES)
         .select('total_quantity')
         .eq('id', deadlineId)

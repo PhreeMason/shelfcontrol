@@ -46,7 +46,7 @@ interface FilterSectionProps {
 const filterOptions: FilterOption[] = [
   { key: 'pending', label: 'Pending' },
   { key: 'active', label: 'Active' },
-  { key: 'overdue', label: 'Past due' },
+  { key: 'overdue', label: 'Past Due' },
   { key: 'paused', label: 'Paused' },
   { key: 'toReview', label: 'To Review' },
   { key: 'completed', label: 'Completed' },
