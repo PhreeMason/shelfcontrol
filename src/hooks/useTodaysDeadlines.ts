@@ -10,6 +10,8 @@ import { useMemo } from 'react';
 interface TodaysDeadlines {
   audioDeadlines: ReadingDeadlineWithProgress[];
   readingDeadlines: ReadingDeadlineWithProgress[];
+  allAudioDeadlines: ReadingDeadlineWithProgress[];
+  allReadingDeadlines: ReadingDeadlineWithProgress[];
   allDeadlines: ReadingDeadlineWithProgress[];
 }
 
@@ -34,11 +36,27 @@ export const useTodaysDeadlines = (): TodaysDeadlines => {
     });
   }, [activeDeadlines, completedDeadlines]);
 
-  const { audioDeadlines, readingDeadlines } = useMemo(() => {
+  // Filter to only include active deadlines for goal calculation
+  // Exclude: paused, did_not_finish, rejected, withdrew
+  // Include: reading, pending, to_review, and complete (but only today's completions are in allDeadlines)
+  const activeDeadlinesOnly = useMemo(() => {
+    const activeStatuses = ['reading', 'pending', 'to_review', 'complete'];
+
+    return allDeadlines.filter(deadline => {
+      const latestStatus = deadline.status?.length && deadline.status[deadline.status.length - 1];
+      if (!latestStatus || !latestStatus.status) return false;
+      return activeStatuses.includes(latestStatus.status);
+    });
+  }, [allDeadlines]);
+
+  const { audioDeadlines, readingDeadlines, allAudioDeadlines, allReadingDeadlines } = useMemo(() => {
     const audio: ReadingDeadlineWithProgress[] = [];
     const reading: ReadingDeadlineWithProgress[] = [];
+    const allAudio: ReadingDeadlineWithProgress[] = [];
+    const allReading: ReadingDeadlineWithProgress[] = [];
 
-    allDeadlines.forEach(deadline => {
+    // Split active deadlines (for goals)
+    activeDeadlinesOnly.forEach(deadline => {
       if (deadline.format === 'audio') {
         audio.push(deadline);
       } else {
@@ -46,12 +64,28 @@ export const useTodaysDeadlines = (): TodaysDeadlines => {
       }
     });
 
-    return { audioDeadlines: audio, readingDeadlines: reading };
-  }, [allDeadlines]);
+    // Split all deadlines (for progress tracking)
+    allDeadlines.forEach(deadline => {
+      if (deadline.format === 'audio') {
+        allAudio.push(deadline);
+      } else {
+        allReading.push(deadline);
+      }
+    });
+
+    return {
+      audioDeadlines: audio,
+      readingDeadlines: reading,
+      allAudioDeadlines: allAudio,
+      allReadingDeadlines: allReading
+    };
+  }, [activeDeadlinesOnly, allDeadlines]);
 
   return {
     audioDeadlines,
     readingDeadlines,
+    allAudioDeadlines,
+    allReadingDeadlines,
     allDeadlines,
   };
 };
