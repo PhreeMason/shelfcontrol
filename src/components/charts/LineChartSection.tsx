@@ -132,7 +132,10 @@ export const LineChartSection: React.FC<LineChartSectionProps> = ({
 }) => {
   return (
     <View style={styles.chartSection}>
-      <ThemedText variant='title' style={[styles.chartTitle, { color: colors.text }]}>
+      <ThemedText
+        variant="title"
+        style={[styles.chartTitle, { color: colors.text }]}
+      >
         {title}
       </ThemedText>
 
@@ -232,7 +235,10 @@ export const LineChartSection: React.FC<LineChartSectionProps> = ({
             textAlign: 'center',
           }}
           rotateLabel
-          yAxisTextStyle={{ color: colors.textMuted, fontSize: CHART_STYLING.Y_AXIS_LABEL_FONT_SIZE }}
+          yAxisTextStyle={{
+            color: colors.textMuted,
+            fontSize: CHART_STYLING.Y_AXIS_LABEL_FONT_SIZE,
+          }}
           noOfSections={CHART_STYLING.NUMBER_OF_SECTIONS}
           maxValue={yAxisMax}
           mostNegativeValue={0}
@@ -263,7 +269,10 @@ export const LineChartSection: React.FC<LineChartSectionProps> = ({
           yAxisThickness={CHART_STYLING.AXIS_THICKNESS}
           xAxisColor={colors.border}
           yAxisColor={colors.border}
-          yAxisTextStyle={{ color: colors.textMuted, fontSize: CHART_STYLING.Y_AXIS_LABEL_FONT_SIZE }}
+          yAxisTextStyle={{
+            color: colors.textMuted,
+            fontSize: CHART_STYLING.Y_AXIS_LABEL_FONT_SIZE,
+          }}
           xAxisLabelTextStyle={{
             color: colors.textMuted,
             fontSize: CHART_STYLING.X_AXIS_LABEL_FONT_SIZE,
@@ -301,7 +310,10 @@ export const LineChartSection: React.FC<LineChartSectionProps> = ({
           yAxisThickness={CHART_STYLING.AXIS_THICKNESS}
           xAxisColor={colors.border}
           yAxisColor={colors.border}
-          yAxisTextStyle={{ color: colors.textMuted, fontSize: CHART_STYLING.Y_AXIS_LABEL_FONT_SIZE }}
+          yAxisTextStyle={{
+            color: colors.textMuted,
+            fontSize: CHART_STYLING.Y_AXIS_LABEL_FONT_SIZE,
+          }}
           xAxisLabelTextStyle={{
             color: colors.textMuted,
             fontSize: CHART_STYLING.X_AXIS_LABEL_FONT_SIZE,

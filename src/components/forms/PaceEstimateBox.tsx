@@ -14,8 +14,6 @@ export const PaceEstimateBox: React.FC<PaceEstimateBoxProps> = ({
   const { colors } = useTheme();
   const isOverdue = paceEstimate.includes('passed');
 
-
-
   if (!paceEstimate) return null;
 
   return (
@@ -26,9 +24,12 @@ export const PaceEstimateBox: React.FC<PaceEstimateBoxProps> = ({
       ]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={[styles.estimateContainer, {
-        borderColor: isOverdue ? colors.secondary : colors.primary,
-      }]}
+      style={[
+        styles.estimateContainer,
+        {
+          borderColor: isOverdue ? colors.secondary : colors.primary,
+        },
+      ]}
     >
       <ThemedText
         style={

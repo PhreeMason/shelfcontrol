@@ -111,7 +111,8 @@ const DeadlineView = () => {
     onBack: handleBack,
   };
 
-  const shouldShowStats = latestStatus !== 'pending' && latestStatus !== 'reading';
+  const shouldShowStats =
+    latestStatus !== 'pending' && latestStatus !== 'reading';
   const shouldShowProgress = !shouldShowStats && !isPending;
   const sourceOptions = getDeadlineSourceOptions(deadline);
   const shouldShowDisclosure = sourceOptions.length > 0;
@@ -132,9 +133,11 @@ const DeadlineView = () => {
           isPaused={isPaused}
           deadline={deadline}
         />
-        
-        {shouldShowProgress ? <ReadingProgressUpdate deadline={deadline} /> : null}
-        
+
+        {shouldShowProgress ? (
+          <ReadingProgressUpdate deadline={deadline} />
+        ) : null}
+
         {shouldShowStats ? <ReadingStats deadline={deadline} /> : null}
         <ReviewProgressSection deadline={deadline} />
 
@@ -144,7 +147,9 @@ const DeadlineView = () => {
 
         <DeadlineTagsSection deadline={deadline} />
 
-        {shouldShowDisclosure ? <DisclosureSection deadline={deadline} /> : null}
+        {shouldShowDisclosure ? (
+          <DisclosureSection deadline={deadline} />
+        ) : null}
 
         <BookDetailsSection deadline={deadline} />
       </ThemedKeyboardAwareScrollView>

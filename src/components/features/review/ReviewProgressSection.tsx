@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
-    marginVertical: Spacing.md
+    marginVertical: Spacing.md,
   },
   loadingContainer: {
     backgroundColor: Colors.light.background,

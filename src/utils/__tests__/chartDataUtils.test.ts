@@ -1211,22 +1211,31 @@ describe('chartDataUtils', () => {
       type: 'Personal',
       publishers: null,
       flexibility: 'strict',
-      status: options.status ? [{
-        id: 'status-1',
-        deadline_id: id,
-        status: options.status as any,
-        created_at: options.statusUpdatedAt || '2024-01-15T10:00:00Z',
-        updated_at: options.statusUpdatedAt || '2024-01-15T10:00:00Z',
-      }] : [],
-      progress: options.progress !== undefined ? [{
-        id: 'progress-1',
-        deadline_id: id,
-        current_progress: options.progress,
-        created_at: options.progressDate || '2024-01-15T10:00:00Z',
-        updated_at: options.progressDate || '2024-01-15T10:00:00Z',
-        time_spent_reading: null,
-        ignore_in_calcs: false,
-      }] : [],
+      status: options.status
+        ? [
+            {
+              id: 'status-1',
+              deadline_id: id,
+              status: options.status as any,
+              created_at: options.statusUpdatedAt || '2024-01-15T10:00:00Z',
+              updated_at: options.statusUpdatedAt || '2024-01-15T10:00:00Z',
+            },
+          ]
+        : [],
+      progress:
+        options.progress !== undefined
+          ? [
+              {
+                id: 'progress-1',
+                deadline_id: id,
+                current_progress: options.progress,
+                created_at: options.progressDate || '2024-01-15T10:00:00Z',
+                updated_at: options.progressDate || '2024-01-15T10:00:00Z',
+                time_spent_reading: null,
+                ignore_in_calcs: false,
+              },
+            ]
+          : [],
     });
 
     describe('Basic Filtering', () => {
@@ -1236,9 +1245,7 @@ describe('chartDataUtils', () => {
       });
 
       it('should return empty array when all deadlines have no progress', () => {
-        const deadlines = [
-          createMockDeadline('1', { status: 'reading' }),
-        ];
+        const deadlines = [createMockDeadline('1', { status: 'reading' })];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result.length).toBeGreaterThan(0);
       });
@@ -1248,8 +1255,8 @@ describe('chartDataUtils', () => {
           createMockDeadline('1', {
             createdAt: '2024-01-16T10:00:00Z',
             status: 'reading',
-            progress: 50
-          })
+            progress: 50,
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(0);
@@ -1261,8 +1268,8 @@ describe('chartDataUtils', () => {
             createdAt: '2024-01-15T10:00:00Z',
             status: 'reading',
             progress: 50,
-            progressDate: '2024-01-15T11:00:00Z'
-          })
+            progressDate: '2024-01-15T11:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(1);
@@ -1275,8 +1282,8 @@ describe('chartDataUtils', () => {
             createdAt: '2024-01-10T10:00:00Z',
             status: 'reading',
             progress: 50,
-            progressDate: '2024-01-14T10:00:00Z'
-          })
+            progressDate: '2024-01-14T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(1);
@@ -1292,8 +1299,8 @@ describe('chartDataUtils', () => {
             statusUpdatedAt: '2024-01-14T10:00:00Z',
             progress: 50,
             progressDate: '2024-01-14T10:00:00Z',
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(1);
@@ -1305,8 +1312,8 @@ describe('chartDataUtils', () => {
           createMockDeadline('1', {
             status: 'pending',
             progress: 50,
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(0);
@@ -1317,8 +1324,8 @@ describe('chartDataUtils', () => {
           createMockDeadline('1', {
             status: 'paused',
             progress: 50,
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(0);
@@ -1329,8 +1336,8 @@ describe('chartDataUtils', () => {
           createMockDeadline('1', {
             status: 'complete',
             progress: 300,
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(0);
@@ -1341,8 +1348,8 @@ describe('chartDataUtils', () => {
           createMockDeadline('1', {
             status: 'did_not_finish',
             progress: 50,
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(0);
@@ -1353,8 +1360,8 @@ describe('chartDataUtils', () => {
           createMockDeadline('1', {
             status: 'to_review',
             progress: 300,
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(0);
@@ -1365,8 +1372,8 @@ describe('chartDataUtils', () => {
           createMockDeadline('1', {
             progress: 50,
             progressDate: '2024-01-14T10:00:00Z',
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(1);
@@ -1394,7 +1401,7 @@ describe('chartDataUtils', () => {
             status: 'paused' as any,
             created_at: '2024-01-14T10:00:00Z',
             updated_at: '2024-01-14T10:00:00Z',
-          }
+          },
         ];
 
         const result = getDeadlinesInFlightOnDate([deadline], '2024-01-15');
@@ -1423,7 +1430,7 @@ describe('chartDataUtils', () => {
             status: 'reading' as any,
             created_at: '2024-01-15T14:00:00Z',
             updated_at: '2024-01-15T14:00:00Z',
-          }
+          },
         ];
 
         const result = getDeadlinesInFlightOnDate([deadline], '2024-01-15');
@@ -1439,8 +1446,8 @@ describe('chartDataUtils', () => {
             progress: 300, // Fully complete
             progressDate: '2024-01-14T10:00:00Z',
             totalQuantity: 300,
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(0);
@@ -1453,8 +1460,8 @@ describe('chartDataUtils', () => {
             progress: 150,
             progressDate: '2024-01-14T10:00:00Z',
             totalQuantity: 300,
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(1);
@@ -1464,8 +1471,8 @@ describe('chartDataUtils', () => {
         const deadlines = [
           createMockDeadline('1', {
             status: 'reading',
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(1);
@@ -1478,8 +1485,8 @@ describe('chartDataUtils', () => {
             progress: 150,
             progressDate: '2024-01-14T10:00:00Z', // Progress on Jan 14
             totalQuantity: 300,
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(1); // Not complete as of Jan 14 end
@@ -1490,7 +1497,7 @@ describe('chartDataUtils', () => {
           status: 'reading',
           statusUpdatedAt: '2024-01-14T10:00:00Z',
           totalQuantity: 300,
-          createdAt: '2024-01-10T10:00:00Z'
+          createdAt: '2024-01-10T10:00:00Z',
         });
 
         // Add progress: 150 on Jan 14, 300 on Jan 15 (completed)
@@ -1512,7 +1519,7 @@ describe('chartDataUtils', () => {
             updated_at: '2024-01-15T10:00:00Z',
             time_spent_reading: null,
             ignore_in_calcs: false,
-          }
+          },
         ];
 
         const result = getDeadlinesInFlightOnDate([deadline], '2024-01-15');
@@ -1529,8 +1536,8 @@ describe('chartDataUtils', () => {
             progress: 150,
             progressDate: '2024-01-14T10:00:00Z', // Progress before target date
             deadlineDate: '2024-01-15T23:59:59Z', // End of target day
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(1);
@@ -1542,8 +1549,8 @@ describe('chartDataUtils', () => {
             status: 'reading',
             progress: 150,
             deadlineDate: '2024-01-20T00:00:00Z',
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(1);
@@ -1555,8 +1562,8 @@ describe('chartDataUtils', () => {
             status: 'reading',
             progress: 150,
             deadlineDate: '2024-01-10T00:00:00Z',
-            createdAt: '2024-01-05T10:00:00Z'
-          })
+            createdAt: '2024-01-05T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(0);
@@ -1570,8 +1577,8 @@ describe('chartDataUtils', () => {
             format: 'physical',
             status: 'reading',
             progress: 150,
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(1);
@@ -1584,8 +1591,8 @@ describe('chartDataUtils', () => {
             format: 'eBook',
             status: 'reading',
             progress: 150,
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(1);
@@ -1598,8 +1605,8 @@ describe('chartDataUtils', () => {
             format: 'audio',
             status: 'reading',
             progress: 150,
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(1);
@@ -1612,20 +1619,20 @@ describe('chartDataUtils', () => {
             format: 'physical',
             status: 'reading',
             progress: 150,
-            createdAt: '2024-01-10T10:00:00Z'
+            createdAt: '2024-01-10T10:00:00Z',
           }),
           createMockDeadline('2', {
             format: 'eBook',
             status: 'reading',
             progress: 100,
-            createdAt: '2024-01-10T10:00:00Z'
+            createdAt: '2024-01-10T10:00:00Z',
           }),
           createMockDeadline('3', {
             format: 'audio',
             status: 'reading',
             progress: 200,
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(3);
@@ -1636,18 +1643,20 @@ describe('chartDataUtils', () => {
       it('should handle deadline with baseline progress (ignore_in_calcs)', () => {
         const deadline = createMockDeadline('1', {
           status: 'reading',
-          createdAt: '2024-01-10T10:00:00Z'
+          createdAt: '2024-01-10T10:00:00Z',
         });
 
-        deadline.progress = [{
-          id: 'progress-1',
-          deadline_id: '1',
-          current_progress: 50,
-          created_at: '2024-01-14T10:00:00Z',
-          updated_at: '2024-01-14T10:00:00Z',
-          time_spent_reading: null,
-          ignore_in_calcs: true,
-        }];
+        deadline.progress = [
+          {
+            id: 'progress-1',
+            deadline_id: '1',
+            current_progress: 50,
+            created_at: '2024-01-14T10:00:00Z',
+            updated_at: '2024-01-14T10:00:00Z',
+            time_spent_reading: null,
+            ignore_in_calcs: true,
+          },
+        ];
 
         const result = getDeadlinesInFlightOnDate([deadline], '2024-01-15');
         expect(result).toHaveLength(1); // Still in flight, baseline ignored
@@ -1656,7 +1665,7 @@ describe('chartDataUtils', () => {
       it('should handle multiple progress entries on same day', () => {
         const deadline = createMockDeadline('1', {
           status: 'reading',
-          createdAt: '2024-01-10T10:00:00Z'
+          createdAt: '2024-01-10T10:00:00Z',
         });
 
         deadline.progress = [
@@ -1677,7 +1686,7 @@ describe('chartDataUtils', () => {
             updated_at: '2024-01-14T18:00:00Z',
             time_spent_reading: null,
             ignore_in_calcs: false,
-          }
+          },
         ];
 
         const result = getDeadlinesInFlightOnDate([deadline], '2024-01-15');
@@ -1693,8 +1702,8 @@ describe('chartDataUtils', () => {
             progress: 150,
             progressDate: '2024-01-15T10:00:00Z',
             createdAt: '2024-01-10T10:00:00Z',
-            deadlineDate: '2024-02-01T00:00:00Z'
-          })
+            deadlineDate: '2024-02-01T00:00:00Z',
+          }),
         ];
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-25');
         // Function allows querying future dates based on current progress state
@@ -1704,7 +1713,7 @@ describe('chartDataUtils', () => {
       it('should handle unsorted progress array', () => {
         const deadline = createMockDeadline('1', {
           status: 'reading',
-          createdAt: '2024-01-10T10:00:00Z'
+          createdAt: '2024-01-10T10:00:00Z',
         });
 
         deadline.progress = [
@@ -1734,7 +1743,7 @@ describe('chartDataUtils', () => {
             updated_at: '2024-01-15T10:00:00Z',
             time_spent_reading: null,
             ignore_in_calcs: false,
-          }
+          },
         ];
 
         const result = getDeadlinesInFlightOnDate([deadline], '2024-01-15');
@@ -1744,7 +1753,7 @@ describe('chartDataUtils', () => {
       it('should handle null/undefined progress array', () => {
         const deadline = createMockDeadline('1', {
           status: 'reading',
-          createdAt: '2024-01-10T10:00:00Z'
+          createdAt: '2024-01-10T10:00:00Z',
         });
         deadline.progress = null as any;
 
@@ -1762,7 +1771,7 @@ describe('chartDataUtils', () => {
             progress: 150,
             progressDate: '2024-01-14T10:00:00Z',
             deadlineDate: '2024-01-20T00:00:00Z',
-            createdAt: '2024-01-10T10:00:00Z'
+            createdAt: '2024-01-10T10:00:00Z',
           }),
           // Not in flight: paused
           createMockDeadline('2', {
@@ -1770,7 +1779,7 @@ describe('chartDataUtils', () => {
             progress: 100,
             progressDate: '2024-01-14T10:00:00Z',
             deadlineDate: '2024-01-20T00:00:00Z',
-            createdAt: '2024-01-10T10:00:00Z'
+            createdAt: '2024-01-10T10:00:00Z',
           }),
           // Not in flight: completed
           createMockDeadline('3', {
@@ -1779,7 +1788,7 @@ describe('chartDataUtils', () => {
             progressDate: '2024-01-14T10:00:00Z',
             deadlineDate: '2024-01-20T00:00:00Z',
             totalQuantity: 300,
-            createdAt: '2024-01-10T10:00:00Z'
+            createdAt: '2024-01-10T10:00:00Z',
           }),
           // Not in flight: overdue
           createMockDeadline('4', {
@@ -1787,7 +1796,7 @@ describe('chartDataUtils', () => {
             progress: 100,
             progressDate: '2024-01-14T10:00:00Z',
             deadlineDate: '2024-01-10T00:00:00Z',
-            createdAt: '2024-01-05T10:00:00Z'
+            createdAt: '2024-01-05T10:00:00Z',
           }),
           // In flight: reading, partial progress
           createMockDeadline('5', {
@@ -1795,14 +1804,18 @@ describe('chartDataUtils', () => {
             progress: 50,
             progressDate: '2024-01-14T10:00:00Z',
             deadlineDate: '2024-01-25T00:00:00Z',
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
 
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(2);
-        expect(result.map((d: ReadingDeadlineWithProgress) => d.id)).toContain('1');
-        expect(result.map((d: ReadingDeadlineWithProgress) => d.id)).toContain('5');
+        expect(result.map((d: ReadingDeadlineWithProgress) => d.id)).toContain(
+          '1'
+        );
+        expect(result.map((d: ReadingDeadlineWithProgress) => d.id)).toContain(
+          '5'
+        );
       });
 
       it('should handle different statuses, formats, and progress states together', () => {
@@ -1811,25 +1824,31 @@ describe('chartDataUtils', () => {
             format: 'physical',
             status: 'reading',
             progress: 150,
-            createdAt: '2024-01-10T10:00:00Z'
+            createdAt: '2024-01-10T10:00:00Z',
           }),
           createMockDeadline('2', {
             format: 'audio',
             status: 'paused',
             progress: 100,
-            createdAt: '2024-01-10T10:00:00Z'
+            createdAt: '2024-01-10T10:00:00Z',
           }),
           createMockDeadline('3', {
             format: 'eBook',
             status: 'reading',
-            createdAt: '2024-01-10T10:00:00Z'
-          })
+            createdAt: '2024-01-10T10:00:00Z',
+          }),
         ];
 
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
         expect(result).toHaveLength(2);
-        expect(result.some((d: ReadingDeadlineWithProgress) => d.format === 'physical')).toBe(true);
-        expect(result.some((d: ReadingDeadlineWithProgress) => d.format === 'eBook')).toBe(true);
+        expect(
+          result.some(
+            (d: ReadingDeadlineWithProgress) => d.format === 'physical'
+          )
+        ).toBe(true);
+        expect(
+          result.some((d: ReadingDeadlineWithProgress) => d.format === 'eBook')
+        ).toBe(true);
       });
 
       it('should correctly calculate with real date strings', () => {
@@ -1840,8 +1859,8 @@ describe('chartDataUtils', () => {
             progress: 150,
             progressDate: '2024-01-14T20:45:00Z',
             deadlineDate: '2024-01-25T23:59:59Z',
-            createdAt: '2024-01-01T08:00:00Z'
-          })
+            createdAt: '2024-01-01T08:00:00Z',
+          }),
         ];
 
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
@@ -1854,8 +1873,8 @@ describe('chartDataUtils', () => {
             status: 'reading',
             progress: 150,
             progressDate: '2024-01-14T23:59:59Z', // End of day
-            createdAt: '2024-01-10T00:00:00Z'
-          })
+            createdAt: '2024-01-10T00:00:00Z',
+          }),
         ];
 
         const result = getDeadlinesInFlightOnDate(deadlines, '2024-01-15');
@@ -1893,22 +1912,24 @@ describe('chartDataUtils', () => {
     it('should calculate pace from start of target day', () => {
       mockCalculateRequiredPace.mockReturnValue(20);
       const deadline = createMockDeadlineForPace(200, '2024-01-25T00:00:00Z');
-      deadline.progress = [{
-        id: 'progress-1',
-        deadline_id: 'deadline-1',
-        current_progress: 100,
-        created_at: '2024-01-14T10:00:00Z',
-        updated_at: '2024-01-14T10:00:00Z',
-        time_spent_reading: null,
-        ignore_in_calcs: false,
-      }];
+      deadline.progress = [
+        {
+          id: 'progress-1',
+          deadline_id: 'deadline-1',
+          current_progress: 100,
+          created_at: '2024-01-14T10:00:00Z',
+          updated_at: '2024-01-14T10:00:00Z',
+          time_spent_reading: null,
+          ignore_in_calcs: false,
+        },
+      ];
 
       const result = calculateHistoricalRequiredPace(deadline, '2024-01-15');
 
       expect(mockCalculateRequiredPace).toHaveBeenCalledWith(
         200, // total
         100, // progress as of Jan 14 (previous day)
-        9,   // days from Jan 15 to Jan 25 (using dayjs diff)
+        9, // days from Jan 15 to Jan 25 (using dayjs diff)
         'physical'
       );
       expect(result).toBe(20);
@@ -1936,7 +1957,7 @@ describe('chartDataUtils', () => {
           updated_at: '2024-01-15T10:00:00Z',
           time_spent_reading: null,
           ignore_in_calcs: false,
-        }
+        },
       ];
 
       const result = calculateHistoricalRequiredPace(deadline, '2024-01-15');
@@ -1944,8 +1965,8 @@ describe('chartDataUtils', () => {
       // Should use progress as of Jan 14 (50), not Jan 15 (200)
       expect(mockCalculateRequiredPace).toHaveBeenCalledWith(
         200,
-        50,  // Progress at start of Jan 15
-        4,   // Days from Jan 15 to Jan 20 (using dayjs diff)
+        50, // Progress at start of Jan 15
+        4, // Days from Jan 15 to Jan 20 (using dayjs diff)
         'physical'
       );
       expect(result).toBe(30);
@@ -1973,7 +1994,7 @@ describe('chartDataUtils', () => {
           updated_at: '2024-01-15T10:00:00Z',
           time_spent_reading: null,
           ignore_in_calcs: false,
-        }
+        },
       ];
 
       const result = calculateHistoricalRequiredPace(deadline, '2024-01-15');
@@ -1981,7 +2002,7 @@ describe('chartDataUtils', () => {
       expect(mockCalculateRequiredPace).toHaveBeenCalledWith(
         300,
         100, // Progress as of Jan 14
-        14,  // Days from Jan 15 to Jan 30 (using dayjs diff)
+        14, // Days from Jan 15 to Jan 30 (using dayjs diff)
         'physical'
       );
       expect(result).toBe(25);
@@ -2004,17 +2025,23 @@ describe('chartDataUtils', () => {
 
     it('should handle audio format', () => {
       mockCalculateRequiredPace.mockReturnValue(45);
-      const deadline = createMockDeadlineForPace(500, '2024-01-25T00:00:00Z', 'audio');
+      const deadline = createMockDeadlineForPace(
+        500,
+        '2024-01-25T00:00:00Z',
+        'audio'
+      );
 
-      deadline.progress = [{
-        id: 'progress-1',
-        deadline_id: 'deadline-1',
-        current_progress: 200,
-        created_at: '2024-01-14T10:00:00Z',
-        updated_at: '2024-01-14T10:00:00Z',
-        time_spent_reading: null,
-        ignore_in_calcs: false,
-      }];
+      deadline.progress = [
+        {
+          id: 'progress-1',
+          deadline_id: 'deadline-1',
+          current_progress: 200,
+          created_at: '2024-01-14T10:00:00Z',
+          updated_at: '2024-01-14T10:00:00Z',
+          time_spent_reading: null,
+          ignore_in_calcs: false,
+        },
+      ];
 
       const result = calculateHistoricalRequiredPace(deadline, '2024-01-15');
 
@@ -2051,22 +2078,29 @@ describe('chartDataUtils', () => {
       type: 'Personal',
       publishers: null,
       flexibility: 'strict',
-      status: [{
-        id: 'status-1',
-        deadline_id: id,
-        status: 'reading' as any,
-        created_at: '2024-01-14T10:00:00Z',
-        updated_at: '2024-01-14T10:00:00Z',
-      }],
-      progress: progress > 0 ? [{
-        id: 'progress-1',
-        deadline_id: id,
-        current_progress: progress,
-        created_at: '2024-01-14T10:00:00Z',
-        updated_at: '2024-01-14T10:00:00Z',
-        time_spent_reading: null,
-        ignore_in_calcs: false,
-      }] : [],
+      status: [
+        {
+          id: 'status-1',
+          deadline_id: id,
+          status: 'reading' as any,
+          created_at: '2024-01-14T10:00:00Z',
+          updated_at: '2024-01-14T10:00:00Z',
+        },
+      ],
+      progress:
+        progress > 0
+          ? [
+              {
+                id: 'progress-1',
+                deadline_id: id,
+                current_progress: progress,
+                created_at: '2024-01-14T10:00:00Z',
+                updated_at: '2024-01-14T10:00:00Z',
+                time_spent_reading: null,
+                ignore_in_calcs: false,
+              },
+            ]
+          : [],
     });
 
     beforeEach(() => {
@@ -2091,9 +2125,7 @@ describe('chartDataUtils', () => {
     });
 
     it('should sum minutes for audio', () => {
-      mockCalculateRequiredPace
-        .mockReturnValueOnce(45)
-        .mockReturnValueOnce(30);
+      mockCalculateRequiredPace.mockReturnValueOnce(45).mockReturnValueOnce(30);
 
       const deadlines = [
         createMockDeadlineForAggregate('1', 'audio', 500, 100),

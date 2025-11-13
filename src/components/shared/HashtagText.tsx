@@ -61,7 +61,11 @@ export const HashtagText: React.FC<HashtagTextProps> = ({
           if (onHashtagPress && segment.id) {
             return (
               <TouchableOpacity
-                key={segment.id ? `hashtag-${segment.id}-${index}` : `text-${index}`}
+                key={
+                  segment.id
+                    ? `hashtag-${segment.id}-${index}`
+                    : `text-${index}`
+                }
                 onPress={() =>
                   onHashtagPress(segment.text.slice(1), segment.id!)
                 }
@@ -73,7 +77,15 @@ export const HashtagText: React.FC<HashtagTextProps> = ({
           }
 
           return (
-            <Text key={segment.id ? `hashtag-text-${segment.id}-${index}` : `text-${index}`}>{hashtagContent}</Text>
+            <Text
+              key={
+                segment.id
+                  ? `hashtag-text-${segment.id}-${index}`
+                  : `text-${index}`
+              }
+            >
+              {hashtagContent}
+            </Text>
           );
         }
         return <Text key={`text-${index}`}>{segment.text}</Text>;

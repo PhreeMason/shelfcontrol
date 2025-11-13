@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Agenda, AgendaEntry, AgendaSchedule, DateData } from 'react-native-calendars';
+import {
+  Agenda,
+  AgendaEntry,
+  AgendaSchedule,
+  DateData,
+} from 'react-native-calendars';
 
 export default function CalendarScreen() {
   const [items, setItems] = useState<AgendaSchedule>({});
@@ -17,14 +22,14 @@ export default function CalendarScreen() {
 
         if (!newItems[strTime]) {
           newItems[strTime] = [];
-          
+
           // Add 1-3 random items for each day
           const numItems = Math.floor(Math.random() * 3 + 1);
           for (let j = 0; j < numItems; j++) {
             newItems[strTime].push({
               name: `Event ${j + 1} for ${strTime}`,
               height: Math.max(50, Math.floor(Math.random() * 100)),
-              day: strTime
+              day: strTime,
             });
           }
         }
@@ -74,7 +79,7 @@ export default function CalendarScreen() {
         agendaDayNumColor: '#000',
         agendaTodayColor: '#00adf5',
         dotColor: '#00adf5',
-        selectedDayBackgroundColor: '#00adf5'
+        selectedDayBackgroundColor: '#00adf5',
       }}
     />
   );
@@ -87,11 +92,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginRight: 10,
-    marginTop: 17
+    marginTop: 17,
   },
   emptyDate: {
     height: 15,
     flex: 1,
-    paddingTop: 30
-  }
+    paddingTop: 30,
+  },
 });

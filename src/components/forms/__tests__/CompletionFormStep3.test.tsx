@@ -741,7 +741,9 @@ describe('CompletionFormStep3', () => {
 
       mockUpdateReviewTracking.mockImplementation((_params, callbacks) => {
         // Should use existing date, not deadline.deadline_date
-        expect(_params.review_due_date).toBe(new Date(existingReviewDueDate).toISOString());
+        expect(_params.review_due_date).toBe(
+          new Date(existingReviewDueDate).toISOString()
+        );
         expect(_params.needs_link_submission).toBe(true);
         callbacks.onSuccess();
       });
@@ -760,7 +762,9 @@ describe('CompletionFormStep3', () => {
 
       mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
         expect(_params.review_due_date).toBeDefined();
-        expect(_params.review_due_date).toBe(new Date('2024-12-31').toISOString());
+        expect(_params.review_due_date).toBe(
+          new Date('2024-12-31').toISOString()
+        );
         callbacks.onSuccess();
       });
 

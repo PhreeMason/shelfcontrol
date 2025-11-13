@@ -7,8 +7,8 @@ export const QUERY_KEYS = {
     ACQUISITION_SOURCES: (userId: string) =>
       ['deadline', 'acquisition_sources', userId] as const,
     PROGRESS: (userId: string) => ['deadline_progress', userId] as const,
-    DAILY_ACTIVITIES: (userId: string, date: string) =>
-      ['daily_activities', userId, date] as const,
+    DAILY_ACTIVITIES: (userId: string, dateRange: string) =>
+      ['deadline', 'daily_activities', userId, dateRange] as const,
   },
   NOTES: {
     BY_DEADLINE: (userId: string, deadlineId: string) =>

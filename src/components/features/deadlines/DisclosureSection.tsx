@@ -438,7 +438,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             <ThemedButton
               title={
                 updateDeadlineDisclosureMutation.isPending ||
-                  createTemplateMutation.isPending
+                createTemplateMutation.isPending
                   ? 'Saving...'
                   : 'Save'
               }
@@ -561,7 +561,7 @@ const styles = StyleSheet.create({
   section: {
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
-    marginVertical: Spacing.md
+    marginVertical: Spacing.md,
   },
   header: {
     flexDirection: 'row',

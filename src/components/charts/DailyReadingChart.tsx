@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   container: {
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
-    marginVertical: Spacing.md
+    marginVertical: Spacing.md,
   },
   title: {
     fontSize: 18,

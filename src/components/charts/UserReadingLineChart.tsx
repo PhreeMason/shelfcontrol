@@ -123,46 +123,81 @@ const UserReadingLineChart: React.FC<UserReadingLineChartProps> = ({
   // Show every nth date label for better readability
   const pagesReadData = activityDays.map((day, index) => ({
     value: Math.round(day.pagesRead),
-    label: index % CHART_CONFIG.LABEL_INTERVAL === 0 ? parseServerDateOnly(day.date).format(CHART_DATE_FORMATS.LABEL) : '',
+    label:
+      index % CHART_CONFIG.LABEL_INTERVAL === 0
+        ? parseServerDateOnly(day.date).format(CHART_DATE_FORMATS.LABEL)
+        : '',
     dataPointText: String(Math.round(day.pagesRead)),
   }));
 
   const minutesListenedData = activityDays.map((day, index) => ({
     value: Math.round(day.minutesListened),
-    label: index % CHART_CONFIG.LABEL_INTERVAL === 0 ? parseServerDateOnly(day.date).format(CHART_DATE_FORMATS.LABEL) : '',
+    label:
+      index % CHART_CONFIG.LABEL_INTERVAL === 0
+        ? parseServerDateOnly(day.date).format(CHART_DATE_FORMATS.LABEL)
+        : '',
     dataPointText: String(Math.round(day.minutesListened)),
   }));
 
   const targetPagesData = activityDays.map((day, index) => ({
     value: Math.round(day.targetPages),
-    label: index % CHART_CONFIG.LABEL_INTERVAL === 0 ? parseServerDateOnly(day.date).format(CHART_DATE_FORMATS.LABEL) : '',
+    label:
+      index % CHART_CONFIG.LABEL_INTERVAL === 0
+        ? parseServerDateOnly(day.date).format(CHART_DATE_FORMATS.LABEL)
+        : '',
     dataPointText: String(Math.round(day.targetPages)),
   }));
 
   const targetMinutesData = activityDays.map((day, index) => ({
     value: Math.round(day.targetMinutes),
-    label: index % CHART_CONFIG.LABEL_INTERVAL === 0 ? parseServerDateOnly(day.date).format(CHART_DATE_FORMATS.LABEL) : '',
+    label:
+      index % CHART_CONFIG.LABEL_INTERVAL === 0
+        ? parseServerDateOnly(day.date).format(CHART_DATE_FORMATS.LABEL)
+        : '',
     dataPointText: String(Math.round(day.targetMinutes)),
   }));
 
   // Calculate combined max values for combination charts
-  const maxPagesRead = Math.max(...pagesReadData.map(d => d.value), CHART_CONFIG.MIN_Y_AXIS_MAX);
-  const maxTargetPages = Math.max(...targetPagesData.map(d => d.value), CHART_CONFIG.MIN_Y_AXIS_MAX);
+  const maxPagesRead = Math.max(
+    ...pagesReadData.map(d => d.value),
+    CHART_CONFIG.MIN_Y_AXIS_MAX
+  );
+  const maxTargetPages = Math.max(
+    ...targetPagesData.map(d => d.value),
+    CHART_CONFIG.MIN_Y_AXIS_MAX
+  );
   const maxReadingActivity = Math.max(maxPagesRead, maxTargetPages);
-  const yAxisMaxReading = Math.ceil(maxReadingActivity * CHART_CONFIG.Y_AXIS_BUFFER_MULTIPLIER);
+  const yAxisMaxReading = Math.ceil(
+    maxReadingActivity * CHART_CONFIG.Y_AXIS_BUFFER_MULTIPLIER
+  );
 
   // Calculate max values for listening (without MIN_Y_AXIS_MAX for detection)
-  const maxMinutesListenedRaw = Math.max(...minutesListenedData.map(d => d.value), 0);
-  const maxTargetMinutesRaw = Math.max(...targetMinutesData.map(d => d.value), 0);
+  const maxMinutesListenedRaw = Math.max(
+    ...minutesListenedData.map(d => d.value),
+    0
+  );
+  const maxTargetMinutesRaw = Math.max(
+    ...targetMinutesData.map(d => d.value),
+    0
+  );
 
   // Check if user has any listening activity (before applying MIN_Y_AXIS_MAX)
-  const hasListeningActivity = maxMinutesListenedRaw > 0 || maxTargetMinutesRaw > 0;
+  const hasListeningActivity =
+    maxMinutesListenedRaw > 0 || maxTargetMinutesRaw > 0;
 
   // Apply MIN_Y_AXIS_MAX for chart rendering
-  const maxMinutesListened = Math.max(maxMinutesListenedRaw, CHART_CONFIG.MIN_Y_AXIS_MAX);
-  const maxTargetMinutes = Math.max(maxTargetMinutesRaw, CHART_CONFIG.MIN_Y_AXIS_MAX);
+  const maxMinutesListened = Math.max(
+    maxMinutesListenedRaw,
+    CHART_CONFIG.MIN_Y_AXIS_MAX
+  );
+  const maxTargetMinutes = Math.max(
+    maxTargetMinutesRaw,
+    CHART_CONFIG.MIN_Y_AXIS_MAX
+  );
   const maxListeningActivity = Math.max(maxMinutesListened, maxTargetMinutes);
-  const yAxisMaxListening = Math.ceil(maxListeningActivity * CHART_CONFIG.Y_AXIS_BUFFER_MULTIPLIER);
+  const yAxisMaxListening = Math.ceil(
+    maxListeningActivity * CHART_CONFIG.Y_AXIS_BUFFER_MULTIPLIER
+  );
 
   return (
     <ThemedView style={styles.container} testID="user-reading-line-chart">

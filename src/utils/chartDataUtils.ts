@@ -230,7 +230,9 @@ export const getProgressAsOfDate = (
 
   // Filter to progress on or before target date (date-only comparison)
   const relevantProgress = progressArray.filter(progress => {
-    const progressDate = parseServerDateTime(progress.created_at).startOf('day');
+    const progressDate = parseServerDateTime(progress.created_at).startOf(
+      'day'
+    );
     return (
       progressDate.isBefore(targetDateDayjs) ||
       progressDate.isSame(targetDateDayjs, 'day')
@@ -245,7 +247,9 @@ export const getProgressAsOfDate = (
   const sortedProgress = isProgressArraySorted(relevantProgress)
     ? relevantProgress
     : [...relevantProgress].sort((a, b) => {
-        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        return (
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
       });
 
   // Remove baseline entries (ignore_in_calcs)
@@ -289,7 +293,9 @@ export const getDeadlinesActiveOnDate = (
         return false;
       }
 
-      const progressDate = parseServerDateTime(progress.created_at).startOf('day');
+      const progressDate = parseServerDateTime(progress.created_at).startOf(
+        'day'
+      );
       return progressDate.isSame(targetDateDayjs, 'day');
     });
   });
@@ -328,10 +334,15 @@ export const calculateHistoricalRequiredPace = (
   const previousDay = targetDateDayjs.subtract(1, 'day').format('YYYY-MM-DD');
 
   // Progress at the start of the target date = progress as of previous day
-  const progressAsOfStartOfDay = getProgressAsOfDate(deadline.progress, previousDay);
+  const progressAsOfStartOfDay = getProgressAsOfDate(
+    deadline.progress,
+    previousDay
+  );
 
   // Calculate days left from target date to deadline
-  const deadlineDateDayjs = parseServerDateTime(deadline.deadline_date).startOf('day');
+  const deadlineDateDayjs = parseServerDateTime(deadline.deadline_date).startOf(
+    'day'
+  );
   const daysLeft = deadlineDateDayjs.diff(targetDateDayjs, 'day');
 
   // Use existing calculateRequiredPace function
@@ -375,7 +386,9 @@ export const getDeadlinesInFlightOnDate = (
 
   const result = deadlines.filter(deadline => {
     // 0. Deadline must have been created on or before target date
-    const createdAtDayjs = parseServerDateTime(deadline.created_at).startOf('day');
+    const createdAtDayjs = parseServerDateTime(deadline.created_at).startOf(
+      'day'
+    );
     if (createdAtDayjs.isAfter(targetDateDayjs)) {
       return false;
     }
@@ -386,10 +399,12 @@ export const getDeadlinesInFlightOnDate = (
     const statusAsOfDate = deadline.status
       ?.filter(s => {
         const statusTimestamp = parseServerDateTime(s.created_at);
-        return statusTimestamp.isBefore(endOfTargetDay) || statusTimestamp.isSame(endOfTargetDay);
+        return (
+          statusTimestamp.isBefore(endOfTargetDay) ||
+          statusTimestamp.isSame(endOfTargetDay)
+        );
       })
-      .sort((a, b) => dayjs(b.created_at).diff(dayjs(a.created_at)))
-      ?.[0];
+      .sort((a, b) => dayjs(b.created_at).diff(dayjs(a.created_at)))?.[0];
 
     const currentStatus = statusAsOfDate?.status || 'reading'; // Default to reading if no status
 
@@ -400,7 +415,10 @@ export const getDeadlinesInFlightOnDate = (
 
     // 2. Not yet completed as of START of that day (by progress)
     const previousDay = targetDateDayjs.subtract(1, 'day').format('YYYY-MM-DD');
-    const progressAsOfStartOfDay = getProgressAsOfDate(deadline.progress, previousDay);
+    const progressAsOfStartOfDay = getProgressAsOfDate(
+      deadline.progress,
+      previousDay
+    );
 
     // If already completed before this day, exclude
     if (progressAsOfStartOfDay >= deadline.total_quantity) {
@@ -408,11 +426,12 @@ export const getDeadlinesInFlightOnDate = (
     }
 
     // 3. Deadline date >= target date (not overdue)
-    const deadlineDateDayjs = parseServerDateTime(deadline.deadline_date).startOf('day');
-    const isValid = (
+    const deadlineDateDayjs = parseServerDateTime(
+      deadline.deadline_date
+    ).startOf('day');
+    const isValid =
       deadlineDateDayjs.isAfter(targetDateDayjs) ||
-      deadlineDateDayjs.isSame(targetDateDayjs, 'day')
-    );
+      deadlineDateDayjs.isSame(targetDateDayjs, 'day');
 
     return isValid;
   });
@@ -522,7 +541,12 @@ export const getAllUserActivityDays = (
   const audioDeadlines = deadlines.filter(d => d.format === 'audio');
 
   audioDeadlines.forEach(deadline => {
-    processBookProgress(deadline, cutoffTime, dailyMinutesListened, deadline.format);
+    processBookProgress(
+      deadline,
+      cutoffTime,
+      dailyMinutesListened,
+      deadline.format
+    );
   });
 
   // Get all unique dates from both maps
@@ -539,10 +563,18 @@ export const getAllUserActivityDays = (
     const minutesListened = dailyMinutesListened[date] || 0;
 
     // Calculate targets for this date
-    const { targetPages, targetMinutes } = aggregateTargetsByFormat(deadlines, date);
+    const { targetPages, targetMinutes } = aggregateTargetsByFormat(
+      deadlines,
+      date
+    );
 
     // Only include days with activity OR targets
-    if (pagesRead > 0 || minutesListened > 0 || targetPages > 0 || targetMinutes > 0) {
+    if (
+      pagesRead > 0 ||
+      minutesListened > 0 ||
+      targetPages > 0 ||
+      targetMinutes > 0
+    ) {
       activityDays.push({
         date,
         pagesRead: Number(pagesRead.toFixed(2)),
@@ -554,7 +586,7 @@ export const getAllUserActivityDays = (
   }
 
   // Sort by date (oldest to newest)
-  return activityDays.sort((a, b) =>
-    new Date(a.date).getTime() - new Date(b.date).getTime()
+  return activityDays.sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 };

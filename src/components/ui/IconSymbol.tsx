@@ -67,7 +67,7 @@ export const MAPPING = {
   'arrow.up.right': 'trending-up',
   'star.leadinghalf.filled': 'star-half',
   'plus.circle.fill': 'add-circle',
-  'play.fill': 'play-circle-fill'
+  'play.fill': 'play-circle-fill',
 } as IconMapping;
 
 /**

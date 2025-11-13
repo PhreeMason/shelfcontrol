@@ -35,7 +35,7 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
           onPress={() =>
             startReadingDeadline(
               deadline.id,
-              () => { },
+              () => {},
               error => {
                 console.error('Failed to start reading:', error);
               }
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   heroCardContainer: {
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
-    marginBottom: Spacing.md
+    marginBottom: Spacing.md,
   },
   primaryActionText: {
     fontSize: 17,

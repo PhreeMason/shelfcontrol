@@ -4,9 +4,15 @@ import { useTheme } from '@/hooks/useTheme';
 import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getProgressAsOfDate } from '@/utils/chartDataUtils';
-import { parseServerDateOnly, parseServerDateTime } from '@/utils/dateNormalization';
+import {
+  parseServerDateOnly,
+  parseServerDateTime,
+} from '@/utils/dateNormalization';
 import { formatProgressDisplay } from '@/utils/deadlineUtils';
-import { getBookCoverIcon, getGradientBackground } from '@/utils/deadlineDisplayUtils';
+import {
+  getBookCoverIcon,
+  getGradientBackground,
+} from '@/utils/deadlineDisplayUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -30,9 +36,17 @@ export const DeadlineInFlightItem: React.FC<DeadlineInFlightItemProps> = ({
   const { data: bookData } = useFetchBookById(deadline.book_id);
 
   // Calculate remaining work at start of selected day
-  const previousDay = dayjs(selectedDate).subtract(1, 'day').format('YYYY-MM-DD');
-  const progressAsOfStartOfDay = getProgressAsOfDate(deadline.progress, previousDay);
-  const remaining = Math.max(0, deadline.total_quantity - progressAsOfStartOfDay);
+  const previousDay = dayjs(selectedDate)
+    .subtract(1, 'day')
+    .format('YYYY-MM-DD');
+  const progressAsOfStartOfDay = getProgressAsOfDate(
+    deadline.progress,
+    previousDay
+  );
+  const remaining = Math.max(
+    0,
+    deadline.total_quantity - progressAsOfStartOfDay
+  );
 
   // Calculate days left
   const selectedDateDayjs = parseServerDateOnly(selectedDate);
@@ -41,9 +55,10 @@ export const DeadlineInFlightItem: React.FC<DeadlineInFlightItemProps> = ({
 
   // Format display text with proper time formatting for audio books
   const formattedRemaining = formatProgressDisplay(deadline.format, remaining);
-  const remainingText = deadline.format === 'audio'
-    ? `${formattedRemaining} left`
-    : `${formattedRemaining} pgs left`;
+  const remainingText =
+    deadline.format === 'audio'
+      ? `${formattedRemaining} left`
+      : `${formattedRemaining} pgs left`;
 
   let daysText: string;
   if (daysLeft === 0) {
@@ -92,7 +107,7 @@ export const DeadlineInFlightItem: React.FC<DeadlineInFlightItemProps> = ({
         <ThemedText style={styles.title} numberOfLines={1}>
           {bookData?.title || 'Unknown Book'}
         </ThemedText>
-        <ThemedText variant='muted' style={[styles.info]}>
+        <ThemedText variant="muted" style={[styles.info]}>
           {remainingText} • {daysText}
         </ThemedText>
       </View>

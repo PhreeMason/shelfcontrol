@@ -11,16 +11,30 @@ import { StyleSheet, View } from 'react-native';
 
 const TodaysGoals: React.FC = () => {
   const { calculateProgressForToday } = useDeadlines();
-  const { audioDeadlines, readingDeadlines, allAudioDeadlines, allReadingDeadlines } = useTodaysDeadlines();
+  const {
+    audioDeadlines,
+    readingDeadlines,
+    allAudioDeadlines,
+    allReadingDeadlines,
+  } = useTodaysDeadlines();
 
   const audioTotals = useMemo(
-    () => calculateTodaysAudioTotals(audioDeadlines, allAudioDeadlines, calculateProgressForToday),
+    () =>
+      calculateTodaysAudioTotals(
+        audioDeadlines,
+        allAudioDeadlines,
+        calculateProgressForToday
+      ),
     [audioDeadlines, allAudioDeadlines, calculateProgressForToday]
   );
 
   const readingTotals = useMemo(
     () =>
-      calculateTodaysReadingTotals(readingDeadlines, allReadingDeadlines, calculateProgressForToday),
+      calculateTodaysReadingTotals(
+        readingDeadlines,
+        allReadingDeadlines,
+        calculateProgressForToday
+      ),
     [readingDeadlines, allReadingDeadlines, calculateProgressForToday]
   );
 

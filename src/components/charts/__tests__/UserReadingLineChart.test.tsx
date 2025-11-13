@@ -32,7 +32,8 @@ jest.mock('react-native-gifted-charts', () => ({
 }));
 
 describe('UserReadingLineChart', () => {
-  const mockGetAllUserActivityDays = chartDataUtils.getAllUserActivityDays as jest.Mock;
+  const mockGetAllUserActivityDays =
+    chartDataUtils.getAllUserActivityDays as jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -42,13 +43,13 @@ describe('UserReadingLineChart', () => {
     it('should render empty state when there are no activity days', () => {
       mockGetAllUserActivityDays.mockReturnValue([]);
 
-      const { getByText } = render(
-        <UserReadingLineChart deadlines={[]} />
-      );
+      const { getByText } = render(<UserReadingLineChart deadlines={[]} />);
 
       expect(getByText('Reading Activity & Targets')).toBeTruthy();
       expect(getByText('No activity recorded')).toBeTruthy();
-      expect(getByText('Start reading to see your daily progress')).toBeTruthy();
+      expect(
+        getByText('Start reading to see your daily progress')
+      ).toBeTruthy();
     });
 
     it('should call getAllUserActivityDays with deadlines', () => {
@@ -89,9 +90,7 @@ describe('UserReadingLineChart', () => {
     it('should render reading progress chart when there is activity', () => {
       mockGetAllUserActivityDays.mockReturnValue(mockActivityDays);
 
-      const { getByText } = render(
-        <UserReadingLineChart deadlines={[]} />
-      );
+      const { getByText } = render(<UserReadingLineChart deadlines={[]} />);
 
       expect(getByText('Reading Activity & Targets')).toBeTruthy();
       expect(getByText('Reading Progress & Target')).toBeTruthy();
@@ -100,9 +99,7 @@ describe('UserReadingLineChart', () => {
     it('should not render listening chart when there is no listening activity', () => {
       mockGetAllUserActivityDays.mockReturnValue(mockActivityDays);
 
-      const { queryByText } = render(
-        <UserReadingLineChart deadlines={[]} />
-      );
+      const { queryByText } = render(<UserReadingLineChart deadlines={[]} />);
 
       expect(queryByText('Listening Progress & Target')).toBeNull();
     });
@@ -121,9 +118,7 @@ describe('UserReadingLineChart', () => {
 
       mockGetAllUserActivityDays.mockReturnValue(activityWithListening);
 
-      const { getByText } = render(
-        <UserReadingLineChart deadlines={[]} />
-      );
+      const { getByText } = render(<UserReadingLineChart deadlines={[]} />);
 
       expect(getByText('Listening Progress & Target')).toBeTruthy();
     });
@@ -307,9 +302,7 @@ describe('UserReadingLineChart', () => {
         },
       ]);
 
-      const { getByTestId } = render(
-        <UserReadingLineChart deadlines={[]} />
-      );
+      const { getByTestId } = render(<UserReadingLineChart deadlines={[]} />);
 
       expect(getByTestId('user-reading-line-chart')).toBeTruthy();
     });

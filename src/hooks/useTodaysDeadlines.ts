@@ -43,13 +43,19 @@ export const useTodaysDeadlines = (): TodaysDeadlines => {
     const activeStatuses = ['reading', 'pending', 'to_review', 'complete'];
 
     return allDeadlines.filter(deadline => {
-      const latestStatus = deadline.status?.length && deadline.status[deadline.status.length - 1];
+      const latestStatus =
+        deadline.status?.length && deadline.status[deadline.status.length - 1];
       if (!latestStatus || !latestStatus.status) return false;
       return activeStatuses.includes(latestStatus.status);
     });
   }, [allDeadlines]);
 
-  const { audioDeadlines, readingDeadlines, allAudioDeadlines, allReadingDeadlines } = useMemo(() => {
+  const {
+    audioDeadlines,
+    readingDeadlines,
+    allAudioDeadlines,
+    allReadingDeadlines,
+  } = useMemo(() => {
     const audio: ReadingDeadlineWithProgress[] = [];
     const reading: ReadingDeadlineWithProgress[] = [];
     const allAudio: ReadingDeadlineWithProgress[] = [];
@@ -77,7 +83,7 @@ export const useTodaysDeadlines = (): TodaysDeadlines => {
       audioDeadlines: audio,
       readingDeadlines: reading,
       allAudioDeadlines: allAudio,
-      allReadingDeadlines: allReading
+      allReadingDeadlines: allReading,
     };
   }, [activeDeadlinesOnly, allDeadlines]);
 

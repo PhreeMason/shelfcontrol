@@ -66,9 +66,7 @@ describe('LineChartSection', () => {
     });
 
     it('should render legend dots with correct colors', () => {
-      const { UNSAFE_root } = render(
-        <LineChartSection {...defaultProps} />
-      );
+      const { UNSAFE_root } = render(<LineChartSection {...defaultProps} />);
 
       // Legend dots should have background colors matching the chart colors
       const root = UNSAFE_root;
@@ -105,7 +103,11 @@ describe('LineChartSection', () => {
   describe('Chart States', () => {
     it('should render chart when both lines are visible', () => {
       const { getAllByText } = render(
-        <LineChartSection {...defaultProps} showActual={true} showTarget={true} />
+        <LineChartSection
+          {...defaultProps}
+          showActual={true}
+          showTarget={true}
+        />
       );
 
       // Should render the LineChart component
@@ -115,7 +117,11 @@ describe('LineChartSection', () => {
 
     it('should render chart when only actual is visible', () => {
       const { getAllByText } = render(
-        <LineChartSection {...defaultProps} showActual={true} showTarget={false} />
+        <LineChartSection
+          {...defaultProps}
+          showActual={true}
+          showTarget={false}
+        />
       );
 
       const charts = getAllByText('LineChart');
@@ -124,7 +130,11 @@ describe('LineChartSection', () => {
 
     it('should render chart when only target is visible', () => {
       const { getAllByText } = render(
-        <LineChartSection {...defaultProps} showActual={false} showTarget={true} />
+        <LineChartSection
+          {...defaultProps}
+          showActual={false}
+          showTarget={true}
+        />
       );
 
       const charts = getAllByText('LineChart');
@@ -133,7 +143,11 @@ describe('LineChartSection', () => {
 
     it('should render empty state when neither line is visible', () => {
       const { getByText } = render(
-        <LineChartSection {...defaultProps} showActual={false} showTarget={false} />
+        <LineChartSection
+          {...defaultProps}
+          showActual={false}
+          showTarget={false}
+        />
       );
 
       expect(getByText('Toggle a line to view data')).toBeTruthy();
@@ -143,7 +157,11 @@ describe('LineChartSection', () => {
   describe('Legend Styling', () => {
     it('should apply disabled style to actual legend when showActual is false', () => {
       const { getByText } = render(
-        <LineChartSection {...defaultProps} showActual={false} showTarget={true} />
+        <LineChartSection
+          {...defaultProps}
+          showActual={false}
+          showTarget={true}
+        />
       );
 
       const actualLabel = getByText('Actual');
@@ -153,7 +171,11 @@ describe('LineChartSection', () => {
 
     it('should apply disabled style to target legend when showTarget is false', () => {
       const { getByText } = render(
-        <LineChartSection {...defaultProps} showActual={true} showTarget={false} />
+        <LineChartSection
+          {...defaultProps}
+          showActual={true}
+          showTarget={false}
+        />
       );
 
       const targetLabel = getByText('Target');
@@ -163,7 +185,11 @@ describe('LineChartSection', () => {
 
     it('should not apply disabled style when both are visible', () => {
       const { getByText } = render(
-        <LineChartSection {...defaultProps} showActual={true} showTarget={true} />
+        <LineChartSection
+          {...defaultProps}
+          showActual={true}
+          showTarget={true}
+        />
       );
 
       const actualLabel = getByText('Actual');
@@ -177,11 +203,7 @@ describe('LineChartSection', () => {
   describe('Props Validation', () => {
     it('should handle empty data arrays', () => {
       const { getByText } = render(
-        <LineChartSection
-          {...defaultProps}
-          actualData={[]}
-          targetData={[]}
-        />
+        <LineChartSection {...defaultProps} actualData={[]} targetData={[]} />
       );
 
       expect(getByText('Test Chart')).toBeTruthy();
@@ -255,13 +277,21 @@ describe('LineChartSection', () => {
   describe('Rerendering', () => {
     it('should update when toggle state changes', () => {
       const { rerender, getAllByText } = render(
-        <LineChartSection {...defaultProps} showActual={true} showTarget={true} />
+        <LineChartSection
+          {...defaultProps}
+          showActual={true}
+          showTarget={true}
+        />
       );
 
       expect(getAllByText('LineChart').length).toBeGreaterThan(0);
 
       rerender(
-        <LineChartSection {...defaultProps} showActual={false} showTarget={false} />
+        <LineChartSection
+          {...defaultProps}
+          showActual={false}
+          showTarget={false}
+        />
       );
 
       // Should now show empty state

@@ -495,7 +495,11 @@ describe('deadlineAggregationUtils', () => {
 
         const mockGetProgress = jest.fn().mockReturnValue(50);
 
-        const result = calculateTodaysGoalTotals([deadline], [deadline], mockGetProgress);
+        const result = calculateTodaysGoalTotals(
+          [deadline],
+          [deadline],
+          mockGetProgress
+        );
 
         expect(result.current).toBe(50);
         expect(mockGetProgress).toHaveBeenCalledWith(deadline);
@@ -534,7 +538,11 @@ describe('deadlineAggregationUtils', () => {
 
         const mockGetProgress = jest.fn().mockReturnValue(0);
 
-        const result = calculateTodaysGoalTotals([deadline], [deadline], mockGetProgress);
+        const result = calculateTodaysGoalTotals(
+          [deadline],
+          [deadline],
+          mockGetProgress
+        );
 
         expect(result.current).toBe(0);
         expect(mockGetProgress).toHaveBeenCalledWith(deadline);
@@ -583,7 +591,11 @@ describe('deadlineAggregationUtils', () => {
 
         const mockGetProgress = jest.fn().mockReturnValue(50);
 
-        const result = calculateTodaysGoalTotals([deadline], [deadline], mockGetProgress);
+        const result = calculateTodaysGoalTotals(
+          [deadline],
+          [deadline],
+          mockGetProgress
+        );
 
         expect(result.current).toBe(50);
       });
@@ -729,7 +741,11 @@ describe('deadlineAggregationUtils', () => {
 
       it('should exclude DNF books from goals but include their progress', () => {
         const activeBook = createDeadlineWithStatus('1', 'physical', 'reading');
-        const dnfBook = createDeadlineWithStatus('2', 'physical', 'did_not_finish');
+        const dnfBook = createDeadlineWithStatus(
+          '2',
+          'physical',
+          'did_not_finish'
+        );
 
         const activeDeadlines = [activeBook];
         const allDeadlines = [activeBook, dnfBook];
@@ -754,7 +770,11 @@ describe('deadlineAggregationUtils', () => {
 
       it('should include completed books in goals and their progress', () => {
         const activeBook = createDeadlineWithStatus('1', 'physical', 'reading');
-        const completedBook = createDeadlineWithStatus('2', 'physical', 'complete');
+        const completedBook = createDeadlineWithStatus(
+          '2',
+          'physical',
+          'complete'
+        );
 
         const activeDeadlines = [activeBook, completedBook];
         const allDeadlines = [activeBook, completedBook];
@@ -781,7 +801,11 @@ describe('deadlineAggregationUtils', () => {
         const activeBook = createDeadlineWithStatus('1', 'physical', 'reading');
         const pausedBook1 = createDeadlineWithStatus('2', 'physical', 'paused');
         const pausedBook2 = createDeadlineWithStatus('3', 'physical', 'paused');
-        const dnfBook = createDeadlineWithStatus('4', 'physical', 'did_not_finish');
+        const dnfBook = createDeadlineWithStatus(
+          '4',
+          'physical',
+          'did_not_finish'
+        );
 
         const activeDeadlines = [activeBook];
         const allDeadlines = [activeBook, pausedBook1, pausedBook2, dnfBook];
@@ -789,8 +813,8 @@ describe('deadlineAggregationUtils', () => {
         const mockGetProgress = jest
           .fn()
           .mockReturnValueOnce(10) // Active
-          .mockReturnValueOnce(5)  // Paused 1
-          .mockReturnValueOnce(8)  // Paused 2
+          .mockReturnValueOnce(5) // Paused 1
+          .mockReturnValueOnce(8) // Paused 2
           .mockReturnValueOnce(12); // DNF
 
         const result = calculateTodaysGoalTotals(
@@ -835,8 +859,16 @@ describe('deadlineAggregationUtils', () => {
 
     describe('calculateTodaysReadingTotals with separate arrays', () => {
       it('should exclude DNF reading books from goals but include their progress', () => {
-        const activeReading = createDeadlineWithStatus('1', 'physical', 'reading');
-        const dnfReading = createDeadlineWithStatus('2', 'eBook', 'did_not_finish');
+        const activeReading = createDeadlineWithStatus(
+          '1',
+          'physical',
+          'reading'
+        );
+        const dnfReading = createDeadlineWithStatus(
+          '2',
+          'eBook',
+          'did_not_finish'
+        );
 
         const activeDeadlines = [activeReading];
         const allDeadlines = [activeReading, dnfReading];
@@ -861,7 +893,11 @@ describe('deadlineAggregationUtils', () => {
 
     describe('Real-world scenario tests', () => {
       it('should handle user completing a book then pausing another', () => {
-        const completedBook = createDeadlineWithStatus('1', 'physical', 'complete');
+        const completedBook = createDeadlineWithStatus(
+          '1',
+          'physical',
+          'complete'
+        );
         const pausedBook = createDeadlineWithStatus('2', 'physical', 'paused');
         const activeBook = createDeadlineWithStatus('3', 'physical', 'reading');
 
@@ -890,7 +926,11 @@ describe('deadlineAggregationUtils', () => {
 
       it('should work when all books are paused/DNF', () => {
         const pausedBook = createDeadlineWithStatus('1', 'physical', 'paused');
-        const dnfBook = createDeadlineWithStatus('2', 'physical', 'did_not_finish');
+        const dnfBook = createDeadlineWithStatus(
+          '2',
+          'physical',
+          'did_not_finish'
+        );
 
         const activeDeadlines: ReadingDeadlineWithProgress[] = [];
         const allDeadlines = [pausedBook, dnfBook];

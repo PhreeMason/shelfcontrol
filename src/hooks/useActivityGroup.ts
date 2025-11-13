@@ -27,7 +27,9 @@ export function useActivityGroup() {
    * Format minutes as "Xh:Ym" format
    */
   const formatTimeAsHrMin = (minutes: number): string => {
-    const { hours, minutes: mins } = convertMinutesToHoursAndMinutes(Math.round(minutes));
+    const { hours, minutes: mins } = convertMinutesToHoursAndMinutes(
+      Math.round(minutes)
+    );
     return `${hours}h:${mins}m`;
   };
 
@@ -39,12 +41,12 @@ export function useActivityGroup() {
 
     // Status label mapping - shared across activity types
     const statusLabels: Record<string, string> = {
-      'reading': 'Reading',
-      'pending': 'Pending',
-      'complete': 'Complete',
-      'to_review': 'To Review',
-      'did_not_finish': 'DNF',
-      'paused': 'Paused'
+      reading: 'Reading',
+      pending: 'Pending',
+      complete: 'Complete',
+      to_review: 'To Review',
+      did_not_finish: 'DNF',
+      paused: 'Paused',
     };
 
     switch (activity_type) {
@@ -54,7 +56,8 @@ export function useActivityGroup() {
         const deadlineDate = metadata.deadline_date;
 
         // Check if deadline is overdue using proper date normalization
-        const isOverdue = deadlineDate && calculateLocalDaysLeft(deadlineDate) < 0;
+        const isOverdue =
+          deadlineDate && calculateLocalDaysLeft(deadlineDate) < 0;
 
         // Active statuses that can be overdue
         const activeStatuses = ['reading', 'pending', 'paused'];
@@ -124,7 +127,8 @@ export function useActivityGroup() {
         // Show transition if we have previous status
         const previousStatus = metadata.previous_status;
         if (previousStatus !== undefined && previousStatus !== null) {
-          const formattedPreviousStatus = statusLabels[previousStatus] || previousStatus;
+          const formattedPreviousStatus =
+            statusLabels[previousStatus] || previousStatus;
           return `${formattedPreviousStatus} → ${formattedStatus}`;
         }
 

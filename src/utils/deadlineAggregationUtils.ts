@@ -119,7 +119,10 @@ export const calculateTodaysGoalTotals = (
   getProgress: (deadline: ReadingDeadlineWithProgress) => number | null
 ): DeadlineTotals => ({
   total: calculateTodaysGoalUnitsForDeadlines(deadlinesForGoals),
-  current: calculateCurrentProgressForDeadlines(deadlinesForProgress, getProgress),
+  current: calculateCurrentProgressForDeadlines(
+    deadlinesForProgress,
+    getProgress
+  ),
 });
 
 /**
@@ -135,7 +138,11 @@ export const calculateTodaysAudioTotals = (
   audioDeadlinesForProgress: ReadingDeadlineWithProgress[],
   getProgress: (deadline: ReadingDeadlineWithProgress) => number | null
 ): DeadlineTotals => {
-  return calculateTodaysGoalTotals(audioDeadlinesForGoals, audioDeadlinesForProgress, getProgress);
+  return calculateTodaysGoalTotals(
+    audioDeadlinesForGoals,
+    audioDeadlinesForProgress,
+    getProgress
+  );
 };
 
 /**
@@ -151,7 +158,11 @@ export const calculateTodaysReadingTotals = (
   readingDeadlinesForProgress: ReadingDeadlineWithProgress[],
   getProgress: (deadline: ReadingDeadlineWithProgress) => number | null
 ): DeadlineTotals => {
-  return calculateTodaysGoalTotals(readingDeadlinesForGoals, readingDeadlinesForProgress, getProgress);
+  return calculateTodaysGoalTotals(
+    readingDeadlinesForGoals,
+    readingDeadlinesForProgress,
+    getProgress
+  );
 };
 
 export interface DailyGoalImpact {

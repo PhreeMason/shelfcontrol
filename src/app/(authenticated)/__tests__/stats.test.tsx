@@ -48,7 +48,10 @@ jest.mock('@/hooks/useThemeColor', () => ({
 jest.mock('@/utils/deadlineUtils');
 
 // Mock components
-jest.mock('@/components/charts/UserReadingLineChart', () => 'UserReadingLineChart');
+jest.mock(
+  '@/components/charts/UserReadingLineChart',
+  () => 'UserReadingLineChart'
+);
 jest.mock('@/components/features/profile/CompletedBooksCarousel', () => ({
   CompletedBooksCarousel: 'CompletedBooksCarousel',
 }));

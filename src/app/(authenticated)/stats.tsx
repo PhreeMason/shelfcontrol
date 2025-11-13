@@ -13,7 +13,14 @@ import {
   getOnTrackDeadlines,
 } from '@/utils/deadlineUtils';
 import React from 'react';
-import { ActivityIndicator, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Stats() {
@@ -75,14 +82,19 @@ export default function Stats() {
           <ThemedText style={styles.errorTitle}>
             Unable to Load Statistics
           </ThemedText>
-          <ThemedText style={[styles.errorMessage, { color: colors.textMuted }]}>
-            {error.message || 'An error occurred while loading your reading data.'}
+          <ThemedText
+            style={[styles.errorMessage, { color: colors.textMuted }]}
+          >
+            {error.message ||
+              'An error occurred while loading your reading data.'}
           </ThemedText>
           <TouchableOpacity
             style={[styles.retryButton, { backgroundColor: colors.primary }]}
             onPress={() => refetch()}
           >
-            <ThemedText style={[styles.retryButtonText, { color: colors.textOnPrimary }]}>
+            <ThemedText
+              style={[styles.retryButtonText, { color: colors.textOnPrimary }]}
+            >
               Try Again
             </ThemedText>
           </TouchableOpacity>

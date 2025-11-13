@@ -426,7 +426,9 @@ describe('DeadlineFormStep3', () => {
 
       const input = screen.getByTestId('input-type');
       expect(input.props['data-name']).toBe('type');
-      expect(input.props['data-placeholder']).toBe('Select a type or add your own');
+      expect(input.props['data-placeholder']).toBe(
+        'Select a type or add your own'
+      );
     });
 
     it('should configure acquisition_source input with correct props', () => {

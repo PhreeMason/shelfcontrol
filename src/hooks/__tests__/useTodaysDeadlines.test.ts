@@ -358,7 +358,11 @@ describe('useTodaysDeadlines', () => {
       };
 
       const completedDeadlineNoStatus = { ...baseDeadline };
-      const completedDeadlineEmptyStatus = { ...baseDeadline, id: '2', status: [] };
+      const completedDeadlineEmptyStatus = {
+        ...baseDeadline,
+        id: '2',
+        status: [],
+      };
 
       mockUseDeadlines.mockReturnValue({
         activeDeadlines: [],
@@ -487,9 +491,12 @@ describe('useTodaysDeadlines', () => {
       const activeDeadline = createMockDeadline('1', 'physical', '2024-12-31', [
         { created_at: '2024-12-30T10:00:00Z', status: 'reading' },
       ]);
-      const rejectedDeadline = createMockDeadline('2', 'physical', '2024-12-31', [
-        { created_at: '2024-12-30T10:00:00Z', status: 'rejected' },
-      ]);
+      const rejectedDeadline = createMockDeadline(
+        '2',
+        'physical',
+        '2024-12-31',
+        [{ created_at: '2024-12-30T10:00:00Z', status: 'rejected' }]
+      );
       const withdrewDeadline = createMockDeadline('3', 'audio', '2024-12-31', [
         { created_at: '2024-12-30T10:00:00Z', status: 'withdrew' },
       ]);
@@ -511,9 +518,12 @@ describe('useTodaysDeadlines', () => {
     });
 
     it('should include complete and to_review deadlines in goal calculations', () => {
-      const completeDeadline = createMockDeadline('1', 'physical', '2024-12-31', [
-        { created_at: '2024-12-30T10:00:00Z', status: 'complete' },
-      ]);
+      const completeDeadline = createMockDeadline(
+        '1',
+        'physical',
+        '2024-12-31',
+        [{ created_at: '2024-12-30T10:00:00Z', status: 'complete' }]
+      );
       const toReviewDeadline = createMockDeadline('2', 'audio', '2024-12-31', [
         { created_at: '2024-12-30T10:00:00Z', status: 'to_review' },
       ]);

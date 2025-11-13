@@ -54,7 +54,9 @@ const MonthlyProgressSectionComponent = ({
  * Memoized version of MonthlyProgressSection
  * Prevents unnecessary re-renders when props haven't changed
  */
-export const MonthlyProgressSection = React.memo(MonthlyProgressSectionComponent);
+export const MonthlyProgressSection = React.memo(
+  MonthlyProgressSectionComponent
+);
 MonthlyProgressSection.displayName = 'MonthlyProgressSection';
 
 const styles = StyleSheet.create({

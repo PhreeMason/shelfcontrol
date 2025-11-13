@@ -2,7 +2,11 @@ import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTheme } from '@/hooks/useTheme';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { aggregateTargetsByFormat, getDeadlinesInFlightOnDate, getProgressAsOfDate } from '@/utils/chartDataUtils';
+import {
+  aggregateTargetsByFormat,
+  getDeadlinesInFlightOnDate,
+  getProgressAsOfDate,
+} from '@/utils/chartDataUtils';
 import { parseServerDateOnly } from '@/utils/dateNormalization';
 import { formatAveragePace } from '@/utils/readingStatsUtils';
 import React, { useState } from 'react';
@@ -32,7 +36,9 @@ export const DeadlinesInFlightGroup: React.FC<DeadlinesInFlightGroupProps> = ({
   // Sort by remaining amount - least remaining first
   const sortedDeadlines = [...inFlightDeadlines].sort((a, b) => {
     const selectedDateDayjs = parseServerDateOnly(selectedDate);
-    const previousDay = selectedDateDayjs.subtract(1, 'day').format('YYYY-MM-DD');
+    const previousDay = selectedDateDayjs
+      .subtract(1, 'day')
+      .format('YYYY-MM-DD');
 
     const progressA = getProgressAsOfDate(a.progress, previousDay);
     const remainingA = Math.max(0, a.total_quantity - progressA);
@@ -49,7 +55,10 @@ export const DeadlinesInFlightGroup: React.FC<DeadlinesInFlightGroupProps> = ({
   }
 
   // Calculate aggregate targets for header
-  const { targetPages, targetMinutes } = aggregateTargetsByFormat(deadlines, selectedDate);
+  const { targetPages, targetMinutes } = aggregateTargetsByFormat(
+    deadlines,
+    selectedDate
+  );
 
   // Format target text for display
   const targetParts = [];
@@ -66,29 +75,29 @@ export const DeadlinesInFlightGroup: React.FC<DeadlinesInFlightGroupProps> = ({
   };
 
   return (
-    <View style={[styles.container, { borderColor: colors.border, backgroundColor: colors.background }]}>
+    <View
+      style={[
+        styles.container,
+        { borderColor: colors.border, backgroundColor: colors.background },
+      ]}
+    >
       {/* Header */}
       <Pressable
-        style={({ pressed }) => [
-          styles.header,
-          pressed && styles.pressed,
-        ]}
+        style={({ pressed }) => [styles.header, pressed && styles.pressed]}
         onPress={handleToggle}
       >
         <View style={styles.headerContent}>
           <View style={styles.iconContainer}>
-            <IconSymbol
-              name="books.vertical.fill"
-              size={20}
-              color="#6366F1"
-            />
+            <IconSymbol name="books.vertical.fill" size={20} color="#6366F1" />
           </View>
           <View style={styles.headerTextContent}>
             <ThemedText style={styles.headerTitle}>
               Books in progress ({sortedDeadlines.length})
             </ThemedText>
             {targetText && (
-              <ThemedText style={[styles.headerSubtitle, { color: colors.textMuted }]}>
+              <ThemedText
+                style={[styles.headerSubtitle, { color: colors.textMuted }]}
+              >
                 Total: {targetText}
               </ThemedText>
             )}
@@ -107,7 +116,9 @@ export const DeadlinesInFlightGroup: React.FC<DeadlinesInFlightGroupProps> = ({
 
       {/* Expanded Content - Show all in-flight deadlines (sorted by remaining amount) */}
       {isExpanded && (
-        <View style={[styles.expandedContent, { borderTopColor: colors.border }]}>
+        <View
+          style={[styles.expandedContent, { borderTopColor: colors.border }]}
+        >
           {sortedDeadlines.map((deadline, index) => (
             <React.Fragment key={deadline.id}>
               <DeadlineInFlightItem
@@ -116,7 +127,9 @@ export const DeadlinesInFlightGroup: React.FC<DeadlinesInFlightGroupProps> = ({
               />
               {/* Divider between items (not after last one) */}
               {index < sortedDeadlines.length - 1 && (
-                <View style={[styles.divider, { backgroundColor: colors.border }]} />
+                <View
+                  style={[styles.divider, { backgroundColor: colors.border }]}
+                />
               )}
             </React.Fragment>
           ))}
