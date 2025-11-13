@@ -27,7 +27,7 @@ export function AppleSSO({
         try {
           const available = await AppleAuthentication.isAvailableAsync();
           setIsAvailable(available);
-        } catch (error) {
+        } catch {
           setIsAvailable(false);
         }
       }
