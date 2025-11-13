@@ -1,5 +1,6 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import {
   useAddContact,
   useDeleteContact,
@@ -258,9 +259,9 @@ export const DeadlineContactsSection = ({
 
 const styles = StyleSheet.create({
   section: {
-    borderRadius: 16,
-    padding: 24,
-    marginBottom: 16,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginVertical: Spacing.md
   },
   header: {
     flexDirection: 'row',

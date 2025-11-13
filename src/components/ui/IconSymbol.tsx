@@ -31,6 +31,7 @@ export const MAPPING = {
   'info.circle.fill': 'info',
   'checkmark.circle.fill': 'check-circle',
   'person.fill': 'person',
+  'person.circle.fill': 'person',
   'book.fill': 'menu-book',
   'line.3.horizontal.decrease': 'filter-list',
   headphones: 'headphones',
@@ -65,7 +66,8 @@ export const MAPPING = {
   'arrow.left.arrow.right': 'swap-horiz',
   'arrow.up.right': 'trending-up',
   'star.leadinghalf.filled': 'star-half',
-  'plus.circle.fill': 'add-circle'
+  'plus.circle.fill': 'add-circle',
+  'play.fill': 'play-circle-fill'
 } as IconMapping;
 
 /**

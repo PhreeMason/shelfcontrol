@@ -1,5 +1,6 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -34,7 +35,7 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
           onPress={() =>
             startReadingDeadline(
               deadline.id,
-              () => {},
+              () => { },
               error => {
                 console.error('Failed to start reading:', error);
               }
@@ -92,7 +93,9 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
 
 const styles = StyleSheet.create({
   heroCardContainer: {
-    marginBottom: 10,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing.md
   },
   primaryActionText: {
     fontSize: 17,

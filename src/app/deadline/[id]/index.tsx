@@ -3,11 +3,12 @@ import BookDetailsSection from '@/components/features/deadlines/BookDetailsSecti
 import { DeadlineActionSheet } from '@/components/features/deadlines/DeadlineActionSheet';
 import { DeadlineContactsSection } from '@/components/features/deadlines/DeadlineContactsSection';
 import DeadlineHeroSection from '@/components/features/deadlines/DeadlineHeroSection';
-import DeadlineTabsSection from '@/components/features/deadlines/DeadlineTabsSection';
 import { DeadlineTagsSection } from '@/components/features/deadlines/DeadlineTagsSection';
 import DeadlineViewHeader from '@/components/features/deadlines/DeadlineViewHeader';
 import { DisclosureSection } from '@/components/features/deadlines/DisclosureSection';
+import ReviewProgressSection from '@/components/features/review/ReviewProgressSection';
 import ReadingProgressUpdate from '@/components/progress/ReadingProgressUpdate';
+import ReadingStats from '@/components/stats/ReadingStats';
 import {
   ThemedButton,
   ThemedKeyboardAwareScrollView,
@@ -118,34 +119,32 @@ const DeadlineView = () => {
   return (
     <SafeAreaView
       edges={['right', 'bottom', 'left']}
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={[styles.container, { backgroundColor: colors.surfaceVariant }]}
     >
       <DeadlineViewHeader {...headerProps} />
       <ThemedKeyboardAwareScrollView
         contentContainerStyle={{ paddingBottom: 100 }}
         keyboardShouldPersistTaps="handled"
-        style={[styles.content, { backgroundColor: 'white' }]}
+        style={[styles.content, { backgroundColor: colors.surfaceVariant }]}
       >
         <DeadlineHeroSection
           isPending={isPending}
           isPaused={isPaused}
           deadline={deadline}
         />
+        
+        {shouldShowProgress ? <ReadingProgressUpdate deadline={deadline} /> : null}
+        
+        {shouldShowStats ? <ReadingStats deadline={deadline} /> : null}
+        <ReviewProgressSection deadline={deadline} />
 
-        {shouldShowStats ? (
-          <DeadlineTabsSection deadline={deadline} />
-        ) : shouldShowProgress ? (
-          <>
-            <ReadingProgressUpdate deadline={deadline} />
-            <DailyReadingChart deadline={deadline} />
-          </>
-        ) : null}
+        <DailyReadingChart deadline={deadline} />
 
         <DeadlineContactsSection deadline={deadline} />
 
-        {shouldShowDisclosure && <DisclosureSection deadline={deadline} />}
-
         <DeadlineTagsSection deadline={deadline} />
+
+        {shouldShowDisclosure ? <DisclosureSection deadline={deadline} /> : null}
 
         <BookDetailsSection deadline={deadline} />
       </ThemedKeyboardAwareScrollView>
@@ -174,7 +173,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    flex: 1,
     paddingVertical: 20,
     paddingHorizontal: 10,
   },

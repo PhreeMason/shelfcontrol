@@ -1,5 +1,6 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import {
   useCreateTemplate,
   useGetTemplates,
@@ -437,7 +438,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
             <ThemedButton
               title={
                 updateDeadlineDisclosureMutation.isPending ||
-                createTemplateMutation.isPending
+                  createTemplateMutation.isPending
                   ? 'Saving...'
                   : 'Save'
               }
@@ -558,9 +559,9 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
 
 const styles = StyleSheet.create({
   section: {
-    borderRadius: 16,
-    padding: 24,
-    marginBottom: 16,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginVertical: Spacing.md
   },
   header: {
     flexDirection: 'row',

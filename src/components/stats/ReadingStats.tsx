@@ -170,9 +170,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
-    marginTop: Spacing.md,
-    marginBottom: Spacing.sm,
     gap: Spacing.md,
+    marginVertical: Spacing.md
   },
   progressSection: {
     width: '100%',

@@ -1,4 +1,5 @@
 import { ThemedText, ThemedView } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import React from 'react';
@@ -92,9 +93,9 @@ export default BookDetailsSection;
 
 const styles = StyleSheet.create({
   section: {
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginVertical: Spacing.md
   },
   sectionTitle: {
     flexDirection: 'row',

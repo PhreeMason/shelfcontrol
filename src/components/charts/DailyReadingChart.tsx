@@ -1,4 +1,5 @@
 import { ThemedText, ThemedView } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
@@ -117,10 +118,9 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    borderRadius: 12,
-    width: '100%',
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginVertical: Spacing.md
   },
   title: {
     fontSize: 18,
