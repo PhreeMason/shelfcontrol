@@ -1,5 +1,4 @@
 import { ThemedText } from '@/components/themed';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
@@ -43,17 +42,19 @@ export function DeadlineCountdownDisplay({
           </>
         ) : latestStatus === 'did_not_finish' ? (
           <>
-            <IconSymbol
-              name="bookmark.slash"
-              size={28}
-              color={countdownColor}
-              style={{ marginTop: 8 }}
-            />
+            <ThemedText
+              style={[
+                styles.archivedIcon,
+                { paddingTop: Platform.select({ ios: 6, android: 3 }) },
+              ]}
+            >
+              🪦
+            </ThemedText>
             <ThemedText
               style={[
                 styles.countdownLabel,
                 { color: countdownColor },
-                { marginTop: 4 },
+                { marginTop: Platform.select({ ios: -2, android: 1 }) },
               ]}
             >
               DNF
