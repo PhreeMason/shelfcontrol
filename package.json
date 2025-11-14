@@ -1,7 +1,7 @@
 {
   "name": "shelfcontrol",
   "main": "expo-router/entry",
-  "version": "1.41.1",
+  "version": "1.42.0",
   "scripts": {
     "start": "expo start -c --clear",
     "reset-project": "node ./scripts/reset-project.js",
@@ -79,7 +79,6 @@
     "react-dom": "19.0.0",
     "react-hook-form": "^7.56.4",
     "react-native": "0.79.6",
-    "react-native-adapty": "^3.11.4",
     "react-native-calendars": "^1.1313.0",
     "react-native-confetti-cannon": "^1.5.2",
     "react-native-gesture-handler": "~2.24.0",
@@ -87,7 +86,7 @@
     "react-native-gifted-charts": "^1.4.64",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-pager-view": "6.7.1",
-    "react-native-reanimated": "~3.17.4",
+    "react-native-reanimated": "^3.19.4",
     "react-native-render-html": "^6.3.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
