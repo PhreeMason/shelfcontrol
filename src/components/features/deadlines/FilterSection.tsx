@@ -106,20 +106,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
   const baseDeadlines = getBaseDeadlines();
 
-  const getFilterCount = (filterKey: FilterType): number => {
-    const countMap = new Map<FilterType, number>();
-    countMap.set('active', activeDeadlines.length);
-    countMap.set('overdue', overdueDeadlines.length);
-    countMap.set('pending', pendingDeadlines.length);
-    countMap.set('paused', pausedDeadlines.length);
-    countMap.set('completed', completedDeadlines.length);
-    countMap.set('toReview', toReviewDeadlines.length);
-    countMap.set('didNotFinish', didNotFinishDeadlines.length);
-    countMap.set('all', deadlines.length);
-
-    return countMap.get(filterKey) ?? 0;
-  };
-
   const statusCounts: Record<FilterType, number> = {
     active: activeDeadlines.length,
     overdue: overdueDeadlines.length,
@@ -168,7 +154,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           />
 
           {visibleOptions.map(option => {
-            const count = getFilterCount(option.key);
             const isSelected = selectedFilter === option.key;
             const shouldShowStar = isSelected && hasActiveFilters;
 
@@ -184,7 +169,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                   </View>
                 )}
                 <ThemedButton
-                  title={`${option.label} (${count})`}
+                  title={`${option.label}`}
                   style={styles.filterButton}
                   variant={isSelected ? 'primary' : 'outline'}
                   onPress={() => {
