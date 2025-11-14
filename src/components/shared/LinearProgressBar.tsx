@@ -26,13 +26,13 @@ const LinearProgressBar: React.FC<LinearProgressBarProps> = ({
   showShimmer = true,
   gradientColors = ['#E8C2B9', '#B8A9D9'],
 }) => {
-  const animatedWidth = useSharedValue(progressPercentage);
+  const animatedWidth = useSharedValue(0);
   const shimmerTranslateX = useSharedValue(-40);
 
   useEffect(() => {
     animatedWidth.value = withSpring(progressPercentage, {
-      damping: 10,
-      stiffness: 10,
+      damping: 15,
+      stiffness: 80,
     });
   }, [progressPercentage, animatedWidth]);
 

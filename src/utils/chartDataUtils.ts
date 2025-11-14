@@ -1,4 +1,8 @@
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { dayjs } from '@/lib/dayjs';
+import {
+  ReadingDeadlineProgress,
+  ReadingDeadlineWithProgress,
+} from '@/types/deadline.types';
 import {
   parseServerDateOnly,
   parseServerDateTime,
@@ -8,8 +12,6 @@ import {
   calculateRequiredPace,
   processBookProgress,
 } from '@/utils/paceCalculations';
-import { ReadingDeadlineProgress } from '@/types/deadline.types';
-import { dayjs } from '@/lib/dayjs';
 
 export interface ReadingDay {
   date: string;

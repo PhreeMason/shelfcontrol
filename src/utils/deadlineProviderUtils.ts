@@ -1,13 +1,13 @@
 import { BOOK_FORMAT } from '@/constants/status';
 import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { normalizeServerDate } from '@/utils/dateNormalization';
 import {
   calculateCurrentProgress,
   calculateTotalQuantity,
   getPaceEstimate,
   getReadingEstimate,
 } from '@/utils/deadlineCalculations';
-import { normalizeServerDate } from '@/utils/dateNormalization';
 import {
   calculateDaysLeft,
   calculateProgress,
@@ -146,14 +146,15 @@ export function mapPaceToUrgency(
 }
 
 // Map pace color to urgency color
+// Uses theme colors to match DeadlineCard countdown and border colors
 export function mapPaceColorToUrgencyColor(color: string): string {
   const paceColorToUrgencyColorMap: Record<string, string> = {
-    green: '#10b981',
-    orange: '#f59e0b',
-    red: '#ef4444',
+    green: '#7a5a8c', // Colors.light.good (dark purple)
+    orange: '#d4a46a', // Colors.light.approaching (orange/gold)
+    red: '#c8696e', // Colors.light.overdue (red)
   };
 
-  return paceColorToUrgencyColorMap[color] || '#7bc598';
+  return paceColorToUrgencyColorMap[color] || '#7a5a8c'; // Default to good color
 }
 
 // Calculate units per day needed based on format
@@ -250,7 +251,7 @@ export function formatAudioUnitsPerDay(
   daysLeft: number
 ): string {
   if (actualUnitsPerDay === 0) {
-    return '0 minutes/day needed';
+    return '0 minutes/day';
   }
 
   if (actualUnitsPerDay < 1 && daysLeft > 0) {
@@ -262,10 +263,10 @@ export function formatAudioUnitsPerDay(
   const minutes = Math.round(units % 60);
   if (hours > 0) {
     return minutes > 0
-      ? `${hours}h ${minutes}m/day needed`
-      : `${hours}h/day needed`;
+      ? `${hours}h ${minutes}m/day`
+      : `${hours}h/day`;
   }
-  return `${Math.round(units)} minutes/day needed`;
+  return `${Math.round(units)} minutes/day`;
 }
 
 // Format book units per day (physical/eBook)
@@ -276,7 +277,7 @@ export function formatBookUnitsPerDay(
   format: 'physical' | 'eBook'
 ): string {
   if (actualUnitsPerDay === 0) {
-    return '0 pages/day needed';
+    return '0 pages/day';
   }
 
   if (actualUnitsPerDay < 1 && daysLeft > 0) {
@@ -285,7 +286,7 @@ export function formatBookUnitsPerDay(
   }
 
   const unit = getUnitForFormat(format);
-  return `${Math.round(units)} ${unit}/day needed`;
+  return `${Math.round(units)} ${unit}/day`;
 }
 
 // Format the units per day display based on format (original version for general use)
@@ -298,13 +299,13 @@ export function formatUnitsPerDay(
     const minutes = units % 60;
     if (hours > 0) {
       return minutes > 0
-        ? `${hours}h ${minutes}m/day needed`
-        : `${hours}h/day needed`;
+        ? `${hours}h ${minutes}m/day`
+        : `${hours}h/day`;
     }
-    return `${minutes} minutes/day needed`;
+    return `${minutes} minutes/day`;
   }
   const unit = getUnitForFormat(format);
-  return `${units} ${unit}/day needed`;
+  return `${units} ${unit}/day`;
 }
 
 // Special formatting for DeadlineCard display - handles < 1 unit/day cases

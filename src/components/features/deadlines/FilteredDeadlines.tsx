@@ -23,6 +23,8 @@ interface FilteredDeadlinesProps {
   selectedTags: string[];
   excludedStatuses: FilterType[];
   sortOrder: SortOrder;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
 }
 
 const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
@@ -34,6 +36,8 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   selectedTags,
   excludedStatuses,
   sortOrder,
+  searchQuery,
+  onSearchChange,
 }) => {
   const {
     deadlines,
@@ -109,6 +113,15 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
           const deadlineIds = deadlineIdsByTag.get(tagId);
           return deadlineIds?.has(deadline.id);
         });
+      });
+    }
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(deadline => {
+        const title = deadline.book_title?.toLowerCase() || '';
+        const author = deadline.author?.toLowerCase() || '';
+        return title.includes(query) || author.includes(query);
       });
     }
 
@@ -227,6 +240,8 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       isLoading={isLoading}
       error={error}
       emptyMessage={getEmptyMessage()}
+      searchQuery={searchQuery}
+      onSearchChange={onSearchChange}
     />
   );
 };
