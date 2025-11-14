@@ -7,11 +7,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { PostHogProvider } from 'posthog-react-native';
-import { adapty } from 'react-native-adapty';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 
-adapty.activate('public_live_CqReFxvt.vf6Lpsr6dz5AkqbNjd2V');
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
