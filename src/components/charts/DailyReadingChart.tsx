@@ -1,153 +1,232 @@
+/**
+ * Daily Reading Chart Component
+ * Shows cumulative daily progress vs. required pace for a reading deadline
+ */
+
+import React, { useMemo } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { LineChart, CurveType } from 'react-native-gifted-charts';
 import { ThemedText, ThemedView } from '@/components/themed';
-import { BorderRadius, Spacing } from '@/constants/Colors';
-import { useTheme } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useTheme';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
-  calculateChartMaxValue,
-  calculateDailyMinimum,
-  calculateDynamicBarWidth,
-  getBookReadingDays,
-  getChartTitle,
-  getUnitLabel,
-  transformReadingDaysToChartData,
-} from '@/utils/chartDataUtils';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { BarChart } from 'react-native-gifted-charts';
+  calculateDailyCumulativeProgress,
+  transformToDailyChartData,
+} from '@/utils/dailyChartDataUtils';
+import { DailyChartLegend } from './DailyChartLegend';
+import {
+  CHART_ANIMATION,
+  CHART_CONFIG,
+  CHART_STYLING,
+} from '@/constants/ChartConfig';
+import { normalizeServerDate } from '@/utils/dateNormalization';
+import { BorderRadius } from '@/constants/Colors';
 
 interface DailyReadingChartProps {
   deadline: ReadingDeadlineWithProgress;
 }
 
 const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
-  const { colors, typography } = useTheme();
+  const { colors } = useTheme();
 
-  const unitLabel = getUnitLabel(deadline.format);
-  const chartTitle = getChartTitle(deadline.format);
+  // Check if deadline is completed
+  const isCompleted = useMemo(() => {
+    if (!deadline.status || deadline.status.length === 0) {
+      return false;
+    }
 
-  const recentDays = getBookReadingDays(deadline);
+    // Terminal statuses that indicate completion
+    const terminalStatuses = [
+      'complete',
+      'did_not_finish',
+      'rejected',
+      'withdrew',
+      'to_review',
+    ];
 
-  if (recentDays.length === 0) {
+    // Sort statuses by date to get latest
+    const sortedStatuses = [...deadline.status].sort((a, b) => {
+      const aTime = normalizeServerDate(a.created_at).valueOf();
+      const bTime = normalizeServerDate(b.created_at).valueOf();
+      return bTime - aTime; // Descending order (latest first)
+    });
+
+    const latestStatus = sortedStatuses[0];
+
     return (
-      <ThemedView style={styles.container}>
-        <ThemedText style={[styles.title, { color: colors.text }]}>
-          {chartTitle}
+      latestStatus != null &&
+      latestStatus.status != null &&
+      terminalStatuses.includes(latestStatus.status)
+    );
+  }, [deadline.status]);
+
+  // For completed books, use last progress date instead of today
+  const chartEndDate = useMemo(() => {
+    if (!isCompleted || !deadline.progress || deadline.progress.length === 0) {
+      return undefined;
+    }
+
+    // Get the latest progress entry date
+    const sortedProgress = [...deadline.progress]
+      .filter(p => !p.ignore_in_calcs)
+      .sort((a, b) => {
+        const aTime = normalizeServerDate(a.created_at).valueOf();
+        const bTime = normalizeServerDate(b.created_at).valueOf();
+        return bTime - aTime; // Descending order (latest first)
+      });
+
+    if (sortedProgress.length > 0) {
+      return normalizeServerDate(sortedProgress[0].created_at).startOf('day');
+    }
+
+    return undefined;
+  }, [isCompleted, deadline.progress]);
+
+  // Calculate daily cumulative progress
+  const dailyData = useMemo(() => {
+    return calculateDailyCumulativeProgress(
+      deadline,
+      CHART_CONFIG.DEFAULT_DAYS_TO_SHOW,
+      chartEndDate
+    );
+  }, [deadline, chartEndDate]);
+
+  // Transform data for chart
+  const chartData = useMemo(() => {
+    if (dailyData.length === 0) {
+      return null;
+    }
+
+    return transformToDailyChartData(
+      dailyData,
+      dailyData,
+      deadline.format,
+      isCompleted
+    );
+  }, [dailyData, deadline.format, isCompleted]);
+
+  // Handle empty state
+  if (!chartData || dailyData.length === 0) {
+    return (
+      <ThemedView style={styles.emptyContainer} testID="daily-chart-empty">
+        <ThemedText
+          style={styles.emptyText}
+          variant="muted"
+          testID="empty-message"
+        >
+          Not enough progress data to display chart. Start reading to see your
+          daily progress!
         </ThemedText>
-        <ThemedView style={styles.emptyState}>
-          <ThemedText
-            style={[styles.emptyStateText, { color: colors.textMuted }]}
-          >
-            No activity recorded
-          </ThemedText>
-          <ThemedText
-            style={[styles.emptyStateSubtext, { color: colors.textMuted }]}
-          >
-            Start reading to see your daily progress
-          </ThemedText>
-        </ThemedView>
       </ThemedView>
     );
   }
 
-  const dailyMinimum = calculateDailyMinimum(deadline);
-  const displayDailyMinimum = dailyMinimum;
+  const { actualLineData, requiredLineData, maxValue } = chartData;
 
-  const topLabelComponentFactory = (value: number) => (
-    <ThemedText
-      style={{
-        color: colors.text,
-        fontSize: 10,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        backgroundColor: 'transparent',
-      }}
-    >
-      {value}
-    </ThemedText>
-  );
-
-  const chartData =
-    transformReadingDaysToChartData(
-      recentDays,
-      colors,
-      topLabelComponentFactory
-    ) || [];
-
-  const yAxisMax = calculateChartMaxValue(chartData, displayDailyMinimum);
+  // Calculate nice max value for y-axis (round up to nearest nice number)
+  const yAxisMax =
+    Math.ceil(
+      (maxValue * CHART_CONFIG.Y_AXIS_BUFFER_MULTIPLIER) /
+        CHART_CONFIG.Y_AXIS_ROUNDING_FACTOR
+    ) * CHART_CONFIG.Y_AXIS_ROUNDING_FACTOR;
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText
-        style={[
-          typography.bodyLarge,
-          { color: colors.text, fontWeight: 'bold', marginBottom: 16 },
-        ]}
-      >
-        {chartTitle}
+    <ThemedView style={styles.container} testID="daily-reading-chart">
+      {/* Title */}
+      <ThemedText variant="title" testID="chart-title">
+        {deadline.format === 'audio' ? 'Listening' : 'Reading'} Progress
       </ThemedText>
 
-      <View style={styles.chartContainer}>
-        <View style={styles.combinedChartSection} testID="combined-chart">
-          <BarChart
-            data={chartData}
-            width={350}
-            height={200}
-            initialSpacing={10}
-            endSpacing={10}
-            barWidth={calculateDynamicBarWidth(chartData.length)}
-            roundedTop
-            xAxisThickness={2}
-            yAxisThickness={2}
-            xAxisColor={colors.border}
-            yAxisColor={colors.border}
-            yAxisTextStyle={{
-              color: colors.textMuted,
-              fontSize: 11,
-            }}
-            noOfSections={4}
-            maxValue={yAxisMax > 0 ? yAxisMax : 10}
-            yAxisLabelSuffix={` ${unitLabel}`}
-            isAnimated
-            animationDuration={1000}
-          />
-        </View>
+      {/* Chart */}
+      <View style={styles.chartContainer} testID="chart-container">
+        <LineChart
+          // Required data
+          data={requiredLineData}
+          // Actual data (second line)
+          data2={actualLineData}
+          // Required line styling (solid gray)
+          color={colors.textMuted}
+          thickness={2}
+          startOpacity={0}
+          endOpacity={0}
+          hideDataPoints={true}
+          // Actual line styling (solid primary color with area fill and visible data points on activity days)
+          color2={colors.primary}
+          thickness2={3}
+          hideDataPoints2={false}
+          startFillColor2={colors.primary}
+          endFillColor2={colors.primary}
+          startOpacity2={0.2}
+          endOpacity2={0.05}
+          // Chart dimensions
+          width={CHART_CONFIG.DEFAULT_WIDTH}
+          height={CHART_CONFIG.DEFAULT_HEIGHT}
+          adjustToWidth
+          // Curve style
+          curved
+          curveType={CurveType.QUADRATIC}
+          // Area fill
+          areaChart
+          areaChart2
+          // Spacing
+          initialSpacing={CHART_CONFIG.INITIAL_SPACING}
+          // Axes
+          xAxisThickness={CHART_STYLING.AXIS_THICKNESS}
+          yAxisThickness={CHART_STYLING.AXIS_THICKNESS}
+          xAxisColor={colors.border}
+          yAxisColor={colors.border}
+          // Labels
+          xAxisLabelTextStyle={{
+            color: colors.textMuted,
+            fontSize: CHART_STYLING.X_AXIS_LABEL_FONT_SIZE,
+            width: CHART_STYLING.X_AXIS_LABEL_WIDTH,
+            textAlign: 'center',
+          }}
+          yAxisTextStyle={{
+            color: colors.textMuted,
+            fontSize: CHART_STYLING.Y_AXIS_LABEL_FONT_SIZE,
+          }}
+          // Y-axis configuration
+          noOfSections={CHART_STYLING.NUMBER_OF_SECTIONS}
+          maxValue={yAxisMax}
+          mostNegativeValue={0}
+          yAxisLabelWidth={CHART_STYLING.Y_AXIS_LABEL_WIDTH}
+          // Animation
+          isAnimated={CHART_ANIMATION.ENABLED}
+          animationDuration={CHART_ANIMATION.DURATION}
+        />
       </View>
+
+      {/* Legend */}
+      <DailyChartLegend testID="chart-legend" />
     </ThemedView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: Spacing.md,
+    padding: 20,
     borderRadius: BorderRadius.md,
-    marginVertical: Spacing.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 16,
+  emptyContainer: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 200,
+  },
+  emptyText: {
+    fontSize: 16,
+    fontStyle: 'italic',
+    textAlign: 'center',
   },
   chartContainer: {
-    alignItems: 'center',
-  },
-  combinedChartSection: {
-    alignItems: 'center',
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: 40,
-    paddingHorizontal: 20,
-  },
-  emptyStateText: {
-    fontSize: 16,
-    fontWeight: '500',
+    marginTop: 12,
     marginBottom: 8,
-    textAlign: 'center',
-  },
-  emptyStateSubtext: {
-    fontSize: 14,
-    textAlign: 'center',
-    lineHeight: 20,
   },
 });
 
