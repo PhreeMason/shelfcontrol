@@ -3,21 +3,21 @@
  * Reuses calculation logic from statsUtils.ts hero card calculations
  */
 
-import {
-  ReadingDeadlineWithProgress,
-  ReadingDeadlineProgress,
-} from '@/types/deadline.types';
-import {
-  DailyProgressPoint,
-  ProgressStatus,
-  LineDataPoint,
-  DailyChartData,
-} from '@/types/dailyChart.types';
-import { normalizeServerDate } from './dateNormalization';
+import { Colors } from '@/constants/Colors';
 import { dayjs } from '@/lib/dayjs';
+import {
+  DailyChartData,
+  DailyProgressPoint,
+  LineDataPoint,
+  ProgressStatus,
+} from '@/types/dailyChart.types';
+import {
+  ReadingDeadlineProgress,
+  ReadingDeadlineWithProgress,
+} from '@/types/deadline.types';
 import type { Dayjs } from 'dayjs';
+import { normalizeServerDate } from './dateNormalization';
 import { formatAudiobookTime } from './timeFormatUtils';
-import { CHART_COLORS } from '@/constants/ChartConfig';
 
 /**
  * Gets the date when a deadline was first moved to 'reading' status
@@ -229,7 +229,7 @@ export const calculateProgressStatus = (
       difference,
       isAhead: true,
       displayText: 'Completed!',
-      color: CHART_COLORS.SUCCESS,
+      color: Colors.light.success,
     };
   }
 
@@ -254,7 +254,7 @@ export const calculateProgressStatus = (
   }
 
   // Determine color
-  const color = isAhead ? CHART_COLORS.SUCCESS : CHART_COLORS.WARNING;
+  const color = isAhead ? Colors.light.successGreen : Colors.light.warningOrange;
 
   return {
     difference,
@@ -296,7 +296,7 @@ export const transformToDailyChartData = (
   const actualLineData: LineDataPoint[] = actualData.map(point => ({
     value: point.actual,
     label: point.date,
-    dataPointColor: CHART_COLORS.PRIMARY,
+    dataPointColor: Colors.light.primary,
     // Keep small radius (2) for all points to ensure solid line, larger (6) for activity days
     dataPointRadius: point.hasActivity ? 6 : 2,
   }));
