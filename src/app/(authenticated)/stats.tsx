@@ -1,17 +1,18 @@
-import UserReadingLineChart from '@/components/charts/UserReadingLineChart';
 import { CompletedBooksCarousel } from '@/components/features/profile/CompletedBooksCarousel';
-import { MonthlyProgressSection } from '@/components/features/stats/MonthlyProgressSection';
-import { PaceCalculationInfo } from '@/components/features/stats/PaceCalculationInfo';
-import { ReadingPaceSection } from '@/components/features/stats/ReadingPaceSection';
+import { MostProductiveListeningDaysCard } from '@/components/features/stats/MostProductiveListeningDaysCard';
+import { MostProductiveReadingDaysCard } from '@/components/features/stats/MostProductiveReadingDaysCard';
+import { WeeklyListeningCard } from '@/components/features/stats/WeeklyListeningCard';
+import { WeeklyReadingCard } from '@/components/features/stats/WeeklyReadingCard';
 import AppHeader from '@/components/shared/AppHeader';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
+import { getCompletedThisYear } from '@/utils/deadlineUtils';
 import {
-  getCompletedThisMonth,
-  getCompletedThisYear,
-  getOnTrackDeadlines,
-} from '@/utils/deadlineUtils';
+  calculateWeeklyListeningStats,
+  calculateWeeklyReadingStats,
+} from '@/utils/statsUtils';
+import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -25,24 +26,27 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Stats() {
   const { colors } = useTheme();
-  const {
-    deadlines,
-    completedDeadlines,
-    userPaceData: readingPaceData,
-    userListeningPaceData: listeningPaceData,
-    formatPaceForFormat,
-    isLoading,
-    error,
-    refetch,
-  } = useDeadlines();
+  const { activeDeadlines, completedDeadlines, isLoading, error, refetch } =
+    useDeadlines();
 
-  const completedCount = getCompletedThisMonth(completedDeadlines);
-  const onTrackCount = getOnTrackDeadlines(
-    deadlines,
-    readingPaceData,
-    listeningPaceData
-  );
   const completedThisYear = getCompletedThisYear(completedDeadlines);
+
+  // Calculate weekly stats for reading and audio
+  const weeklyReadingStats = React.useMemo(
+    () => calculateWeeklyReadingStats(activeDeadlines, completedDeadlines),
+    [activeDeadlines, completedDeadlines]
+  );
+  const weeklyListeningStats = React.useMemo(
+    () => calculateWeeklyListeningStats(activeDeadlines, completedDeadlines),
+    [activeDeadlines, completedDeadlines]
+  );
+
+  // Refetch data whenever the page comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   // Loading state
   if (isLoading) {
@@ -123,22 +127,14 @@ export default function Stats() {
             Platform.OS === 'ios' && styles.iosContainer,
           ]}
         >
-          <MonthlyProgressSection
-            onTrackCount={onTrackCount}
-            completedCount={completedCount}
-          />
-
           <CompletedBooksCarousel completedDeadlines={completedThisYear} />
 
-          <UserReadingLineChart deadlines={deadlines} />
+          <WeeklyReadingCard stats={weeklyReadingStats} />
+          <MostProductiveReadingDaysCard />
+          
+          <WeeklyListeningCard stats={weeklyListeningStats} />
+          <MostProductiveListeningDaysCard />
 
-          <ReadingPaceSection
-            readingPaceData={readingPaceData}
-            listeningPaceData={listeningPaceData}
-            formatPaceForFormat={formatPaceForFormat}
-          />
-
-          <PaceCalculationInfo />
         </ThemedView>
       </ScrollView>
     </SafeAreaView>

@@ -5,7 +5,6 @@
  * and maintainability across the application.
  */
 
-import { Colors } from './Colors';
 
 /**
  * Chart display and layout configuration
@@ -55,29 +54,6 @@ export const CHART_CONFIG = {
    * Y-axis max is rounded to nearest multiple of this value
    */
   Y_AXIS_ROUNDING_FACTOR: 10,
-} as const;
-
-/**
- * Chart color constants (references theme colors for consistency)
- */
-export const CHART_COLORS = {
-  /**
-   * Primary chart line color
-   * Used for actual progress line
-   */
-  PRIMARY: Colors.light.primary,
-
-  /**
-   * Success/ahead status color
-   * Used when user is ahead of schedule
-   */
-  SUCCESS: Colors.light.successGreen,
-
-  /**
-   * Warning/behind status color
-   * Used when user is behind schedule
-   */
-  WARNING: Colors.light.warningOrange,
 } as const;
 
 /**

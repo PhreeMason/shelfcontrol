@@ -8,9 +8,12 @@ import {
   getWeeklyStatusColors,
   formatAheadBehindText,
   getAheadBehindLabel,
+  getHistoricalProductivityDateRange,
+  calculateMostProductiveReadingDays,
+  calculateMostProductiveListeningDays,
   type ThemeColors,
 } from '../statsUtils';
-import { createMockDeadline, mockThemeColors } from './testHelpers';
+import { createMockDeadline } from './testHelpers';
 
 // Mock the dateNormalization module
 jest.mock('../dateNormalization', () => ({
@@ -24,10 +27,11 @@ jest.mock('../dateNormalization', () => ({
 jest.mock('../deadlineCore', () => ({
   calculateProgress: (deadline: ReadingDeadlineWithProgress) => {
     if (!deadline.progress || deadline.progress.length === 0) return 0;
-    const latest = deadline.progress.reduce((latest, current) =>
-      new Date(current.created_at) > new Date(latest.created_at)
+    const dayjs = require('@/lib/dayjs').dayjs;
+    const latest = deadline.progress.reduce((latestEntry, current) =>
+      dayjs(current.created_at).isAfter(dayjs(latestEntry.created_at))
         ? current
-        : latest
+        : latestEntry
     );
     return latest.current_progress || 0;
   },
@@ -1130,6 +1134,400 @@ describe('statsUtils', () => {
       const result = calculateWeeklyListeningStats(deadlines, []);
 
       expect(result.unitsReadThisWeek).toBe(250);
+    });
+  });
+
+  describe('getHistoricalProductivityDateRange', () => {
+    beforeEach(() => {
+      // Mock current date to be 2024-01-17 (Wednesday of week 3)
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2024-01-17'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should return last 2 weeks excluding current week', () => {
+      const result = getHistoricalProductivityDateRange();
+      const dayjs = require('@/lib/dayjs').dayjs;
+
+      // Current week starts Jan 14 (Sunday)
+      // Previous week: Jan 7-13 (Sunday-Saturday)
+      // Week before that: Dec 31 - Jan 6 (Sunday-Saturday)
+
+      // Expected start: Dec 31 00:00
+      const expectedStart = dayjs('2024-01-14').subtract(14, 'day').startOf('day');
+      // Expected end: Jan 13 23:59:59.999
+      const expectedEnd = dayjs('2024-01-14').subtract(1, 'day').endOf('day');
+
+      expect(result.start.format('YYYY-MM-DD')).toBe(expectedStart.format('YYYY-MM-DD'));
+      expect(result.end.format('YYYY-MM-DD')).toBe(expectedEnd.format('YYYY-MM-DD'));
+      expect(result.description).toBe('last 2 weeks');
+    });
+
+    it('should return consistent results when called multiple times', () => {
+      const first = getHistoricalProductivityDateRange();
+      const second = getHistoricalProductivityDateRange();
+
+      expect(first.start.format()).toBe(second.start.format());
+      expect(first.end.format()).toBe(second.end.format());
+      expect(first.description).toBe(second.description);
+    });
+
+    it('should span exactly 14 days', () => {
+      const result = getHistoricalProductivityDateRange();
+      const daysDiff = result.end.diff(result.start, 'day');
+
+      // Should be 13 days diff (14 days inclusive: day 0 through day 13)
+      expect(daysDiff).toBe(13);
+    });
+
+    it('should end before current week starts', () => {
+      const dayjs = require('@/lib/dayjs').dayjs;
+      const result = getHistoricalProductivityDateRange();
+      const currentWeekStart = dayjs().startOf('week');
+
+      expect(result.end.isBefore(currentWeekStart)).toBe(true);
+    });
+  });
+
+  describe('calculateMostProductiveReadingDays', () => {
+    beforeEach(() => {
+      // Mock current date to be 2024-01-17 (Wednesday)
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2024-01-17'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should return empty stats when no reading books', () => {
+      const result = calculateMostProductiveReadingDays([], []);
+
+      expect(result.hasData).toBe(false);
+      expect(result.topDays).toEqual([]);
+      expect(result.totalDataPoints).toBe(0);
+      expect(result.dateRangeText).toBe('last 2 weeks');
+    });
+
+    it('should return empty stats when insufficient data (< 3 entries)', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-20',
+          [
+            { current_progress: 50, created_at: '2024-01-01' },
+            { current_progress: 100, created_at: '2024-01-05' },
+          ],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+      ];
+
+      const result = calculateMostProductiveReadingDays(deadlines, []);
+
+      expect(result.hasData).toBe(false);
+      expect(result.topDays).toEqual([]);
+    });
+
+    it('should calculate most productive days from historical data', () => {
+      // Historical period: Dec 31 - Jan 13 (last 2 weeks)
+      // Create progress entries on different days of week
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          500,
+          '2024-01-30',
+          [
+            { current_progress: 0, created_at: '2023-12-30' }, // Before range
+            { current_progress: 100, created_at: '2024-01-01' }, // Monday
+            { current_progress: 150, created_at: '2024-01-03' }, // Wednesday
+            { current_progress: 250, created_at: '2024-01-05' }, // Friday
+            { current_progress: 300, created_at: '2024-01-08' }, // Monday
+            { current_progress: 380, created_at: '2024-01-10' }, // Wednesday
+            { current_progress: 500, created_at: '2024-01-12' }, // Friday
+          ],
+          [{ status: 'reading', created_at: '2023-12-30' }]
+        ),
+      ];
+
+      const result = calculateMostProductiveReadingDays(deadlines, []);
+
+      expect(result.hasData).toBe(true);
+      expect(result.topDays).toHaveLength(3);
+
+      // Top day should have 100% of max
+      expect(result.topDays[0].percentOfMax).toBe(100);
+      expect(result.topDays[0].totalUnits).toBeGreaterThan(0);
+
+      // All top 3 days should have activity
+      expect(result.topDays[0].totalUnits).toBeGreaterThan(0);
+      expect(result.topDays[1].totalUnits).toBeGreaterThan(0);
+      expect(result.topDays[2].totalUnits).toBeGreaterThan(0);
+
+      // Should be sorted by totalUnits descending
+      expect(result.topDays[0].totalUnits).toBeGreaterThanOrEqual(result.topDays[1].totalUnits);
+      expect(result.topDays[1].totalUnits).toBeGreaterThanOrEqual(result.topDays[2].totalUnits);
+    });
+
+    it('should only include physical and eBook formats', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'audio', // Should be excluded
+          300,
+          '2024-01-30',
+          [
+            { current_progress: 0, created_at: '2024-01-01' },
+            { current_progress: 100, created_at: '2024-01-05' },
+            { current_progress: 200, created_at: '2024-01-10' },
+          ],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+        createMockDeadline(
+          '2',
+          'eBook', // Should be included
+          200,
+          '2024-01-30',
+          [
+            { current_progress: 0, created_at: '2024-01-01' },
+            { current_progress: 100, created_at: '2024-01-05' },
+            { current_progress: 150, created_at: '2024-01-10' },
+          ],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+      ];
+
+      const result = calculateMostProductiveReadingDays(deadlines, []);
+
+      // Only eBook entries should be counted
+      expect(result.hasData).toBe(true);
+      expect(result.totalDataPoints).toBe(2); // Only 2 entries from eBook in range
+    });
+
+    it('should exclude progress entries outside date range', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-30',
+          [
+            { current_progress: 50, created_at: '2023-12-20' }, // Too old
+            { current_progress: 100, created_at: '2024-01-05' }, // In range
+            { current_progress: 150, created_at: '2024-01-10' }, // In range
+            { current_progress: 200, created_at: '2024-01-15' }, // Current week (excluded)
+          ],
+          [{ status: 'reading', created_at: '2023-12-20' }]
+        ),
+      ];
+
+      const result = calculateMostProductiveReadingDays(deadlines, []);
+
+      // Only 2 entries should be in the historical range
+      expect(result.totalDataPoints).toBe(2);
+    });
+
+    it('should calculate percentOfMax correctly', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-30',
+          [
+            { current_progress: 0, created_at: '2024-01-01' },
+            { current_progress: 100, created_at: '2024-01-02' }, // Tuesday: 100 pages
+            { current_progress: 150, created_at: '2024-01-03' }, // Wednesday: 50 pages
+          ],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+      ];
+
+      const result = calculateMostProductiveReadingDays(deadlines, []);
+
+      expect(result.topDays[0].percentOfMax).toBe(100); // Max day = 100%
+      expect(result.topDays[1].percentOfMax).toBe(50); // Half of max = 50%
+    });
+
+    it('should exclude days with 0 activity from top days', () => {
+      // Only has activity on 2 days - should only show 2 days, not pad with 0-activity days
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-30',
+          [
+            { current_progress: 0, created_at: '2024-01-01' },
+            { current_progress: 100, created_at: '2024-01-02' }, // Tuesday: 100 pages
+            { current_progress: 150, created_at: '2024-01-05' }, // Friday: 50 pages
+            // No other days have activity
+          ],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+      ];
+
+      const result = calculateMostProductiveReadingDays(deadlines, []);
+
+      // Should only return 2 days, not 3 (excluding days with 0 pages)
+      expect(result.topDays).toHaveLength(2);
+      expect(result.topDays[0].totalUnits).toBeGreaterThan(0);
+      expect(result.topDays[1].totalUnits).toBeGreaterThan(0);
+
+      // Verify no 0-activity days are included
+      const hasZeroActivityDay = result.topDays.some(day => day.totalUnits === 0);
+      expect(hasZeroActivityDay).toBe(false);
+    });
+  });
+
+  describe('calculateMostProductiveListeningDays', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2024-01-17'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should return empty stats when no audio books', () => {
+      const result = calculateMostProductiveListeningDays([], []);
+
+      expect(result.hasData).toBe(false);
+      expect(result.topDays).toEqual([]);
+      expect(result.totalDataPoints).toBe(0);
+    });
+
+    it('should calculate most productive days for audio format', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'audio',
+          600,
+          '2024-01-30',
+          [
+            { current_progress: 0, created_at: '2023-12-30' },
+            { current_progress: 120, created_at: '2024-01-01' }, // Monday: 120 min
+            { current_progress: 180, created_at: '2024-01-03' }, // Wednesday: 60 min
+            { current_progress: 300, created_at: '2024-01-05' }, // Friday: 120 min
+            { current_progress: 400, created_at: '2024-01-08' }, // Monday: 100 min
+          ],
+          [{ status: 'reading', created_at: '2023-12-30' }]
+        ),
+      ];
+
+      const result = calculateMostProductiveListeningDays(deadlines, []);
+
+      expect(result.hasData).toBe(true);
+      expect(result.topDays).toHaveLength(3);
+
+      // Monday should be #1 (120 + 100 = 220 min)
+      expect(result.topDays[0].dayName).toBe('Monday');
+      expect(result.topDays[0].totalUnits).toBe(220);
+    });
+
+    it('should only include audio format', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical', // Should be excluded
+          300,
+          '2024-01-30',
+          [
+            { current_progress: 0, created_at: '2024-01-01' },
+            { current_progress: 100, created_at: '2024-01-05' },
+            { current_progress: 200, created_at: '2024-01-10' },
+          ],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+        createMockDeadline(
+          '2',
+          'audio', // Should be included
+          400,
+          '2024-01-30',
+          [
+            { current_progress: 0, created_at: '2024-01-01' },
+            { current_progress: 100, created_at: '2024-01-05' },
+            { current_progress: 200, created_at: '2024-01-10' },
+          ],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+      ];
+
+      const result = calculateMostProductiveListeningDays(deadlines, []);
+
+      // Only audio entries should be counted
+      expect(result.hasData).toBe(true);
+      expect(result.totalDataPoints).toBe(2);
+    });
+
+    it('should handle multiple books on same day', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'audio',
+          300,
+          '2024-01-30',
+          [
+            { current_progress: 0, created_at: '2024-01-01' },
+            { current_progress: 100, created_at: '2024-01-05' }, // Friday: 100 min
+          ],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+        createMockDeadline(
+          '2',
+          'audio',
+          400,
+          '2024-01-30',
+          [
+            { current_progress: 0, created_at: '2024-01-01' },
+            { current_progress: 80, created_at: '2024-01-05' }, // Friday: 80 min
+          ],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+      ];
+
+      const result = calculateMostProductiveListeningDays(deadlines, []);
+
+      // Friday should have combined total: 100 + 80 = 180 min
+      const fridayEntry = result.topDays.find(d => d.dayName === 'Friday');
+      expect(fridayEntry?.totalUnits).toBe(180);
+    });
+
+    it('should exclude days with 0 activity from top days', () => {
+      // Only has activity on 1 day (Friday) - should only show 1 day, not pad with 0-activity days
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'audio',
+          600,
+          '2024-01-30',
+          [
+            { current_progress: 0, created_at: '2024-01-01' },
+            { current_progress: 60, created_at: '2024-01-05' }, // Friday: 60 min
+            { current_progress: 120, created_at: '2024-01-05' }, // Friday: +60 min (same day)
+            { current_progress: 180, created_at: '2024-01-05' }, // Friday: +60 min (same day)
+            // All 3 entries on same day - other days have 0 activity
+          ],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+      ];
+
+      const result = calculateMostProductiveListeningDays(deadlines, []);
+
+      // Should only return 1 day, not 3 (excluding days with 0 minutes)
+      expect(result.topDays).toHaveLength(1);
+      expect(result.topDays[0].totalUnits).toBeGreaterThan(0);
+      expect(result.topDays[0].dayName).toBe('Friday');
+
+      // Verify no 0-activity days are included
+      const hasZeroActivityDay = result.topDays.some(day => day.totalUnits === 0);
+      expect(hasZeroActivityDay).toBe(false);
     });
   });
 });

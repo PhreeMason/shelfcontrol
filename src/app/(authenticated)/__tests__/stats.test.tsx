@@ -2,6 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import Stats from '../stats';
 import * as deadlineUtils from '@/utils/deadlineUtils';
+import * as statsUtils from '@/utils/statsUtils';
 
 // Mock the DeadlineProvider
 jest.mock('@/providers/DeadlineProvider', () => ({
@@ -10,9 +11,10 @@ jest.mock('@/providers/DeadlineProvider', () => ({
 
 const { useDeadlines } = require('@/providers/DeadlineProvider');
 
-// Mock the chart data utils
-jest.mock('@/utils/chartDataUtils', () => ({
-  getAllUserActivityDays: jest.fn(() => []),
+// Mock the stats utils
+jest.mock('@/utils/statsUtils', () => ({
+  calculateWeeklyReadingStats: jest.fn(),
+  calculateWeeklyListeningStats: jest.fn(),
 }));
 
 // Mock the theme hook
@@ -48,40 +50,57 @@ jest.mock('@/hooks/useThemeColor', () => ({
 jest.mock('@/utils/deadlineUtils');
 
 // Mock components
-jest.mock(
-  '@/components/charts/UserReadingLineChart',
-  () => 'UserReadingLineChart'
-);
+jest.mock('@/components/features/stats/WeeklyReadingCard', () => ({
+  WeeklyReadingCard: 'WeeklyReadingCard',
+}));
+jest.mock('@/components/features/stats/WeeklyListeningCard', () => ({
+  WeeklyListeningCard: 'WeeklyListeningCard',
+}));
 jest.mock('@/components/features/profile/CompletedBooksCarousel', () => ({
   CompletedBooksCarousel: 'CompletedBooksCarousel',
 }));
-jest.mock('react-native-gifted-charts', () => ({
-  LineChart: () => null,
-  CurveType: { QUADRATIC: 'QUADRATIC' },
+
+// Mock useFocusEffect
+jest.mock('@react-navigation/native', () => ({
+  useFocusEffect: jest.fn(callback => callback()),
 }));
 
 describe('Stats Screen', () => {
-  const mockFormatPaceForFormat = jest.fn((pace, format) => {
-    if (format === 'audio') return `${pace}m/day`;
-    return `${pace} pages/day`;
-  });
-
   const mockRefetch = jest.fn();
 
+  const mockWeeklyReadingStats = {
+    currentWeek: {
+      pagesRead: 150,
+      daysActive: 5,
+      averagePerDay: 30,
+    },
+    previousWeek: {
+      pagesRead: 120,
+      daysActive: 4,
+      averagePerDay: 30,
+    },
+    weeklyGoal: 140,
+    status: 'ahead' as const,
+  };
+
+  const mockWeeklyListeningStats = {
+    currentWeek: {
+      minutesListened: 300,
+      daysActive: 4,
+      averagePerDay: 75,
+    },
+    previousWeek: {
+      minutesListened: 250,
+      daysActive: 3,
+      averagePerDay: 83.33,
+    },
+    weeklyGoal: 280,
+    status: 'ahead' as const,
+  };
+
   const defaultDeadlineData = {
-    deadlines: [],
+    activeDeadlines: [],
     completedDeadlines: [],
-    userPaceData: {
-      averagePace: 25,
-      isReliable: true,
-      readingDaysCount: 10,
-    },
-    userListeningPaceData: {
-      averagePace: 30,
-      isReliable: true,
-      listeningDaysCount: 8,
-    },
-    formatPaceForFormat: mockFormatPaceForFormat,
     isLoading: false,
     error: null,
     refetch: mockRefetch,
@@ -89,9 +108,13 @@ describe('Stats Screen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (deadlineUtils.getCompletedThisMonth as jest.Mock).mockReturnValue(5);
-    (deadlineUtils.getOnTrackDeadlines as jest.Mock).mockReturnValue(3);
-    (deadlineUtils.getCompletedThisYear as jest.Mock).mockReturnValue(12);
+    (deadlineUtils.getCompletedThisYear as jest.Mock).mockReturnValue([]);
+    (statsUtils.calculateWeeklyReadingStats as jest.Mock).mockReturnValue(
+      mockWeeklyReadingStats
+    );
+    (statsUtils.calculateWeeklyListeningStats as jest.Mock).mockReturnValue(
+      mockWeeklyListeningStats
+    );
   });
 
   describe('Loading State', () => {
@@ -123,9 +146,11 @@ describe('Stats Screen', () => {
         isLoading: true,
       });
 
-      const { queryByText } = render(<Stats />);
+      const { UNSAFE_queryAllByType } = render(<Stats />);
 
-      expect(queryByText("This Month's Reading Progress")).toBeNull();
+      // Should not render the weekly cards when loading
+      const weeklyReadingCards = UNSAFE_queryAllByType('WeeklyReadingCard');
+      expect(weeklyReadingCards.length).toBe(0);
     });
   });
 
@@ -164,7 +189,7 @@ describe('Stats Screen', () => {
       const retryButton = getByText('Try Again');
       fireEvent.press(retryButton);
 
-      expect(mockRefetch).toHaveBeenCalledTimes(1);
+      expect(mockRefetch).toHaveBeenCalledTimes(2); // Once from useFocusEffect, once from button
     });
 
     it('should show default error message when error has no message', () => {
@@ -186,125 +211,143 @@ describe('Stats Screen', () => {
       useDeadlines.mockReturnValue(defaultDeadlineData);
     });
 
-    it('should render all main sections', () => {
+    it('should render all main components', () => {
+      const { UNSAFE_getAllByType } = render(<Stats />);
+
+      expect(UNSAFE_getAllByType('WeeklyReadingCard').length).toBe(1);
+      expect(UNSAFE_getAllByType('WeeklyListeningCard').length).toBe(1);
+      expect(UNSAFE_getAllByType('CompletedBooksCarousel').length).toBe(1);
+    });
+
+    it('should render header', () => {
       const { getByText } = render(<Stats />);
 
       expect(getByText('Reading Statistics')).toBeTruthy();
-      expect(getByText("This Month's Reading Progress")).toBeTruthy();
-      expect(getByText('Reading & Listening Pace')).toBeTruthy();
-      expect(getByText('How Pace is Calculated')).toBeTruthy();
     });
 
-    it('should display monthly progress stats', () => {
-      const { getByText } = render(<Stats />);
+    it('should pass weekly reading stats to WeeklyReadingCard', () => {
+      const { UNSAFE_getByType } = render(<Stats />);
 
-      expect(getByText('3')).toBeTruthy(); // onTrackCount
-      expect(getByText('5')).toBeTruthy(); // completedCount
-      expect(getByText('ON TRACK')).toBeTruthy();
-      expect(getByText('COMPLETED')).toBeTruthy();
+      const weeklyReadingCard = UNSAFE_getByType('WeeklyReadingCard');
+      expect(weeklyReadingCard.props.stats).toEqual(mockWeeklyReadingStats);
     });
 
-    it('should display reading pace', () => {
-      const { getByText } = render(<Stats />);
+    it('should pass weekly listening stats to WeeklyListeningCard', () => {
+      const { UNSAFE_getByType } = render(<Stats />);
 
-      expect(getByText('Reading')).toBeTruthy();
-      expect(mockFormatPaceForFormat).toHaveBeenCalledWith(25, 'physical');
+      const weeklyListeningCard = UNSAFE_getByType('WeeklyListeningCard');
+      expect(weeklyListeningCard.props.stats).toEqual(mockWeeklyListeningStats);
     });
 
-    it('should display listening pace', () => {
-      const { getByText } = render(<Stats />);
-
-      expect(getByText('Listening')).toBeTruthy();
-      expect(mockFormatPaceForFormat).toHaveBeenCalledWith(30, 'audio');
-    });
-
-    it('should call deadline utils with correct arguments', () => {
+    it('should call calculateWeeklyReadingStats with correct arguments', () => {
       render(<Stats />);
 
-      expect(deadlineUtils.getCompletedThisMonth).toHaveBeenCalledWith([]);
-      expect(deadlineUtils.getOnTrackDeadlines).toHaveBeenCalledWith(
-        [],
-        defaultDeadlineData.userPaceData,
-        defaultDeadlineData.userListeningPaceData
+      expect(statsUtils.calculateWeeklyReadingStats).toHaveBeenCalledWith(
+        defaultDeadlineData.activeDeadlines,
+        defaultDeadlineData.completedDeadlines
       );
-      expect(deadlineUtils.getCompletedThisYear).toHaveBeenCalledWith([]);
+    });
+
+    it('should call calculateWeeklyListeningStats with correct arguments', () => {
+      render(<Stats />);
+
+      expect(statsUtils.calculateWeeklyListeningStats).toHaveBeenCalledWith(
+        defaultDeadlineData.activeDeadlines,
+        defaultDeadlineData.completedDeadlines
+      );
+    });
+
+    it('should call getCompletedThisYear with correct arguments', () => {
+      render(<Stats />);
+
+      expect(deadlineUtils.getCompletedThisYear).toHaveBeenCalledWith(
+        defaultDeadlineData.completedDeadlines
+      );
+    });
+
+    it('should pass completed books to CompletedBooksCarousel', () => {
+      const completedBooks = [
+        { id: '1', book_title: 'Book 1' },
+        { id: '2', book_title: 'Book 2' },
+      ];
+      (deadlineUtils.getCompletedThisYear as jest.Mock).mockReturnValue(
+        completedBooks
+      );
+
+      const { UNSAFE_getByType } = render(<Stats />);
+
+      const carousel = UNSAFE_getByType('CompletedBooksCarousel');
+      expect(carousel.props.completedDeadlines).toEqual(completedBooks);
     });
   });
 
   describe('Integration with DeadlineProvider', () => {
     it('should use data from DeadlineProvider', () => {
-      const customDeadlines = [{ id: '1', book_title: 'Test Book' }];
-      const customCompleted = [{ id: '2', book_title: 'Completed Book' }];
+      const customActiveDeadlines = [{ id: '1', book_title: 'Active Book' }];
+      const customCompletedDeadlines = [
+        { id: '2', book_title: 'Completed Book' },
+      ];
 
       useDeadlines.mockReturnValue({
         ...defaultDeadlineData,
-        deadlines: customDeadlines,
-        completedDeadlines: customCompleted,
+        activeDeadlines: customActiveDeadlines,
+        completedDeadlines: customCompletedDeadlines,
       });
 
       render(<Stats />);
 
-      expect(deadlineUtils.getCompletedThisMonth).toHaveBeenCalledWith(
-        customCompleted
+      expect(statsUtils.calculateWeeklyReadingStats).toHaveBeenCalledWith(
+        customActiveDeadlines,
+        customCompletedDeadlines
       );
-      expect(deadlineUtils.getOnTrackDeadlines).toHaveBeenCalledWith(
-        customDeadlines,
-        defaultDeadlineData.userPaceData,
-        defaultDeadlineData.userListeningPaceData
+      expect(statsUtils.calculateWeeklyListeningStats).toHaveBeenCalledWith(
+        customActiveDeadlines,
+        customCompletedDeadlines
+      );
+      expect(deadlineUtils.getCompletedThisYear).toHaveBeenCalledWith(
+        customCompletedDeadlines
       );
     });
 
-    it('should update when provider data changes', () => {
+    it('should recalculate stats when provider data changes', () => {
       const { rerender } = render(<Stats />);
 
-      const updatedData = {
-        ...defaultDeadlineData,
-        userPaceData: {
-          averagePace: 50,
-          isReliable: true,
-          readingDaysCount: 15,
+      const updatedActiveDeadlines = [
+        { id: '3', book_title: 'New Active Book' },
+      ];
+
+      const updatedStats = {
+        ...mockWeeklyReadingStats,
+        currentWeek: {
+          pagesRead: 200,
+          daysActive: 6,
+          averagePerDay: 33.33,
         },
       };
 
-      useDeadlines.mockReturnValue(updatedData);
+      (statsUtils.calculateWeeklyReadingStats as jest.Mock).mockReturnValue(
+        updatedStats
+      );
+
+      useDeadlines.mockReturnValue({
+        ...defaultDeadlineData,
+        activeDeadlines: updatedActiveDeadlines,
+      });
 
       rerender(<Stats />);
 
-      expect(mockFormatPaceForFormat).toHaveBeenCalledWith(50, 'physical');
-    });
-  });
-
-  describe('Calculations', () => {
-    it('should calculate completedCount correctly', () => {
-      (deadlineUtils.getCompletedThisMonth as jest.Mock).mockReturnValue(7);
-
-      useDeadlines.mockReturnValue(defaultDeadlineData);
-
-      const { getByText } = render(<Stats />);
-
-      expect(getByText('7')).toBeTruthy();
+      const { UNSAFE_getByType } = render(<Stats />);
+      const weeklyReadingCard = UNSAFE_getByType('WeeklyReadingCard');
+      expect(weeklyReadingCard.props.stats).toEqual(updatedStats);
     });
 
-    it('should calculate onTrackCount correctly', () => {
-      (deadlineUtils.getOnTrackDeadlines as jest.Mock).mockReturnValue(4);
-
+    it('should call refetch on focus', () => {
       useDeadlines.mockReturnValue(defaultDeadlineData);
 
-      const { getByText } = render(<Stats />);
+      render(<Stats />);
 
-      expect(getByText('4')).toBeTruthy();
-    });
-
-    it('should handle zero counts', () => {
-      (deadlineUtils.getCompletedThisMonth as jest.Mock).mockReturnValue(0);
-      (deadlineUtils.getOnTrackDeadlines as jest.Mock).mockReturnValue(0);
-
-      useDeadlines.mockReturnValue(defaultDeadlineData);
-
-      const { getAllByText } = render(<Stats />);
-
-      const zeros = getAllByText('0');
-      expect(zeros.length).toBeGreaterThanOrEqual(2);
+      // useFocusEffect is mocked to call the callback immediately
+      expect(mockRefetch).toHaveBeenCalled();
     });
   });
 

@@ -35,3 +35,27 @@ export interface WeeklyStats {
   /** Overall status based on progress percentage */
   overallStatus: 'ahead' | 'onTrack' | 'behind';
 }
+
+export interface DayProductivity {
+  /** Full day name ('Monday', 'Tuesday', etc.) */
+  dayName: string;
+  /** Abbreviated day name ('Mon', 'Tue', etc.) */
+  dayAbbrev: string;
+  /** Day index (0-6, where Sunday = 0) */
+  dayIndex: number;
+  /** Total units (pages or minutes) for this day across all analyzed weeks */
+  totalUnits: number;
+  /** Percentage of the maximum day's productivity (0-100) */
+  percentOfMax: number;
+}
+
+export interface ProductiveDaysStats {
+  /** Top 3 most productive days, ranked by total units */
+  topDays: DayProductivity[];
+  /** True if there is sufficient data to show meaningful insights */
+  hasData: boolean;
+  /** Total number of progress entries analyzed */
+  totalDataPoints: number;
+  /** Human-readable description of the date range analyzed (e.g., 'last 2 weeks') */
+  dateRangeText: string;
+}

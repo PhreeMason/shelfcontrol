@@ -59,6 +59,14 @@ export const QUERY_KEYS = {
     BASE: () => ['avatar'] as const,
     SIGNED_BASE: () => ['avatar', 'signedUrl'] as const,
   },
+  PRODUCTIVITY: {
+    BY_DAY_OF_WEEK: (
+      userId: string,
+      startDate: string,
+      endDate: string,
+      format: 'physical' | 'eBook' | 'audio'
+    ) => ['productivity', 'day_of_week', userId, startDate, endDate, format] as const,
+  },
 } as const;
 
 export const MUTATION_KEYS = {

@@ -31,7 +31,7 @@ const getStatusIcon = (status: 'ahead' | 'onTrack' | 'behind'): IconSymbolName =
 const getStatusIconLabel = (status: 'ahead' | 'onTrack' | 'behind'): string => {
   if (status === 'ahead') return 'Ahead of pace';
   if (status === 'onTrack') return 'On track';
-  return 'Behind pace';
+  return 'More to go';
 };
 
 /**
@@ -157,6 +157,8 @@ export function WeeklyStatsCard({
     },
   };
 
+  const statusIcon = getStatusIcon(stats.overallStatus)
+
   return (
     <View
       accessible={true}
@@ -194,12 +196,12 @@ export function WeeklyStatsCard({
               {aheadBehindText}
             </ThemedText>
             <View style={styles.statusLabelContainer}>
-              <IconSymbol
+              {statusIcon !== "exclamationmark.triangle" ? <IconSymbol
                 name={getStatusIcon(stats.overallStatus)}
                 size={18}
                 color={statusColors.text}
                 accessibilityLabel={getStatusIconLabel(stats.overallStatus)}
-              />
+              /> : null}
               <ThemedText
                 style={[styles.numberLabel, { color: statusColors.text }]}
               >

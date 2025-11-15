@@ -31,7 +31,7 @@ jest.mock('@/hooks/useTheme', () => ({
       background: '#ffffff',
       border: '#e5e7eb',
       textMuted: '#9ca3af',
-      successGreen: '#16a34a',
+      successGreen: '#86b468',
       warningOrange: '#f97316',
       errorRed: '#dc2626',
     },
@@ -324,27 +324,8 @@ describe('WeeklyStatsCard', () => {
         />
       );
 
-      expect(screen.getByText('-130 units')).toBeTruthy();
-      expect(screen.getByText('behind')).toBeTruthy();
-    });
-
-    it('should display warning icon for behind status', () => {
-      render(
-        <WeeklyStatsCard
-          stats={behindStats}
-          type="reading"
-          headerLabel="Test"
-          unitsReadLabel="read"
-          unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
-          daysActivityLabel="Read"
-          formatValue={defaultFormatValue}
-        />
-      );
-
-      const icon = screen.getByTestId('icon-exclamationmark.triangle');
-      expect(icon).toBeTruthy();
-      expect(icon.props.accessibilityLabel).toBe('Behind pace');
+      expect(screen.getByText('130 units')).toBeTruthy();
+      expect(screen.getByText('to go')).toBeTruthy();
     });
   });
 

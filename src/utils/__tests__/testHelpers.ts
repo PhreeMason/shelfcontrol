@@ -89,7 +89,7 @@ export const mockThemeColors = {
   background: '#ffffff',
   border: '#e5e7eb',
   textMuted: '#9ca3af',
-  successGreen: '#16a34a',
+  successGreen: '#86b468',
   warningOrange: '#f97316',
   errorRed: '#dc2626',
 } as const;

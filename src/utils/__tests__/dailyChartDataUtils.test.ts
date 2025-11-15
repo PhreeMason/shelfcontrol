@@ -2,21 +2,21 @@
  * Tests for daily chart data utilities
  */
 
+import { dayjs } from '@/lib/dayjs';
 import {
-  getReadingStartDate,
-  calculateRequiredDailyPace,
-  getProgressAsOfDate,
-  hasDailyActivity,
-  calculateDailyCumulativeProgress,
-  calculateProgressStatus,
-  transformToDailyChartData,
-} from '../dailyChartDataUtils';
-import {
-  ReadingDeadlineWithProgress,
   ReadingDeadlineProgress,
   ReadingDeadlineStatus,
+  ReadingDeadlineWithProgress,
 } from '@/types/deadline.types';
-import { dayjs } from '@/lib/dayjs';
+import {
+  calculateDailyCumulativeProgress,
+  calculateProgressStatus,
+  calculateRequiredDailyPace,
+  getProgressAsOfDate,
+  getReadingStartDate,
+  hasDailyActivity,
+  transformToDailyChartData,
+} from '../dailyChartDataUtils';
 
 // Mock the dateNormalization module
 jest.mock('../dateNormalization', () => {
@@ -350,7 +350,7 @@ describe('dailyChartDataUtils', () => {
       expect(result.difference).toBe(20);
       expect(result.isAhead).toBe(true);
       expect(result.displayText).toBe('+20 pages ahead');
-      expect(result.color).toBe('#16a34a'); // Green
+      expect(result.color).toBe('#86b468'); // Green
     });
 
     it('should calculate behind status correctly', () => {

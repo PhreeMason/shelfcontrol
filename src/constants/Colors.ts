@@ -62,6 +62,11 @@ export const Colors = {
     onSuccess: '#FFFFFF',
     onSuccessContainer: '#064E3B',
 
+    // Hero status colors (green/orange/gray from stats design)
+    successGreen: '#86b468',
+    warningOrange: '#f97316',
+    errorRed: '#6b7280',
+
     peach: '#E8C2B9',
     darkPink: '#C8698A',
     orange: '#F5C2A1',
@@ -159,6 +164,11 @@ export const Colors = {
     successContainer: '#F0FDF4',
     onSuccess: '#FFFFFF',
     onSuccessContainer: '#064E3B',
+
+    // Hero status colors (green/orange/gray from stats design)
+    successGreen: '#86b468',
+    warningOrange: '#f97316',
+    errorRed: '#6b7280',
 
     peach: '#E8C2B9',
     darkPink: '#C8698A',
