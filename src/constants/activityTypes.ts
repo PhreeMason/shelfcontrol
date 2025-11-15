@@ -1,4 +1,5 @@
 import { IconSymbolName } from '@/components/ui/IconSymbol';
+import { Colors } from '@/constants/Colors';
 
 /**
  * Activity type identifiers from get_daily_activities RPC function
@@ -27,27 +28,27 @@ export interface ActivityTypeConfig {
 export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
   progress: {
     icon: 'arrow.up.right',
-    color: '#10B981', // Green - positive progress
+    color: '#0a7ea4', // Teal - positive progress
     label: 'Progress Update',
   },
   note: {
     icon: 'note.text',
-    color: '#3B82F6', // Blue - informational
+    color: Colors.light.peach, // Peach - informational
     label: 'Note Added',
   },
   status: {
-    icon: 'checkmark.circle.fill',
-    color: '#8B5CF6', // Purple - state change
+    icon: 'arrow.triangle.2.circlepath',
+    color: Colors.light.darkPink, // Pink - state change
     label: 'Status Change',
   },
   review: {
-    icon: 'star.fill',
-    color: '#F59E0B', // Amber - rating/review
+    icon: 'star',
+    color: Colors.light.orange, // Orange - rating/review
     label: 'Review Posted',
   },
   deadline_created: {
-    icon: 'plus.circle.fill',
-    color: '#06B6D4', // Cyan - creation action
+    icon: 'plus',
+    color: '#64748B', // Blue-gray - creation action
     label: 'Deadline Created',
   },
   deadline_due: {
@@ -61,4 +62,4 @@ export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
  * Activity type color for general use (non-deadline activities)
  * Used for calendar dots representing any activity on a date
  */
-export const ACTIVITY_DOT_COLOR = '#9CA3AF'; // Grey - neutral indicator
+export const ACTIVITY_DOT_COLOR = Colors.light.textMuted; // Grey - neutral indicator

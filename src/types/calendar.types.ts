@@ -16,6 +16,86 @@ export interface DailyActivity {
 }
 
 /**
+ * Type guard to check if an object is a valid DailyActivity
+ */
+function isValidActivityType(type: string): type is ActivityType {
+  const validTypes: ActivityType[] = [
+    'deadline_due',
+    'deadline_created',
+    'progress',
+    'status',
+    'note',
+    'review',
+  ];
+  return validTypes.includes(type as ActivityType);
+}
+
+/**
+ * Validates and transforms raw activity data from the database into DailyActivity type
+ * @param data - Raw data from database
+ * @returns Validated DailyActivity array
+ * @throws Error if data structure is invalid
+ */
+export function validateDailyActivities(data: unknown[]): DailyActivity[] {
+  if (!Array.isArray(data)) {
+    console.error('Invalid activities data: expected array, got:', typeof data);
+    return [];
+  }
+
+  return data
+    .map((item, index) => {
+      // Validate that item is an object
+      if (!item || typeof item !== 'object') {
+        console.warn(
+          `Skipping invalid activity at index ${index}: not an object`
+        );
+        return null;
+      }
+
+      const activity = item as Record<string, any>;
+
+      // Validate required fields
+      if (
+        typeof activity.activity_date !== 'string' ||
+        typeof activity.activity_type !== 'string' ||
+        typeof activity.deadline_id !== 'string' ||
+        typeof activity.book_title !== 'string' ||
+        typeof activity.activity_timestamp !== 'string'
+      ) {
+        console.warn(
+          `Skipping invalid activity at index ${index}: missing or invalid required fields`,
+          activity
+        );
+        return null;
+      }
+
+      // Validate activity_type is a valid ActivityType
+      if (!isValidActivityType(activity.activity_type)) {
+        console.warn(
+          `Skipping activity at index ${index}: invalid activity_type '${activity.activity_type}'`
+        );
+        return null;
+      }
+
+      // Ensure metadata is an object
+      const metadata =
+        activity.metadata && typeof activity.metadata === 'object'
+          ? activity.metadata
+          : {};
+
+      return {
+        activity_date: activity.activity_date,
+        activity_type: activity.activity_type as ActivityType,
+        deadline_id: activity.deadline_id,
+        book_title: activity.book_title,
+        activity_timestamp: activity.activity_timestamp,
+        metadata,
+      } as DailyActivity;
+    })
+    .filter((activity): activity is DailyActivity => activity !== null);
+}
+
+/**
  * Enriched activity with deadline calculations
  * Adds urgency calculations for deadline_due activities
  */
@@ -42,10 +122,12 @@ export interface AgendaActivityItem {
  */
 export interface MarkedDatesConfig {
   [date: string]: {
-    dots: {
+    dots?: {
       key: string; // Unique key for the dot (e.g., 'activity', 'deadline_1')
       color: string; // Hex color code
     }[];
+    selected?: boolean; // Whether this date is selected
+    selectedColor?: string; // Color for selected date
   };
 }
 
@@ -63,7 +145,6 @@ export interface ActivityTimelineItemProps {
  * Renders deadline due cards at the top of each day
  */
 export interface DeadlineDueCardProps {
-  deadline: ReadingDeadlineWithProgress;
-  calculations: DeadlineCalculationResult;
+  agendaItem: AgendaActivityItem;
   onPress?: () => void;
 }

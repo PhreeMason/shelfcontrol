@@ -112,7 +112,9 @@ const DeadlineView = () => {
   };
 
   const shouldShowStats =
-    latestStatus !== 'pending' && latestStatus !== 'reading';
+    latestStatus !== 'pending' &&
+    latestStatus !== 'reading' &&
+    latestStatus !== 'paused';
   const shouldShowProgress = !shouldShowStats && !isPending;
   const sourceOptions = getDeadlineSourceOptions(deadline);
   const shouldShowDisclosure = sourceOptions.length > 0;

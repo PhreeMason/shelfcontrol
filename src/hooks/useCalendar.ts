@@ -24,5 +24,6 @@ export const useGetDailyActivities = (startDate: string, endDate: string) => {
     enabled: !!userId && !!startDate && !!endDate,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
+    placeholderData: previousData => previousData, // Keep previous data visible while loading
   });
 };
