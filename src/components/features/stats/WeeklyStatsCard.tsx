@@ -238,11 +238,11 @@ export function WeeklyStatsCard({
               •
             </ThemedText>
             <ThemedText style={styles.detailText}>
-              {averageActivityLabel}{' '}
+              On pace for{' '}
               <ThemedText style={styles.detailBold}>
                 {formatValue(stats.averagePerDay)}/day
               </ThemedText>{' '}
-              average
+              this week
             </ThemedText>
           </View>
 

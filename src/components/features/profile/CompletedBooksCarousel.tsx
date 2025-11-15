@@ -100,7 +100,7 @@ export const CompletedBooksCarousel: React.FC<CompletedBooksCarouselProps> = ({
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.sectionTitle}>
-        {completedDeadlines.length} books finished this year!
+        Books completed: {completedDeadlines.length}
       </ThemedText>
       <ScrollView
         horizontal
