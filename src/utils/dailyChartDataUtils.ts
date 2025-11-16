@@ -114,6 +114,9 @@ export const hasDailyActivity = (
   date: Dayjs,
   progress: ReadingDeadlineProgress[]
 ): boolean => {
+  if (!progress || progress.length === 0) {
+    return false;
+  }
   const dateStr = date.format('YYYY-MM-DD');
   return progress.some(entry => {
     if (entry.ignore_in_calcs) return false;

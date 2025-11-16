@@ -39,13 +39,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DeadlineFormStep1 } from './DeadlineFormStep1';
-import { DeadlineFormStep2 } from './DeadlineFormStep2';
-import { DeadlineFormStep3 } from './DeadlineFormStep3';
-import { DeadlineFormStep4 } from './DeadlineFormStep4';
+import { DeadlineFormStep2Combined } from './DeadlineFormStep2Combined';
 import { StepIndicators } from './StepIndicators';
 
 interface DeadlineFormContainerProps {
@@ -63,10 +61,8 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
 
   // Determine steps and initial step
   const formSteps =
-    mode === 'new'
-      ? ['Find Book', 'Book Details', 'Additional Details', 'Set Due Date']
-      : ['Book Details', 'Additional Details', 'Set Due Date'];
-  const totalSteps = formSteps.length;
+    mode === 'new' ? ['Find Book', 'Book Details'] : ['Edit Deadline'];
+  const totalSteps = mode === 'new' ? 2 : 1;
 
   const initialStep = getInitialStepFromSearchParams(params, {
     paramName: 'page',
@@ -112,6 +108,8 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     formState: reactHookFormState,
   } = useForm<DeadlineFormData>({
     resolver: zodResolver(deadlineFormSchema),
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: getFormDefaultValues(mode),
   });
 
@@ -142,6 +140,9 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       setSelectedFormat(newFormat);
       setSelectedPriority(newPriority);
       isInitialized.current = true;
+      // Trigger validation after populating form from params
+      // Use setTimeout to ensure setValue calls complete first
+      setTimeout(() => trigger(), 0);
     } else if (mode === 'edit' && existingDeadline) {
       const {
         selectedFormat: editFormat,
@@ -152,8 +153,11 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       setSelectedPriority(editPriority);
       setSelectedStatus(editStatus);
       isInitialized.current = true;
+      // Trigger validation after populating form from existing deadline
+      // Use setTimeout to ensure setValue calls complete first
+      setTimeout(() => trigger(), 0);
     }
-  }, [mode, stableParams, existingDeadline, setValue]);
+  }, [mode, stableParams, existingDeadline, setValue, trigger]);
 
   useEffect(() => {
     if (currentStep === totalSteps && scrollViewRef.current) {
@@ -226,7 +230,8 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
         formFlowTracking.markCompleted();
       }
 
-      setIsSubmitting(false);
+      // Don't set isSubmitting to false - we're navigating away immediately
+      // and keeping the button disabled prevents duplicate submissions
       createSuccessToast(mode)();
     };
 
@@ -328,6 +333,58 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     }
   };
 
+  const hasExistingProgressRecords = Boolean(
+    mode === 'edit' &&
+      existingDeadline?.progress &&
+      existingDeadline.progress.length > 1
+  );
+
+  // Save button for header - shown on Step 2 (new mode) or always (edit mode)
+  const saveButton = useMemo(() => {
+    const showSaveButton =
+      (mode === 'new' && currentStep === 2) || mode === 'edit';
+
+    if (!showSaveButton) return null;
+
+    const { isValid } = reactHookFormState;
+    const buttonText = isSubmitting
+      ? mode === 'new'
+        ? 'Adding...'
+        : 'Updating...'
+      : mode === 'new'
+        ? 'Add'
+        : 'Save';
+
+    return (
+      <TouchableOpacity
+        onPress={() => handleSubmit(onSubmit)()}
+        disabled={!isValid || isSubmitting}
+        style={[
+          styles.saveButton,
+          (!isValid || isSubmitting) && styles.saveButtonDisabled,
+        ]}
+      >
+        <ThemedText
+          style={[
+            styles.saveText,
+            { color: colors.textOnPrimary },
+            (!isValid || isSubmitting) && styles.saveTextDisabled,
+          ]}
+        >
+          {buttonText}
+        </ThemedText>
+      </TouchableOpacity>
+    );
+  }, [
+    mode,
+    currentStep,
+    reactHookFormState.isValid,
+    isSubmitting,
+    handleSubmit,
+    onSubmit,
+    colors,
+  ]);
+
   // Show error if deadline not found in edit mode
   if (mode === 'edit' && !existingDeadline) {
     return (
@@ -350,19 +407,19 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     );
   }
 
-  const hasExistingProgressRecords = Boolean(
-    mode === 'edit' &&
-      existingDeadline?.progress &&
-      existingDeadline.progress.length > 1
-  );
-
   return (
     <SafeAreaView
       edges={['right', 'bottom', 'left']}
       style={{ flex: 1, backgroundColor: colors.background }}
     >
-      <AppHeader title={formSteps[currentStep - 1]} onBack={navigation.goBack}>
-        <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
+      <AppHeader
+        title={formSteps[currentStep - 1]}
+        onBack={navigation.goBack}
+        rightElement={saveButton}
+      >
+        {mode === 'new' && (
+          <StepIndicators currentStep={currentStep} totalSteps={totalSteps} />
+        )}
       </AppHeader>
 
       <ThemedKeyboardAwareScrollView
@@ -381,33 +438,22 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
               onManualEntry={handleManualEntry}
               setValue={setValue}
             />
-          ) : (mode === 'new' && currentStep === 2) ||
-            (mode === 'edit' && currentStep === 1) ? (
-            <DeadlineFormStep2
+          ) : (
+            <DeadlineFormStep2Combined
               control={control}
               selectedFormat={selectedFormat}
-              onFormatChange={mode === 'new' ? handleFormatChange : () => {}}
+              onFormatChange={handleFormatChange}
               selectedStatus={selectedStatus}
               onStatusChange={setSelectedStatus}
-              setValue={setValue}
-              isEditMode={mode === 'edit'}
-            />
-          ) : (mode === 'new' && currentStep === 3) ||
-            (mode === 'edit' && currentStep === 2) ? (
-            <DeadlineFormStep3 control={control} setValue={setValue} />
-          ) : (
-            <DeadlineFormStep4
-              control={control}
-              selectedFormat={selectedFormat}
               selectedPriority={selectedPriority}
               onPriorityChange={handlePriorityChange}
+              setValue={setValue}
               showDatePicker={showDatePicker}
               onDatePickerToggle={() => setShowDatePicker(true)}
               onDateChange={onDateChange}
               deadline={watchedValues.deadline}
               paceEstimate={paceEstimate}
-              watchedValues={watchedValues}
-              setValue={setValue}
+              mode={mode}
               deadlineFromPublicationDate={
                 mode === 'new' ? deadlineFromPublicationDate : false
               }
@@ -439,7 +485,11 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
                   : 'Continue'
             }
             onPress={navigation.nextStep}
-            disabled={isSubmitting}
+            disabled={
+              currentStep === totalSteps
+                ? !reactHookFormState.isValid || isSubmitting
+                : isSubmitting
+            }
             style={{ flex: 1 }}
           />
         </ThemedView>
@@ -464,6 +514,20 @@ const styles = StyleSheet.create({
     gap: 16,
     padding: 16,
     marginBottom: 20,
+  },
+  saveButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  saveButtonDisabled: {
+    opacity: 0.5,
+  },
+  saveText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  saveTextDisabled: {
+    opacity: 0.7,
   },
 });
 

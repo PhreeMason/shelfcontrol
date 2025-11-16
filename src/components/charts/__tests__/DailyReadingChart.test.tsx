@@ -76,7 +76,7 @@ const createMockProgress = (
 
 describe('DailyReadingChart', () => {
   describe('Component Structure', () => {
-    it('should render empty state when no progress data', () => {
+    it('should render chart when no progress data but has reading status', () => {
       const mockDeadline = createMockDeadline({
         status: [createMockStatus('reading', '2025-01-01T00:00:00Z')],
         progress: [],
@@ -84,11 +84,9 @@ describe('DailyReadingChart', () => {
 
       render(<DailyReadingChart deadline={mockDeadline} />);
 
-      expect(screen.getByTestId('daily-chart-empty')).toBeTruthy();
-      expect(screen.getByTestId('empty-message')).toBeTruthy();
-      expect(
-        screen.getByText(/Not enough progress data to display chart/)
-      ).toBeTruthy();
+      // Should render chart with required pace line, even with no progress
+      expect(screen.getByTestId('daily-reading-chart')).toBeTruthy();
+      expect(screen.getByTestId('line-chart')).toBeTruthy();
     });
 
     it('should render empty state when no reading status', () => {
@@ -263,7 +261,9 @@ describe('DailyReadingChart', () => {
 
       render(<DailyReadingChart deadline={mockDeadline} />);
 
-      expect(screen.getByTestId('daily-chart-empty')).toBeTruthy();
+      // Should render chart even with undefined progress, showing required pace line
+      expect(screen.getByTestId('daily-reading-chart')).toBeTruthy();
+      expect(screen.getByTestId('line-chart')).toBeTruthy();
     });
 
     it('should handle single progress entry', () => {

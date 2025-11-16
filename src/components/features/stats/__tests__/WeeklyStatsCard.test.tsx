@@ -91,12 +91,12 @@ jest.mock('@/utils/statsUtils', () => ({
   }),
   formatAheadBehindText: jest.fn((value, formatValue) => {
     if (value > 0) return `+${formatValue(Math.abs(value))}`;
-    if (value < 0) return `-${formatValue(Math.abs(value))}`;
+    if (value < 0) return `${formatValue(Math.abs(value))}`;
     return formatValue(0);
   }),
   getAheadBehindLabel: jest.fn(value => {
     if (value > 0) return 'ahead';
-    if (value < 0) return 'behind';
+    if (value < 0) return 'to go';
     return 'on track';
   }),
 }));
@@ -238,7 +238,7 @@ describe('WeeklyStatsCard', () => {
         />
       );
 
-      expect(screen.getByText(/Reading/)).toBeTruthy();
+      expect(screen.getByText(/On pace for/)).toBeTruthy();
       expect(screen.getByText(/50 units\/day/)).toBeTruthy();
     });
 
@@ -256,7 +256,8 @@ describe('WeeklyStatsCard', () => {
         />
       );
 
-      expect(screen.getByText(/Read 7 out of 7 days this week/)).toBeTruthy();
+      expect(screen.getByText(/Read/)).toBeTruthy();
+      expect(screen.getByText(/7 out of 7 days/)).toBeTruthy();
     });
 
     it('should use progress bar height from constants', () => {

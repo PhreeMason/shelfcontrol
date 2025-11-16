@@ -904,67 +904,6 @@ describe('deadlineFormUtils', () => {
       expect(mockTrigger).not.toHaveBeenCalled();
     });
 
-    it('should validate before moving from step 2 to step 3', async () => {
-      const config = { ...baseConfig, currentStep: 2 };
-      const navigation = createFormNavigation(
-        config,
-        mockTrigger,
-        mockHandleSubmit,
-        'eBook',
-        mockSetCurrentStep,
-        'new',
-        () => ({})
-      );
-
-      await navigation.nextStep();
-
-      expect(mockTrigger).toHaveBeenCalledWith([
-        'bookTitle',
-        'format',
-        'totalQuantity',
-      ]);
-      expect(mockSetCurrentStep).toHaveBeenCalledWith(3);
-    });
-
-    it('should include totalMinutes validation for audio format', async () => {
-      const config = { ...baseConfig, currentStep: 2 };
-      const navigation = createFormNavigation(
-        config,
-        mockTrigger,
-        mockHandleSubmit,
-        'audio',
-        mockSetCurrentStep,
-        'new',
-        () => ({})
-      );
-
-      await navigation.nextStep();
-
-      expect(mockTrigger).toHaveBeenCalledWith([
-        'bookTitle',
-        'format',
-        'totalQuantity',
-        'totalMinutes',
-      ]);
-    });
-
-    it('should not navigate if validation fails', async () => {
-      mockTrigger.mockResolvedValue(false);
-      const config = { ...baseConfig, currentStep: 2 };
-      const navigation = createFormNavigation(
-        config,
-        mockTrigger,
-        mockHandleSubmit,
-        'eBook',
-        mockSetCurrentStep,
-        'new',
-        () => ({})
-      );
-
-      await navigation.nextStep();
-
-      expect(mockSetCurrentStep).not.toHaveBeenCalled();
-    });
 
     it('should submit form on final step', async () => {
       const config = { ...baseConfig, currentStep: 3 };
@@ -1284,7 +1223,7 @@ describe('deadlineFormUtils', () => {
         type: 'success',
         text1: 'Deadline added successfully!',
         autoHide: true,
-        visibilityTime: 1500,
+        visibilityTime: 2000,
         position: 'top',
       });
     });
@@ -1298,7 +1237,7 @@ describe('deadlineFormUtils', () => {
         type: 'success',
         text1: 'Deadline updated successfully!',
         autoHide: true,
-        visibilityTime: 1500,
+        visibilityTime: 2000,
         position: 'top',
       });
     });
@@ -1405,16 +1344,16 @@ describe('deadlineFormUtils', () => {
         expect(getFieldStep('format', 'new')).toBe(2);
       });
 
-      it('should return step 3 for type', () => {
-        expect(getFieldStep('type', 'new')).toBe(3);
+      it('should return step 2 for type', () => {
+        expect(getFieldStep('type', 'new')).toBe(2);
       });
 
-      it('should return step 3 for acquisition_source', () => {
-        expect(getFieldStep('acquisition_source', 'new')).toBe(3);
+      it('should return step 2 for acquisition_source', () => {
+        expect(getFieldStep('acquisition_source', 'new')).toBe(2);
       });
 
-      it('should return step 3 for publishers', () => {
-        expect(getFieldStep('publishers', 'new')).toBe(3);
+      it('should return step 2 for publishers', () => {
+        expect(getFieldStep('publishers', 'new')).toBe(2);
       });
 
       it('should return step 2 for totalQuantity', () => {
@@ -1429,20 +1368,20 @@ describe('deadlineFormUtils', () => {
         expect(getFieldStep('status', 'new')).toBe(2);
       });
 
-      it('should return step 4 for deadline', () => {
-        expect(getFieldStep('deadline', 'new')).toBe(4);
+      it('should return step 2 for deadline', () => {
+        expect(getFieldStep('deadline', 'new')).toBe(2);
       });
 
-      it('should return step 4 for flexibility', () => {
-        expect(getFieldStep('flexibility', 'new')).toBe(4);
+      it('should return step 2 for flexibility', () => {
+        expect(getFieldStep('flexibility', 'new')).toBe(2);
       });
 
-      it('should return step 4 for currentProgress', () => {
-        expect(getFieldStep('currentProgress', 'new')).toBe(4);
+      it('should return step 2 for currentProgress', () => {
+        expect(getFieldStep('currentProgress', 'new')).toBe(2);
       });
 
-      it('should return step 4 for currentMinutes', () => {
-        expect(getFieldStep('currentMinutes', 'new')).toBe(4);
+      it('should return step 2 for currentMinutes', () => {
+        expect(getFieldStep('currentMinutes', 'new')).toBe(2);
       });
     });
 
@@ -1455,36 +1394,36 @@ describe('deadlineFormUtils', () => {
         expect(getFieldStep('format', 'edit')).toBe(1);
       });
 
-      it('should return step 2 for type', () => {
-        expect(getFieldStep('type', 'edit')).toBe(2);
+      it('should return step 1 for type', () => {
+        expect(getFieldStep('type', 'edit')).toBe(1);
       });
 
-      it('should return step 2 for acquisition_source', () => {
-        expect(getFieldStep('acquisition_source', 'edit')).toBe(2);
+      it('should return step 1 for acquisition_source', () => {
+        expect(getFieldStep('acquisition_source', 'edit')).toBe(1);
       });
 
-      it('should return step 2 for publishers', () => {
-        expect(getFieldStep('publishers', 'edit')).toBe(2);
+      it('should return step 1 for publishers', () => {
+        expect(getFieldStep('publishers', 'edit')).toBe(1);
       });
 
       it('should return step 1 for totalQuantity', () => {
         expect(getFieldStep('totalQuantity', 'edit')).toBe(1);
       });
 
-      it('should return step 3 for deadline', () => {
-        expect(getFieldStep('deadline', 'edit')).toBe(3);
+      it('should return step 1 for deadline', () => {
+        expect(getFieldStep('deadline', 'edit')).toBe(1);
       });
 
-      it('should return step 3 for flexibility', () => {
-        expect(getFieldStep('flexibility', 'edit')).toBe(3);
+      it('should return step 1 for flexibility', () => {
+        expect(getFieldStep('flexibility', 'edit')).toBe(1);
       });
 
-      it('should return step 3 for api_id', () => {
-        expect(getFieldStep('api_id', 'edit')).toBe(3);
+      it('should return step 1 for api_id', () => {
+        expect(getFieldStep('api_id', 'edit')).toBe(1);
       });
 
-      it('should return step 3 for book_id', () => {
-        expect(getFieldStep('book_id', 'edit')).toBe(3);
+      it('should return step 1 for book_id', () => {
+        expect(getFieldStep('book_id', 'edit')).toBe(1);
       });
     });
   });
@@ -1498,14 +1437,14 @@ describe('deadlineFormUtils', () => {
       expect(findEarliestErrorStep(undefined as any, 'new')).toBeNull();
     });
 
-    it('should find step 3 for type error in new mode', () => {
+    it('should find step 2 for type error in new mode', () => {
       const errors = { type: { message: 'Required' } };
-      expect(findEarliestErrorStep(errors, 'new')).toBe(3);
+      expect(findEarliestErrorStep(errors, 'new')).toBe(2);
     });
 
-    it('should find step 4 for deadline error in new mode', () => {
+    it('should find step 2 for deadline error in new mode', () => {
       const errors = { deadline: { message: 'Required' } };
-      expect(findEarliestErrorStep(errors, 'new')).toBe(4);
+      expect(findEarliestErrorStep(errors, 'new')).toBe(2);
     });
 
     it('should find earliest step with multiple errors in new mode', () => {
@@ -1514,17 +1453,17 @@ describe('deadlineFormUtils', () => {
         deadline: { message: 'Required' },
         flexibility: { message: 'Required' },
       };
-      expect(findEarliestErrorStep(errors, 'new')).toBe(3);
+      expect(findEarliestErrorStep(errors, 'new')).toBe(2);
     });
 
-    it('should find step 2 for type error in edit mode', () => {
+    it('should find step 1 for type error in edit mode', () => {
       const errors = { type: { message: 'Required' } };
-      expect(findEarliestErrorStep(errors, 'edit')).toBe(2);
+      expect(findEarliestErrorStep(errors, 'edit')).toBe(1);
     });
 
-    it('should find step 3 for deadline error in edit mode', () => {
+    it('should find step 1 for deadline error in edit mode', () => {
       const errors = { deadline: { message: 'Required' } };
-      expect(findEarliestErrorStep(errors, 'edit')).toBe(3);
+      expect(findEarliestErrorStep(errors, 'edit')).toBe(1);
     });
 
     it('should find earliest step with multiple errors in edit mode', () => {
@@ -1557,32 +1496,8 @@ describe('deadlineFormUtils', () => {
       mockGetFormErrors.mockReturnValue({});
     });
 
-    it('should navigate to step 3 when on step 4 with step 3 errors in new mode', async () => {
-      const config = { currentStep: 4, totalSteps: 4, canGoBack: true };
-      mockTrigger.mockResolvedValue(false);
-      mockGetFormErrors.mockReturnValue({
-        type: { message: 'Required' },
-      });
-
-      const navigation = createFormNavigation(
-        config,
-        mockTrigger,
-        mockHandleSubmit,
-        'eBook',
-        mockSetCurrentStep,
-        'new',
-        mockGetFormErrors
-      );
-
-      await navigation.nextStep();
-
-      expect(mockTrigger).toHaveBeenCalledWith();
-      expect(mockSetCurrentStep).toHaveBeenCalledWith(3);
-      expect(mockHandleSubmit).not.toHaveBeenCalled();
-    });
-
-    it('should stay on current step if already on earliest error step', async () => {
-      const config = { currentStep: 3, totalSteps: 4, canGoBack: true };
+    it('should stay on step 2 when validation fails on final step in new mode', async () => {
+      const config = { currentStep: 2, totalSteps: 2, canGoBack: true };
       mockTrigger.mockResolvedValue(false);
       mockGetFormErrors.mockReturnValue({
         type: { message: 'Required' },
@@ -1605,7 +1520,7 @@ describe('deadlineFormUtils', () => {
     });
 
     it('should submit when validation passes on final step', async () => {
-      const config = { currentStep: 4, totalSteps: 4, canGoBack: true };
+      const config = { currentStep: 2, totalSteps: 2, canGoBack: true };
       mockTrigger.mockResolvedValue(true);
 
       const navigation = createFormNavigation(
@@ -1623,54 +1538,6 @@ describe('deadlineFormUtils', () => {
       expect(mockTrigger).toHaveBeenCalledWith();
       expect(mockHandleSubmit).toHaveBeenCalled();
       expect(mockSetCurrentStep).not.toHaveBeenCalled();
-    });
-
-    it('should navigate to step 2 when on step 3 with step 2 errors in edit mode', async () => {
-      const config = { currentStep: 3, totalSteps: 3, canGoBack: true };
-      mockTrigger.mockResolvedValue(false);
-      mockGetFormErrors.mockReturnValue({
-        type: { message: 'Required' },
-      });
-
-      const navigation = createFormNavigation(
-        config,
-        mockTrigger,
-        mockHandleSubmit,
-        'eBook',
-        mockSetCurrentStep,
-        'edit',
-        mockGetFormErrors
-      );
-
-      await navigation.nextStep();
-
-      expect(mockTrigger).toHaveBeenCalledWith();
-      expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
-      expect(mockHandleSubmit).not.toHaveBeenCalled();
-    });
-
-    it('should handle multiple errors and navigate to earliest', async () => {
-      const config = { currentStep: 4, totalSteps: 4, canGoBack: true };
-      mockTrigger.mockResolvedValue(false);
-      mockGetFormErrors.mockReturnValue({
-        type: { message: 'Required' },
-        deadline: { message: 'Required' },
-        flexibility: { message: 'Required' },
-      });
-
-      const navigation = createFormNavigation(
-        config,
-        mockTrigger,
-        mockHandleSubmit,
-        'eBook',
-        mockSetCurrentStep,
-        'new',
-        mockGetFormErrors
-      );
-
-      await navigation.nextStep();
-
-      expect(mockSetCurrentStep).toHaveBeenCalledWith(3);
     });
   });
 });

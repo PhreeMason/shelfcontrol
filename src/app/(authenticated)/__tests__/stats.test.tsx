@@ -11,11 +11,15 @@ jest.mock('@/providers/DeadlineProvider', () => ({
 
 const { useDeadlines } = require('@/providers/DeadlineProvider');
 
-// Mock the stats utils
-jest.mock('@/utils/statsUtils', () => ({
-  calculateWeeklyReadingStats: jest.fn(),
-  calculateWeeklyListeningStats: jest.fn(),
-}));
+// Mock the stats utils - use actual implementation for most functions
+jest.mock('@/utils/statsUtils', () => {
+  const actual = jest.requireActual('@/utils/statsUtils');
+  return {
+    ...actual,
+    calculateWeeklyReadingStats: jest.fn(),
+    calculateWeeklyListeningStats: jest.fn(),
+  };
+});
 
 // Mock the theme hook
 jest.mock('@/hooks/useThemeColor', () => ({
@@ -55,6 +59,12 @@ jest.mock('@/components/features/stats/WeeklyReadingCard', () => ({
 }));
 jest.mock('@/components/features/stats/WeeklyListeningCard', () => ({
   WeeklyListeningCard: 'WeeklyListeningCard',
+}));
+jest.mock('@/components/features/stats/MostProductiveReadingDaysCard', () => ({
+  MostProductiveReadingDaysCard: 'MostProductiveReadingDaysCard',
+}));
+jest.mock('@/components/features/stats/MostProductiveListeningDaysCard', () => ({
+  MostProductiveListeningDaysCard: 'MostProductiveListeningDaysCard',
 }));
 jest.mock('@/components/features/profile/CompletedBooksCarousel', () => ({
   CompletedBooksCarousel: 'CompletedBooksCarousel',
