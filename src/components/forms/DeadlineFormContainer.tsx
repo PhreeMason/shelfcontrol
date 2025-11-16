@@ -140,6 +140,9 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       setSelectedFormat(newFormat);
       setSelectedPriority(newPriority);
       isInitialized.current = true;
+      // Trigger validation after populating form from params
+      // Use setTimeout to ensure setValue calls complete first
+      setTimeout(() => trigger(), 0);
     } else if (mode === 'edit' && existingDeadline) {
       const {
         selectedFormat: editFormat,
@@ -150,8 +153,11 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       setSelectedPriority(editPriority);
       setSelectedStatus(editStatus);
       isInitialized.current = true;
+      // Trigger validation after populating form from existing deadline
+      // Use setTimeout to ensure setValue calls complete first
+      setTimeout(() => trigger(), 0);
     }
-  }, [mode, stableParams, existingDeadline, setValue]);
+  }, [mode, stableParams, existingDeadline, setValue, trigger]);
 
   useEffect(() => {
     if (currentStep === totalSteps && scrollViewRef.current) {
@@ -327,28 +333,6 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     }
   };
 
-  // Show error if deadline not found in edit mode
-  if (mode === 'edit' && !existingDeadline) {
-    return (
-      <SafeAreaView
-        edges={['right', 'bottom', 'left']}
-        style={{ flex: 1, backgroundColor: colors.background }}
-      >
-        <ThemedView style={styles.container}>
-          <AppHeader title="Edit Deadline" onBack={() => router.back()} />
-          <ThemedView style={styles.content}>
-            <ThemedText>Deadline not found</ThemedText>
-            <ThemedButton
-              title="Go Back"
-              onPress={() => router.back()}
-              style={{ marginTop: 16 }}
-            />
-          </ThemedView>
-        </ThemedView>
-      </SafeAreaView>
-    );
-  }
-
   const hasExistingProgressRecords = Boolean(
     mode === 'edit' &&
       existingDeadline?.progress &&
@@ -400,6 +384,28 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     onSubmit,
     colors,
   ]);
+
+  // Show error if deadline not found in edit mode
+  if (mode === 'edit' && !existingDeadline) {
+    return (
+      <SafeAreaView
+        edges={['right', 'bottom', 'left']}
+        style={{ flex: 1, backgroundColor: colors.background }}
+      >
+        <ThemedView style={styles.container}>
+          <AppHeader title="Edit Deadline" onBack={() => router.back()} />
+          <ThemedView style={styles.content}>
+            <ThemedText>Deadline not found</ThemedText>
+            <ThemedButton
+              title="Go Back"
+              onPress={() => router.back()}
+              style={{ marginTop: 16 }}
+            />
+          </ThemedView>
+        </ThemedView>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView

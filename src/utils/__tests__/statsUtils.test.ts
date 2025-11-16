@@ -13,7 +13,7 @@ import {
   calculateMostProductiveListeningDays,
   type ThemeColors,
 } from '../statsUtils';
-import { createMockDeadline } from './testHelpers';
+import { createMockDeadline } from '../testHelpers';
 
 // Mock the dateNormalization module
 jest.mock('../dateNormalization', () => ({
