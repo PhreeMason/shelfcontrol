@@ -8,7 +8,7 @@ import {
   ThemedText,
   ThemedView,
 } from '@/components/themed';
-import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { ROUTES } from '@/constants/routes';
 import { useFetchBookById } from '@/hooks/useBooks';
 import {
@@ -29,7 +29,6 @@ import { useAuth } from '@/providers/AuthProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { ReviewFormData, reviewFormSchema } from '@/utils/reviewFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -302,10 +301,28 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
     }
   };
 
+  const dynamicStyles = {
+    container: {
+      backgroundColor: colors.surfaceContainer, // Let gradient show through
+    },
+    bookCard: {
+      backgroundColor: colors.surface,
+      borderColor: colors.border,
+    },
+    bookCoverPlaceholder: {
+      backgroundColor: colors.surfaceVariant,
+    },
+    actionBar: {
+      backgroundColor: 'transparent',
+      borderTopColor: colors.border,
+    },
+  };
+
   return (
     <ThemedView
       style={[
         styles.container,
+        dynamicStyles.container,
         {
           paddingBottom: insets.bottom,
           paddingLeft: insets.left,
@@ -314,13 +331,8 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
       ]}
       testID="review-form-container"
     >
-      <LinearGradient
-        colors={[colors.accent, colors.primary]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.gradientHeader, { paddingTop: insets.top }]}
-      >
-        <ThemedView style={styles.bookCard}>
+      <View style={[styles.header, { paddingTop: insets.top, backgroundColor: 'transparent' }]}>
+        <ThemedView style={[styles.bookCard, dynamicStyles.bookCard]}>
           <View style={styles.bookCardContent}>
             {bookData?.cover_image_url ? (
               <Image
@@ -329,30 +341,35 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
                 resizeMode="cover"
               />
             ) : (
-              <View style={styles.bookCoverPlaceholder}>
-                <ThemedText style={styles.bookCoverPlaceholderText}>
+              <View
+                style={[
+                  styles.bookCoverPlaceholder,
+                  dynamicStyles.bookCoverPlaceholder,
+                ]}
+              >
+                <ThemedText typography="headlineSmall">
                   📖
                 </ThemedText>
               </View>
             )}
             <View style={styles.bookInfoText}>
-              <ThemedText variant="default" style={styles.bookTitle}>
+              <ThemedText typography="titleSmall" numberOfLines={1}>
                 {deadline.book_title}
               </ThemedText>
-              <ThemedText variant="secondary" style={styles.bookAuthor}>
+              <ThemedText typography="bodySmall" color="textSecondary">
                 by {deadline.author || 'Unknown Author'}
               </ThemedText>
             </View>
           </View>
         </ThemedView>
-      </LinearGradient>
+      </View>
 
       <ThemedKeyboardAwareScrollView
-        style={styles.scrollView}
+        style={[styles.scrollView, { backgroundColor: 'transparent' }]}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <ThemedView style={styles.content}>
+        <ThemedView style={[styles.content, { backgroundColor: 'transparent' }]}>
           <ReviewTimelineSection
             control={control}
             watch={watch}
@@ -383,32 +400,33 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
         </ThemedView>
       </ThemedKeyboardAwareScrollView>
 
-      <ThemedView style={styles.actionBar}>
-        {mode === 'create' && (
-          <ThemedButton
-            title="Skip Review Tracking"
-            variant="secondary"
-            onPress={handleSkip}
-            disabled={isSubmitting}
-            testID="skip-button"
-            style={styles.actionButton}
-          />
-        )}
+      <ThemedView style={[styles.actionBar, dynamicStyles.actionBar]}>
         <ThemedButton
           title={
             isSubmitting
               ? 'Saving...'
               : mode === 'edit'
                 ? 'Update'
-                : 'Save & Finish'
+                : 'Start Tracking'
           }
           variant="primary"
           onPress={handleSubmit(handleSaveAndFinish)}
           disabled={isSubmitting}
           hapticsOnPress
           testID="save-and-finish-button"
-          style={styles.actionButton}
+          style={styles.primaryButton}
         />
+        {mode === 'create' && (
+          <ThemedText
+            typography="bodyMedium"
+            color="surfaceVariant"
+            style={styles.skipLink}
+            onPress={handleSkip}
+            testID="skip-button"
+          >
+            Skip this book
+          </ThemedText>
+        )}
       </ThemedView>
     </ThemedView>
   );
@@ -417,66 +435,50 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
-  gradientHeader: {
+  header: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.xl,
-    paddingBottom: Spacing.lg,
+    paddingBottom: Spacing.md,
   },
   bookCard: {
-    backgroundColor: Colors.light.surface,
     borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    borderWidth: 2,
-    borderColor: Colors.light.border,
+    padding: Spacing.md,
+    borderWidth: 1,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
       },
       android: {
-        elevation: 2,
+        elevation: 1,
       },
     }),
   },
   bookCardContent: {
     flexDirection: 'row',
     gap: Spacing.md,
+    alignItems: 'center',
   },
   bookCover: {
-    width: 96,
-    height: 144,
+    width: 48,
+    height: 72,
     borderRadius: BorderRadius.sm,
     flexShrink: 0,
   },
   bookCoverPlaceholder: {
-    width: 96,
-    height: 144,
+    width: 48,
+    height: 72,
     borderRadius: BorderRadius.sm,
-    backgroundColor: Colors.light.surfaceVariant,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
   },
-  bookCoverPlaceholderText: {
-    fontSize: 40,
-  },
   bookInfoText: {
     flex: 1,
     justifyContent: 'center',
-  },
-  bookTitle: {
-    fontWeight: '600',
-    fontSize: 18,
-    lineHeight: 24,
-    marginBottom: Spacing.xs,
-  },
-  bookAuthor: {
-    fontSize: 14,
-    lineHeight: 18,
+    minWidth: 0,
   },
   scrollView: {
     flex: 1,
@@ -489,18 +491,19 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   actionBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: 'column',
     alignItems: 'center',
     padding: Spacing.lg,
     paddingBottom: 0,
-    backgroundColor: Colors.light.surface,
     borderTopWidth: 1,
-    borderTopColor: Colors.light.border,
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
-  actionButton: {
-    flexGrow: 1,
+  primaryButton: {
+    width: '100%',
+  },
+  skipLink: {
+    paddingVertical: Spacing.sm,
+    textAlign: 'center',
   },
 });
 

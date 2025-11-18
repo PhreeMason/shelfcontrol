@@ -1,6 +1,6 @@
 import Checkbox from '@/components/shared/Checkbox';
 import { ThemedButton, ThemedText } from '@/components/themed';
-import { Colors, Spacing } from '@/constants/Colors';
+import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import {
   initializeModalState,
@@ -114,11 +114,11 @@ const PostReviewModal: React.FC<PostReviewModalProps> = ({
           ]}
           onStartShouldSetResponder={() => true}
         >
-          <ThemedText variant="title" style={styles.title}>
+          <ThemedText typography="titleSubLarge" style={styles.title}>
             Mark as Posted
           </ThemedText>
 
-          <ThemedText variant="secondary" style={styles.subtitle}>
+          <ThemedText typography="bodyMedium" color="textSecondary" style={styles.subtitle}>
             Select platforms posted
           </ThemedText>
 
@@ -131,6 +131,10 @@ const PostReviewModal: React.FC<PostReviewModalProps> = ({
                     key={platform.id}
                     style={[
                       styles.platformRow,
+                      {
+                        borderColor: colors.border,
+                        backgroundColor: colors.surface,
+                      },
                       isSelected && {
                         backgroundColor: colors.primary + '20',
                         borderColor: colors.primary,
@@ -184,16 +188,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 20,
-    lineHeight: 24,
-    fontWeight: '700',
     textAlign: 'center',
     marginBottom: Spacing.md,
   },
   subtitle: {
-    fontSize: 14,
     textAlign: 'center',
-    color: Colors.light.textSecondary,
     marginBottom: Spacing.xl,
   },
   content: {},
@@ -207,9 +206,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: Colors.light.border,
     borderRadius: 12,
-    backgroundColor: Colors.light.surface,
   },
   buttonContainer: {
     flexDirection: 'row',

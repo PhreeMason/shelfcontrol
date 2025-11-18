@@ -96,7 +96,9 @@ describe('TypeTypeaheadInput', () => {
     it('should render text input with default placeholder', () => {
       render(<TypeTypeaheadInput control={mockControl} name="source" />);
 
-      expect(screen.getByPlaceholderText('Enter book type')).toBeTruthy();
+      expect(
+        screen.getByPlaceholderText('Select a type or add your own')
+      ).toBeTruthy();
     });
 
     it('should render text input with custom placeholder', () => {
@@ -315,8 +317,12 @@ describe('TypeTypeaheadInput', () => {
         };
         const mockFieldState = {
           error: { message: 'This field is required' },
+          isTouched: true,
         };
-        return render({ field: mockField, fieldState: mockFieldState });
+        const mockFormState = {
+          isSubmitted: false,
+        };
+        return render({ field: mockField, fieldState: mockFieldState, formState: mockFormState });
       });
 
       render(<TypeTypeaheadInput control={mockControl} name="source" />);
@@ -333,8 +339,12 @@ describe('TypeTypeaheadInput', () => {
         };
         const mockFieldState = {
           error: { message: 'Error' },
+          isTouched: true,
         };
-        return render({ field: mockField, fieldState: mockFieldState });
+        const mockFormState = {
+          isSubmitted: false,
+        };
+        return render({ field: mockField, fieldState: mockFieldState, formState: mockFormState });
       });
 
       render(<TypeTypeaheadInput control={mockControl} name="source" />);

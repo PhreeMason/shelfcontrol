@@ -23,7 +23,7 @@ const TypeTypeaheadInput = <T extends FieldValues>({
       control={control}
       name={name}
       defaultValue={'ARC' as any}
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
+      render={({ field: { onChange, value }, fieldState: { error, isTouched }, formState }) => (
         <Typeahead
           suggestions={types}
           isLoading={isLoading}
@@ -32,7 +32,7 @@ const TypeTypeaheadInput = <T extends FieldValues>({
           value={value as string}
           onChangeText={onChange}
           onSelect={onChange}
-          error={error?.message}
+          error={error && (isTouched || formState?.isSubmitted) ? error.message : undefined}
           noResultsAction="info"
         />
       )}

@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Typography } from '@/constants/Colors';
+import { Spacing, Typography } from '@/constants/Colors';
 import { useDeadlineCardViewModel } from '@/hooks/useDeadlineCardViewModel';
 import { useTheme } from '@/hooks/useThemeColor';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -120,14 +120,14 @@ const styles = StyleSheet.create({
     top: 1,
     right: 1,
     zIndex: 10,
-    padding: 4,
+    padding: Spacing.xs,
   },
   bookContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.sm,
     flex: 3,
     minWidth: 0,
   },
@@ -136,13 +136,13 @@ const styles = StyleSheet.create({
   },
   bookTitle: {
     color: '#2B3D4F',
-    marginBottom: 10,
+    marginBottom: Spacing.sm,
     ...Typography.titleMedium,
     fontSize: 18,
   },
   additionalInfo: {
     justifyContent: 'center',
-    gap: 2,
+    gap: Spacing.xs,
   },
   capacityText: {
     color: '#2B3D4F',
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   progressTrack: {
     flex: 1,

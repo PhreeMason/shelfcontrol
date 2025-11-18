@@ -30,7 +30,10 @@ export const MAPPING = {
   plus: 'add',
   'info.circle.fill': 'info',
   'checkmark.circle.fill': 'check-circle',
+  'exclamationmark.circle.fill': 'error',
+  'minus.circle': 'remove-circle',
   'person.fill': 'person',
+  'person.circle.fill': 'person',
   'book.fill': 'menu-book',
   'line.3.horizontal.decrease': 'filter-list',
   headphones: 'headphones',
@@ -59,6 +62,19 @@ export const MAPPING = {
   trash: 'delete',
   'star.fill': 'star',
   at: 'alternate-email',
+  'chart.bar.fill': 'bar-chart',
+  'arrow.up.forward.square': 'send',
+  'books.vertical.fill': 'library-books',
+  'arrow.left.arrow.right': 'swap-horiz',
+  'arrow.up.right': 'trending-up',
+  'star.leadinghalf.filled': 'star-half',
+  'plus.circle.fill': 'add-circle',
+  'play.fill': 'play-circle-fill',
+  'list.bullet': 'list',
+  'square.grid.2x2': 'grid-view',
+  'arrow.triangle.2.circlepath': 'sync',
+  star: 'star-border',
+  'info.circle': 'info',
 } as IconMapping;
 
 /**
@@ -71,12 +87,14 @@ export function IconSymbol({
   size = 24,
   color,
   style,
+  accessibilityLabel,
 }: {
   name: IconSymbolName;
   size?: number;
   color: string | OpaqueColorValue;
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
+  accessibilityLabel?: string;
 }) {
   if (__DEV__ && !(name in MAPPING)) {
     throw new Error(
@@ -90,6 +108,7 @@ export function IconSymbol({
       size={size}
       name={MAPPING[name]}
       style={style}
+      accessibilityLabel={accessibilityLabel}
     />
   );
 }

@@ -25,22 +25,25 @@ export const ReviewNotesSection: React.FC<ReviewNotesSectionProps> = ({
       testID="review-notes-section"
     >
       <ThemedView style={styles.section}>
-        <ThemedText variant="title" style={styles.sectionHeader}>
-          Quick Review Thoughts (Optional)
+        <ThemedView style={styles.headerRow}>
+          <ThemedText typography="titleMediumPlus">Book thoughts</ThemedText>
+          <ThemedText typography="bodyMedium" color="textMuted">
+            {' '}(Optional)
+          </ThemedText>
+        </ThemedView>
+        <ThemedText typography="bodySmall" color="textSecondary" style={styles.helpText}>
+          Saved to your Notes for this book
         </ThemedText>
         <CustomInput
           control={control}
           name="reviewNotes"
-          placeholder="Jot down key points while they're fresh they will be saved to your Notes..."
+          placeholder="Favorite quotes, themes, moments to remember..."
           multiline
           numberOfLines={4}
           textAlignVertical="top"
           style={styles.textArea}
           testID="review-notes-input"
         />
-        <ThemedText variant="secondary" style={styles.noteExplanation}>
-          This will be saved to your Notes for this book.
-        </ThemedText>
       </ThemedView>
     </ThemedView>
   );
@@ -66,17 +69,14 @@ const styles = StyleSheet.create({
   section: {
     gap: Spacing.sm,
   },
-  sectionHeader: {
-    fontSize: 16,
-    lineHeight: 20,
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+  },
+  helpText: {
     marginBottom: Spacing.xs,
   },
   textArea: {
     minHeight: 100,
-  },
-  noteExplanation: {
-    fontSize: 12,
-    lineHeight: 18,
-    fontStyle: 'italic',
   },
 });

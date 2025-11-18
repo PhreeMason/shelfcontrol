@@ -4,7 +4,6 @@ import { HashtagText } from '@/components/shared/HashtagText';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Colors } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
 import { useGetAllHashtags, useGetAllNoteHashtags } from '@/hooks/useHashtags';
@@ -238,9 +237,32 @@ const Notes = () => {
     setCursorPosition(event.nativeEvent.selection.start);
   };
 
-  const handleHashtagPress = (hashtagName: string, hashtagId: string) => {
+  const handleHashtagPress = (_hashtagName: string, hashtagId: string) => {
     setSelectedHashtagIds([hashtagId]);
   };
+
+  // Filter button for header
+  const filterButton =
+    usedHashtags.length > 0 ? (
+      <View style={styles.filterButtonContainer}>
+        {selectedHashtagIds.length > 0 && (
+          <View style={styles.starIndicator}>
+            <IconSymbol
+              name="star.fill"
+              size={12}
+              color={colors.urgent}
+            />
+          </View>
+        )}
+        <ThemedIconButton
+          icon="line.3.horizontal.decrease"
+          onPress={() => setShowFilterSheet(true)}
+          variant="ghost"
+          iconColor={selectedHashtagIds.length > 0 ? 'accent' : 'background'}
+          size="sm"
+        />
+      </View>
+    ) : null;
 
   const renderNote = ({
     item,
@@ -308,7 +330,11 @@ const Notes = () => {
       edges={['right', 'bottom', 'left']}
       style={[styles.container, { backgroundColor: colors.background }]}
     >
-      <AppHeader title="Notes" onBack={() => router.back()} />
+      <AppHeader
+        title="Notes"
+        onBack={() => router.back()}
+        rightElement={filterButton}
+      />
       <View style={styles.header}>
         <View style={styles.headerContent}>
           {bookData?.cover_image_url && (
@@ -322,25 +348,6 @@ const Notes = () => {
             {deadline?.book_title || 'Book'}
           </ThemedText>
         </View>
-        {usedHashtags.length > 0 && (
-          <View style={styles.filterButtonContainer}>
-            {selectedHashtagIds.length > 0 && (
-              <View style={styles.starIndicator}>
-                <IconSymbol
-                  name="star.fill"
-                  size={12}
-                  color={Colors.light.urgent}
-                />
-              </View>
-            )}
-            <ThemedIconButton
-              icon="line.3.horizontal.decrease"
-              onPress={() => setShowFilterSheet(true)}
-              variant={selectedHashtagIds.length > 0 ? 'primary' : 'outline'}
-              size="sm"
-            />
-          </View>
-        )}
       </View>
 
       <KeyboardAvoidingView
@@ -439,6 +446,7 @@ const Notes = () => {
           <TouchableOpacity
             style={[
               styles.sendButton,
+              { backgroundColor: colors.darkPurple },
               (!noteText.trim() || isSubmitting || hasHashtagLimitError) &&
                 styles.sendButtonDisabled,
             ]}
@@ -446,11 +454,12 @@ const Notes = () => {
             disabled={!noteText.trim() || isSubmitting || hasHashtagLimitError}
           >
             {isSubmitting ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={colors.textOnPrimary} />
             ) : (
               <ThemedText
                 style={[
                   styles.sendButtonText,
+                  { color: colors.textOnPrimary },
                   (!noteText.trim() || hasHashtagLimitError) &&
                     styles.sendButtonTextDisabled,
                 ]}
@@ -580,24 +589,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,
-    backgroundColor: Colors.light.darkPurple,
     justifyContent: 'center',
     alignItems: 'center',
   },
   sendButtonDisabled: {
-    backgroundColor: '#ccc',
+    opacity: 0.5,
   },
   sendButtonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
   sendButtonTextDisabled: {
-    color: '#999',
+    opacity: 0.5,
   },
   doneButton: {
     fontSize: 17,
-    color: Colors.light.darkPurple,
     fontWeight: '600',
   },
   typeaheadContainer: {

@@ -24,7 +24,9 @@ export default function TabLayout() {
     if (prevPathnameRef.current && prevPathnameRef.current !== pathname) {
       const getTabName = (path: string) => {
         if (path === '/' || path === '') return 'home';
+        if (path.includes('stats')) return 'stats';
         if (path.includes('new-deadline')) return 'new_deadline';
+        if (path.includes('calendar')) return 'calendar';
         if (path.includes('profile')) return 'profile';
         return path.replace(/^\//, '');
       };
@@ -43,6 +45,12 @@ export default function TabLayout() {
 
   const HomeTabButton = (props: any) => (
     <HapticTab {...props} testID="home-tab" />
+  );
+  const CalendarTabButton = (props: any) => (
+    <HapticTab {...props} testID="calendar-tab" />
+  );
+  const StatsTabButton = (props: any) => (
+    <HapticTab {...props} testID="stats-tab" />
   );
   const ProfileTabButton = (props: any) => (
     <HapticTab {...props} testID="profile-tab" />
@@ -73,6 +81,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="calendar"
+        options={{
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="calendar" color={color} />
+          ),
+          tabBarButton: CalendarTabButton,
+        }}
+      />
+      <Tabs.Screen
         name="new-deadline"
         options={{
           tabBarIcon: () => (
@@ -86,6 +103,15 @@ export default function TabLayout() {
             </View>
           ),
           href: Platform.OS === 'android' ? null : '/new-deadline',
+        }}
+      />
+      <Tabs.Screen
+        name="stats"
+        options={{
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="chart.bar.fill" color={color} />
+          ),
+          tabBarButton: StatsTabButton,
         }}
       />
       <Tabs.Screen

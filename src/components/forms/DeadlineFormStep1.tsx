@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useSearchTracking } from '@/hooks/analytics/useSearchTracking';
 import { useFetchBookData, useSearchBooksList } from '@/hooks/useBooks';
 import { useGetDeadlines } from '@/hooks/useDeadlines';
@@ -344,39 +345,39 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     lineHeight: 24,
-    marginBottom: 20,
+    marginBottom: Spacing.lg,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 2,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 13,
-    gap: 12,
+    borderRadius: BorderRadius.lg,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    gap: Spacing.md,
     position: 'relative',
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
     lineHeight: 18,
-    paddingVertical: 6,
+    paddingVertical: Spacing.sm,
   },
   resultsContainer: {
     flex: 1,
-    marginTop: 20,
+    marginTop: Spacing.lg,
   },
   resultsList: {
     flex: 1,
   },
   resultsContent: {
-    paddingBottom: 20,
+    paddingBottom: Spacing.lg,
   },
   resultItem: {
     borderWidth: 1,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    marginBottom: Spacing.md,
   },
   resultContent: {
     flexDirection: 'row',
@@ -385,14 +386,14 @@ const styles = StyleSheet.create({
   bookCover: {
     width: 50,
     height: 75,
-    borderRadius: 6,
-    marginRight: 12,
+    borderRadius: BorderRadius.sm,
+    marginRight: Spacing.md,
   },
   bookCoverPlaceholder: {
     width: 50,
     height: 75,
-    borderRadius: 6,
-    marginRight: 12,
+    borderRadius: BorderRadius.sm,
+    marginRight: Spacing.md,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -402,7 +403,7 @@ const styles = StyleSheet.create({
   bookTitle: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
   bookAuthor: {
     fontSize: 14,
@@ -411,11 +412,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: Spacing.xl,
   },
   loadingText: {
     fontSize: 16,
-    marginTop: 12,
+    marginTop: Spacing.md,
   },
   errorText: {
     fontSize: 16,
@@ -424,37 +425,37 @@ const styles = StyleSheet.create({
   noResultsText: {
     fontSize: 18,
     fontWeight: '500',
-    marginTop: 16,
+    marginTop: Spacing.md,
     textAlign: 'center',
   },
   noResultsSubtext: {
     fontSize: 14,
-    marginTop: 8,
+    marginTop: Spacing.sm,
     textAlign: 'center',
   },
   promptText: {
     fontSize: 18,
     fontWeight: '500',
-    marginTop: 16,
+    marginTop: Spacing.md,
     textAlign: 'center',
   },
   promptSubtext: {
     fontSize: 14,
-    marginTop: 8,
+    marginTop: Spacing.sm,
     textAlign: 'center',
   },
   manualEntryContainer: {
-    paddingTop: 20,
+    paddingTop: Spacing.lg,
   },
   divider: {
     height: 1,
-    marginVertical: 20,
+    marginVertical: Spacing.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   dividerText: {
     backgroundColor: 'white',
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.md,
     fontSize: 14,
     position: 'absolute',
   },
@@ -463,11 +464,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderRadius: 12,
-    paddingVertical: 16,
-    gap: 8,
-    paddingHorizontal: 20,
-    marginTop: 20,
+    borderRadius: BorderRadius.lg,
+    paddingVertical: Spacing.md,
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    marginTop: Spacing.lg,
   },
   manualEntryText: {
     fontSize: 16,
@@ -477,10 +478,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: Spacing.lg,
   },
   loadingOverlayText: {
-    marginTop: 12,
+    marginTop: Spacing.md,
     fontSize: 16,
   },
 });

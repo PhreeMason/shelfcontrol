@@ -67,9 +67,12 @@ const calculatePaceFromActivityDays = (activityDays: ActivityDay[]): number => {
 
 /**
  * Calculates the cutoff date based on the most recent progress across all filtered deadlines
+ * @param deadlines - Array of deadlines to consider
+ * @param daysToConsider - Number of days to look back (default: 21)
  */
 export const calculateCutoffTime = (
-  deadlines: ReadingDeadlineWithProgress[]
+  deadlines: ReadingDeadlineWithProgress[],
+  daysToConsider: number = DAYS_TO_CONSIDER_FOR_PACE
 ): number | null => {
   const allProgressUpdates = deadlines
     .flatMap(d => d.progress || [])
@@ -88,7 +91,7 @@ export const calculateCutoffTime = (
   const cutoffDate = normalizeServerDate(
     allProgressUpdatesSorted[0].created_at
   );
-  return cutoffDate.subtract(DAYS_TO_CONSIDER_FOR_PACE, 'day').valueOf();
+  return cutoffDate.subtract(daysToConsider, 'day').valueOf();
 };
 
 /**

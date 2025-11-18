@@ -298,7 +298,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
         unitsPerDay = 0;
         urgencyLevel = 'good' as const;
         urgencyColor = '#10b981';
-        statusMessage = deadlineStatus.isCompleted ? 'Completed!' : 'Set aside';
+        statusMessage = deadlineStatus.isCompleted ? 'Completed!' : 'Paused';
         paceData = createArchivedPaceData(statusMessage);
       } else {
         daysLeft = calculateDaysLeft(deadline.deadline_date);

@@ -1,7 +1,7 @@
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import DeadlineFormContainer from '../DeadlineFormContainer';
@@ -817,17 +817,26 @@ describe('DeadlineFormContainer', () => {
       // Note: status changes are handled by component state, just verify interaction works
       expect(screen.getByTestId('status-pending')).toBeTruthy();
 
-      // Verify Continue button is available
-      expect(screen.getByText('Continue')).toBeTruthy();
+      // Verify Add Book button is available (step 2 is final step in 2-step flow)
+      expect(screen.getByText('Add Book')).toBeTruthy();
     });
 
-    it('should render step 3 with real form components', () => {
-      // Start on step 4 directly (page: '4' = step 4 final step for new mode)
-      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '4' });
+    it('should render step 2 with all form components (combined step)', () => {
+      // Start on step 2 directly (page: '2' = step 2 final step for new mode in 2-step flow)
+      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '2' });
 
       render(<DeadlineFormContainer mode="new" />);
 
-      // Should be on step 4 with priority selector and other real components
+      // Should be on step 2 with all sections: book details, additional info, and reading schedule
+      // Book details section
+      expect(screen.getByTestId('format-selector')).toBeTruthy();
+      expect(screen.getByTestId('status-selector')).toBeTruthy();
+      expect(screen.getByTestId('input-bookTitle')).toBeTruthy();
+
+      // Additional information section
+      expect(screen.getByTestId('input-type')).toBeTruthy();
+
+      // Reading schedule section
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
       expect(screen.getByTestId('date-picker-button')).toBeTruthy();
       expect(screen.getByTestId('pace-estimate-box')).toBeTruthy();
@@ -875,26 +884,26 @@ describe('DeadlineFormContainer', () => {
     });
 
     it('should start on final step when page param is set', () => {
-      // For edit mode, page: '3' = step 3 (final step)
-      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '3' });
+      // For edit mode, page: '1' = step 1 (only step in 1-step flow)
+      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '1' });
 
       render(
         <DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />
       );
 
-      // Should be on final step
+      // Should be on the edit form with all sections
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
     });
 
     it('should trigger scroll effect on final step navigation', () => {
-      // Set up to start directly on final step for edit mode
-      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '3' });
+      // Set up to start directly on final step for edit mode (1-step flow)
+      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '1' });
 
       render(
         <DeadlineFormContainer mode="edit" existingDeadline={mockDeadline} />
       );
 
-      // Should be on final step with priority selector and date picker
+      // Should be on the edit form with priority selector and date picker
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
       expect(screen.getByTestId('date-picker-button')).toBeTruthy();
     });
@@ -927,15 +936,15 @@ describe('DeadlineFormContainer', () => {
     });
 
     it('should execute date picker toggle handler', () => {
-      // For new mode, page: '4' = step 4 (final step)
-      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '4' });
+      // For new mode, page: '2' = step 2 (final step in 2-step flow)
+      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '2' });
 
       render(<DeadlineFormContainer mode="new" />);
 
       const datePickerButton = screen.getByTestId('date-picker-button');
       fireEvent.press(datePickerButton);
 
-      // This should trigger the onDatePickerToggle callback (line 357)
+      // This should trigger the onDatePickerToggle callback
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
     });
 
@@ -951,7 +960,7 @@ describe('DeadlineFormContainer', () => {
         }
       );
 
-      // For new mode, page: '4' = step 4 (final step) with all required form data
+      // For new mode, page: '2' = step 2 (final step in 2-step flow) with all required form data
       (useLocalSearchParams as jest.Mock).mockReturnValue({
         api_id: 'test-123',
         book_id: 'book-456',
@@ -960,7 +969,7 @@ describe('DeadlineFormContainer', () => {
         type: 'Library',
         totalQuantity: '300',
         format: 'physical',
-        page: '4',
+        page: '2',
       });
 
       render(<DeadlineFormContainer mode="new" />);
@@ -968,15 +977,15 @@ describe('DeadlineFormContainer', () => {
       // Verify we're on the final step
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
 
-      // Trigger form submission
+      // Button is always enabled - validation happens on press
       const submitButton = screen.getByText('Add Book');
       fireEvent.press(submitButton);
 
-      // Wait a bit for async operations
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for submission to complete
+      await waitFor(() => {
+        expect(mockAddDeadline).toHaveBeenCalled();
+      });
 
-      // Verify the function was triggered
-      expect(mockAddDeadline).toHaveBeenCalled();
       expect(formSubmitted).toBe(true);
     });
 
@@ -991,8 +1000,8 @@ describe('DeadlineFormContainer', () => {
         }
       );
 
-      // For edit mode, page: '3' = step 3 (final step)
-      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '3' });
+      // For edit mode, page: '1' = step 1 (only step in 1-step flow)
+      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '1' });
 
       // Use the existing mockDeadline which already has the correct structure
       render(
@@ -1002,14 +1011,15 @@ describe('DeadlineFormContainer', () => {
       // Verify we're on the final step
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
 
+      // Button is always enabled - validation happens on press
       const submitButton = screen.getByText('Update Book');
       fireEvent.press(submitButton);
 
-      // Wait a bit for async operations
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for submission to complete
+      await waitFor(() => {
+        expect(mockUpdateDeadline).toHaveBeenCalled();
+      });
 
-      // Verify the function was triggered
-      expect(mockUpdateDeadline).toHaveBeenCalled();
       expect(formSubmitted).toBe(true);
     });
 
@@ -1025,14 +1035,14 @@ describe('DeadlineFormContainer', () => {
         }
       );
 
-      // For new mode, page: '4' = step 4 (final step) with all required form data
+      // For new mode, page: '2' = step 2 (final step in 2-step flow) with all required form data
       (useLocalSearchParams as jest.Mock).mockReturnValue({
         bookTitle: 'Test Book',
         bookAuthor: 'Test Author',
         type: 'Library',
         totalQuantity: '300',
         format: 'physical',
-        page: '4',
+        page: '2',
       });
 
       render(<DeadlineFormContainer mode="new" />);
@@ -1040,14 +1050,15 @@ describe('DeadlineFormContainer', () => {
       // Verify we're on the final step
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
 
+      // Button is always enabled - validation happens on press
       const submitButton = screen.getByText('Add Book');
       fireEvent.press(submitButton);
 
-      // Wait a bit for async operations
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for error handling to complete
+      await waitFor(() => {
+        expect(mockAddDeadline).toHaveBeenCalled();
+      });
 
-      // Verify the error handler was called
-      expect(mockAddDeadline).toHaveBeenCalled();
       expect(errorHandled).toBe(true);
     });
 
@@ -1060,8 +1071,8 @@ describe('DeadlineFormContainer', () => {
         setTimeout(successCallback, 100);
       });
 
-      // For new mode, page: '4' = step 4 (final step)
-      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '4' });
+      // For new mode, page: '2' = step 2 (final step in 2-step flow)
+      (useLocalSearchParams as jest.Mock).mockReturnValue({ page: '2' });
 
       render(<DeadlineFormContainer mode="new" />);
 

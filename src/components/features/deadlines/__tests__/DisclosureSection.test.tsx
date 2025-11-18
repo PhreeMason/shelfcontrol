@@ -199,7 +199,7 @@ describe('DisclosureSection', () => {
     it('should render empty state when no disclosure exists', () => {
       render(<DisclosureSection deadline={mockDeadlineWithoutDisclosure} />);
 
-      expect(screen.getByText('+ Add disclosure language')).toBeTruthy();
+      expect(screen.getByText('Add')).toBeTruthy();
     });
 
     it('should not render action buttons when no disclosure exists', () => {

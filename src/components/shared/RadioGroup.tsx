@@ -67,7 +67,7 @@ const RadioGroup = <T extends FieldValues>({
                     />
                   )}
                 </View>
-                <ThemedText style={styles.radioLabel}>
+                <ThemedText typography="bodyMedium">
                   {option.label}
                 </ThemedText>
               </TouchableOpacity>
@@ -111,9 +111,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-  },
-  radioLabel: {
-    fontSize: 14,
   },
   error: {
     minHeight: 18,

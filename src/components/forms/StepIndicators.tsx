@@ -12,7 +12,8 @@ export const StepIndicators = ({
   totalSteps,
 }: StepIndicatorsProps) => {
   const { colors } = useTheme();
-  const backgroundColor = colors.textOnPrimary;
+  const activeBackgroundColor = colors.textOnPrimary;
+  const inactiveBackgroundColor = colors.border;
 
   return (
     <View style={styles.stepsContainer} testID="steps-container">
@@ -22,8 +23,9 @@ export const StepIndicators = ({
           testID="step-indicator"
           style={[
             styles.step,
-            index + 1 === currentStep && { backgroundColor },
-            index + 1 < currentStep && { backgroundColor },
+            { backgroundColor: inactiveBackgroundColor },
+            index + 1 === currentStep && { backgroundColor: activeBackgroundColor },
+            index + 1 < currentStep && { backgroundColor: activeBackgroundColor },
           ]}
         />
       ))}
@@ -42,6 +44,5 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#404040',
   },
 });

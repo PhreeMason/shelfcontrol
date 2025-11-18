@@ -27,8 +27,8 @@ export const LinkSubmissionSection: React.FC<LinkSubmissionSectionProps> = ({
       testID="link-submission-section"
     >
       <ThemedView style={styles.section}>
-        <ThemedText variant="title" style={styles.sectionHeader}>
-          Do you need to submit review links?
+        <ThemedText typography="titleMedium" style={styles.sectionHeader}>
+          Will you need to submit review links?
         </ThemedText>
         <ThemedView style={styles.radioGroup}>
           <TouchableOpacity
@@ -63,9 +63,14 @@ export const LinkSubmissionSection: React.FC<LinkSubmissionSectionProps> = ({
                 />
               )}
             </View>
-            <ThemedText style={styles.radioLabel}>
-              Yes, I'll need to share review URLs
-            </ThemedText>
+            <View style={styles.radioTextContainer}>
+              <ThemedText typography="bodyMedium">
+                Yes, I'll share review URLs
+              </ThemedText>
+              <ThemedText typography="bodySmall" color="textSecondary">
+                For ARC reviews or publisher requests
+              </ThemedText>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -99,7 +104,7 @@ export const LinkSubmissionSection: React.FC<LinkSubmissionSectionProps> = ({
                 />
               )}
             </View>
-            <ThemedText style={styles.radioLabel}>
+            <ThemedText typography="bodyMedium" style={styles.radioLabel}>
               No link submission needed
             </ThemedText>
           </TouchableOpacity>
@@ -130,8 +135,6 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   sectionHeader: {
-    fontSize: 16,
-    lineHeight: 20,
     marginBottom: Spacing.xs,
   },
   radioGroup: {
@@ -161,6 +164,9 @@ const styles = StyleSheet.create({
   },
   radioLabel: {
     flex: 1,
-    lineHeight: 20,
+  },
+  radioTextContainer: {
+    flex: 1,
+    gap: Spacing.xs,
   },
 });

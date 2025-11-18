@@ -1,8 +1,8 @@
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { useAuth } from '@/providers/AuthProvider';
 import {
-  reviewTrackingService,
   ReviewTrackingResponse,
+  reviewTrackingService,
   UpdateReviewPlatformsParams,
 } from '@/services/reviewTracking.service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -93,6 +93,12 @@ export const useReviewTrackingMutation = (deadlineId: string) => {
       if (userId) {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.REVIEW_TRACKING.BY_DEADLINE(userId, deadlineId),
+        });
+
+        // Invalidate calendar queries so reviews appear immediately
+        queryClient.invalidateQueries({
+          queryKey: ['daily_activities', userId],
+          refetchType: 'active', // Force refetch even with staleTime
         });
       }
     },

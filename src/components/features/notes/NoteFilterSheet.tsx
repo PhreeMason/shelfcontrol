@@ -35,9 +35,22 @@ export const NoteFilterSheet: React.FC<NoteFilterSheetProps> = ({
   onHashtagsChange,
   filteredCount,
 }) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const insets = useSafeAreaInsets();
   const translateY = useSharedValue(1000);
+
+  const dynamicStyles = {
+    sheet: {
+      backgroundColor: colors.surface,
+      borderColor: colors.borderVariant,
+      borderTopLeftRadius: borderRadius.xl,
+      borderTopRightRadius: borderRadius.xl,
+    },
+    footer: {
+      borderTopColor: colors.border,
+      backgroundColor: colors.surface,
+    },
+  };
 
   useEffect(() => {
     if (visible) {
@@ -92,8 +105,8 @@ export const NoteFilterSheet: React.FC<NoteFilterSheetProps> = ({
         <Animated.View
           style={[
             styles.sheet,
+            dynamicStyles.sheet,
             {
-              backgroundColor: colors.surface,
               paddingBottom: insets.bottom + 16,
             },
             animatedStyle,
@@ -106,23 +119,21 @@ export const NoteFilterSheet: React.FC<NoteFilterSheetProps> = ({
             showsVerticalScrollIndicator={true}
           >
             <View style={styles.header}>
-              <ThemedText style={styles.title}>Filter Notes</ThemedText>
+              <ThemedText typography="titleSubLarge">
+                Hashtag Filters
+              </ThemedText>
               <View style={styles.headerActions}>
                 {hasActiveFilters && (
                   <TouchableOpacity onPress={clearAllFilters}>
-                    <ThemedText style={styles.clearButton}>
+                    <ThemedText variant="default" color="textSecondary">
                       Clear All
                     </ThemedText>
                   </TouchableOpacity>
                 )}
-                <TouchableOpacity onPress={handleDone}>
-                  <ThemedText style={styles.doneButton}>Done</ThemedText>
-                </TouchableOpacity>
               </View>
             </View>
 
             <View style={styles.section}>
-              <ThemedText style={styles.sectionTitle}>Hashtags</ThemedText>
               <View style={styles.pillContainer}>
                 {hashtags.map(hashtag => {
                   const isSelected = selectedHashtagIds.includes(hashtag.id);
@@ -147,19 +158,11 @@ export const NoteFilterSheet: React.FC<NoteFilterSheetProps> = ({
             </View>
           </ScrollView>
 
-          <View
-            style={[
-              styles.footer,
-              {
-                borderTopColor: colors.border,
-                backgroundColor: colors.surface,
-              },
-            ]}
-          >
+          <View style={[styles.footer, dynamicStyles.footer]}>
             <ThemedButton
               title="CANCEL"
               onPress={onClose}
-              variant="ghost"
+              variant="outline"
               size="lg"
               style={styles.footerButton}
             />
@@ -180,13 +183,11 @@ export const NoteFilterSheet: React.FC<NoteFilterSheetProps> = ({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
   sheet: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
     maxHeight: '85%',
+    borderWidth: 1,
   },
   scrollView: {
     maxHeight: '100%',
@@ -201,30 +202,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-  },
   headerActions: {
     flexDirection: 'row',
     gap: 16,
   },
-  clearButton: {
-    fontSize: 16,
-    color: '#666',
-  },
-  doneButton: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#7c3aed',
-  },
   section: {
     marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 12,
   },
   pillContainer: {
     flexDirection: 'row',
@@ -240,7 +223,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    padding: 16,
+    padding: 5,
     gap: 12,
     borderTopWidth: 1,
   },

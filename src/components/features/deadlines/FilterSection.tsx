@@ -1,7 +1,7 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Colors } from '@/constants/Colors';
+import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
   BookFormat,
@@ -46,7 +46,7 @@ interface FilterSectionProps {
 const filterOptions: FilterOption[] = [
   { key: 'pending', label: 'Pending' },
   { key: 'active', label: 'Active' },
-  { key: 'overdue', label: 'Past due' },
+  { key: 'overdue', label: 'Past Due' },
   { key: 'paused', label: 'Paused' },
   { key: 'toReview', label: 'To Review' },
   { key: 'completed', label: 'Completed' },
@@ -75,6 +75,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   animatedStyle,
   onLayout,
 }) => {
+  const { colors } = useTheme();
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const {
     deadlines,
@@ -105,20 +106,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   };
 
   const baseDeadlines = getBaseDeadlines();
-
-  const getFilterCount = (filterKey: FilterType): number => {
-    const countMap = new Map<FilterType, number>();
-    countMap.set('active', activeDeadlines.length);
-    countMap.set('overdue', overdueDeadlines.length);
-    countMap.set('pending', pendingDeadlines.length);
-    countMap.set('paused', pausedDeadlines.length);
-    countMap.set('completed', completedDeadlines.length);
-    countMap.set('toReview', toReviewDeadlines.length);
-    countMap.set('didNotFinish', didNotFinishDeadlines.length);
-    countMap.set('all', deadlines.length);
-
-    return countMap.get(filterKey) ?? 0;
-  };
 
   const statusCounts: Record<FilterType, number> = {
     active: activeDeadlines.length,
@@ -168,7 +155,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           />
 
           {visibleOptions.map(option => {
-            const count = getFilterCount(option.key);
             const isSelected = selectedFilter === option.key;
             const shouldShowStar = isSelected && hasActiveFilters;
 
@@ -179,12 +165,16 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                     <IconSymbol
                       name="star.fill"
                       size={12}
-                      color={Colors.light.urgent}
+                      color={colors.urgent}
                     />
                   </View>
                 )}
                 <ThemedButton
-                  title={`${option.label} (${count})`}
+                  title={
+                    option.key === 'active' || option.key === 'pending'
+                      ? option.label
+                      : `${option.label} (${statusCounts[option.key]})`
+                  }
                   style={styles.filterButton}
                   variant={isSelected ? 'primary' : 'outline'}
                   onPress={() => {
@@ -229,7 +219,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffffff',
+    // backgroundColor set by ThemedView or parent
   },
   filterContainer: {
     maxHeight: 60,

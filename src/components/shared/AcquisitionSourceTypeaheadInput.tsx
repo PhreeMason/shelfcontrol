@@ -22,7 +22,7 @@ const AcquisitionSourceTypeaheadInput = <T extends FieldValues>({
     <Controller
       control={control}
       name={name}
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
+      render={({ field: { onChange, value }, fieldState: { error, isTouched }, formState }) => (
         <Typeahead
           suggestions={sources}
           isLoading={isLoading}
@@ -31,7 +31,7 @@ const AcquisitionSourceTypeaheadInput = <T extends FieldValues>({
           value={value as string}
           onChangeText={onChange}
           onSelect={onChange}
-          error={error?.message}
+          error={error && (isTouched || formState?.isSubmitted) ? error.message : undefined}
           noResultsAction="info"
         />
       )}

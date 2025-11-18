@@ -11,7 +11,12 @@ import { FilterType } from '@/types/deadline.types';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import React from 'react';
-import { Platform, RefreshControl, StyleSheet } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  RefreshControl,
+  StyleSheet,
+} from 'react-native';
 import Animated, {
   useAnimatedScrollHandler,
   useAnimatedStyle,
@@ -44,6 +49,7 @@ export default function HomeScreen() {
   const { data: availableTypes = [] } = useDeadlineTypes();
   const prevSelectedFilterRef = React.useRef<FilterType | null>(null);
   const prevSortOrderRef = React.useRef(sortOrder);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   const gradientHeight = Math.max(insets.top, 10);
 
@@ -96,6 +102,7 @@ export default function HomeScreen() {
       setSelectedTypes([]);
       setSelectedTags([]);
       setExcludedStatuses([]);
+      setSearchQuery('');
     }
     prevSelectedFilterRef.current = selectedFilter;
   }, [
@@ -197,52 +204,59 @@ export default function HomeScreen() {
         animatedStyle={stickyFilterStyle}
       />
 
-      <Animated.ScrollView
-        onScroll={scrollHandler}
-        scrollEventThrottle={16}
-        style={styles.scrollContainer}
-        contentContainerStyle={[styles.scrollContent]}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={refetch} />
-        }
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
       >
-        <Header />
+        <Animated.ScrollView
+          onScroll={scrollHandler}
+          scrollEventThrottle={16}
+          style={styles.scrollContainer}
+          contentContainerStyle={[styles.scrollContent]}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={refetch} />
+          }
+        >
+          <Header />
 
-        {/* Scrollable filter that hides when sticky */}
-        <FilterSection
-          selectedFilter={selectedFilter}
-          onFilterChange={handleFilterChange}
-          timeRangeFilter={timeRangeFilter}
-          onTimeRangeChange={setTimeRangeFilter}
-          selectedFormats={selectedFormats}
-          onFormatsChange={setSelectedFormats}
-          selectedPageRanges={selectedPageRanges}
-          onPageRangesChange={setSelectedPageRanges}
-          selectedTypes={selectedTypes}
-          onTypesChange={setSelectedTypes}
-          selectedTags={selectedTags}
-          onTagsChange={setSelectedTags}
-          excludedStatuses={excludedStatuses}
-          onExcludedStatusesChange={setExcludedStatuses}
-          sortOrder={sortOrder}
-          onSortOrderChange={setSortOrder}
-          availableTypes={availableTypes}
-          animatedStyle={scrollableFilterStyle}
-          onLayout={handleFilterLayout}
-        />
+          {/* Scrollable filter that hides when sticky */}
+          <FilterSection
+            selectedFilter={selectedFilter}
+            onFilterChange={handleFilterChange}
+            timeRangeFilter={timeRangeFilter}
+            onTimeRangeChange={setTimeRangeFilter}
+            selectedFormats={selectedFormats}
+            onFormatsChange={setSelectedFormats}
+            selectedPageRanges={selectedPageRanges}
+            onPageRangesChange={setSelectedPageRanges}
+            selectedTypes={selectedTypes}
+            onTypesChange={setSelectedTypes}
+            selectedTags={selectedTags}
+            onTagsChange={setSelectedTags}
+            excludedStatuses={excludedStatuses}
+            onExcludedStatusesChange={setExcludedStatuses}
+            sortOrder={sortOrder}
+            onSortOrderChange={setSortOrder}
+            availableTypes={availableTypes}
+            animatedStyle={scrollableFilterStyle}
+            onLayout={handleFilterLayout}
+          />
 
-        <FilteredDeadlines
-          selectedFilter={selectedFilter}
-          timeRangeFilter={timeRangeFilter}
-          selectedFormats={selectedFormats}
-          selectedPageRanges={selectedPageRanges}
-          selectedTypes={selectedTypes}
-          selectedTags={selectedTags}
-          excludedStatuses={excludedStatuses}
-          sortOrder={sortOrder}
-        />
-      </Animated.ScrollView>
+          <FilteredDeadlines
+            selectedFilter={selectedFilter}
+            timeRangeFilter={timeRangeFilter}
+            selectedFormats={selectedFormats}
+            selectedPageRanges={selectedPageRanges}
+            selectedTypes={selectedTypes}
+            selectedTags={selectedTags}
+            excludedStatuses={excludedStatuses}
+            sortOrder={sortOrder}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+        </Animated.ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Floating action button */}
       {Platform.OS === 'android' ? (
@@ -263,6 +277,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
+  },
+  keyboardAvoidingView: {
+    flex: 1,
   },
   scrollContainer: {
     flex: 1,

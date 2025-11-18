@@ -19,6 +19,8 @@ import {
   useState,
 } from 'react';
 
+export type DeadlineViewMode = 'list' | 'compact';
+
 interface PreferencesContextType {
   selectedFilter: FilterType;
   setSelectedFilter: (filter: FilterType) => void;
@@ -39,6 +41,8 @@ interface PreferencesContextType {
   progressInputModes: ProgressInputModePreferences;
   getProgressInputMode: (format: BookFormat) => ProgressInputMode;
   setProgressInputMode: (format: BookFormat, mode: ProgressInputMode) => void;
+  deadlineViewMode: DeadlineViewMode;
+  setDeadlineViewMode: (mode: DeadlineViewMode) => void;
   isLoading: boolean;
 }
 
@@ -62,6 +66,8 @@ const PreferencesContext = createContext<PreferencesContextType>({
   progressInputModes: DEFAULT_PROGRESS_INPUT_MODES,
   getProgressInputMode: () => 'direct',
   setProgressInputMode: () => {},
+  deadlineViewMode: 'list',
+  setDeadlineViewMode: () => {},
   isLoading: true,
 });
 
@@ -75,6 +81,7 @@ const STORAGE_KEYS = {
   EXCLUDED_STATUSES: '@preferences/excludedStatuses',
   SORT_ORDER: '@preferences/sortOrder',
   PROGRESS_INPUT_MODES: '@preferences/progressInputModes',
+  DEADLINE_VIEW_MODE: '@preferences/deadlineViewMode',
 };
 
 export default function PreferencesProvider({ children }: PropsWithChildren) {
@@ -94,6 +101,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
   const [sortOrder, setSortOrderState] = useState<SortOrder>('default');
   const [progressInputModes, setProgressInputModesState] =
     useState<ProgressInputModePreferences>(DEFAULT_PROGRESS_INPUT_MODES);
+  const [deadlineViewMode, setDeadlineViewModeState] =
+    useState<DeadlineViewMode>('list');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -109,6 +118,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           savedExcludedStatuses,
           savedSortOrder,
           savedProgressInputModes,
+          savedDeadlineViewMode,
         ] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FILTER),
           AsyncStorage.getItem(STORAGE_KEYS.TIME_RANGE_FILTER),
@@ -119,6 +129,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           AsyncStorage.getItem(STORAGE_KEYS.EXCLUDED_STATUSES),
           AsyncStorage.getItem(STORAGE_KEYS.SORT_ORDER),
           AsyncStorage.getItem(STORAGE_KEYS.PROGRESS_INPUT_MODES),
+          AsyncStorage.getItem(STORAGE_KEYS.DEADLINE_VIEW_MODE),
         ]);
 
         if (savedFilter) {
@@ -153,6 +164,9 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           setProgressInputModesState(
             JSON.parse(savedProgressInputModes) as ProgressInputModePreferences
           );
+        }
+        if (savedDeadlineViewMode) {
+          setDeadlineViewModeState(savedDeadlineViewMode as DeadlineViewMode);
         }
       } catch (error) {
         console.error('Error loading preferences:', error);
@@ -271,6 +285,15 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     }
   };
 
+  const setDeadlineViewMode = async (mode: DeadlineViewMode) => {
+    try {
+      setDeadlineViewModeState(mode);
+      await AsyncStorage.setItem(STORAGE_KEYS.DEADLINE_VIEW_MODE, mode);
+    } catch (error) {
+      console.error('Error saving deadline view mode preference:', error);
+    }
+  };
+
   const value = {
     selectedFilter,
     setSelectedFilter,
@@ -291,6 +314,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     progressInputModes,
     getProgressInputMode,
     setProgressInputMode,
+    deadlineViewMode,
+    setDeadlineViewMode,
     isLoading,
   };
 

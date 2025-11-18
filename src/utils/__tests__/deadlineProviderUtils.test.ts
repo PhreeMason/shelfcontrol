@@ -630,17 +630,17 @@ describe('deadlineProviderUtils', () => {
   describe('formatAudioUnitsPerDay', () => {
     it('should format standard audio units', () => {
       const result = formatAudioUnitsPerDay(90, 90, 5);
-      expect(result).toBe('1h 30m/day needed');
+      expect(result).toBe('1h 30m/day');
     });
 
     it('should format hours only', () => {
       const result = formatAudioUnitsPerDay(120, 120, 5);
-      expect(result).toBe('2h/day needed');
+      expect(result).toBe('2h/day');
     });
 
     it('should format minutes only', () => {
       const result = formatAudioUnitsPerDay(45, 45, 5);
-      expect(result).toBe('45 minutes/day needed');
+      expect(result).toBe('45 minutes/day');
     });
 
     it('should format less than 1 minute per day as weekly', () => {
@@ -680,14 +680,14 @@ describe('deadlineProviderUtils', () => {
 
     it('should handle zero actualUnitsPerDay (book complete)', () => {
       const result = formatAudioUnitsPerDay(0, 0, 10);
-      expect(result).toBe('0 minutes/day needed');
+      expect(result).toBe('0 minutes/day');
     });
   });
 
   describe('formatBookUnitsPerDay', () => {
     it('should format standard book units', () => {
       const result = formatBookUnitsPerDay(10, 10, 5, 'physical');
-      expect(result).toBe('10 pages/day needed');
+      expect(result).toBe('10 pages/day');
     });
 
     it('should format less than 1 page per day as weekly', () => {
@@ -722,56 +722,56 @@ describe('deadlineProviderUtils', () => {
 
     it('should handle zero actualUnitsPerDay (book complete)', () => {
       const result = formatBookUnitsPerDay(0, 0, 10, 'eBook');
-      expect(result).toBe('0 pages/day needed');
+      expect(result).toBe('0 pages/day');
     });
   });
 
   describe('formatUnitsPerDay', () => {
     it('should format audio units correctly', () => {
       const result = formatUnitsPerDay(90, 'audio');
-      expect(result).toBe('1h 30m/day needed');
+      expect(result).toBe('1h 30m/day');
     });
 
     it('should format physical book units correctly', () => {
       const result = formatUnitsPerDay(10, 'physical');
-      expect(result).toBe('10 pages/day needed');
+      expect(result).toBe('10 pages/day');
     });
 
     it('should format eBook units correctly', () => {
       const result = formatUnitsPerDay(15, 'eBook');
-      expect(result).toBe('15 pages/day needed');
+      expect(result).toBe('15 pages/day');
     });
   });
 
   describe('formatUnitsPerDayForDisplay', () => {
     it('should use audio formatting for audio format', () => {
       const result = formatUnitsPerDayForDisplay(90, 'audio', 90, 5);
-      expect(result).toBe('1h 30m/day needed');
+      expect(result).toBe('1h 30m/day');
     });
 
     it('should use book formatting for physical format', () => {
       const result = formatUnitsPerDayForDisplay(10, 'physical', 50, 5);
-      expect(result).toBe('10 pages/day needed');
+      expect(result).toBe('10 pages/day');
     });
 
     it('should use book formatting for eBook format', () => {
       const result = formatUnitsPerDayForDisplay(15, 'eBook', 75, 5);
-      expect(result).toBe('15 pages/day needed');
+      expect(result).toBe('15 pages/day');
     });
 
     it('should handle zero remaining pages for eBook', () => {
       const result = formatUnitsPerDayForDisplay(0, 'eBook', 0, 12);
-      expect(result).toBe('0 pages/day needed');
+      expect(result).toBe('0 pages/day');
     });
 
     it('should handle zero remaining pages for physical', () => {
       const result = formatUnitsPerDayForDisplay(0, 'physical', 0, 12);
-      expect(result).toBe('0 pages/day needed');
+      expect(result).toBe('0 pages/day');
     });
 
     it('should handle zero remaining minutes for audio', () => {
       const result = formatUnitsPerDayForDisplay(0, 'audio', 0, 12);
-      expect(result).toBe('0 minutes/day needed');
+      expect(result).toBe('0 minutes/day');
     });
 
     it('should show completion message for 1 page remaining', () => {
@@ -791,7 +791,7 @@ describe('deadlineProviderUtils', () => {
 
     it('should use normal formatting for 6 pages remaining', () => {
       const result = formatUnitsPerDayForDisplay(1, 'physical', 6, 5);
-      expect(result).toBe('1 pages/day needed');
+      expect(result).toBe('1 pages/day');
     });
 
     it('should show completion message for 15 minutes remaining (audio)', () => {
@@ -811,12 +811,12 @@ describe('deadlineProviderUtils', () => {
 
     it('should use normal formatting for 75 minutes remaining (audio, above threshold)', () => {
       const result = formatUnitsPerDayForDisplay(4, 'audio', 75, 20);
-      expect(result).toBe('4 minutes/day needed');
+      expect(result).toBe('4 minutes/day');
     });
 
     it('should use normal formatting for 60 minutes remaining (audio, above threshold)', () => {
       const result = formatUnitsPerDayForDisplay(12, 'audio', 60, 5);
-      expect(result).toBe('12 minutes/day needed');
+      expect(result).toBe('12 minutes/day');
     });
   });
 
@@ -914,22 +914,22 @@ describe('deadlineProviderUtils', () => {
   describe('mapPaceColorToUrgencyColor', () => {
     it('should map green to green color', () => {
       const result = mapPaceColorToUrgencyColor('green');
-      expect(result).toBe('#10b981');
+      expect(result).toBe('#7a5a8c');
     });
 
     it('should map orange to orange color', () => {
       const result = mapPaceColorToUrgencyColor('orange');
-      expect(result).toBe('#f59e0b');
+      expect(result).toBe('#d4a46a');
     });
 
     it('should map red to red color', () => {
       const result = mapPaceColorToUrgencyColor('red');
-      expect(result).toBe('#ef4444');
+      expect(result).toBe('#c8696e');
     });
 
     it('should default to default color for unknown', () => {
       const result = mapPaceColorToUrgencyColor('unknown');
-      expect(result).toBe('#7bc598');
+      expect(result).toBe('#7a5a8c');
     });
   });
 

@@ -73,7 +73,6 @@ export default function SignUpScreen() {
 
     try {
       const { error } = await signUp(data.email, data.password, '');
-      console.log('Sign up response error:', error);
       if (error) {
         analytics.track('sign_up_failed', {
           error_type: error.message.includes('User already registered')

@@ -1,3 +1,4 @@
+import { Spacing } from '@/constants/Colors';
 import { Hashtag } from '@/types/hashtags.types';
 import { parseTextWithHashtags } from '@/utils/hashtagUtils';
 import React, { useMemo } from 'react';
@@ -14,6 +15,7 @@ interface HashtagTextProps {
   hashtags: Hashtag[];
   style?: StyleProp<TextStyle>;
   onHashtagPress?: (hashtagName: string, hashtagId: string) => void;
+  numberOfLines?: number | undefined;
 }
 
 /**
@@ -25,6 +27,7 @@ export const HashtagText: React.FC<HashtagTextProps> = ({
   hashtags,
   style,
   onHashtagPress,
+  numberOfLines,
 }) => {
   const hashtagsMap = useMemo(() => {
     const map = new Map<string, { color: string; id?: string }>();
@@ -39,7 +42,7 @@ export const HashtagText: React.FC<HashtagTextProps> = ({
   }, [text, hashtagsMap]);
 
   return (
-    <Text style={style}>
+    <Text style={style} numberOfLines={numberOfLines}>
       {segments.map((segment, index) => {
         if (segment.type === 'hashtag' && segment.color) {
           const hashtagContent = (
@@ -59,7 +62,11 @@ export const HashtagText: React.FC<HashtagTextProps> = ({
           if (onHashtagPress && segment.id) {
             return (
               <TouchableOpacity
-                key={segment.id ? `hashtag-${segment.id}-${index}` : `text-${index}`}
+                key={
+                  segment.id
+                    ? `hashtag-${segment.id}-${index}`
+                    : `text-${index}`
+                }
                 onPress={() =>
                   onHashtagPress(segment.text.slice(1), segment.id!)
                 }
@@ -71,7 +78,15 @@ export const HashtagText: React.FC<HashtagTextProps> = ({
           }
 
           return (
-            <Text key={segment.id ? `hashtag-text-${segment.id}-${index}` : `text-${index}`}>{hashtagContent}</Text>
+            <Text
+              key={
+                segment.id
+                  ? `hashtag-text-${segment.id}-${index}`
+                  : `text-${index}`
+              }
+            >
+              {hashtagContent}
+            </Text>
           );
         }
         return <Text key={`text-${index}`}>{segment.text}</Text>;
@@ -83,8 +98,8 @@ export const HashtagText: React.FC<HashtagTextProps> = ({
 const styles = StyleSheet.create({
   hashtag: {
     fontWeight: '600',
-    paddingHorizontal: 4,
+    paddingHorizontal: Spacing.xs,
     borderRadius: 4,
-    marginBottom: -4,
+    marginBottom: Spacing.negative.xs,
   },
 });

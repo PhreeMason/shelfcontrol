@@ -1,6 +1,7 @@
 import StatsSummaryCard from '@/components/stats/StatsSummaryCard';
 import { ThemedText } from '@/components/themed';
-import { BorderRadius, Colors, FontFamily, Spacing } from '@/constants/Colors';
+import { BorderRadius, Spacing } from '@/constants/Colors';
+import { useTheme } from '@/hooks/useTheme';
 import { calculateLocalDaysLeft } from '@/utils/dateNormalization';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -16,6 +17,8 @@ const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({
   postedCount,
   totalCount,
 }) => {
+  const { colors } = useTheme();
+
   if (!reviewDueDate) return null;
 
   const daysUntilDue = calculateLocalDaysLeft(reviewDueDate);
@@ -45,18 +48,21 @@ const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({
     >
       <View style={styles.progressSection}>
         <View style={styles.progressLabelContainer}>
-          <ThemedText style={styles.progressLabel}>Reviews Posted</ThemedText>
-          <ThemedText style={styles.progressFraction}>
+          <ThemedText typography="bodyMedium" color="textSecondary" style={styles.progressLabel}>
+            Reviews Posted
+          </ThemedText>
+          <ThemedText typography="bodyMedium" color="primary" style={styles.progressFraction}>
             {postedCount}/{totalCount}
           </ThemedText>
         </View>
 
-        <View style={styles.progressTrack}>
+        <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
           <View
             style={[
               styles.progressFill,
               {
                 width: `${percentage}%`,
+                backgroundColor: colors.primary,
               },
             ]}
           />
@@ -78,26 +84,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressLabel: {
-    fontSize: 14,
     fontWeight: '600',
-    fontFamily: FontFamily.regular,
-    color: Colors.light.textSecondary,
   },
   progressFraction: {
-    fontSize: 14,
     fontWeight: '600',
-    fontFamily: FontFamily.semiBold,
-    color: Colors.light.primary,
   },
   progressTrack: {
     height: 10,
-    backgroundColor: Colors.light.border,
     borderRadius: BorderRadius.full,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: Colors.light.primary,
     borderRadius: BorderRadius.full,
   },
 });

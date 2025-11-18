@@ -1,6 +1,6 @@
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ThemedText } from '@/components/themed';
-import { Colors, FontFamily, Spacing } from '@/constants/Colors';
+import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
 import React, { useEffect, useRef, useState } from 'react';
@@ -192,10 +192,15 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
         >
           <View style={styles.headerContent}>
             <View style={styles.titleContainer}>
-              <ThemedText style={styles.title} numberOfLines={1}>
+              <ThemedText typography="titleMediumPlus" numberOfLines={1}>
                 {platformName}
               </ThemedText>
-              <ThemedText style={styles.subtitle} numberOfLines={1}>
+              <ThemedText
+                typography="bodySmall"
+                color="textSecondary"
+                style={styles.subtitle}
+                numberOfLines={1}
+              >
                 Review Link
               </ThemedText>
             </View>
@@ -232,10 +237,16 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                 size={48}
                 color={colors.textSecondary}
               />
-              <ThemedText style={styles.errorTitle}>
+              <ThemedText typography="titleMediumPlus" style={styles.errorTitle}>
                 Unable to Load Page
               </ThemedText>
-              <ThemedText style={styles.errorMessage}>{error}</ThemedText>
+              <ThemedText
+                typography="bodyMedium"
+                color="textSecondary"
+                style={styles.errorMessage}
+              >
+                {error}
+              </ThemedText>
               <Pressable
                 style={[
                   styles.retryButton,
@@ -243,7 +254,13 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                 ]}
                 onPress={handleRefresh}
               >
-                <ThemedText style={styles.retryButtonText}>
+                <ThemedText
+                  typography="bodyLarge"
+                  style={[
+                    styles.retryButtonText,
+                    { color: colors.background },
+                  ]}
+                >
                   Try Again
                 </ThemedText>
               </Pressable>
@@ -280,9 +297,20 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                 scalesPageToFit={true}
               />
               {isLoading && (
-                <View style={styles.loadingOverlay}>
+                <View
+                  style={[
+                    styles.loadingOverlay,
+                    { backgroundColor: colors.surface + 'F2' },
+                  ]}
+                >
                   <ActivityIndicator size="large" color={colors.primary} />
-                  <ThemedText style={styles.loadingText}>Loading...</ThemedText>
+                  <ThemedText
+                    typography="bodyMedium"
+                    color="textSecondary"
+                    style={styles.loadingText}
+                  >
+                    Loading...
+                  </ThemedText>
                 </View>
               )}
             </>
@@ -311,14 +339,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: Spacing.md,
   },
-  title: {
-    fontSize: 17,
-    fontFamily: FontFamily.semiBold,
-  },
   subtitle: {
-    fontSize: 13,
-    fontFamily: FontFamily.regular,
-    color: Colors.light.textSecondary,
     marginTop: 2,
   },
   headerButtons: {
@@ -341,14 +362,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
     marginTop: Spacing.sm,
-    fontSize: 14,
-    color: Colors.light.textSecondary,
   },
   errorContainer: {
     flex: 1,
@@ -357,14 +375,10 @@ const styles = StyleSheet.create({
     padding: Spacing.xl,
   },
   errorTitle: {
-    fontSize: 18,
-    fontFamily: FontFamily.semiBold,
     marginTop: Spacing.md,
     marginBottom: Spacing.sm,
   },
   errorMessage: {
-    fontSize: 14,
-    color: Colors.light.textSecondary,
     textAlign: 'center',
     marginBottom: Spacing.lg,
   },
@@ -373,11 +387,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     borderRadius: 8,
   },
-  retryButtonText: {
-    color: Colors.light.background,
-    fontFamily: FontFamily.medium,
-    fontSize: 15,
-  },
+  retryButtonText: {},
 });
 
 export default WebViewModal;

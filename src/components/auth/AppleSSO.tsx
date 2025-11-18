@@ -27,8 +27,7 @@ export function AppleSSO({
         try {
           const available = await AppleAuthentication.isAvailableAsync();
           setIsAvailable(available);
-        } catch (error) {
-          console.log('Apple Authentication not available:', error);
+        } catch {
           setIsAvailable(false);
         }
       }
@@ -50,35 +49,19 @@ export function AppleSSO({
         ],
       });
 
-      console.log('Apple credential:', JSON.stringify(credential, null, 2));
-
       const appleUserData = {
         email: credential.email,
         fullName: credential.fullName,
       };
-
-      console.log(
-        'Extracted Apple user data:',
-        JSON.stringify(appleUserData, null, 2)
-      );
 
       if (credential.identityToken) {
         const { user } = await authService.signInWithApple({
           identityToken: credential.identityToken,
         });
 
-        console.log('Apple sign-in result:', JSON.stringify({ user }, null, 2));
-
         if (user) {
-          console.log('Apple sign-in successful');
-
           try {
-            const profileUpdateResult =
-              await updateProfileFromApple(appleUserData);
-            console.log(
-              'Profile update result:',
-              JSON.stringify(profileUpdateResult, null, 2)
-            );
+            await updateProfileFromApple(appleUserData);
           } catch (profileError) {
             console.error(
               'Error updating profile from Apple data:',
@@ -95,7 +78,7 @@ export function AppleSSO({
       }
     } catch (e: any) {
       if (e.code === 'ERR_REQUEST_CANCELED') {
-        console.log('Apple sign-in canceled by user');
+        // User canceled sign-in
       } else {
         console.error('Apple sign-in error:', e);
         onError?.(e);

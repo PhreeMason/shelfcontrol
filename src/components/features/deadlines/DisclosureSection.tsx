@@ -1,5 +1,6 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing, Typography } from '@/constants/Colors';
 import {
   useCreateTemplate,
   useGetTemplates,
@@ -291,7 +292,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                   { backgroundColor: colors.primary },
                 ]}
               >
-                <ThemedText style={styles.sourceBadgeText}>
+                <ThemedText typography="bodyMedium" style={[styles.sourceBadgeText, { color: colors.textInverse }]}>
                   {deadline.disclosure_source_name}
                 </ThemedText>
               </View>
@@ -316,6 +317,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
               style={styles.addIcon}
             />
             <ThemedText
+              typography="titleMedium"
               style={[styles.addButtonText, { color: colors.darkPurple }]}
             >
               Add
@@ -414,10 +416,10 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                 ]}
               >
                 {shouldSaveAsTemplate && (
-                  <IconSymbol name="checkmark" size={14} color="#FFFFFF" />
+                  <IconSymbol name="checkmark" size={14} color={colors.textInverse} />
                 )}
               </View>
-              <ThemedText style={styles.checkboxLabel}>
+              <ThemedText typography="bodyMedium" style={styles.checkboxLabel}>
                 Save this message as a template
               </ThemedText>
             </Pressable>
@@ -463,7 +465,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                   },
                 ]}
               >
-                <ThemedText style={styles.disclosureText}>
+                <ThemedText typography="bodyMedium" style={styles.disclosureText}>
                   {currentDisclosure}
                 </ThemedText>
               </View>
@@ -474,7 +476,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                     { backgroundColor: colors.success },
                   ]}
                 >
-                  <ThemedText style={styles.copySuccessText}>
+                  <ThemedText typography="bodyMedium" style={[styles.copySuccessText, { color: colors.textInverse }]}>
                     Copied!
                   </ThemedText>
                 </View>
@@ -499,6 +501,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                   ]}
                 >
                   <ThemedText
+                    typography="bodyMedium"
                     style={[styles.ghostBadgeText, { color: colors.primary }]}
                   >
                     NetGalley
@@ -533,7 +536,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                   ]}
                 />
               </View>
-              <ThemedText variant="secondary" style={styles.emptyCta}>
+              <ThemedText typography="bodyMedium" color="textSecondary" style={styles.emptyCta}>
                 Add required disclosure language
               </ThemedText>
             </Pressable>
@@ -541,7 +544,7 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
         </>
       )}
 
-      <ThemedText variant="secondary" style={styles.helpText}>
+      <ThemedText typography="bodyMedium" color="textSecondary" style={styles.helpText}>
         Required disclosure language for reviews from this publisher or PR
         company
       </ThemedText>
@@ -558,9 +561,14 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
 
 const styles = StyleSheet.create({
   section: {
-    borderRadius: 16,
-    padding: 24,
-    marginBottom: 16,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginVertical: Spacing.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   header: {
     flexDirection: 'row',
@@ -578,7 +586,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   benefitText: {
-    fontSize: 14,
     marginTop: 2,
   },
   sourceBadge: {
@@ -587,8 +594,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   sourceBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 14,
     fontWeight: '600',
   },
   addButton: {
@@ -605,7 +610,6 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   addButtonText: {
-    fontSize: 16,
     fontWeight: '600',
     transform: [{ translateY: 1 }],
   },
@@ -621,8 +625,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     padding: 12,
-    fontSize: 14,
-    lineHeight: 20,
+    ...Typography.bodyMedium,
     minHeight: 100,
     textAlignVertical: 'top',
   },
@@ -646,8 +649,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   disclosureText: {
-    fontSize: 14,
-    lineHeight: 20,
+    // Typography token provides fontSize and lineHeight
   },
   copySuccessBadge: {
     position: 'absolute',
@@ -658,8 +660,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   copySuccessText: {
-    color: 'white',
-    fontSize: 14,
     fontWeight: '600',
   },
   emptyStateCard: {
@@ -681,7 +681,6 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   ghostBadgeText: {
-    fontSize: 14,
     fontWeight: '600',
   },
   ghostDisclosure: {
@@ -699,11 +698,9 @@ const styles = StyleSheet.create({
   },
   emptyCta: {
     textAlign: 'center',
-    fontSize: 14,
     fontWeight: '500',
   },
   helpText: {
-    fontSize: 14,
     textAlign: 'center',
   },
   checkboxRow: {
@@ -720,6 +717,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   checkboxLabel: {
-    fontSize: 14,
+    // Typography token provides fontSize and lineHeight
   },
 });

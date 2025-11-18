@@ -1,5 +1,6 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
-import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
+import { BorderRadius, Spacing } from '@/constants/Colors';
+import { useTheme } from '@/hooks/useTheme';
 import React from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
@@ -24,6 +25,7 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
   onComplete,
   onCancel,
 }) => {
+  const { colors } = useTheme();
   const unpostedPlatforms = platforms.filter(p => !p.posted);
   const allPosted = unpostedPlatforms.length === 0;
 
@@ -40,10 +42,10 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
           <ThemedView style={styles.dialog}>
             {allPosted ? (
               <>
-                <ThemedText variant="title" style={styles.title}>
+                <ThemedText typography="headlineSmall" style={styles.title}>
                   All reviews posted!
                 </ThemedText>
-                <ThemedText variant="secondary" style={styles.message}>
+                <ThemedText typography="bodyMedium" color="textSecondary" style={styles.message}>
                   Move this book to Completed?
                 </ThemedText>
                 <View style={styles.buttonContainer}>
@@ -61,16 +63,25 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
               </>
             ) : (
               <>
-                <ThemedText variant="title" style={styles.title}>
+                <ThemedText typography="headlineSmall" style={styles.title}>
                   Just checking
                 </ThemedText>
-                <ThemedText variant="secondary" style={styles.message}>
+                <ThemedText typography="bodyMedium" color="textSecondary" style={styles.message}>
                   These platforms don't{'\n'}have checkmarks yet:
                 </ThemedText>
                 <View style={styles.platformList}>
                   {unpostedPlatforms.map(platform => (
-                    <ThemedView key={platform.id} style={styles.platformCard}>
-                      <ThemedText style={styles.platformItem}>
+                    <ThemedView
+                      key={platform.id}
+                      style={[
+                        styles.platformCard,
+                        {
+                          borderColor: colors.primary,
+                          backgroundColor: colors.primary + '20',
+                        },
+                      ]}
+                    >
+                      <ThemedText typography="titleMedium" style={styles.platformItem}>
                         {platform.platform_name}
                       </ThemedText>
                     </ThemedView>
@@ -82,7 +93,7 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
                     textStyle={{ fontWeight: '700' }}
                     style={{
                       borderWidth: 1.5,
-                      borderColor: Colors.light.primary,
+                      borderColor: colors.primary,
                     }}
                     variant="outline"
                     onPress={onCancel}
@@ -111,20 +122,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dialog: {
-    backgroundColor: Colors.light.surface,
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
   },
   title: {
-    fontSize: 24,
-    lineHeight: 28,
     fontWeight: '700',
     marginBottom: Spacing.sm,
     textAlign: 'center',
   },
   message: {
-    fontSize: 14,
-    color: Colors.light.textSecondary,
     marginBottom: Spacing.xl,
     textAlign: 'center',
   },
@@ -138,13 +144,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.light.primary,
-    backgroundColor: Colors.light.primary + '20',
   },
   platformItem: {
-    fontSize: 16,
     fontWeight: '600',
-    color: Colors.light.text,
     textAlign: 'left',
   },
   buttonContainer: {

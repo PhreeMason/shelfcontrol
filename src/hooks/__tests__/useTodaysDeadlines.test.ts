@@ -20,6 +20,7 @@ describe('useTodaysDeadlines', () => {
   const mockToday = {
     startOf: jest.fn().mockReturnThis(),
     isAfter: jest.fn(),
+    isSameOrAfter: jest.fn(),
     isValid: jest.fn().mockReturnValue(true),
   };
 
@@ -27,7 +28,7 @@ describe('useTodaysDeadlines', () => {
     id: string,
     format: 'audio' | 'physical' | 'eBook',
     deadline_date: string | null,
-    status?: { created_at: string }[]
+    status?: { created_at: string; status?: string }[]
   ): ReadingDeadlineWithProgress => {
     const base = {
       id,
@@ -48,20 +49,19 @@ describe('useTodaysDeadlines', () => {
       progress: [],
     };
 
-    if (status) {
-      return {
-        ...base,
-        status: status.map(s => ({
-          created_at: s.created_at,
-          deadline_id: id,
-          id: `status-${id}`,
-          status: 'reading' as const,
-          updated_at: s.created_at,
-        })),
-      };
-    }
+    // Always add a default status of 'reading' if not provided
+    const statusArray = status || [{ created_at: '2024-01-01T00:00:00Z' }];
 
-    return base;
+    return {
+      ...base,
+      status: statusArray.map(s => ({
+        created_at: s.created_at,
+        deadline_id: id,
+        id: `status-${id}`,
+        status: (s.status || 'reading') as any,
+        updated_at: s.created_at,
+      })),
+    };
   };
 
   beforeEach(() => {
@@ -70,15 +70,18 @@ describe('useTodaysDeadlines', () => {
     mockDayjs.mockReturnValue(mockToday);
     mockToday.startOf.mockReturnValue(mockToday);
     mockToday.isAfter.mockReturnValue(true);
+    mockToday.isSameOrAfter.mockReturnValue(true);
 
     mockNormalizeServerDate.mockImplementation(() => ({
       isValid: () => true,
       isAfter: mockToday.isAfter,
+      isSameOrAfter: mockToday.isSameOrAfter,
     }));
 
     mockNormalizeServerDateStartOfDay.mockImplementation(() => ({
       isValid: () => true,
       isAfter: mockToday.isAfter,
+      isSameOrAfter: mockToday.isSameOrAfter,
     }));
   });
 
@@ -94,6 +97,8 @@ describe('useTodaysDeadlines', () => {
       expect(result.current.allDeadlines).toEqual([]);
       expect(result.current.audioDeadlines).toEqual([]);
       expect(result.current.readingDeadlines).toEqual([]);
+      expect(result.current.allAudioDeadlines).toEqual([]);
+      expect(result.current.allReadingDeadlines).toEqual([]);
     });
 
     it('should filter deadlines with dates after today', () => {
@@ -103,6 +108,7 @@ describe('useTodaysDeadlines', () => {
       mockNormalizeServerDateStartOfDay.mockImplementation(date => ({
         isValid: () => true,
         isAfter: () => date === '2024-12-31',
+        isSameOrAfter: () => date === '2024-12-31',
       }));
 
       mockUseDeadlines.mockReturnValue({
@@ -146,6 +152,7 @@ describe('useTodaysDeadlines', () => {
       mockNormalizeServerDateStartOfDay.mockImplementation(date => ({
         isValid: () => date === '2024-12-31',
         isAfter: () => true,
+        isSameOrAfter: () => true,
       }));
 
       mockUseDeadlines.mockReturnValue({
@@ -191,6 +198,14 @@ describe('useTodaysDeadlines', () => {
       expect(result.current.readingDeadlines[0].id).toBe('3');
       expect(result.current.readingDeadlines[1].id).toBe('4');
 
+      expect(result.current.allAudioDeadlines).toHaveLength(2);
+      expect(result.current.allAudioDeadlines[0].id).toBe('1');
+      expect(result.current.allAudioDeadlines[1].id).toBe('2');
+
+      expect(result.current.allReadingDeadlines).toHaveLength(2);
+      expect(result.current.allReadingDeadlines[0].id).toBe('3');
+      expect(result.current.allReadingDeadlines[1].id).toBe('4');
+
       expect(result.current.allDeadlines).toHaveLength(4);
     });
 
@@ -210,6 +225,8 @@ describe('useTodaysDeadlines', () => {
 
       expect(result.current.audioDeadlines).toHaveLength(3);
       expect(result.current.readingDeadlines).toHaveLength(0);
+      expect(result.current.allAudioDeadlines).toHaveLength(3);
+      expect(result.current.allReadingDeadlines).toHaveLength(0);
       expect(result.current.allDeadlines).toHaveLength(3);
     });
 
@@ -229,6 +246,8 @@ describe('useTodaysDeadlines', () => {
 
       expect(result.current.audioDeadlines).toHaveLength(0);
       expect(result.current.readingDeadlines).toHaveLength(3);
+      expect(result.current.allAudioDeadlines).toHaveLength(0);
+      expect(result.current.allReadingDeadlines).toHaveLength(3);
       expect(result.current.allDeadlines).toHaveLength(3);
     });
   });
@@ -245,6 +264,7 @@ describe('useTodaysDeadlines', () => {
       mockNormalizeServerDate.mockImplementation(() => ({
         isValid: () => true,
         isAfter: () => true,
+        isSameOrAfter: () => true,
       }));
 
       mockUseDeadlines.mockReturnValue({
@@ -269,6 +289,7 @@ describe('useTodaysDeadlines', () => {
       mockNormalizeServerDate.mockImplementation(() => ({
         isValid: () => true,
         isAfter: () => false,
+        isSameOrAfter: () => false,
       }));
 
       mockUseDeadlines.mockReturnValue({
@@ -298,6 +319,9 @@ describe('useTodaysDeadlines', () => {
         isAfter: () => {
           return date === '2024-12-30T10:00:00Z';
         },
+        isSameOrAfter: () => {
+          return date === '2024-12-30T10:00:00Z';
+        },
       }));
 
       mockUseDeadlines.mockReturnValue({
@@ -314,23 +338,37 @@ describe('useTodaysDeadlines', () => {
     });
 
     it('should exclude completed deadlines without status', () => {
-      const completedDeadlineNoStatus = createMockDeadline(
-        '1',
-        'physical',
-        '2024-12-31'
-      );
-      const completedDeadlineEmptyStatus = createMockDeadline(
-        '2',
-        'physical',
-        '2024-12-31',
-        []
-      );
+      const baseDeadline = {
+        id: '1',
+        format: 'physical' as const,
+        deadline_date: '2024-12-31',
+        book_id: 'book-1',
+        book_title: 'Test Book',
+        author: 'Test Author',
+        user_id: 'user-123',
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
+        total_quantity: 300,
+        source: 'library' as const,
+        acquisition_source: null,
+        type: 'Personal' as const,
+        publishers: null,
+        flexibility: 'flexible' as const,
+        progress: [],
+      };
+
+      const completedDeadlineNoStatus = { ...baseDeadline };
+      const completedDeadlineEmptyStatus = {
+        ...baseDeadline,
+        id: '2',
+        status: [],
+      };
 
       mockUseDeadlines.mockReturnValue({
         activeDeadlines: [],
         completedDeadlines: [
-          completedDeadlineNoStatus,
-          completedDeadlineEmptyStatus,
+          completedDeadlineNoStatus as any,
+          completedDeadlineEmptyStatus as any,
         ],
       });
 
@@ -350,6 +388,7 @@ describe('useTodaysDeadlines', () => {
       mockNormalizeServerDate.mockImplementation(() => ({
         isValid: () => false,
         isAfter: () => false,
+        isSameOrAfter: () => false,
       }));
 
       mockUseDeadlines.mockReturnValue({
@@ -382,12 +421,16 @@ describe('useTodaysDeadlines', () => {
       const firstAllDeadlines = result.current.allDeadlines;
       const firstAudioDeadlines = result.current.audioDeadlines;
       const firstReadingDeadlines = result.current.readingDeadlines;
+      const firstAllAudioDeadlines = result.current.allAudioDeadlines;
+      const firstAllReadingDeadlines = result.current.allReadingDeadlines;
 
       rerender({});
 
       expect(result.current.allDeadlines).toBe(firstAllDeadlines);
       expect(result.current.audioDeadlines).toBe(firstAudioDeadlines);
       expect(result.current.readingDeadlines).toBe(firstReadingDeadlines);
+      expect(result.current.allAudioDeadlines).toBe(firstAllAudioDeadlines);
+      expect(result.current.allReadingDeadlines).toBe(firstAllReadingDeadlines);
     });
 
     it('should update results when dependencies change', () => {
@@ -417,6 +460,95 @@ describe('useTodaysDeadlines', () => {
     });
   });
 
+  describe('Status filtering', () => {
+    it('should exclude paused deadlines from goal calculations but include in all deadlines', () => {
+      const activeDeadline = createMockDeadline('1', 'audio', '2024-12-31', [
+        { created_at: '2024-12-30T10:00:00Z', status: 'reading' },
+      ]);
+      const pausedDeadline = createMockDeadline('2', 'physical', '2024-12-31', [
+        { created_at: '2024-12-30T10:00:00Z', status: 'paused' },
+      ]);
+
+      mockUseDeadlines.mockReturnValue({
+        activeDeadlines: [activeDeadline, pausedDeadline],
+        completedDeadlines: [],
+      });
+
+      const { result } = renderHook(() => useTodaysDeadlines());
+
+      // All deadlines should include both
+      expect(result.current.allDeadlines).toHaveLength(2);
+      expect(result.current.allAudioDeadlines).toHaveLength(1);
+      expect(result.current.allReadingDeadlines).toHaveLength(1);
+
+      // But only active deadline should be in goal calculations
+      expect(result.current.audioDeadlines).toHaveLength(1);
+      expect(result.current.audioDeadlines[0].id).toBe('1');
+      expect(result.current.readingDeadlines).toHaveLength(0);
+    });
+
+    it('should exclude rejected and withdrew deadlines from goal calculations', () => {
+      const activeDeadline = createMockDeadline('1', 'physical', '2024-12-31', [
+        { created_at: '2024-12-30T10:00:00Z', status: 'reading' },
+      ]);
+      const rejectedDeadline = createMockDeadline(
+        '2',
+        'physical',
+        '2024-12-31',
+        [{ created_at: '2024-12-30T10:00:00Z', status: 'rejected' }]
+      );
+      const withdrewDeadline = createMockDeadline('3', 'audio', '2024-12-31', [
+        { created_at: '2024-12-30T10:00:00Z', status: 'withdrew' },
+      ]);
+
+      mockUseDeadlines.mockReturnValue({
+        activeDeadlines: [activeDeadline, rejectedDeadline, withdrewDeadline],
+        completedDeadlines: [],
+      });
+
+      const { result } = renderHook(() => useTodaysDeadlines());
+
+      // All deadlines should include all three
+      expect(result.current.allDeadlines).toHaveLength(3);
+
+      // But only active deadline should be in goal calculations
+      expect(result.current.readingDeadlines).toHaveLength(1);
+      expect(result.current.readingDeadlines[0].id).toBe('1');
+      expect(result.current.audioDeadlines).toHaveLength(0);
+    });
+
+    it('should include complete and to_review deadlines in goal calculations', () => {
+      const completeDeadline = createMockDeadline(
+        '1',
+        'physical',
+        '2024-12-31',
+        [{ created_at: '2024-12-30T10:00:00Z', status: 'complete' }]
+      );
+      const toReviewDeadline = createMockDeadline('2', 'audio', '2024-12-31', [
+        { created_at: '2024-12-30T10:00:00Z', status: 'to_review' },
+      ]);
+
+      mockNormalizeServerDate.mockImplementation(() => ({
+        isValid: () => true,
+        isAfter: () => true,
+        isSameOrAfter: () => true,
+      }));
+
+      mockUseDeadlines.mockReturnValue({
+        activeDeadlines: [],
+        completedDeadlines: [completeDeadline, toReviewDeadline],
+      });
+
+      const { result } = renderHook(() => useTodaysDeadlines());
+
+      // Should be in goal calculations since they're active statuses
+      expect(result.current.readingDeadlines).toHaveLength(1);
+      expect(result.current.readingDeadlines[0].id).toBe('1');
+      expect(result.current.audioDeadlines).toHaveLength(1);
+      expect(result.current.audioDeadlines[0].id).toBe('2');
+    });
+  });
+
   describe('Edge cases', () => {
     it('should handle mixed active and completed deadlines', () => {
       const activeDeadline = createMockDeadline('1', 'audio', '2024-12-31');
@@ -436,6 +568,7 @@ describe('useTodaysDeadlines', () => {
       mockNormalizeServerDate.mockImplementation(date => ({
         isValid: () => true,
         isAfter: () => date === '2024-12-30T10:00:00Z',
+        isSameOrAfter: () => date === '2024-12-30T10:00:00Z',
       }));
 
       mockUseDeadlines.mockReturnValue({
@@ -460,6 +593,7 @@ describe('useTodaysDeadlines', () => {
       mockNormalizeServerDateStartOfDay.mockImplementation(() => ({
         isValid: () => true,
         isAfter: () => true,
+        isSameOrAfter: () => true,
       }));
 
       mockUseDeadlines.mockReturnValue({

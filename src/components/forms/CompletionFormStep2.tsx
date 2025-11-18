@@ -1,5 +1,5 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
-import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useTheme';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -29,6 +29,22 @@ const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
     }
   };
 
+  const dynamicStyles = {
+    coverThumbnail: {
+      backgroundColor: colors.surfaceVariant,
+    },
+    selectionButton: {
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+    },
+    selectionButtonSelected: {
+      borderColor: colors.primary,
+    },
+    selectionButtonText: {
+      color: colors.secondary,
+    },
+  };
+
   return (
     <LinearGradient
       colors={['#F5F1EA', colors.accent, colors.primary]}
@@ -46,7 +62,7 @@ const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
               contentFit="cover"
             />
           ) : (
-            <ThemedView style={styles.coverThumbnail}>
+            <ThemedView style={[styles.coverThumbnail, dynamicStyles.coverThumbnail]}>
               <ThemedText style={styles.coverEmoji}>📖</ThemedText>
             </ThemedView>
           )}
@@ -62,13 +78,15 @@ const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
             onPress={() => setNeedsReview(true)}
             style={[
               styles.selectionButton,
-              needsReview === true && styles.selectionButtonSelected,
+              dynamicStyles.selectionButton,
+              needsReview === true && [styles.selectionButtonSelected, dynamicStyles.selectionButtonSelected],
             ]}
             testID="yes-button"
           >
             <ThemedText
               style={[
                 styles.selectionButtonText,
+                dynamicStyles.selectionButtonText,
                 needsReview === true && styles.selectionButtonTextSelected,
               ]}
             >
@@ -80,11 +98,12 @@ const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
             onPress={() => setNeedsReview(false)}
             style={[
               styles.selectionButton,
-              needsReview === false && styles.selectionButtonSelected,
+              dynamicStyles.selectionButton,
+              needsReview === false && [styles.selectionButtonSelected, dynamicStyles.selectionButtonSelected],
             ]}
             testID="no-button"
           >
-            <ThemedText style={styles.selectionButtonText}>
+            <ThemedText style={[styles.selectionButtonText, dynamicStyles.selectionButtonText]}>
               No, I'm all done
             </ThemedText>
           </Pressable>
@@ -114,7 +133,6 @@ const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   content: {
     flex: 1,
@@ -141,13 +159,12 @@ const styles = StyleSheet.create({
   coverImage: {
     width: 120,
     height: 200,
-    borderRadius: 8,
+    borderRadius: BorderRadius.sm,
   },
   coverThumbnail: {
     width: 120,
     height: 200,
-    backgroundColor: Colors.light.surfaceVariant,
-    borderRadius: 8,
+    borderRadius: BorderRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -164,24 +181,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     borderRadius: BorderRadius.md,
     borderWidth: 2,
-    borderColor: Colors.light.border,
     opacity: 0.6,
-    backgroundColor: Colors.light.surface,
   },
   selectionButtonSelected: {
-    // backgroundColor: Colors.light.primary + '80',
-    borderColor: Colors.light.primary,
     borderWidth: 3,
     opacity: 1,
   },
   selectionButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.light.secondary,
     textAlign: 'center',
   },
   selectionButtonTextSelected: {
-    // color: Colors.light.textOnPrimary,
   },
   confirmationContainer: {
     backgroundColor: 'transparent',

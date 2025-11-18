@@ -237,8 +237,8 @@ describe('CompletionFormStep3', () => {
 
       expect(screen.getByTestId('save-and-finish-button')).toBeTruthy();
       expect(screen.getByTestId('skip-button')).toBeTruthy();
-      expect(screen.getByText('Save & Finish')).toBeTruthy();
-      expect(screen.getByText('Skip Review Tracking')).toBeTruthy();
+      expect(screen.getByText('Start Tracking')).toBeTruthy();
+      expect(screen.getByText('Skip this book')).toBeTruthy();
     });
 
     it('should handle deadline with null author', () => {
@@ -515,9 +515,9 @@ describe('CompletionFormStep3', () => {
       });
 
       const saveButton = screen.getByTestId('save-and-finish-button');
-      const skipButton = screen.getByTestId('skip-button');
       expect(saveButton.props.accessibilityState.disabled).toBe(true);
-      expect(skipButton.props.accessibilityState.disabled).toBe(true);
+      // Skip link is now a text link, not a button, so it doesn't have disabled state
+      expect(screen.getByTestId('skip-button')).toBeTruthy();
     });
   });
 
@@ -741,7 +741,9 @@ describe('CompletionFormStep3', () => {
 
       mockUpdateReviewTracking.mockImplementation((_params, callbacks) => {
         // Should use existing date, not deadline.deadline_date
-        expect(_params.review_due_date).toBe(new Date(existingReviewDueDate).toISOString());
+        expect(_params.review_due_date).toBe(
+          new Date(existingReviewDueDate).toISOString()
+        );
         expect(_params.needs_link_submission).toBe(true);
         callbacks.onSuccess();
       });
@@ -760,7 +762,9 @@ describe('CompletionFormStep3', () => {
 
       mockCreateReviewTracking.mockImplementation((_params, callbacks) => {
         expect(_params.review_due_date).toBeDefined();
-        expect(_params.review_due_date).toBe(new Date('2024-12-31').toISOString());
+        expect(_params.review_due_date).toBe(
+          new Date('2024-12-31').toISOString()
+        );
         callbacks.onSuccess();
       });
 

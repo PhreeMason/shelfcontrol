@@ -62,6 +62,8 @@ describe('TodaysGoals', () => {
       useTodaysDeadlines.mockReturnValue({
         audioDeadlines: [],
         readingDeadlines: [],
+        allAudioDeadlines: [],
+        allReadingDeadlines: [],
       });
 
       const {
@@ -84,6 +86,8 @@ describe('TodaysGoals', () => {
       useTodaysDeadlines.mockReturnValue({
         audioDeadlines: [],
         readingDeadlines: [{ id: '1', title: 'Test Book' }],
+        allAudioDeadlines: [],
+        allReadingDeadlines: [{ id: '1', title: 'Test Book' }],
       });
 
       const {
@@ -104,6 +108,8 @@ describe('TodaysGoals', () => {
       useTodaysDeadlines.mockReturnValue({
         audioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
         readingDeadlines: [],
+        allAudioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
+        allReadingDeadlines: [],
       });
 
       const {
@@ -126,6 +132,8 @@ describe('TodaysGoals', () => {
       useTodaysDeadlines.mockReturnValue({
         audioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
         readingDeadlines: [{ id: '2', title: 'Test Book' }],
+        allAudioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
+        allReadingDeadlines: [{ id: '2', title: 'Test Book' }],
       });
 
       const {
@@ -147,6 +155,8 @@ describe('TodaysGoals', () => {
       useTodaysDeadlines.mockReturnValue({
         audioDeadlines: [],
         readingDeadlines: [{ id: '1', title: 'Test Book' }],
+        allAudioDeadlines: [],
+        allReadingDeadlines: [{ id: '1', title: 'Test Book' }],
       });
 
       const {
@@ -167,6 +177,8 @@ describe('TodaysGoals', () => {
       useTodaysDeadlines.mockReturnValue({
         audioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
         readingDeadlines: [],
+        allAudioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
+        allReadingDeadlines: [],
       });
 
       const {
@@ -189,6 +201,8 @@ describe('TodaysGoals', () => {
       useTodaysDeadlines.mockReturnValue({
         audioDeadlines: [],
         readingDeadlines: [],
+        allAudioDeadlines: [],
+        allReadingDeadlines: [],
       });
 
       const {
@@ -208,6 +222,8 @@ describe('TodaysGoals', () => {
       useTodaysDeadlines.mockReturnValue({
         audioDeadlines: [],
         readingDeadlines: [{ id: '1', title: 'Test Book' }],
+        allAudioDeadlines: [],
+        allReadingDeadlines: [{ id: '1', title: 'Test Book' }],
       });
 
       const {
@@ -232,6 +248,8 @@ describe('TodaysGoals', () => {
       useTodaysDeadlines.mockReturnValue({
         audioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
         readingDeadlines: [],
+        allAudioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
+        allReadingDeadlines: [],
       });
 
       const {
@@ -254,10 +272,14 @@ describe('TodaysGoals', () => {
       const { useTodaysDeadlines } = require('@/hooks/useTodaysDeadlines');
       const mockReadingDeadlines = [{ id: '1', title: 'Book 1' }];
       const mockAudioDeadlines = [{ id: '2', title: 'Audio 1' }];
+      const mockAllReadingDeadlines = [{ id: '1', title: 'Book 1' }];
+      const mockAllAudioDeadlines = [{ id: '2', title: 'Audio 1' }];
 
       useTodaysDeadlines.mockReturnValue({
         audioDeadlines: mockAudioDeadlines,
         readingDeadlines: mockReadingDeadlines,
+        allAudioDeadlines: mockAllAudioDeadlines,
+        allReadingDeadlines: mockAllReadingDeadlines,
       });
 
       const {
@@ -271,10 +293,12 @@ describe('TodaysGoals', () => {
 
       expect(calculateTodaysAudioTotals).toHaveBeenCalledWith(
         mockAudioDeadlines,
+        mockAllAudioDeadlines,
         mockCalculateProgressForToday
       );
       expect(calculateTodaysReadingTotals).toHaveBeenCalledWith(
         mockReadingDeadlines,
+        mockAllReadingDeadlines,
         mockCalculateProgressForToday
       );
     });

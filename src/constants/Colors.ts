@@ -62,6 +62,11 @@ export const Colors = {
     onSuccess: '#FFFFFF',
     onSuccessContainer: '#064E3B',
 
+    // Hero status colors (green/orange/gray from stats design)
+    successGreen: '#86b468',
+    warningOrange: '#f97316',
+    errorRed: '#6b7280',
+
     peach: '#E8C2B9',
     darkPink: '#C8698A',
     orange: '#F5C2A1',
@@ -160,6 +165,11 @@ export const Colors = {
     onSuccess: '#FFFFFF',
     onSuccessContainer: '#064E3B',
 
+    // Hero status colors (green/orange/gray from stats design)
+    successGreen: '#86b468',
+    warningOrange: '#f97316',
+    errorRed: '#6b7280',
+
     peach: '#E8C2B9',
     darkPink: '#C8698A',
     orange: '#F5C2A1',
@@ -214,27 +224,9 @@ export const FontFamily = {
 } as const;
 
 // Typography scale with Nunito font families
+// Token-based system with 11 sizes (10-32px) for consistent, constrained typography
 export const Typography = {
-  // Headings
-  displayLarge: {
-    fontSize: 57,
-    lineHeight: 60,
-    fontWeight: '400' as const,
-    fontFamily: FontFamily.regular,
-  },
-  displayMedium: {
-    fontSize: 44,
-    lineHeight: 48,
-    fontWeight: '400' as const,
-    fontFamily: FontFamily.regular,
-  },
-  displaySmall: {
-    fontSize: 36,
-    lineHeight: 40,
-    fontWeight: '400' as const,
-    fontFamily: FontFamily.regular,
-  },
-
+  // Headlines - Large attention-grabbing text
   headlineLarge: {
     fontSize: 32,
     lineHeight: 36,
@@ -254,11 +246,24 @@ export const Typography = {
     fontFamily: FontFamily.semiBold,
   },
 
+  // Titles - Section headers and prominent UI text
   titleLarge: {
     fontSize: 22,
     lineHeight: 26,
     fontWeight: '700' as const,
     fontFamily: FontFamily.bold,
+  },
+  titleSubLarge: {
+    fontSize: 20,
+    lineHeight: 24,
+    fontWeight: '600' as const,
+    fontFamily: FontFamily.semiBold,
+  },
+  titleMediumPlus: {
+    fontSize: 18,
+    lineHeight: 22,
+    fontWeight: '600' as const,
+    fontFamily: FontFamily.semiBold,
   },
   titleMedium: {
     fontSize: 16,
@@ -273,7 +278,7 @@ export const Typography = {
     fontFamily: FontFamily.semiBold,
   },
 
-  // Body text
+  // Body text - Main content text
   bodyLarge: {
     fontSize: 16,
     lineHeight: 20,
@@ -293,7 +298,7 @@ export const Typography = {
     fontFamily: FontFamily.regular,
   },
 
-  // Labels
+  // Labels - UI labels, captions, and micro-text
   labelLarge: {
     fontSize: 14,
     lineHeight: 18,
@@ -323,6 +328,15 @@ export const Spacing = {
   xl: 30,
   xxl: 44,
   xxxl: 60,
+
+  // Negative spacing for semantic use cases
+  // Use these for intentional overlap, tight grouping, and alignment corrections
+  negative: {
+    xs: -4,  // Inline alignment corrections, tight multi-line spacing
+    sm: -8,  // Error messages attached to fields, header-to-content grouping
+    md: -14, // Annotation overlays (badges, indicators attached to inputs)
+    lg: -22, // Full-bleed layouts (breaking out of container padding)
+  },
 } as const;
 
 // Border radius scale

@@ -4,6 +4,7 @@ import ProgressInput from '@/components/progress/ProgressInput';
 import ProgressStats from '@/components/progress/ProgressStats';
 import QuickActionButtons from '@/components/progress/QuickActionButtons';
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import {
   useDeleteFutureProgress,
   useUpdateDeadlineProgress,
@@ -348,8 +349,14 @@ export default ReadingProgressUpdate;
 
 const styles = StyleSheet.create({
   section: {
-    padding: 8,
-    marginBottom: 16,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginVertical: Spacing.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   updateSection: {
     marginTop: 8,

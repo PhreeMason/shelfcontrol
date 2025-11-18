@@ -40,67 +40,26 @@ export interface FormStateConfig {
  */
 export const createFormNavigation = (
   config: FormNavigationConfig,
-  triggerValidation: (fields?: (keyof DeadlineFormData)[]) => Promise<boolean>,
+  _triggerValidation: (fields?: (keyof DeadlineFormData)[]) => Promise<boolean>,
   handleSubmit: () => void,
-  selectedFormat: 'physical' | 'eBook' | 'audio',
+  _selectedFormat: 'physical' | 'eBook' | 'audio',
   setCurrentStep: (step: number) => void,
-  mode: FormMode,
-  getFormErrors: () => Record<string, any>
+  _mode: FormMode,
+  _getFormErrors: () => Record<string, any>,
+  _setFocus: (field: keyof DeadlineFormData) => void
 ): FormNavigationHandlers => {
   const nextStep = async () => {
     if (config.currentStep < config.totalSteps) {
-      // Step 1 -> Step 2: No validation needed for new form
-      if (config.currentStep === 1) {
-        setCurrentStep(2);
-        return;
-      }
-
-      // Step 2 -> Step 3: Validate book details
-      if (config.currentStep === 2) {
-        const fieldsToValidate: (keyof DeadlineFormData)[] = [
-          'bookTitle',
-          'format',
-          'totalQuantity',
-        ];
-
-        if (selectedFormat === 'audio') {
-          fieldsToValidate.push('totalMinutes');
-        }
-
-        const result = await triggerValidation(fieldsToValidate);
-
-        if (result) {
-          setCurrentStep(config.currentStep + 1);
-        }
-        return;
-      }
-
-      // Step 3 -> Step 4: Validate additional details
-      if (config.currentStep === 3) {
-        const fieldsToValidate: (keyof DeadlineFormData)[] = ['type'];
-        const result = await triggerValidation(fieldsToValidate);
-
-        if (result) {
-          setCurrentStep(config.currentStep + 1);
-        }
-        return;
-      }
+      // Step 1 -> Step 2: No validation needed (book search step)
+      // Just advance to the next step
+      setCurrentStep(config.currentStep + 1);
+      return;
     } else {
-      const isValid = await triggerValidation();
-
-      if (!isValid) {
-        const errors = getFormErrors();
-        const earliestErrorStep = findEarliestErrorStep(errors, mode);
-
-        if (
-          earliestErrorStep !== null &&
-          earliestErrorStep !== config.currentStep
-        ) {
-          setCurrentStep(earliestErrorStep);
-        }
-        return;
-      }
-
+      // Final step - submit form
+      // handleSubmit from react-hook-form will:
+      // 1. Validate all fields and mark them as touched
+      // 2. If valid, call the onSubmit callback
+      // 3. If invalid, show errors and call the error callback
       handleSubmit();
     }
   };
@@ -565,6 +524,17 @@ export const createSuccessToast = (mode: FormMode) => {
       : 'Deadline updated successfully!';
 
   return () => {
+    // Show toast first
+    Toast.show({
+      swipeable: true,
+      type: 'success',
+      text1: message,
+      autoHide: true,
+      visibilityTime: 2000,
+      position: 'top',
+    });
+
+    // Navigate immediately after
     if (mode === 'new') {
       router.replace(ROUTES.HOME);
     } else {
@@ -574,14 +544,6 @@ export const createSuccessToast = (mode: FormMode) => {
         router.replace(ROUTES.HOME);
       }
     }
-    Toast.show({
-      swipeable: true,
-      type: 'success',
-      text1: message,
-      autoHide: true,
-      visibilityTime: 1500,
-      position: 'top',
-    });
   };
 };
 
@@ -613,52 +575,35 @@ export const getFieldStep = (
   mode: FormMode
 ): number => {
   if (mode === 'new') {
+    // New mode: 2 steps total
+    // Step 1: Book search (api_id, book_id)
+    // Step 2: All form fields (book details, additional info, schedule)
     switch (field) {
       case 'api_id':
       case 'book_id':
         return 1;
+      // All other fields are on Step 2 (combined form)
       case 'bookTitle':
       case 'bookAuthor':
       case 'format':
       case 'totalQuantity':
       case 'totalMinutes':
       case 'status':
-        return 2;
       case 'type':
       case 'acquisition_source':
       case 'publishers':
-        return 3;
       case 'deadline':
       case 'flexibility':
       case 'currentProgress':
       case 'currentMinutes':
-        return 4;
+        return 2;
       default:
-        return 1;
+        return 2;
     }
   } else {
-    switch (field) {
-      case 'bookTitle':
-      case 'bookAuthor':
-      case 'format':
-      case 'totalQuantity':
-      case 'totalMinutes':
-      case 'status':
-        return 1;
-      case 'type':
-      case 'acquisition_source':
-      case 'publishers':
-        return 2;
-      case 'deadline':
-      case 'flexibility':
-      case 'currentProgress':
-      case 'currentMinutes':
-      case 'api_id':
-      case 'book_id':
-        return 3;
-      default:
-        return 1;
-    }
+    // Edit mode: 1 step total (all fields on single page)
+    // All fields belong to step 1
+    return 1;
   }
 };
 
@@ -683,4 +628,59 @@ export const findEarliestErrorStep = (
   }
 
   return earliestStep;
+};
+
+/**
+ * Gets the first error field in display order
+ */
+export const getFirstErrorField = (
+  errors: Record<string, any>,
+  mode: FormMode
+): keyof DeadlineFormData | null => {
+  if (!errors || Object.keys(errors).length === 0) {
+    return null;
+  }
+
+  // Field order matches the form display order
+  const fieldOrder: (keyof DeadlineFormData)[] =
+    mode === 'new'
+      ? [
+          'bookTitle',
+          'bookAuthor',
+          'format',
+          'type',
+          'acquisition_source',
+          'publishers',
+          'totalQuantity',
+          'totalMinutes',
+          'currentProgress',
+          'currentMinutes',
+          'deadline',
+          'flexibility',
+          'status',
+        ]
+      : [
+          'bookTitle',
+          'bookAuthor',
+          'format',
+          'type',
+          'acquisition_source',
+          'publishers',
+          'totalQuantity',
+          'totalMinutes',
+          'currentProgress',
+          'currentMinutes',
+          'deadline',
+          'flexibility',
+          'status',
+        ];
+
+  for (const field of fieldOrder) {
+    if (errors[field]) {
+      return field;
+    }
+  }
+
+  // If no field matches the order, return the first error key
+  return Object.keys(errors)[0] as keyof DeadlineFormData;
 };

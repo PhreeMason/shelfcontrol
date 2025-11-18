@@ -39,7 +39,7 @@ export function DeadlineBookCover({
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      <ThemedText style={styles.bookCoverIcon}>
+      <ThemedText typography="titleSubLarge" style={styles.bookCoverIcon}>
         {getBookCoverIcon(deadline, daysLeft)}
       </ThemedText>
     </LinearGradient>
@@ -58,6 +58,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bookCoverIcon: {
-    fontSize: 20,
+    // Typography token provides fontSize and lineHeight
   },
 });

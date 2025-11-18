@@ -7,8 +7,8 @@ export const QUERY_KEYS = {
     ACQUISITION_SOURCES: (userId: string) =>
       ['deadline', 'acquisition_sources', userId] as const,
     PROGRESS: (userId: string) => ['deadline_progress', userId] as const,
-    DAILY_ACTIVITIES: (userId: string, date: string) =>
-      ['daily_activities', userId, date] as const,
+    DAILY_ACTIVITIES: (userId: string, dateRange: string) =>
+      ['deadline', 'daily_activities', userId, dateRange] as const,
   },
   NOTES: {
     BY_DEADLINE: (userId: string, deadlineId: string) =>
@@ -42,6 +42,8 @@ export const QUERY_KEYS = {
     SEARCH: (query: string) => ['books', 'search', query] as const,
     BY_API_ID: (apiId: string) => ['book', apiId] as const,
     BY_ID: (bookId: string) => ['book', 'id', bookId] as const,
+    BY_IDS: (bookIds: string[]) =>
+      ['books', 'ids', bookIds.sort().join(',')] as const,
   },
   PROFILE: {
     DETAIL: (userId: string) => ['profile', userId] as const,
@@ -56,6 +58,14 @@ export const QUERY_KEYS = {
       ['avatar', 'signedUrl', avatarPath] as const,
     BASE: () => ['avatar'] as const,
     SIGNED_BASE: () => ['avatar', 'signedUrl'] as const,
+  },
+  PRODUCTIVITY: {
+    BY_DAY_OF_WEEK: (
+      userId: string,
+      startDate: string,
+      endDate: string,
+      format: 'physical' | 'eBook' | 'audio'
+    ) => ['productivity', 'day_of_week', userId, startDate, endDate, format] as const,
   },
 } as const;
 
