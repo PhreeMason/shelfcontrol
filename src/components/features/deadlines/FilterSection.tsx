@@ -1,6 +1,7 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
@@ -15,6 +16,8 @@ import React, { useState } from 'react';
 import { LayoutChangeEvent, ScrollView, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { FilterSheet } from './FilterSheet';
+import { SearchBar } from './SearchBar';
+import { ViewToggleControl } from './ViewToggleControl';
 
 interface FilterOption {
   key: FilterType;
@@ -39,6 +42,8 @@ interface FilterSectionProps {
   sortOrder: SortOrder;
   onSortOrderChange: (order: SortOrder) => void;
   availableTypes: string[];
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
   animatedStyle?: any;
   onLayout?: (event: LayoutChangeEvent) => void;
 }
@@ -72,6 +77,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   sortOrder,
   onSortOrderChange,
   availableTypes,
+  searchQuery,
+  onSearchChange,
   animatedStyle,
   onLayout,
 }) => {
@@ -136,7 +143,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
   return (
     <Animated.View
-      style={[styles.container, animatedStyle]}
+      style={[animatedStyle, { backgroundColor: colors.background }]}
       onLayout={onLayout}
     >
       <View style={styles.filterContainer}>
@@ -189,6 +196,11 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             );
           })}
         </ScrollView>
+
+        <View style={styles.searchAndToggleContainer}>
+          <SearchBar searchQuery={searchQuery} onSearchChange={onSearchChange} />
+          <ViewToggleControl />
+        </View>
       </View>
 
       <FilterSheet
@@ -218,24 +230,20 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    // backgroundColor set by ThemedView or parent
-  },
   filterContainer: {
-    maxHeight: 60,
-    paddingHorizontal: 12,
+    paddingHorizontal: Spacing.md,
   },
   filterScrollView: {
     flexGrow: 0,
   },
   filterContentContainer: {
-    gap: 10,
-    paddingVertical: 5,
+    gap: Spacing.sm,
+    paddingVertical: Spacing.xs,
     alignItems: 'center',
   },
   filterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     minWidth: 80,
   },
   iconFilterButton: {
@@ -250,6 +258,12 @@ const styles = StyleSheet.create({
     top: 3,
     right: 3,
     zIndex: 1,
+  },
+  searchAndToggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: Spacing.sm,
+    gap: Spacing.sm,
   },
 });
 

@@ -24,7 +24,6 @@ interface FilteredDeadlinesProps {
   excludedStatuses: FilterType[];
   sortOrder: SortOrder;
   searchQuery: string;
-  onSearchChange: (query: string) => void;
 }
 
 const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
@@ -37,7 +36,6 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   excludedStatuses,
   sortOrder,
   searchQuery,
-  onSearchChange,
 }) => {
   const {
     deadlines,
@@ -240,8 +238,6 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       isLoading={isLoading}
       error={error}
       emptyMessage={getEmptyMessage()}
-      searchQuery={searchQuery}
-      onSearchChange={onSearchChange}
     />
   );
 };
