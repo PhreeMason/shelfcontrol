@@ -133,7 +133,11 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
 
         {isToReview && (
           <>
-            <ThemedText typography="labelSmall" color="textSecondary" style={styles.reminderText}>
+            <ThemedText
+              typography="labelSmall"
+              color="textSecondary"
+              style={styles.reminderText}
+            >
               Reminder: Submit review links to publisher if required
             </ThemedText>
 

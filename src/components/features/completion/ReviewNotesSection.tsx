@@ -28,10 +28,15 @@ export const ReviewNotesSection: React.FC<ReviewNotesSectionProps> = ({
         <ThemedView style={styles.headerRow}>
           <ThemedText typography="titleMediumPlus">Book thoughts</ThemedText>
           <ThemedText typography="bodyMedium" color="textMuted">
-            {' '}(Optional)
+            {' '}
+            (Optional)
           </ThemedText>
         </ThemedView>
-        <ThemedText typography="bodySmall" color="textSecondary" style={styles.helpText}>
+        <ThemedText
+          typography="bodySmall"
+          color="textSecondary"
+          style={styles.helpText}
+        >
           Saved to your Notes for this book
         </ThemedText>
         <CustomInput

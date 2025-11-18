@@ -43,7 +43,10 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
           }
         >
           <IconSymbol name="book.fill" size={20} color={colors.surface} />
-          <ThemedText typography="titleMediumPlus" style={{ color: colors.surface }}>
+          <ThemedText
+            typography="titleMediumPlus"
+            style={{ color: colors.surface }}
+          >
             Start Reading
           </ThemedText>
         </TouchableOpacity>
@@ -78,7 +81,10 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
           }
         >
           <IconSymbol name="play.fill" size={20} color={colors.surface} />
-          <ThemedText typography="titleMediumPlus" style={{ color: colors.surface }}>
+          <ThemedText
+            typography="titleMediumPlus"
+            style={{ color: colors.surface }}
+          >
             Resume Reading
           </ThemedText>
         </TouchableOpacity>

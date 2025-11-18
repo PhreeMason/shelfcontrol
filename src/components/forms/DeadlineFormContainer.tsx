@@ -289,10 +289,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     }
 
     // Navigate to the step with the error if it's not the current step
-    if (
-      earliestErrorStep !== null &&
-      earliestErrorStep !== currentStep
-    ) {
+    if (earliestErrorStep !== null && earliestErrorStep !== currentStep) {
       setCurrentStep(earliestErrorStep);
     }
   };
@@ -385,9 +382,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
         <ThemedText
           typography="titleMedium"
           color="textOnPrimary"
-          style={[
-            (!isValid || isSubmitting) && styles.saveTextDisabled,
-          ]}
+          style={[(!isValid || isSubmitting) && styles.saveTextDisabled]}
         >
           {buttonText}
         </ThemedText>

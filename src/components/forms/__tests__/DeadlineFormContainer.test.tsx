@@ -1,7 +1,12 @@
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import DeadlineFormContainer from '../DeadlineFormContainer';

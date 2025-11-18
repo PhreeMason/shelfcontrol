@@ -257,7 +257,9 @@ export const calculateProgressStatus = (
   }
 
   // Determine color
-  const color = isAhead ? Colors.light.successGreen : Colors.light.warningOrange;
+  const color = isAhead
+    ? Colors.light.successGreen
+    : Colors.light.warningOrange;
 
   return {
     difference,

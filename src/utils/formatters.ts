@@ -95,7 +95,9 @@ export function formatNumber(
 ): string {
   const { abbreviate = true, unit, decimals = 1 } = options;
 
-  const numStr = abbreviate ? abbreviateNumber(value, decimals) : value.toString();
+  const numStr = abbreviate
+    ? abbreviateNumber(value, decimals)
+    : value.toString();
 
   if (unit) {
     return `${numStr} ${unit}`;

@@ -27,10 +27,18 @@ const StatsSummaryCard: React.FC<StatsSummaryCardProps> = ({
 
   return (
     <View style={[styles.card, dynamicStyles.card]}>
-      <ThemedText typography="labelSmall" color="textSecondary" style={styles.label}>
+      <ThemedText
+        typography="labelSmall"
+        color="textSecondary"
+        style={styles.label}
+      >
         {label}
       </ThemedText>
-      <ThemedText typography="headlineLarge" color="primary" style={styles.dateText}>
+      <ThemedText
+        typography="headlineLarge"
+        color="primary"
+        style={styles.dateText}
+      >
         {dateText}
       </ThemedText>
       <ThemedText typography="bodyMedium" color="textSecondary">

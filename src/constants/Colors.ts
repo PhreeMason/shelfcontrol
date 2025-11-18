@@ -332,8 +332,8 @@ export const Spacing = {
   // Negative spacing for semantic use cases
   // Use these for intentional overlap, tight grouping, and alignment corrections
   negative: {
-    xs: -4,  // Inline alignment corrections, tight multi-line spacing
-    sm: -8,  // Error messages attached to fields, header-to-content grouping
+    xs: -4, // Inline alignment corrections, tight multi-line spacing
+    sm: -8, // Error messages attached to fields, header-to-content grouping
     md: -14, // Annotation overlays (badges, indicators attached to inputs)
     lg: -22, // Full-bleed layouts (breaking out of container padding)
   },

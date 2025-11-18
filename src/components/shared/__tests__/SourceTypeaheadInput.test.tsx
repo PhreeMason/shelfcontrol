@@ -322,7 +322,11 @@ describe('TypeTypeaheadInput', () => {
         const mockFormState = {
           isSubmitted: false,
         };
-        return render({ field: mockField, fieldState: mockFieldState, formState: mockFormState });
+        return render({
+          field: mockField,
+          fieldState: mockFieldState,
+          formState: mockFormState,
+        });
       });
 
       render(<TypeTypeaheadInput control={mockControl} name="source" />);
@@ -344,7 +348,11 @@ describe('TypeTypeaheadInput', () => {
         const mockFormState = {
           isSubmitted: false,
         };
-        return render({ field: mockField, fieldState: mockFieldState, formState: mockFormState });
+        return render({
+          field: mockField,
+          fieldState: mockFieldState,
+          formState: mockFormState,
+        });
       });
 
       render(<TypeTypeaheadInput control={mockControl} name="source" />);

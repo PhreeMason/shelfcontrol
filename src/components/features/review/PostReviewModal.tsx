@@ -118,7 +118,11 @@ const PostReviewModal: React.FC<PostReviewModalProps> = ({
             Mark as Posted
           </ThemedText>
 
-          <ThemedText typography="bodyMedium" color="textSecondary" style={styles.subtitle}>
+          <ThemedText
+            typography="bodyMedium"
+            color="textSecondary"
+            style={styles.subtitle}
+          >
             Select platforms posted
           </ThemedText>
 

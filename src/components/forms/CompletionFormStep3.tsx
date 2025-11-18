@@ -331,7 +331,12 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
       ]}
       testID="review-form-container"
     >
-      <View style={[styles.header, { paddingTop: insets.top, backgroundColor: 'transparent' }]}>
+      <View
+        style={[
+          styles.header,
+          { paddingTop: insets.top, backgroundColor: 'transparent' },
+        ]}
+      >
         <ThemedView style={[styles.bookCard, dynamicStyles.bookCard]}>
           <View style={styles.bookCardContent}>
             {bookData?.cover_image_url ? (
@@ -347,9 +352,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
                   dynamicStyles.bookCoverPlaceholder,
                 ]}
               >
-                <ThemedText typography="headlineSmall">
-                  📖
-                </ThemedText>
+                <ThemedText typography="headlineSmall">📖</ThemedText>
               </View>
             )}
             <View style={styles.bookInfoText}>
@@ -369,7 +372,9 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <ThemedView style={[styles.content, { backgroundColor: 'transparent' }]}>
+        <ThemedView
+          style={[styles.content, { backgroundColor: 'transparent' }]}
+        >
           <ReviewTimelineSection
             control={control}
             watch={watch}

@@ -237,7 +237,10 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
                 size={48}
                 color={colors.textSecondary}
               />
-              <ThemedText typography="titleMediumPlus" style={styles.errorTitle}>
+              <ThemedText
+                typography="titleMediumPlus"
+                style={styles.errorTitle}
+              >
                 Unable to Load Page
               </ThemedText>
               <ThemedText
@@ -256,10 +259,7 @@ const WebViewModal: React.FC<WebViewModalProps> = ({
               >
                 <ThemedText
                   typography="bodyLarge"
-                  style={[
-                    styles.retryButtonText,
-                    { color: colors.background },
-                  ]}
+                  style={[styles.retryButtonText, { color: colors.background }]}
                 >
                   Try Again
                 </ThemedText>

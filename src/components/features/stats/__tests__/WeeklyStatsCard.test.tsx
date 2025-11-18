@@ -293,7 +293,9 @@ describe('WeeklyStatsCard', () => {
 
       // Accessibility label uses raw numbers, not formatted/abbreviated
       expect(
-        getByLabelText(/Test Header.*350 read.*280 needed.*70 ahead.*Averaging 50 per day/)
+        getByLabelText(
+          /Test Header.*350 read.*280 needed.*70 ahead.*Averaging 50 per day/
+        )
       ).toBeTruthy();
     });
   });

@@ -24,8 +24,12 @@ export const StepIndicators = ({
           style={[
             styles.step,
             { backgroundColor: inactiveBackgroundColor },
-            index + 1 === currentStep && { backgroundColor: activeBackgroundColor },
-            index + 1 < currentStep && { backgroundColor: activeBackgroundColor },
+            index + 1 === currentStep && {
+              backgroundColor: activeBackgroundColor,
+            },
+            index + 1 < currentStep && {
+              backgroundColor: activeBackgroundColor,
+            },
           ]}
         />
       ))}

@@ -81,7 +81,11 @@ export const CalendarLegend: React.FC = () => {
           {/* Multiple dots info */}
           <View style={[styles.infoContainer, dynamicStyles.infoContainer]}>
             <IconSymbol name="info.circle" size={14} color={colors.textMuted} />
-            <ThemedText typography="bodySmall" color="textMuted" style={styles.infoText}>
+            <ThemedText
+              typography="bodySmall"
+              color="textMuted"
+              style={styles.infoText}
+            >
               Multiple dots can appear on dates with both activities and due
               dates
             </ThemedText>

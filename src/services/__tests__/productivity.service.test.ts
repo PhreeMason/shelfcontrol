@@ -64,12 +64,16 @@ describe('ProductivityService', () => {
       // Create chainable mocks for both queries
       const progressChain = createChainableMock();
       progressChain.then = (onFulfilled: any) =>
-        Promise.resolve({ data: mockProgressData, error: null }).then(onFulfilled);
+        Promise.resolve({ data: mockProgressData, error: null }).then(
+          onFulfilled
+        );
 
       const baselineChain = createChainableMock();
       // Make the chainable awaitable by implementing then properly
       baselineChain.then = (onFulfilled: any) =>
-        Promise.resolve({ data: mockBaselineData, error: null }).then(onFulfilled);
+        Promise.resolve({ data: mockBaselineData, error: null }).then(
+          onFulfilled
+        );
 
       mockSupabaseFrom
         .mockReturnValueOnce(progressChain)
@@ -108,7 +112,9 @@ describe('ProductivityService', () => {
       const progressChain = createChainableMock();
       progressChain.eq = mockEq.mockReturnValue(progressChain);
       progressChain.then = (onFulfilled: any) =>
-        Promise.resolve({ data: mockProgressData, error: null }).then(onFulfilled);
+        Promise.resolve({ data: mockProgressData, error: null }).then(
+          onFulfilled
+        );
 
       const baselineChain = createChainableMock();
       baselineChain.then = (onFulfilled: any) =>
@@ -178,11 +184,15 @@ describe('ProductivityService', () => {
 
       const progressChain = createChainableMock();
       progressChain.then = (onFulfilled: any) =>
-        Promise.resolve({ data: mockProgressData, error: null }).then(onFulfilled);
+        Promise.resolve({ data: mockProgressData, error: null }).then(
+          onFulfilled
+        );
 
       const baselineChain = createChainableMock();
       baselineChain.then = (onFulfilled: any) =>
-        Promise.resolve({ data: null, error: mockBaselineError }).then(onFulfilled);
+        Promise.resolve({ data: null, error: mockBaselineError }).then(
+          onFulfilled
+        );
 
       mockSupabaseFrom
         .mockReturnValueOnce(progressChain)
@@ -228,12 +238,16 @@ describe('ProductivityService', () => {
 
       const progressChain = createChainableMock();
       progressChain.then = (onFulfilled: any) =>
-        Promise.resolve({ data: mockProgressData, error: null }).then(onFulfilled);
+        Promise.resolve({ data: mockProgressData, error: null }).then(
+          onFulfilled
+        );
 
       const baselineChain = createChainableMock();
       // Make the chainable awaitable by implementing then properly
       baselineChain.then = (onFulfilled: any) =>
-        Promise.resolve({ data: mockBaselineData, error: null }).then(onFulfilled);
+        Promise.resolve({ data: mockBaselineData, error: null }).then(
+          onFulfilled
+        );
 
       mockSupabaseFrom
         .mockReturnValueOnce(progressChain)
@@ -261,7 +275,9 @@ describe('ProductivityService', () => {
 
       const progressChain = createChainableMock();
       progressChain.then = (onFulfilled: any) =>
-        Promise.resolve({ data: mockProgressData, error: null }).then(onFulfilled);
+        Promise.resolve({ data: mockProgressData, error: null }).then(
+          onFulfilled
+        );
 
       const baselineChain = createChainableMock();
       baselineChain.then = (onFulfilled: any) =>

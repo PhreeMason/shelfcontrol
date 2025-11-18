@@ -83,48 +83,48 @@ export const ReviewTimelineSection: React.FC<ReviewTimelineSectionProps> = ({
             </ThemedText>
           </TouchableOpacity>
           {watchHasDeadline && watchReviewDueDate && (
-          <ThemedView style={styles.datePickerContainer}>
-            <TouchableOpacity
-              style={[
-                styles.dateInput,
-                {
-                  backgroundColor: colors.surfaceVariant,
-                  borderColor: colors.border,
-                },
-              ]}
-              onPress={() => setShowDatePicker(true)}
-              testID="date-picker-trigger"
-            >
-              <IconSymbol
-                name="calendar"
-                size={20}
-                color={colors.primary}
-              />
-              <ThemedText typography="bodyMedium" style={styles.dateText}>
-                {watchReviewDueDate.toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </ThemedText>
-            </TouchableOpacity>
-            {isPastDate && (
-              <ThemedText typography="bodySmall" color="error" style={styles.warningText}>
-                This date is in the past
-              </ThemedText>
-            )}
-            {showDatePicker && (
-              <DateTimePicker
-                themeVariant="light"
-                value={watchReviewDueDate}
-                mode="date"
-                display={Platform.OS === 'ios' ? 'inline' : 'default'}
-                onChange={onDateChange}
-              />
-            )}
-          </ThemedView>
-        )}
+            <ThemedView style={styles.datePickerContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.dateInput,
+                  {
+                    backgroundColor: colors.surfaceVariant,
+                    borderColor: colors.border,
+                  },
+                ]}
+                onPress={() => setShowDatePicker(true)}
+                testID="date-picker-trigger"
+              >
+                <IconSymbol name="calendar" size={20} color={colors.primary} />
+                <ThemedText typography="bodyMedium" style={styles.dateText}>
+                  {watchReviewDueDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </ThemedText>
+              </TouchableOpacity>
+              {isPastDate && (
+                <ThemedText
+                  typography="bodySmall"
+                  color="error"
+                  style={styles.warningText}
+                >
+                  This date is in the past
+                </ThemedText>
+              )}
+              {showDatePicker && (
+                <DateTimePicker
+                  themeVariant="light"
+                  value={watchReviewDueDate}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                  onChange={onDateChange}
+                />
+              )}
+            </ThemedView>
+          )}
           <TouchableOpacity
             style={[
               styles.radioOption,
@@ -162,7 +162,6 @@ export const ReviewTimelineSection: React.FC<ReviewTimelineSectionProps> = ({
             </ThemedText>
           </TouchableOpacity>
         </ThemedView>
-
       </ThemedView>
     </ThemedView>
   );

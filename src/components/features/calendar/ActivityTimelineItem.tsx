@@ -53,13 +53,10 @@ export const ActivityTimelineItem: React.FC<ActivityTimelineItemProps> =
         </View>
 
         {/* Content Column */}
-        <View
-          style={[
-            styles.content,
-            { borderColor: colors.border },
-          ]}
-        >
-          <ThemedText typography="bodyLarge" style={styles.label}>{config.label}</ThemedText>
+        <View style={[styles.content, { borderColor: colors.border }]}>
+          <ThemedText typography="bodyLarge" style={styles.label}>
+            {config.label}
+          </ThemedText>
           <ThemedText variant="muted" numberOfLines={2}>
             {details.text}
           </ThemedText>

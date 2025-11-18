@@ -48,15 +48,25 @@ const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({
     >
       <View style={styles.progressSection}>
         <View style={styles.progressLabelContainer}>
-          <ThemedText typography="bodyMedium" color="textSecondary" style={styles.progressLabel}>
+          <ThemedText
+            typography="bodyMedium"
+            color="textSecondary"
+            style={styles.progressLabel}
+          >
             Reviews Posted
           </ThemedText>
-          <ThemedText typography="bodyMedium" color="primary" style={styles.progressFraction}>
+          <ThemedText
+            typography="bodyMedium"
+            color="primary"
+            style={styles.progressFraction}
+          >
             {postedCount}/{totalCount}
           </ThemedText>
         </View>
 
-        <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
+        <View
+          style={[styles.progressTrack, { backgroundColor: colors.border }]}
+        >
           <View
             style={[
               styles.progressFill,

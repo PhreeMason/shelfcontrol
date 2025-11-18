@@ -34,7 +34,9 @@ const DeadlinesList: React.FC<DeadlinesListProps> = ({
     if (isLoading) {
       return (
         <ThemedView style={styles.centerContainer}>
-          <ThemedText typography="bodyMedium" style={styles.loadingText}>Loading books...</ThemedText>
+          <ThemedText typography="bodyMedium" style={styles.loadingText}>
+            Loading books...
+          </ThemedText>
         </ThemedView>
       );
     }
@@ -42,7 +44,11 @@ const DeadlinesList: React.FC<DeadlinesListProps> = ({
     if (error) {
       return (
         <ThemedView style={styles.centerContainer}>
-          <ThemedText typography="bodyMedium" color="error" style={styles.errorText}>
+          <ThemedText
+            typography="bodyMedium"
+            color="error"
+            style={styles.errorText}
+          >
             Error loading deadlines: {error.message}
           </ThemedText>
         </ThemedView>
@@ -52,7 +58,9 @@ const DeadlinesList: React.FC<DeadlinesListProps> = ({
     if (deadlines.length === 0) {
       return (
         <ThemedView style={styles.centerContainer}>
-          <ThemedText typography="bodyMedium" style={styles.emptyText}>{emptyMessage}</ThemedText>
+          <ThemedText typography="bodyMedium" style={styles.emptyText}>
+            {emptyMessage}
+          </ThemedText>
         </ThemedView>
       );
     }

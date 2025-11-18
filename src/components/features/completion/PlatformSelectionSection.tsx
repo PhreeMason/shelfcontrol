@@ -103,7 +103,12 @@ export const PlatformSelectionSection: React.FC<
       topSectionPlatforms: topSection,
       moreSectionPlatforms: unselectedRemaining,
     };
-  }, [allPlatformsOrdered, first3Platforms, remainingPlatforms, selectedPlatforms]);
+  }, [
+    allPlatformsOrdered,
+    first3Platforms,
+    remainingPlatforms,
+    selectedPlatforms,
+  ]);
 
   const handleAddCustomPlatform = () => {
     addCustomPlatform();
@@ -126,7 +131,9 @@ export const PlatformSelectionSection: React.FC<
           styles.platformCard,
           {
             borderColor: isSelected ? colors.primary : colors.border,
-            backgroundColor: isSelected ? colors.primaryContainer : colors.surface,
+            backgroundColor: isSelected
+              ? colors.primaryContainer
+              : colors.surface,
           },
           isPosted && { opacity: 0.6 },
         ]}
@@ -186,7 +193,11 @@ export const PlatformSelectionSection: React.FC<
         <ThemedText typography="titleMediumPlus" style={styles.sectionHeader}>
           Where will you post?
         </ThemedText>
-        <ThemedText typography="bodySmall" color="textSecondary" style={styles.helpText}>
+        <ThemedText
+          typography="bodySmall"
+          color="textSecondary"
+          style={styles.helpText}
+        >
           Select all that apply
         </ThemedText>
 
@@ -218,7 +229,11 @@ export const PlatformSelectionSection: React.FC<
                       },
                     ]}
                   >
-                    <IconSymbol name="checkmark" size={16} color={colors.textInverse} />
+                    <IconSymbol
+                      name="checkmark"
+                      size={16}
+                      color={colors.textInverse}
+                    />
                   </View>
                   <ThemedText
                     typography="bodyMedium"
@@ -279,7 +294,12 @@ export const PlatformSelectionSection: React.FC<
 
               {/* More section: only unselected platforms */}
               {showMorePlatforms && (
-                <ThemedView style={[styles.morePlatformsSection, { borderTopColor: colors.border }]}>
+                <ThemedView
+                  style={[
+                    styles.morePlatformsSection,
+                    { borderTopColor: colors.border },
+                  ]}
+                >
                   <ThemedView style={styles.platformsColumn}>
                     {moreSectionPlatforms.map(p => renderPlatform(p, false))}
 
@@ -296,7 +316,12 @@ export const PlatformSelectionSection: React.FC<
                         onPress={() => setHasBlog(true)}
                         activeOpacity={0.7}
                       >
-                        <View style={[styles.checkboxIcon, { borderColor: colors.border }]} />
+                        <View
+                          style={[
+                            styles.checkboxIcon,
+                            { borderColor: colors.border },
+                          ]}
+                        />
                         <ThemedText
                           typography="bodyMedium"
                           style={[styles.platformLabel, { fontWeight: '500' }]}
@@ -308,7 +333,12 @@ export const PlatformSelectionSection: React.FC<
                   </ThemedView>
 
                   {/* Custom platform section */}
-                  <ThemedView style={[styles.customPlatformSection, { borderTopColor: colors.border }]}>
+                  <ThemedView
+                    style={[
+                      styles.customPlatformSection,
+                      { borderTopColor: colors.border },
+                    ]}
+                  >
                     {!showCustomInput ? (
                       <TouchableOpacity
                         style={[
@@ -374,7 +404,10 @@ export const PlatformSelectionSection: React.FC<
                             setNewCustomPlatform('');
                           }}
                         >
-                          <ThemedText typography="bodySmall" color="textSecondary">
+                          <ThemedText
+                            typography="bodySmall"
+                            color="textSecondary"
+                          >
                             Cancel
                           </ThemedText>
                         </TouchableOpacity>
@@ -387,7 +420,11 @@ export const PlatformSelectionSection: React.FC<
           )}
 
           {postedPlatforms.length > 0 && (
-            <ThemedText typography="bodySmall" color="textSecondary" style={styles.postedHelpText}>
+            <ThemedText
+              typography="bodySmall"
+              color="textSecondary"
+              style={styles.postedHelpText}
+            >
               Platforms marked with ✓ have been posted and cannot be removed.
             </ThemedText>
           )}

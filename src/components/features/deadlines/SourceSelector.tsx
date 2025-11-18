@@ -121,7 +121,11 @@ export const SourceSelector = ({
       )}
 
       {options.length === 0 && (
-        <ThemedText typography="bodyMedium" color="textMuted" style={styles.noOptions}>
+        <ThemedText
+          typography="bodyMedium"
+          color="textMuted"
+          style={styles.noOptions}
+        >
           No sources available. Add a source or publisher to the book first.
         </ThemedText>
       )}

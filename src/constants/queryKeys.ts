@@ -65,7 +65,15 @@ export const QUERY_KEYS = {
       startDate: string,
       endDate: string,
       format: 'physical' | 'eBook' | 'audio'
-    ) => ['productivity', 'day_of_week', userId, startDate, endDate, format] as const,
+    ) =>
+      [
+        'productivity',
+        'day_of_week',
+        userId,
+        startDate,
+        endDate,
+        format,
+      ] as const,
   },
 } as const;
 

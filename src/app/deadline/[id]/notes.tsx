@@ -247,11 +247,7 @@ const Notes = () => {
       <View style={styles.filterButtonContainer}>
         {selectedHashtagIds.length > 0 && (
           <View style={styles.starIndicator}>
-            <IconSymbol
-              name="star.fill"
-              size={12}
-              color={colors.urgent}
-            />
+            <IconSymbol name="star.fill" size={12} color={colors.urgent} />
           </View>
         )}
         <ThemedIconButton

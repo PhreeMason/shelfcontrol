@@ -18,7 +18,9 @@ import { StyleSheet, View } from 'react-native';
  * @param status - The overall status
  * @returns Icon name for the status
  */
-const getStatusIcon = (status: 'ahead' | 'onTrack' | 'behind'): IconSymbolName => {
+const getStatusIcon = (
+  status: 'ahead' | 'onTrack' | 'behind'
+): IconSymbolName => {
   if (status === 'ahead') return 'checkmark';
   if (status === 'onTrack') return 'arrow.up.right';
   return 'exclamationmark.triangle';
@@ -158,7 +160,7 @@ export function WeeklyStatsCard({
     },
   };
 
-  const statusIcon = getStatusIcon(stats.overallStatus)
+  const statusIcon = getStatusIcon(stats.overallStatus);
 
   return (
     <View
@@ -197,12 +199,14 @@ export function WeeklyStatsCard({
               {aheadBehindText}
             </ThemedText>
             <View style={styles.statusLabelContainer}>
-              {statusIcon !== "exclamationmark.triangle" ? <IconSymbol
-                name={getStatusIcon(stats.overallStatus)}
-                size={18}
-                color={statusColors.text}
-                accessibilityLabel={getStatusIconLabel(stats.overallStatus)}
-              /> : null}
+              {statusIcon !== 'exclamationmark.triangle' ? (
+                <IconSymbol
+                  name={getStatusIcon(stats.overallStatus)}
+                  size={18}
+                  color={statusColors.text}
+                  accessibilityLabel={getStatusIconLabel(stats.overallStatus)}
+                />
+              ) : null}
               <ThemedText
                 style={[styles.numberLabel, { color: statusColors.text }]}
               >

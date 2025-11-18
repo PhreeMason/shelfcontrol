@@ -63,9 +63,12 @@ jest.mock('@/components/features/stats/WeeklyListeningCard', () => ({
 jest.mock('@/components/features/stats/MostProductiveReadingDaysCard', () => ({
   MostProductiveReadingDaysCard: 'MostProductiveReadingDaysCard',
 }));
-jest.mock('@/components/features/stats/MostProductiveListeningDaysCard', () => ({
-  MostProductiveListeningDaysCard: 'MostProductiveListeningDaysCard',
-}));
+jest.mock(
+  '@/components/features/stats/MostProductiveListeningDaysCard',
+  () => ({
+    MostProductiveListeningDaysCard: 'MostProductiveListeningDaysCard',
+  })
+);
 jest.mock('@/components/features/stats/CompletedBooksCarousel', () => ({
   CompletedBooksCarousel: 'CompletedBooksCarousel',
 }));

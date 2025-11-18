@@ -66,19 +66,16 @@ export const DeadlineDueCard: React.FC<DeadlineDueCardProps> = React.memo(
         </View>
 
         {/* Content Column */}
-        <View
-          style={[
-            styles.content,
-            { borderColor: colors.border },
-          ]}
-        >
-          <ThemedText typography="bodyLarge" style={styles.bookTitle} numberOfLines={1}>
+        <View style={[styles.content, { borderColor: colors.border }]}>
+          <ThemedText
+            typography="bodyLarge"
+            style={styles.bookTitle}
+            numberOfLines={1}
+          >
             {deadline.book_title}
           </ThemedText>
           <View style={styles.metadataRow}>
-            <ThemedText variant="muted">
-              {statusText}
-            </ThemedText>
+            <ThemedText variant="muted">{statusText}</ThemedText>
             <ThemedText variant="muted" style={styles.separator}>
               •
             </ThemedText>

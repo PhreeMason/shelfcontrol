@@ -140,7 +140,10 @@ export const DeadlineFormStep2Combined = ({
       <ThemedText style={styles.sectionHeader}>BOOK DETAILS</ThemedText>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Book Title <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
         <CustomInput
@@ -158,7 +161,10 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Author
         </ThemedText>
         <CustomInput
@@ -175,20 +181,29 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Status
         </ThemedText>
         <StatusSelector
           selectedStatus={selectedStatus}
           onSelectStatus={onStatusChange}
         />
-        <ThemedText color="textMuted" style={{ marginTop: Spacing.sm, lineHeight: 18 }}>
+        <ThemedText
+          color="textMuted"
+          style={{ marginTop: Spacing.sm, lineHeight: 18 }}
+        >
           Is this book actively being read or pending?
         </ThemedText>
       </View>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Format
         </ThemedText>
         <FormatSelector
@@ -207,7 +222,10 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           {getTotalQuantityLabel()}
         </ThemedText>
         <View style={{ flexDirection: 'row', gap: Spacing.sm }}>
@@ -241,10 +259,15 @@ export const DeadlineFormStep2Combined = ({
 
       {/* ========== ADDITIONAL INFORMATION SECTION ========== */}
       <View style={styles.sectionDivider} />
-      <ThemedText style={styles.sectionHeader}>ADDITIONAL INFORMATION</ThemedText>
+      <ThemedText style={styles.sectionHeader}>
+        ADDITIONAL INFORMATION
+      </ThemedText>
 
       <View style={{ zIndex: 3 }}>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Book Type <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
         <TypeTypeaheadInput
@@ -256,7 +279,10 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View style={{ zIndex: 2 }}>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Source
         </ThemedText>
         <AcquisitionSourceTypeaheadInput
@@ -268,7 +294,10 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View style={{ zIndex: 1 }}>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Publishers
         </ThemedText>
         {publishers.length === 0 ? (
@@ -286,7 +315,10 @@ export const DeadlineFormStep2Combined = ({
         ) : (
           <View style={{ gap: Spacing.md }}>
             {publishers.map((_: string, index: number) => (
-              <View key={index} style={{ flexDirection: 'row', gap: Spacing.sm }}>
+              <View
+                key={index}
+                style={{ flexDirection: 'row', gap: Spacing.sm }}
+              >
                 <View style={{ flex: 1 }}>
                   <CustomInput
                     control={control}
@@ -336,7 +368,10 @@ export const DeadlineFormStep2Combined = ({
             </TouchableOpacity>
           </View>
         )}
-        <ThemedText color="textMuted" style={{ marginTop: Spacing.sm, lineHeight: 18 }}>
+        <ThemedText
+          color="textMuted"
+          style={{ marginTop: Spacing.sm, lineHeight: 18 }}
+        >
           {publishers.length >= 5
             ? 'Maximum of 5 publishers reached'
             : 'Add up to 5 publishers for this book'}
@@ -390,11 +425,17 @@ export const DeadlineFormStep2Combined = ({
           )}
         />
         {deadlineFromPublicationDate && (
-          <ThemedText color="primary" style={[styles.autoFilledIndicator,  { marginTop: Spacing.xs }]}>
+          <ThemedText
+            color="primary"
+            style={[styles.autoFilledIndicator, { marginTop: Spacing.xs }]}
+          >
             ✓ Set to book publication date
           </ThemedText>
         )}
-        <ThemedText color="textMuted" style={{ marginTop: Spacing.sm, lineHeight: 18 }}>
+        <ThemedText
+          color="textMuted"
+          style={{ marginTop: Spacing.sm, lineHeight: 18 }}
+        >
           Past dates will be marked as overdue
         </ThemedText>
       </View>
@@ -482,7 +523,10 @@ export const DeadlineFormStep2Combined = ({
           selectedPriority={selectedPriority}
           onSelectPriority={onPriorityChange}
         />
-        <ThemedText color="textMuted" style={{ marginTop: Spacing.sm, lineHeight: 18 }}>
+        <ThemedText
+          color="textMuted"
+          style={{ marginTop: Spacing.sm, lineHeight: 18 }}
+        >
           Can this date be adjusted if needed?
         </ThemedText>
       </View>

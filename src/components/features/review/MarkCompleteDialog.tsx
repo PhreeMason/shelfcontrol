@@ -45,7 +45,11 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
                 <ThemedText typography="headlineSmall" style={styles.title}>
                   All reviews posted!
                 </ThemedText>
-                <ThemedText typography="bodyMedium" color="textSecondary" style={styles.message}>
+                <ThemedText
+                  typography="bodyMedium"
+                  color="textSecondary"
+                  style={styles.message}
+                >
                   Move this book to Completed?
                 </ThemedText>
                 <View style={styles.buttonContainer}>
@@ -66,7 +70,11 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
                 <ThemedText typography="headlineSmall" style={styles.title}>
                   Just checking
                 </ThemedText>
-                <ThemedText typography="bodyMedium" color="textSecondary" style={styles.message}>
+                <ThemedText
+                  typography="bodyMedium"
+                  color="textSecondary"
+                  style={styles.message}
+                >
                   These platforms don't{'\n'}have checkmarks yet:
                 </ThemedText>
                 <View style={styles.platformList}>
@@ -81,7 +89,10 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
                         },
                       ]}
                     >
-                      <ThemedText typography="titleMedium" style={styles.platformItem}>
+                      <ThemedText
+                        typography="titleMedium"
+                        style={styles.platformItem}
+                      >
                         {platform.platform_name}
                       </ThemedText>
                     </ThemedView>

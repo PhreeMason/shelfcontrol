@@ -104,7 +104,11 @@ export const DeadlineInFlightItem: React.FC<DeadlineInFlightItemProps> = ({
 
       {/* Content */}
       <View style={styles.content}>
-        <ThemedText typography="titleMedium" style={styles.title} numberOfLines={1}>
+        <ThemedText
+          typography="titleMedium"
+          style={styles.title}
+          numberOfLines={1}
+        >
           {bookData?.title || 'Unknown Book'}
         </ThemedText>
         <ThemedText variant="muted">

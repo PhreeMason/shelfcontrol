@@ -292,7 +292,13 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                   { backgroundColor: colors.primary },
                 ]}
               >
-                <ThemedText typography="bodyMedium" style={[styles.sourceBadgeText, { color: colors.textInverse }]}>
+                <ThemedText
+                  typography="bodyMedium"
+                  style={[
+                    styles.sourceBadgeText,
+                    { color: colors.textInverse },
+                  ]}
+                >
                   {deadline.disclosure_source_name}
                 </ThemedText>
               </View>
@@ -416,7 +422,11 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                 ]}
               >
                 {shouldSaveAsTemplate && (
-                  <IconSymbol name="checkmark" size={14} color={colors.textInverse} />
+                  <IconSymbol
+                    name="checkmark"
+                    size={14}
+                    color={colors.textInverse}
+                  />
                 )}
               </View>
               <ThemedText typography="bodyMedium" style={styles.checkboxLabel}>
@@ -465,7 +475,10 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                   },
                 ]}
               >
-                <ThemedText typography="bodyMedium" style={styles.disclosureText}>
+                <ThemedText
+                  typography="bodyMedium"
+                  style={styles.disclosureText}
+                >
                   {currentDisclosure}
                 </ThemedText>
               </View>
@@ -476,7 +489,13 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                     { backgroundColor: colors.success },
                   ]}
                 >
-                  <ThemedText typography="bodyMedium" style={[styles.copySuccessText, { color: colors.textInverse }]}>
+                  <ThemedText
+                    typography="bodyMedium"
+                    style={[
+                      styles.copySuccessText,
+                      { color: colors.textInverse },
+                    ]}
+                  >
                     Copied!
                   </ThemedText>
                 </View>
@@ -536,7 +555,11 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                   ]}
                 />
               </View>
-              <ThemedText typography="bodyMedium" color="textSecondary" style={styles.emptyCta}>
+              <ThemedText
+                typography="bodyMedium"
+                color="textSecondary"
+                style={styles.emptyCta}
+              >
                 Add required disclosure language
               </ThemedText>
             </Pressable>
@@ -544,7 +567,11 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
         </>
       )}
 
-      <ThemedText typography="bodyMedium" color="textSecondary" style={styles.helpText}>
+      <ThemedText
+        typography="bodyMedium"
+        color="textSecondary"
+        style={styles.helpText}
+      >
         Required disclosure language for reviews from this publisher or PR
         company
       </ThemedText>

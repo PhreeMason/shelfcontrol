@@ -23,7 +23,11 @@ const ReviewProgressBar: React.FC<ReviewProgressBarProps> = ({
         <ThemedText typography="bodyMedium" color="textSecondary">
           Reviews Posted
         </ThemedText>
-        <ThemedText typography="bodyMedium" color="primary" style={styles.fraction}>
+        <ThemedText
+          typography="bodyMedium"
+          color="primary"
+          style={styles.fraction}
+        >
           {postedCount}/{totalCount}
         </ThemedText>
       </View>

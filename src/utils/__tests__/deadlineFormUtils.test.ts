@@ -904,7 +904,6 @@ describe('deadlineFormUtils', () => {
       expect(mockTrigger).not.toHaveBeenCalled();
     });
 
-
     it('should submit form on final step', async () => {
       const config = { ...baseConfig, currentStep: 3 };
       const navigation = createFormNavigation(

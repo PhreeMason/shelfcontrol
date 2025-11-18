@@ -5,7 +5,6 @@
  * and maintainability across the application.
  */
 
-
 /**
  * Chart display and layout configuration
  */
