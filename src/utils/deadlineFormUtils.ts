@@ -40,12 +40,13 @@ export interface FormStateConfig {
  */
 export const createFormNavigation = (
   config: FormNavigationConfig,
-  triggerValidation: (fields?: (keyof DeadlineFormData)[]) => Promise<boolean>,
+  _triggerValidation: (fields?: (keyof DeadlineFormData)[]) => Promise<boolean>,
   handleSubmit: () => void,
   _selectedFormat: 'physical' | 'eBook' | 'audio',
   setCurrentStep: (step: number) => void,
-  mode: FormMode,
-  getFormErrors: () => Record<string, any>
+  _mode: FormMode,
+  _getFormErrors: () => Record<string, any>,
+  _setFocus: (field: keyof DeadlineFormData) => void
 ): FormNavigationHandlers => {
   const nextStep = async () => {
     if (config.currentStep < config.totalSteps) {
@@ -54,22 +55,11 @@ export const createFormNavigation = (
       setCurrentStep(config.currentStep + 1);
       return;
     } else {
-      // Final step - validate entire form and submit
-      const isValid = await triggerValidation();
-
-      if (!isValid) {
-        const errors = getFormErrors();
-        const earliestErrorStep = findEarliestErrorStep(errors, mode);
-
-        if (
-          earliestErrorStep !== null &&
-          earliestErrorStep !== config.currentStep
-        ) {
-          setCurrentStep(earliestErrorStep);
-        }
-        return;
-      }
-
+      // Final step - submit form
+      // handleSubmit from react-hook-form will:
+      // 1. Validate all fields and mark them as touched
+      // 2. If valid, call the onSubmit callback
+      // 3. If invalid, show errors and call the error callback
       handleSubmit();
     }
   };
@@ -638,4 +628,59 @@ export const findEarliestErrorStep = (
   }
 
   return earliestStep;
+};
+
+/**
+ * Gets the first error field in display order
+ */
+export const getFirstErrorField = (
+  errors: Record<string, any>,
+  mode: FormMode
+): keyof DeadlineFormData | null => {
+  if (!errors || Object.keys(errors).length === 0) {
+    return null;
+  }
+
+  // Field order matches the form display order
+  const fieldOrder: (keyof DeadlineFormData)[] =
+    mode === 'new'
+      ? [
+          'bookTitle',
+          'bookAuthor',
+          'format',
+          'type',
+          'acquisition_source',
+          'publishers',
+          'totalQuantity',
+          'totalMinutes',
+          'currentProgress',
+          'currentMinutes',
+          'deadline',
+          'flexibility',
+          'status',
+        ]
+      : [
+          'bookTitle',
+          'bookAuthor',
+          'format',
+          'type',
+          'acquisition_source',
+          'publishers',
+          'totalQuantity',
+          'totalMinutes',
+          'currentProgress',
+          'currentMinutes',
+          'deadline',
+          'flexibility',
+          'status',
+        ];
+
+  for (const field of fieldOrder) {
+    if (errors[field]) {
+      return field;
+    }
+  }
+
+  // If no field matches the order, return the first error key
+  return Object.keys(errors)[0] as keyof DeadlineFormData;
 };

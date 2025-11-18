@@ -464,10 +464,6 @@ export const calculateWeeklyReadingStats = (
     const totalTimelineDays = deadlineDate.diff(startDate, 'day');
     if (totalTimelineDays <= 0) continue;
 
-    // REUSE hero card calculation for daily pace
-    const requiredDailyPace = deadline.total_quantity / totalTimelineDays;
-    totalRequiredDailyPace += requiredDailyPace;
-
     // Check if completed this week
     const completionDate = getCompletionDateThisWeek(deadline);
 
@@ -492,6 +488,15 @@ export const calculateWeeklyReadingStats = (
       .map(p => p.current_progress);
     const progressAtStartOfWeek =
       progressBeforeWeek.length > 0 ? Math.max(...progressBeforeWeek) : 0;
+
+    // Calculate forward-looking daily pace from start of week (like daily goals)
+    // This calculates what's needed from the start of this week, not from the original start date
+    const remainingAtStartOfWeek = deadline.total_quantity - progressAtStartOfWeek;
+    const daysLeftFromWeekStart = deadlineDate.diff(weekStart, 'day');
+    const requiredDailyPace = daysLeftFromWeekStart > 0
+      ? remainingAtStartOfWeek / daysLeftFromWeekStart
+      : remainingAtStartOfWeek;
+    totalRequiredDailyPace += requiredDailyPace;
 
     const pagesThisWeek = Math.max(
       0,

@@ -20,7 +20,7 @@ const PaceCalculationInfoComponent = () => {
 
   const infoStyles = useThemedStyles(theme => ({
     section: {
-      borderRadius: 12,
+      borderRadius: theme.borderRadius.lg,
       borderWidth: 1,
       borderColor: theme.colors.border,
       backgroundColor: theme.colors.surface,

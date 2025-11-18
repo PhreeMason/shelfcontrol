@@ -143,7 +143,7 @@ export const DeadlineContactsSection = ({
       <View style={styles.header}>
         <View style={styles.titleColumn}>
           <ThemedText variant="title">Contacts</ThemedText>
-          <ThemedText variant="secondary" style={styles.benefitText}>
+          <ThemedText variant="secondary" style={styles.benefitMargin}>
             Track publisher relationships
           </ThemedText>
         </View>
@@ -162,7 +162,9 @@ export const DeadlineContactsSection = ({
               style={styles.addIcon}
             />
             <ThemedText
-              style={[styles.addButtonText, { color: colors.darkPurple }]}
+              typography="titleMedium"
+              color="darkPurple"
+              style={styles.addButtonText}
             >
               Add
             </ThemedText>
@@ -242,7 +244,11 @@ export const DeadlineContactsSection = ({
                   />
                 </View>
               </View>
-              <ThemedText variant="secondary" style={styles.emptyCta}>
+              <ThemedText
+                typography="labelLarge"
+                color="textSecondary"
+                style={styles.emptyCta}
+              >
                 Add publisher, PR rep, or author contact
               </ThemedText>
             </Pressable>
@@ -250,7 +256,7 @@ export const DeadlineContactsSection = ({
         </View>
       )}
 
-      <ThemedText variant="secondary" style={styles.helpText}>
+      <ThemedText variant="secondary" style={styles.helpTextCenter}>
         Track publisher contacts, PR reps, authors, or coordinators
       </ThemedText>
     </ThemedView>
@@ -277,8 +283,7 @@ const styles = StyleSheet.create({
   titleColumn: {
     flex: 1,
   },
-  benefitText: {
-    fontSize: 14,
+  benefitMargin: {
     marginTop: 2,
   },
   addButton: {
@@ -295,8 +300,6 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   addButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
     transform: [{ translateY: 1 }],
   },
   contactsList: {
@@ -346,11 +349,8 @@ const styles = StyleSheet.create({
   },
   emptyCta: {
     textAlign: 'center',
-    fontSize: 14,
-    fontWeight: '500',
   },
-  helpText: {
-    fontSize: 14,
+  helpTextCenter: {
     textAlign: 'center',
   },
 });

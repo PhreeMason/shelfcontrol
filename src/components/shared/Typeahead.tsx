@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { Typography } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import {
   filterSuggestions,
@@ -94,7 +95,7 @@ const Typeahead = ({
         style={[styles.suggestionItem, { borderBottomColor: borderColor }]}
         onPress={() => handleSelectSuggestion(item)}
       >
-        <Text style={[styles.suggestionText, { color: textColor }]}>
+        <ThemedText typography="bodyLarge">
           {query && matchIndex >= 0 ? (
             <>
               {beforeMatch}
@@ -111,7 +112,7 @@ const Typeahead = ({
           ) : (
             item
           )}
-        </Text>
+        </ThemedText>
       </TouchableOpacity>
     );
   };
@@ -211,13 +212,13 @@ const Typeahead = ({
               style={styles.noResultsContainer}
               onPress={() => handleSelectSuggestion(query)}
             >
-              <ThemedText color="textMuted" style={styles.noResultsText}>
+              <ThemedText typography="bodyMedium" color="textMuted">
                 {noResultsMessage || defaultNoResultsMessage}
               </ThemedText>
             </TouchableOpacity>
           ) : (
             <View style={styles.noResultsContainer}>
-              <ThemedText color="textMuted" style={styles.noResultsText}>
+              <ThemedText typography="bodyMedium" color="textMuted">
                 {noResultsMessage || defaultNoResultsMessage}
               </ThemedText>
             </View>
@@ -250,7 +251,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    fontSize: 16,
+    ...Typography.bodyLarge,
     padding: 16,
   },
   loadingIndicator: {
@@ -280,14 +281,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderBottomWidth: 1,
   },
-  suggestionText: {
-    fontSize: 16,
-  },
   noResultsContainer: {
     padding: 16,
-  },
-  noResultsText: {
-    fontSize: 14,
   },
   error: {
     minHeight: 18,

@@ -1,5 +1,6 @@
 import TodaysProgress from '@/components/progress/TodaysProgress';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { Spacing } from '@/constants/Colors';
 import { useTodaysDeadlines } from '@/hooks/useTodaysDeadlines';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
@@ -84,8 +85,8 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderRadius: 24,
-    padding: 20,
-    marginBottom: 20,
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
     backdropFilter: 'blur(20px)',
     position: 'relative',
     zIndex: 1,
@@ -94,13 +95,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 32,
     elevation: 8,
-    marginHorizontal: 6,
+    marginHorizontal: Spacing.sm,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 16,
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
   },
   title: {
     color: '#8B5A8C',
@@ -110,12 +111,12 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
   },
   progressSection: {
-    gap: 16,
+    gap: Spacing.md,
   },
   emptyStateContainer: {
-    paddingVertical: 20,
+    paddingVertical: Spacing.lg,
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   emptyStateText: {
     fontSize: 16,

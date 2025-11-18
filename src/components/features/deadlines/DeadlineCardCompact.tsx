@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { Spacing } from '@/constants/Colors';
 import { useDeadlineCardViewModel } from '@/hooks/useDeadlineCardViewModel';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
@@ -60,7 +61,7 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <ThemedText style={styles.bookCoverIcon}>
+            <ThemedText typography="headlineLarge">
               {getBookCoverIcon(deadline, countdown.daysLeft)}
             </ThemedText>
           </LinearGradient>
@@ -96,13 +97,19 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
       <View style={styles.infoContainer}>
         {/* Due Date - Split long messages into two lines */}
         {dateDisplay.type === 'single' ? (
-          <ThemedText style={styles.dueDateText}>{dateDisplay.text}</ThemedText>
+          <ThemedText typography="bodySmall" color="textSecondary">
+            {dateDisplay.text}
+          </ThemedText>
         ) : (
           <>
-            <ThemedText style={styles.dueDateText}>
+            <ThemedText typography="bodySmall" color="textSecondary">
               {dateDisplay.label}
             </ThemedText>
-            <ThemedText style={styles.dueDateText}>
+            <ThemedText
+              typography="bodySmall"
+              color="textSecondary"
+              style={styles.dueDateValue}
+            >
               {dateDisplay.value}
             </ThemedText>
           </>
@@ -111,7 +118,9 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
         {/* Pace Required - Only show for active deadlines */}
         {countdown.latestStatus !== 'complete' &&
           countdown.latestStatus !== 'did_not_finish' && (
-            <ThemedText style={styles.primaryText}>{primaryText}</ThemedText>
+            <ThemedText typography="labelMedium" color="text">
+              {primaryText}
+            </ThemedText>
           )}
       </View>
     </Pressable>
@@ -121,8 +130,8 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
 const styles = StyleSheet.create({
   container: {
     width: '30%',
-    marginBottom: 16,
-    paddingHorizontal: 4,
+    marginBottom: Spacing.md,
+    paddingHorizontal: Spacing.xs,
     position: 'relative',
   },
   coverContainer: {
@@ -142,7 +151,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   progressBarContainer: {
-    marginTop: 6,
+    marginTop: Spacing.sm,
     paddingHorizontal: 2,
     height: 4,
     backgroundColor: 'rgba(0, 0, 0, 0.15)',
@@ -157,22 +166,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bookCoverIcon: {
-    fontSize: 32,
-  },
   infoContainer: {
-    marginTop: 6,
+    marginTop: 2,
     paddingLeft: 2,
   },
-  dueDateText: {
-    fontSize: 11,
-    color: '#6B7280',
-    marginBottom: 2,
-    fontWeight: '500',
-  },
-  primaryText: {
-    fontSize: 12,
-    color: '#2B3D4F',
-    fontWeight: '600',
+  dueDateValue: {
+    marginTop: Spacing.negative.xs,
   },
 });

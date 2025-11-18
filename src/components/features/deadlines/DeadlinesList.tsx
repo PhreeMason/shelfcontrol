@@ -2,6 +2,7 @@ import { DeadlineCard } from '@/components/features/deadlines/DeadlineCard';
 import { ViewToggleControl } from '@/components/features/deadlines/ViewToggleControl';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Spacing, Typography } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { usePreferences } from '@/providers/PreferencesProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -33,7 +34,7 @@ const DeadlinesList: React.FC<DeadlinesListProps> = ({
     if (isLoading) {
       return (
         <ThemedView style={styles.centerContainer}>
-          <ThemedText style={styles.loadingText}>Loading books...</ThemedText>
+          <ThemedText typography="bodyMedium" style={styles.loadingText}>Loading books...</ThemedText>
         </ThemedView>
       );
     }
@@ -41,7 +42,7 @@ const DeadlinesList: React.FC<DeadlinesListProps> = ({
     if (error) {
       return (
         <ThemedView style={styles.centerContainer}>
-          <ThemedText style={styles.errorText}>
+          <ThemedText typography="bodyMedium" color="error" style={styles.errorText}>
             Error loading deadlines: {error.message}
           </ThemedText>
         </ThemedView>
@@ -51,7 +52,7 @@ const DeadlinesList: React.FC<DeadlinesListProps> = ({
     if (deadlines.length === 0) {
       return (
         <ThemedView style={styles.centerContainer}>
-          <ThemedText style={styles.emptyText}>{emptyMessage}</ThemedText>
+          <ThemedText typography="bodyMedium" style={styles.emptyText}>{emptyMessage}</ThemedText>
         </ThemedView>
       );
     }
@@ -134,8 +135,8 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 15,
-    paddingVertical: 0,
+    ...Typography.bodyLarge,
+    paddingVertical: Spacing.xs,
   },
   clearButton: {
     padding: 4,
@@ -158,18 +159,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   emptyText: {
-    fontSize: 14,
     textAlign: 'center',
     fontStyle: 'italic',
     opacity: 0.7,
   },
   errorText: {
-    fontSize: 14,
     textAlign: 'center',
-    color: '#ff4444',
   },
   loadingText: {
-    fontSize: 14,
     textAlign: 'center',
     opacity: 0.7,
   },

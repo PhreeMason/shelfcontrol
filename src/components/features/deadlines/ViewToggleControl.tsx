@@ -1,4 +1,5 @@
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import {
   DeadlineViewMode,
@@ -65,12 +66,11 @@ const styles = StyleSheet.create({
   toggleContainer: {
     flexDirection: 'row',
     borderRadius: 8,
-    padding: 2,
-    gap: 2,
+    padding: Spacing.xs,
   },
   toggleButton: {
-    width: 36,
-    height: 36,
+    width: 40,
+    height: 40,
     borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',

@@ -43,9 +43,7 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
           }
         >
           <IconSymbol name="book.fill" size={20} color={colors.surface} />
-          <ThemedText
-            style={[styles.primaryActionText, { color: colors.surface }]}
-          >
+          <ThemedText typography="titleMediumPlus" style={{ color: colors.surface }}>
             Start Reading
           </ThemedText>
         </TouchableOpacity>
@@ -80,9 +78,7 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
           }
         >
           <IconSymbol name="play.fill" size={20} color={colors.surface} />
-          <ThemedText
-            style={[styles.primaryActionText, { color: colors.surface }]}
-          >
+          <ThemedText typography="titleMediumPlus" style={{ color: colors.surface }}>
             Resume Reading
           </ThemedText>
         </TouchableOpacity>
@@ -102,19 +98,15 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
-  primaryActionText: {
-    fontSize: 17,
-    fontWeight: '600',
-  },
   primaryActionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    gap: 8,
-    marginTop: 25,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    gap: Spacing.sm,
+    marginTop: Spacing.xl,
   },
 });
 

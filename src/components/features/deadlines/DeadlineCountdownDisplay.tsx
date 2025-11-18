@@ -145,6 +145,7 @@ const styles = StyleSheet.create({
   },
   countdownLabel: {
     fontSize: 13,
+    lineHeight: 16,
     fontWeight: '600',
     opacity: 0.8,
     marginTop: Platform.select({ ios: -5, android: -2 }),

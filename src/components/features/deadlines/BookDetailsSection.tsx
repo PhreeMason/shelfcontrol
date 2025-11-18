@@ -1,5 +1,6 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { BorderRadius, Spacing } from '@/constants/Colors';
+import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import React from 'react';
@@ -15,6 +16,8 @@ const BookDetailsSection = ({
 }: {
   deadline: ReadingDeadlineWithProgress;
 }) => {
+  const { colors } = useTheme();
+
   return (
     <ThemedView style={styles.section}>
       <ThemedView style={styles.sectionTitle}>
@@ -22,65 +25,112 @@ const BookDetailsSection = ({
       </ThemedView>
 
       <ThemedView style={styles.detailsGrid}>
-        <ThemedView style={styles.detailRow}>
-          <ThemedText variant="secondary" style={styles.detailLabel}>
-            Author
-          </ThemedText>
-          <ThemedText style={styles.detailsValue}>
+        <ThemedView
+          style={[
+            styles.detailRow,
+            {
+              backgroundColor: colors.surfaceVariant,
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <ThemedText variant="secondary">Author</ThemedText>
+          <ThemedText typography="bodyLarge" style={styles.detailsValue}>
             {deadline.author || 'Unknown'}
           </ThemedText>
         </ThemedView>
         {deadline.publishers &&
           deadline.publishers.length > 0 &&
           deadline.publishers.map((publisher, index) => (
-            <ThemedView key={index} style={styles.detailRow}>
-              <ThemedText variant="secondary" style={styles.detailLabel}>
+            <ThemedView
+              key={index}
+              style={[
+                styles.detailRow,
+                {
+                  backgroundColor: colors.surfaceVariant,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
+              <ThemedText variant="secondary">
                 {index === 0 ? 'Publisher' : `Publisher ${index + 1}`}
               </ThemedText>
-              <ThemedText style={styles.detailsValue}>{publisher}</ThemedText>
+              <ThemedText typography="bodyLarge" style={styles.detailsValue}>
+                {publisher}
+              </ThemedText>
             </ThemedView>
           ))}
-        <ThemedView style={styles.detailRow}>
-          <ThemedText variant="secondary" style={styles.detailLabel}>
-            Format
-          </ThemedText>
-          <ThemedText style={styles.detailsValue}>
+        <ThemedView
+          style={[
+            styles.detailRow,
+            {
+              backgroundColor: colors.surfaceVariant,
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <ThemedText variant="secondary">Format</ThemedText>
+          <ThemedText typography="bodyLarge" style={styles.detailsValue}>
             {deadline.format.toLowerCase() === 'ebook'
               ? 'eBook'
               : makeUpperCaseFirstLetter(deadline.format)}
           </ThemedText>
         </ThemedView>
-        <ThemedView style={styles.detailRow}>
-          <ThemedText variant="secondary" style={styles.detailLabel}>
-            Priority
-          </ThemedText>
-          <ThemedText style={styles.detailsValue}>
+        <ThemedView
+          style={[
+            styles.detailRow,
+            {
+              backgroundColor: colors.surfaceVariant,
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <ThemedText variant="secondary">Priority</ThemedText>
+          <ThemedText typography="bodyLarge" style={styles.detailsValue}>
             {makeUpperCaseFirstLetter(deadline.flexibility)}
           </ThemedText>
         </ThemedView>
-        <ThemedView style={styles.detailRow}>
-          <ThemedText variant="secondary" style={styles.detailLabel}>
-            Type
-          </ThemedText>
-          <ThemedText style={styles.detailsValue}>
+        <ThemedView
+          style={[
+            styles.detailRow,
+            {
+              backgroundColor: colors.surfaceVariant,
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <ThemedText variant="secondary">Type</ThemedText>
+          <ThemedText typography="bodyLarge" style={styles.detailsValue}>
             {deadline.type || deadline.source
               ? makeUpperCaseFirstLetter(deadline.type || deadline.source)
               : ''}
           </ThemedText>
         </ThemedView>
-        <ThemedView style={styles.detailRow}>
-          <ThemedText variant="secondary" style={styles.detailLabel}>
-            Deadline
-          </ThemedText>
-          <ThemedText style={styles.detailsValue}>
+        <ThemedView
+          style={[
+            styles.detailRow,
+            {
+              backgroundColor: colors.surfaceVariant,
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <ThemedText variant="secondary">Deadline</ThemedText>
+          <ThemedText typography="bodyLarge" style={styles.detailsValue}>
             {dayjs(deadline.deadline_date).format('MMMM D, YYYY')}
           </ThemedText>
         </ThemedView>
-        <ThemedView style={styles.detailRow}>
-          <ThemedText variant="secondary" style={styles.detailLabel}>
-            Added
-          </ThemedText>
-          <ThemedText style={styles.detailsValue}>
+        <ThemedView
+          style={[
+            styles.detailRow,
+            {
+              backgroundColor: colors.surfaceVariant,
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <ThemedText variant="secondary">Added</ThemedText>
+          <ThemedText typography="bodyLarge" style={styles.detailsValue}>
             {dayjs(deadline.created_at || '').format('MMMM D, YYYY')}
           </ThemedText>
         </ThemedView>
@@ -108,9 +158,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     gap: 8,
   },
-  sectionIcon: {
-    fontSize: 18,
-  },
   detailsGrid: {
     gap: 12,
   },
@@ -120,16 +167,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: 'rgba(232, 194, 185, 0.05)',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(232, 194, 185, 0.1)',
-  },
-  detailLabel: {
-    fontSize: 15,
   },
   detailsValue: {
     fontWeight: '600',
-    fontSize: 15,
   },
 });

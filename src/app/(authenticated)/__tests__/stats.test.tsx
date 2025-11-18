@@ -1,8 +1,8 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
-import Stats from '../stats';
 import * as deadlineUtils from '@/utils/deadlineUtils';
 import * as statsUtils from '@/utils/statsUtils';
+import { fireEvent, render } from '@testing-library/react-native';
+import React from 'react';
+import Stats from '../stats';
 
 // Mock the DeadlineProvider
 jest.mock('@/providers/DeadlineProvider', () => ({
@@ -66,7 +66,7 @@ jest.mock('@/components/features/stats/MostProductiveReadingDaysCard', () => ({
 jest.mock('@/components/features/stats/MostProductiveListeningDaysCard', () => ({
   MostProductiveListeningDaysCard: 'MostProductiveListeningDaysCard',
 }));
-jest.mock('@/components/features/profile/CompletedBooksCarousel', () => ({
+jest.mock('@/components/features/stats/CompletedBooksCarousel', () => ({
   CompletedBooksCarousel: 'CompletedBooksCarousel',
 }));
 

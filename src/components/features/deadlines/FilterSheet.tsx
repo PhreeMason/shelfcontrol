@@ -341,7 +341,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             showsVerticalScrollIndicator={true}
           >
             <View style={styles.header}>
-              <ThemedText style={styles.title}>
+              <ThemedText typography="titleSubLarge" style={styles.title}>
                 Filter {getFilterDisplayName(selectedFilter)}
               </ThemedText>
               <View style={styles.headerActions}>
@@ -351,6 +351,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
                     style={styles.clearButton}
                   >
                     <ThemedText
+                      typography="titleMedium"
                       style={[styles.closeButton, { color: colors.darkPink }]}
                     >
                       Clear All
@@ -358,13 +359,13 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity onPress={onClose}>
-                  <ThemedText style={styles.closeButton}>Done</ThemedText>
+                  <ThemedText typography="titleMedium" style={styles.closeButton}>Done</ThemedText>
                 </TouchableOpacity>
               </View>
             </View>
 
             <View style={styles.section}>
-              <ThemedText style={styles.sectionTitle}>Due Date</ThemedText>
+              <ThemedText typography="titleMedium" style={styles.sectionTitle}>Due Date</ThemedText>
               <View style={styles.filterRow}>
                 {(['all', 'thisWeek', 'thisMonth'] as TimeRangeFilter[]).map(
                   range => {
@@ -392,7 +393,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             </View>
 
             <View style={styles.section}>
-              <ThemedText style={styles.sectionTitle}>Format</ThemedText>
+              <ThemedText typography="titleMedium" style={styles.sectionTitle}>Format</ThemedText>
               <View style={styles.filterRow}>
                 <ThemedButton
                   title={`All ${deadlines.length}`}
@@ -422,7 +423,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             </View>
 
             <View style={styles.section}>
-              <ThemedText style={styles.sectionTitle}>Page Count</ThemedText>
+              <ThemedText typography="titleMedium" style={styles.sectionTitle}>Page Count</ThemedText>
               <View style={styles.filterRow}>
                 <ThemedButton
                   title={`All ${deadlines.length}`}
@@ -454,7 +455,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             </View>
 
             <View style={styles.section}>
-              <ThemedText style={styles.sectionTitle}>Type</ThemedText>
+              <ThemedText typography="titleMedium" style={styles.sectionTitle}>Type</ThemedText>
               <View style={styles.filterRow}>
                 <ThemedButton
                   title={`All ${deadlines.length}`}
@@ -481,7 +482,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             </View>
 
             <View style={styles.section}>
-              <ThemedText style={styles.sectionTitle}>Tags</ThemedText>
+              <ThemedText typography="titleMedium" style={styles.sectionTitle}>Tags</ThemedText>
               <ScrollView
                 style={styles.tagsScrollView}
                 showsVerticalScrollIndicator={true}
@@ -519,7 +520,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
 
             {selectedFilter === 'all' && (
               <View style={styles.section}>
-                <ThemedText style={styles.sectionTitle}>
+                <ThemedText typography="titleMedium" style={styles.sectionTitle}>
                   Exclude Statuses
                 </ThemedText>
                 <View style={styles.filterRow}>
@@ -563,7 +564,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             )}
 
             <View style={styles.section}>
-              <ThemedText style={styles.sectionTitle}>Sort By</ThemedText>
+              <ThemedText typography="titleMedium" style={styles.sectionTitle}>Sort By</ThemedText>
               <View style={styles.filterRow}>
                 {(selectedFilter === 'all'
                   ? [
@@ -652,19 +653,15 @@ const styles = StyleSheet.create({
     marginRight: 0,
   },
   title: {
-    fontSize: 20,
-    lineHeight: 24,
     fontWeight: '700',
   },
   closeButton: {
-    fontSize: 16,
     fontWeight: '600',
   },
   section: {
     marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: 16,
     fontWeight: '600',
     marginBottom: 12,
   },

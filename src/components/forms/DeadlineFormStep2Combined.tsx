@@ -3,6 +3,7 @@ import CustomInput from '@/components/shared/CustomInput';
 import TypeTypeaheadInput from '@/components/shared/TypeTypeaheadInput';
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import { toTitleCase } from '@/utils/stringUtils';
@@ -134,12 +135,12 @@ export const DeadlineFormStep2Combined = ({
   const isEditMode = mode === 'edit';
 
   return (
-    <View style={{ flex: 1, gap: 24 }}>
+    <View style={{ flex: 1, gap: Spacing.lg }}>
       {/* ========== BOOK DETAILS SECTION ========== */}
       <ThemedText style={styles.sectionHeader}>BOOK DETAILS</ThemedText>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
+        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
           Book Title <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
         <CustomInput
@@ -157,7 +158,7 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
+        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
           Author
         </ThemedText>
         <CustomInput
@@ -174,20 +175,20 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
+        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
           Status
         </ThemedText>
         <StatusSelector
           selectedStatus={selectedStatus}
           onSelectStatus={onStatusChange}
         />
-        <ThemedText color="textMuted" style={{ marginTop: 6, lineHeight: 18 }}>
+        <ThemedText color="textMuted" style={{ marginTop: Spacing.sm, lineHeight: 18 }}>
           Is this book actively being read or pending?
         </ThemedText>
       </View>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
+        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
           Format
         </ThemedText>
         <FormatSelector
@@ -198,7 +199,7 @@ export const DeadlineFormStep2Combined = ({
         {isEditMode ? (
           <ThemedText
             color="textMuted"
-            style={{ marginTop: 6, lineHeight: 18 }}
+            style={{ marginTop: Spacing.sm, lineHeight: 18 }}
           >
             Format cannot be changed after creation
           </ThemedText>
@@ -206,10 +207,10 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
+        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
           {getTotalQuantityLabel()}
         </ThemedText>
-        <View style={{ flexDirection: 'row', gap: 10 }}>
+        <View style={{ flexDirection: 'row', gap: Spacing.sm }}>
           <View style={{ flex: 1 }}>
             <CustomInput
               control={control}
@@ -243,7 +244,7 @@ export const DeadlineFormStep2Combined = ({
       <ThemedText style={styles.sectionHeader}>ADDITIONAL INFORMATION</ThemedText>
 
       <View style={{ zIndex: 3 }}>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
+        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
           Book Type <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
         <TypeTypeaheadInput
@@ -255,7 +256,7 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View style={{ zIndex: 2 }}>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
+        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
           Source
         </ThemedText>
         <AcquisitionSourceTypeaheadInput
@@ -267,7 +268,7 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View style={{ zIndex: 1 }}>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: 8 }}>
+        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
           Publishers
         </ThemedText>
         {publishers.length === 0 ? (
@@ -283,9 +284,9 @@ export const DeadlineFormStep2Combined = ({
             <ThemedText color="primary">Add Publisher</ThemedText>
           </TouchableOpacity>
         ) : (
-          <View style={{ gap: 12 }}>
+          <View style={{ gap: Spacing.md }}>
             {publishers.map((_: string, index: number) => (
-              <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
+              <View key={index} style={{ flexDirection: 'row', gap: Spacing.sm }}>
                 <View style={{ flex: 1 }}>
                   <CustomInput
                     control={control}
@@ -335,7 +336,7 @@ export const DeadlineFormStep2Combined = ({
             </TouchableOpacity>
           </View>
         )}
-        <ThemedText color="textMuted" style={{ marginTop: 6, lineHeight: 18 }}>
+        <ThemedText color="textMuted" style={{ marginTop: Spacing.sm, lineHeight: 18 }}>
           {publishers.length >= 5
             ? 'Maximum of 5 publishers reached'
             : 'Add up to 5 publishers for this book'}
@@ -347,7 +348,7 @@ export const DeadlineFormStep2Combined = ({
       <ThemedText style={styles.sectionHeader}>READING SCHEDULE</ThemedText>
 
       <View>
-        <ThemedText variant="default" style={{ marginBottom: 8 }}>
+        <ThemedText variant="default" style={{ marginBottom: Spacing.sm }}>
           Due Date <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
         <Controller
@@ -389,20 +390,20 @@ export const DeadlineFormStep2Combined = ({
           )}
         />
         {deadlineFromPublicationDate && (
-          <ThemedText color="primary" style={[styles.autoFilledIndicator,  { marginTop: 5 }]}>
+          <ThemedText color="primary" style={[styles.autoFilledIndicator,  { marginTop: Spacing.xs }]}>
             ✓ Set to book publication date
           </ThemedText>
         )}
-        <ThemedText color="textMuted" style={{ marginTop: 6, lineHeight: 18 }}>
+        <ThemedText color="textMuted" style={{ marginTop: Spacing.sm, lineHeight: 18 }}>
           Past dates will be marked as overdue
         </ThemedText>
       </View>
 
       <View>
-        <ThemedText variant="default" style={{ marginBottom: 8 }}>
+        <ThemedText variant="default" style={{ marginBottom: Spacing.sm }}>
           {getProgressLabel()}
         </ThemedText>
-        <View style={{ flexDirection: 'row', gap: 10 }}>
+        <View style={{ flexDirection: 'row', gap: Spacing.sm }}>
           <View style={{ flex: 1 }}>
             <CustomInput
               control={control}
@@ -431,7 +432,7 @@ export const DeadlineFormStep2Combined = ({
         {hasExistingProgressRecords && (
           <ThemedText
             color="textMuted"
-            style={{ marginTop: 6, lineHeight: 18 }}
+            style={{ marginTop: Spacing.sm, lineHeight: 18 }}
           >
             Starting progress cannot be changed after progress records have been
             added
@@ -448,9 +449,9 @@ export const DeadlineFormStep2Combined = ({
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    gap: 12,
-                    marginTop: -12,
-                    marginBottom: 6,
+                    gap: Spacing.md,
+                    marginTop: Spacing.negative.md,
+                    marginBottom: Spacing.sm,
                   }}
                 >
                   <Switch
@@ -474,14 +475,14 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View>
-        <ThemedText variant="default" style={{ marginBottom: 8 }}>
+        <ThemedText variant="default" style={{ marginBottom: Spacing.sm }}>
           Due Date Flexibility
         </ThemedText>
         <PrioritySelector
           selectedPriority={selectedPriority}
           onSelectPriority={onPriorityChange}
         />
-        <ThemedText color="textMuted" style={{ marginTop: 6, lineHeight: 18 }}>
+        <ThemedText color="textMuted" style={{ marginTop: Spacing.sm, lineHeight: 18 }}>
           Can this date be adjusted if needed?
         </ThemedText>
       </View>
@@ -526,51 +527,51 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 14,
     fontWeight: '600',
-    marginTop: 8,
-    marginBottom: -8,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.negative.sm,
     opacity: 0.7,
     letterSpacing: 0.5,
   },
   sectionDivider: {
-    height: 16,
+    height: Spacing.md,
   },
   autoFilledIndicator: {
     fontSize: 12,
     fontWeight: '500',
-    marginTop: -15,
+    marginTop: Spacing.negative.md,
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderRadius: 12,
-    paddingVertical: 12,
-    gap: 8,
+    borderRadius: BorderRadius.lg,
+    paddingVertical: Spacing.md,
+    gap: Spacing.sm,
   },
   removeButton: {
     width: 56,
     height: 56,
     borderWidth: 2,
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   dateInput: {
     borderWidth: 2,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
   },
   summaryCard: {
-    borderRadius: 16,
-    padding: 20,
-    marginTop: 8,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
+    marginTop: Spacing.sm,
     borderWidth: 2,
   },
   summaryTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   summaryText: {
     fontSize: 14,

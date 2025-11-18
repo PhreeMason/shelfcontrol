@@ -1,5 +1,6 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
-import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
+import { BorderRadius, Spacing } from '@/constants/Colors';
+import { useTheme } from '@/hooks/useThemeColor';
 import { formatProgressDisplay } from '@/utils/deadlineUtils';
 import React, { useState } from 'react';
 import { Modal, Pressable, StyleSheet } from 'react-native';
@@ -23,6 +24,7 @@ const ProgressCheckDialog: React.FC<ProgressCheckDialogProps> = ({
   onDidNotFinish,
   onClose,
 }) => {
+  const { colors } = useTheme();
   const [selectedOption, setSelectedOption] = useState<
     'finished' | 'dnf' | null
   >(null);
@@ -45,12 +47,18 @@ const ProgressCheckDialog: React.FC<ProgressCheckDialogProps> = ({
     >
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable onPress={e => e.stopPropagation()}>
-          <ThemedView style={styles.dialog}>
-            <ThemedText variant="title" style={styles.title}>
+          <ThemedView
+            style={[styles.dialog, { backgroundColor: colors.surface }]}
+          >
+            <ThemedText typography="titleSubLarge" style={styles.title}>
               Did you finish all {formatProgressDisplay(format, totalPages)}?
             </ThemedText>
 
-            <ThemedText variant="default" style={styles.subtitle}>
+            <ThemedText
+              variant="default"
+              color="textSecondary"
+              style={styles.subtitle}
+            >
               You're currently at{' '}
               {formatProgressDisplay(format, currentProgress)}/
               {formatProgressDisplay(format, totalPages)}.
@@ -61,15 +69,21 @@ const ProgressCheckDialog: React.FC<ProgressCheckDialogProps> = ({
                 onPress={() => setSelectedOption('finished')}
                 style={[
                   styles.selectionButton,
-                  selectedOption === 'finished' &&
-                    styles.selectionButtonSelected,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface,
+                  },
+                  selectedOption === 'finished' && {
+                    backgroundColor: colors.primaryContainer,
+                    borderColor: colors.primary,
+                  },
                 ]}
               >
                 <ThemedText
+                  typography="titleMedium"
                   style={[
                     styles.selectionButtonText,
-                    selectedOption === 'finished' &&
-                      styles.selectionButtonTextSelected,
+                    selectedOption === 'finished' && { color: colors.primary },
                   ]}
                 >
                   {isAudiobook
@@ -82,14 +96,21 @@ const ProgressCheckDialog: React.FC<ProgressCheckDialogProps> = ({
                 onPress={() => setSelectedOption('dnf')}
                 style={[
                   styles.selectionButton,
-                  selectedOption === 'dnf' && styles.selectionButtonSelected,
+                  {
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface,
+                  },
+                  selectedOption === 'dnf' && {
+                    backgroundColor: colors.primaryContainer,
+                    borderColor: colors.primary,
+                  },
                 ]}
               >
                 <ThemedText
+                  typography="titleMedium"
                   style={[
                     styles.selectionButtonText,
-                    selectedOption === 'dnf' &&
-                      styles.selectionButtonTextSelected,
+                    selectedOption === 'dnf' && { color: colors.primary },
                   ]}
                 >
                   No, I didn't finish everything
@@ -126,7 +147,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dialog: {
-    backgroundColor: Colors.light.surface,
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
     width: '90%',
@@ -135,12 +155,8 @@ const styles = StyleSheet.create({
   title: {
     marginBottom: Spacing.md,
     textAlign: 'center',
-    fontSize: 20,
-    lineHeight: 24,
-    fontWeight: '700',
   },
   subtitle: {
-    color: Colors.light.textSecondary,
     marginBottom: Spacing.xl,
     textAlign: 'center',
   },
@@ -153,21 +169,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     borderRadius: BorderRadius.md,
     borderWidth: 2,
-    borderColor: Colors.light.border,
-    backgroundColor: Colors.light.surface,
-  },
-  selectionButtonSelected: {
-    backgroundColor: Colors.light.primary + '20',
-    borderColor: Colors.light.primary,
   },
   selectionButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.light.text,
     textAlign: 'center',
-  },
-  selectionButtonTextSelected: {
-    color: Colors.light.darkPurple,
   },
   confirmationContainer: {
     marginTop: Spacing.lg,

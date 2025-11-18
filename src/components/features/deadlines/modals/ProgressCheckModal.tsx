@@ -1,6 +1,7 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Spacing } from '@/constants/Colors';
 import { useUpdateDeadlineProgress } from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -302,11 +303,11 @@ const styles = StyleSheet.create({
   sheet: {
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    paddingTop: 24,
-    paddingHorizontal: 20,
+    paddingTop: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
   },
   content: {
-    gap: 20,
+    gap: Spacing.lg,
   },
   title: {
     fontSize: 24,
@@ -317,20 +318,20 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     textAlign: 'center',
-    marginTop: -12,
+    marginTop: Spacing.negative.md,
   },
   optionsContainer: {
-    gap: 16,
+    gap: Spacing.md,
   },
   optionButton: {
     borderRadius: 12,
     borderWidth: 2,
-    padding: 16,
+    padding: Spacing.md,
   },
   optionContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: Spacing.md,
   },
   iconContainer: {
     width: 44,
@@ -341,7 +342,7 @@ const styles = StyleSheet.create({
   },
   optionTextContainer: {
     flex: 1,
-    gap: 4,
+    gap: Spacing.xs,
   },
   optionTitle: {
     fontSize: 17,
@@ -352,11 +353,11 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 8,
+    gap: Spacing.md,
+    marginTop: Spacing.sm,
   },
   button: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
   },
 });

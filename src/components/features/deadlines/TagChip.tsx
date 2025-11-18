@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Typography } from '@/constants/Colors';
 import { TagWithDetails } from '@/types/tags.types';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -43,7 +44,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   text: {
-    fontSize: 14,
-    fontWeight: '600',
+    ...Typography.titleSmall,
   },
 });

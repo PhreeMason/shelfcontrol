@@ -1,5 +1,7 @@
 import { ThemedText, ThemedView } from '@/components/themed';
+import { Spacing } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
+import { useTheme } from '@/hooks/useThemeColor';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   getBookCoverIcon,
@@ -58,7 +60,7 @@ const BookCover: React.FC<{
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <ThemedText style={styles.bookCoverIcon}>
+        <ThemedText typography="headlineSmall">
           {getBookCoverIcon(deadline, 0)}
         </ThemedText>
       </LinearGradient>
@@ -70,14 +72,23 @@ export const CompletedBooksCarousel: React.FC<CompletedBooksCarouselProps> = ({
   completedDeadlines,
   isLoading,
 }) => {
+  const { colors, borderRadius } = useTheme();
+
+  const dynamicStyles = {
+    container: {
+      backgroundColor: colors.surface,
+      borderRadius: borderRadius.lg,
+    },
+  };
+
   if (isLoading) {
     return (
-      <ThemedView style={styles.container}>
-        <ThemedText style={styles.sectionTitle}>
+      <ThemedView style={[styles.container, dynamicStyles.container]}>
+        <ThemedText typography="titleMediumPlus" style={styles.sectionTitle}>
           Books finished this year
         </ThemedText>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#6366f1" />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </ThemedView>
     );
@@ -85,21 +96,20 @@ export const CompletedBooksCarousel: React.FC<CompletedBooksCarouselProps> = ({
 
   if (completedDeadlines.length === 0) {
     return (
-      <ThemedView style={styles.container}>
-        <ThemedText style={styles.sectionTitle}>
+      <ThemedView style={[styles.container, dynamicStyles.container]}>
+        <ThemedText typography="titleMediumPlus" style={styles.sectionTitle}>
           Books finished this year
         </ThemedText>
-        <ThemedText style={styles.emptyStateText}>
-          No completed books yet. Finish your first reading deadline to see it
-          here!
+        <ThemedText variant="secondary" style={styles.emptyStateText}>
+          No completed books yet.
         </ThemedText>
       </ThemedView>
     );
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText style={styles.sectionTitle}>
+    <ThemedView style={[styles.container, dynamicStyles.container]}>
+      <ThemedText typography="titleMediumPlus" style={styles.sectionTitle}>
         Books completed: {completedDeadlines.length}
       </ThemedText>
       <ScrollView
@@ -120,24 +130,20 @@ export const CompletedBooksCarousel: React.FC<CompletedBooksCarouselProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f8f9fa',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 16,
+    marginBottom: Spacing.md,
   },
   scrollView: {
-    marginHorizontal: -20,
+    marginHorizontal: Spacing.negative.lg,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.lg,
   },
   bookCoverWrapper: {
-    marginRight: 12,
+    marginRight: Spacing.md,
   },
   bookCover: {
     width: 80,
@@ -146,17 +152,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bookCoverIcon: {
-    fontSize: 24,
-  },
   loadingContainer: {
     height: 120,
     justifyContent: 'center',
     alignItems: 'center',
   },
   emptyStateText: {
-    fontSize: 14,
-    color: '#6b7280',
     textAlign: 'center',
   },
 });

@@ -96,7 +96,7 @@ export const DeadlineInFlightItem: React.FC<DeadlineInFlightItemProps> = ({
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <ThemedText style={styles.coverIcon}>
+          <ThemedText typography="titleSubLarge">
             {getBookCoverIcon(deadline, 0)}
           </ThemedText>
         </LinearGradient>
@@ -104,10 +104,10 @@ export const DeadlineInFlightItem: React.FC<DeadlineInFlightItemProps> = ({
 
       {/* Content */}
       <View style={styles.content}>
-        <ThemedText style={styles.title} numberOfLines={1}>
+        <ThemedText typography="titleMedium" style={styles.title} numberOfLines={1}>
           {bookData?.title || 'Unknown Book'}
         </ThemedText>
-        <ThemedText variant="muted" style={[styles.info]}>
+        <ThemedText variant="muted">
           {remainingText} • {daysText}
         </ThemedText>
       </View>
@@ -133,19 +133,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  coverIcon: {
-    fontSize: 20,
-  },
   content: {
     flex: 1,
     justifyContent: 'center',
   },
   title: {
-    fontSize: 16,
-    fontWeight: '500',
     marginBottom: 4,
-  },
-  info: {
-    fontSize: 14,
   },
 });

@@ -42,10 +42,10 @@ export const ReviewTimelineSection: React.FC<ReviewTimelineSectionProps> = ({
       testID="timeline-section"
     >
       <ThemedView style={styles.section}>
-        <ThemedText variant="title" style={styles.sectionHeader}>
-          Review Timeline
+        <ThemedText typography="titleMediumPlus" style={styles.sectionHeader}>
+          When will you review?
         </ThemedText>
-        <ThemedView style={styles.radioGroup}>
+        <ThemedView>
           <TouchableOpacity
             style={[
               styles.radioOption,
@@ -78,10 +78,53 @@ export const ReviewTimelineSection: React.FC<ReviewTimelineSectionProps> = ({
                 />
               )}
             </View>
-            <ThemedText style={styles.radioLabel}>
-              Yes, I have a review due date
+            <ThemedText typography="bodyMedium" style={styles.radioLabel}>
+              I have a due date
             </ThemedText>
           </TouchableOpacity>
+          {watchHasDeadline && watchReviewDueDate && (
+          <ThemedView style={styles.datePickerContainer}>
+            <TouchableOpacity
+              style={[
+                styles.dateInput,
+                {
+                  backgroundColor: colors.surfaceVariant,
+                  borderColor: colors.border,
+                },
+              ]}
+              onPress={() => setShowDatePicker(true)}
+              testID="date-picker-trigger"
+            >
+              <IconSymbol
+                name="calendar"
+                size={20}
+                color={colors.primary}
+              />
+              <ThemedText typography="bodyMedium" style={styles.dateText}>
+                {watchReviewDueDate.toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </ThemedText>
+            </TouchableOpacity>
+            {isPastDate && (
+              <ThemedText typography="bodySmall" color="error" style={styles.warningText}>
+                This date is in the past
+              </ThemedText>
+            )}
+            {showDatePicker && (
+              <DateTimePicker
+                themeVariant="light"
+                value={watchReviewDueDate}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                onChange={onDateChange}
+              />
+            )}
+          </ThemedView>
+        )}
           <TouchableOpacity
             style={[
               styles.radioOption,
@@ -114,55 +157,12 @@ export const ReviewTimelineSection: React.FC<ReviewTimelineSectionProps> = ({
                 />
               )}
             </View>
-            <ThemedText style={styles.radioLabel}>
-              No due date, review when I can
+            <ThemedText typography="bodyMedium" style={styles.radioLabel}>
+              No due date, I'll review when ready
             </ThemedText>
           </TouchableOpacity>
         </ThemedView>
-        {watchHasDeadline && watchReviewDueDate && (
-          <ThemedView style={styles.datePickerContainer}>
-            <TouchableOpacity
-              style={[
-                styles.dateInput,
-                {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                },
-              ]}
-              onPress={() => setShowDatePicker(true)}
-              testID="date-picker-trigger"
-            >
-              <IconSymbol
-                name="calendar"
-                size={24}
-                color={colors.text}
-                style={{ opacity: 0.7 }}
-              />
-              <ThemedText style={styles.dateText}>
-                {watchReviewDueDate.toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </ThemedText>
-            </TouchableOpacity>
-            {isPastDate && (
-              <ThemedText color="error" style={styles.warningText}>
-                This date is in the past
-              </ThemedText>
-            )}
-            {showDatePicker && (
-              <DateTimePicker
-                themeVariant="light"
-                value={watchReviewDueDate}
-                mode="date"
-                display={Platform.OS === 'ios' ? 'inline' : 'default'}
-                onChange={onDateChange}
-              />
-            )}
-          </ThemedView>
-        )}
+
       </ThemedView>
     </ThemedView>
   );
@@ -189,12 +189,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   sectionHeader: {
-    fontSize: 16,
-    lineHeight: 20,
     marginBottom: Spacing.xs,
-  },
-  radioGroup: {
-    gap: Spacing.md,
   },
   radioOption: {
     flexDirection: 'row',
@@ -220,25 +215,23 @@ const styles = StyleSheet.create({
   },
   radioLabel: {
     flex: 1,
-    lineHeight: 20,
   },
   datePickerContainer: {
     marginTop: Spacing.sm,
+    marginBottom: Spacing.md,
   },
   dateInput: {
     borderWidth: 2,
-    padding: 16,
+    padding: Spacing.lg,
     borderRadius: BorderRadius.md,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: Spacing.md,
   },
   dateText: {
-    lineHeight: 20,
+    flex: 1,
   },
   warningText: {
-    fontSize: 12,
-    lineHeight: 18,
     marginTop: 6,
   },
 });

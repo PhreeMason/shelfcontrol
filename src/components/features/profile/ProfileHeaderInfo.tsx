@@ -23,8 +23,12 @@ const ProfileHeaderInfo: React.FC<ProfileHeaderInfoProps> = ({
         showIcon={true}
       />
       <View style={styles.textContainer}>
-        <ThemedText style={styles.displayName}>{displayName}</ThemedText>
-        <ThemedText style={styles.username}>@{username}</ThemedText>
+        <ThemedText typography="titleLarge" color="textInverse">
+          {displayName}
+        </ThemedText>
+        <ThemedText variant="default" color="textInverse" style={styles.username}>
+          @{username}
+        </ThemedText>
       </View>
     </View>
   );
@@ -42,16 +46,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  displayName: {
-    fontSize: 22,
-    lineHeight: 28,
-    fontWeight: 'bold',
-    color: 'white',
-  },
   username: {
-    fontSize: 16,
-    lineHeight: 20,
-    color: 'rgba(255, 255, 255, 0.85)',
+    opacity: 0.85,
   },
 });
 

@@ -2,6 +2,7 @@ import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ACTIVITY_TYPE_CONFIG } from '@/constants/activityTypes';
 import { BorderRadius, Spacing } from '@/constants/Colors';
+import { useTheme } from '@/hooks/useTheme';
 import { ActivityTimelineItemProps } from '@/types/calendar.types';
 import { formatActivityTime } from '@/utils/calendarUtils';
 import { formatBookFormat, formatStatus, OPACITY } from '@/utils/formatters';
@@ -15,6 +16,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
  */
 export const ActivityTimelineItem: React.FC<ActivityTimelineItemProps> =
   React.memo(function ActivityTimelineItem({ activity, onPress }) {
+    const { colors } = useTheme();
     const config = ACTIVITY_TYPE_CONFIG[activity.activity_type];
 
     // Get activity-specific details
@@ -30,7 +32,7 @@ export const ActivityTimelineItem: React.FC<ActivityTimelineItemProps> =
         {/* Time Column */}
         {activity.activity_timestamp && (
           <View style={styles.timeColumn}>
-            <ThemedText variant="muted" style={styles.timeText}>
+            <ThemedText typography="bodySmall" color="textMuted">
               {details.time}
             </ThemedText>
           </View>
@@ -42,6 +44,7 @@ export const ActivityTimelineItem: React.FC<ActivityTimelineItemProps> =
               styles.iconCircle,
               {
                 backgroundColor: config.color + OPACITY.SUBTLE,
+                borderColor: colors.background,
               },
             ]}
           >
@@ -50,9 +53,14 @@ export const ActivityTimelineItem: React.FC<ActivityTimelineItemProps> =
         </View>
 
         {/* Content Column */}
-        <View style={styles.content}>
-          <ThemedText style={styles.label}>{config.label}</ThemedText>
-          <ThemedText variant="muted" style={styles.details} numberOfLines={2}>
+        <View
+          style={[
+            styles.content,
+            { borderColor: colors.border },
+          ]}
+        >
+          <ThemedText typography="bodyLarge" style={styles.label}>{config.label}</ThemedText>
+          <ThemedText variant="muted" numberOfLines={2}>
             {details.text}
           </ThemedText>
         </View>
@@ -176,11 +184,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
-  timeText: {
-    fontSize: 12,
-    fontWeight: '400',
-    lineHeight: 14,
-  },
   timelineColumn: {
     alignItems: 'center',
     position: 'relative',
@@ -192,7 +195,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: '#FFFFFF', // White border to separate from line (fixed value for all themes)
   },
   content: {
     flex: 1,
@@ -200,17 +202,9 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0', // Using border color
     borderRadius: BorderRadius.md,
   },
   label: {
-    fontSize: 15,
-    fontWeight: '600',
     marginBottom: 4,
-    lineHeight: 20,
-  },
-  details: {
-    fontSize: 14,
-    lineHeight: 19,
   },
 });

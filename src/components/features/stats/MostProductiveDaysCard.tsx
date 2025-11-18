@@ -1,6 +1,6 @@
 import LinearProgressBar from '@/components/shared/LinearProgressBar';
 import { ThemedText } from '@/components/themed';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useThemeColor';
 import { ProductiveDaysStats } from '@/types/stats.types';
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -46,7 +46,7 @@ export function MostProductiveDaysCard({
   title,
   formatValue,
 }: MostProductiveDaysCardProps) {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
 
   const accessibilityLabel = useMemo(() => {
     if (!stats.hasData || stats.topDays.length === 0) {
@@ -73,6 +73,7 @@ export function MostProductiveDaysCard({
     container: {
       backgroundColor: colors.background,
       borderColor: colors.border,
+      borderRadius: borderRadius.lg,
     },
     insightSection: {
       borderTopColor: colors.border,
@@ -118,9 +119,7 @@ export function MostProductiveDaysCard({
             dynamicStyles.attributionSection,
           ]}
         >
-          <ThemedText
-            style={[styles.attributionText, { color: colors.textMuted }]}
-          >
+          <ThemedText variant="secondary" style={styles.attributionText}>
             Stats are based on {stats.dateRangeText} of data not including this
             week.
           </ThemedText>
@@ -132,7 +131,6 @@ export function MostProductiveDaysCard({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 12,
     borderWidth: 2,
     padding: 20,
     marginBottom: 16,

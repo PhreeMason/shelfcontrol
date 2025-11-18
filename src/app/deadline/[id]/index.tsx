@@ -140,8 +140,8 @@ const DeadlineView = () => {
           <ReadingProgressUpdate deadline={deadline} />
         ) : null}
 
-        {shouldShowStats ? <ReadingStats deadline={deadline} /> : null}
         <ReviewProgressSection deadline={deadline} />
+        {shouldShowStats ? <ReadingStats deadline={deadline} /> : null}
 
         <DailyReadingChart deadline={deadline} />
 
@@ -163,7 +163,7 @@ const DeadlineView = () => {
           { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 },
         ]}
       >
-        <IconSymbol name="ellipsis" size={30} color="white" />
+        <IconSymbol name="ellipsis" size={30} color={colors.textOnPrimary} />
       </Pressable>
 
       <DeadlineActionSheet
@@ -198,11 +198,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
-  },
-  fabText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
 

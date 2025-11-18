@@ -317,8 +317,12 @@ describe('TypeTypeaheadInput', () => {
         };
         const mockFieldState = {
           error: { message: 'This field is required' },
+          isTouched: true,
         };
-        return render({ field: mockField, fieldState: mockFieldState });
+        const mockFormState = {
+          isSubmitted: false,
+        };
+        return render({ field: mockField, fieldState: mockFieldState, formState: mockFormState });
       });
 
       render(<TypeTypeaheadInput control={mockControl} name="source" />);
@@ -335,8 +339,12 @@ describe('TypeTypeaheadInput', () => {
         };
         const mockFieldState = {
           error: { message: 'Error' },
+          isTouched: true,
         };
-        return render({ field: mockField, fieldState: mockFieldState });
+        const mockFormState = {
+          isSubmitted: false,
+        };
+        return render({ field: mockField, fieldState: mockFieldState, formState: mockFormState });
       });
 
       render(<TypeTypeaheadInput control={mockControl} name="source" />);

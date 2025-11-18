@@ -1,5 +1,5 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
-import { Colors } from '@/constants/Colors';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
@@ -120,6 +120,18 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
   const randomQuote =
     congratsQuotes[Math.floor(Math.random() * congratsQuotes.length)];
 
+  const dynamicStyles = {
+    quoteText: {
+      color: colors.darkPurple,
+    },
+    coverPlaceholder: {
+      backgroundColor: colors.surfaceVariant,
+    },
+    statsText: {
+      color: colors.textSecondary,
+    },
+  };
+
   return (
     <LinearGradient
       colors={['#F5F1EA', colors.accent, colors.primary]}
@@ -144,7 +156,7 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
               You finished!
             </ThemedText>
             <View style={[styles.quoteContainer, styles.mediumShadow]}>
-              <ThemedText variant="secondary" style={styles.quoteText}>
+              <ThemedText variant="secondary" style={[styles.quoteText, dynamicStyles.quoteText]}>
                 {randomQuote}
               </ThemedText>
             </View>
@@ -172,7 +184,7 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
               </View>
             ) : (
               <ThemedView
-                style={[styles.coverPlaceholder, { height: coverHeight }]}
+                style={[styles.coverPlaceholder, dynamicStyles.coverPlaceholder, { height: coverHeight }]}
               >
                 <ThemedText style={styles.coverPlaceholderText}>📖</ThemedText>
               </ThemedView>
@@ -182,10 +194,10 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
           <Animated.View
             style={[styles.statsContainer, { opacity: statsOpacity }]}
           >
-            <ThemedText variant="secondary" style={styles.statsText}>
+            <ThemedText variant="secondary" style={[styles.statsText, dynamicStyles.statsText]}>
               {formatDate(startDate)} → {formatDate(finishDate)}
             </ThemedText>
-            <ThemedText variant="secondary" style={styles.statsText}>
+            <ThemedText variant="secondary" style={[styles.statsText, dynamicStyles.statsText]}>
               {duration} {duration === 1 ? 'day' : 'days'} •{' '}
               {deadline.format === 'audio'
                 ? `${formatProgressDisplay(deadline.format, currentProgress)} / ${formatProgressDisplay(deadline.format, deadline.total_quantity || 0)} listened`
@@ -216,17 +228,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
-    gap: 30,
+    padding: Spacing.lg,
+    gap: Spacing.xl,
   },
   headline: {
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: Spacing.sm,
   },
   quoteContainer: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
     borderWidth: 1,
     borderColor: '#FFF7ED',
   },
@@ -235,7 +247,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
     fontWeight: '700',
-    color: Colors.light.darkPurple,
   },
   coverContainer: {
     width: '80%',
@@ -257,7 +268,7 @@ const styles = StyleSheet.create({
   },
   bookCover: {
     width: 200,
-    borderRadius: 10,
+    borderRadius: BorderRadius.md,
     aspectRatio: 0.66,
   },
   checkmarkBadge: {
@@ -266,7 +277,7 @@ const styles = StyleSheet.create({
     right: -15,
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: BorderRadius.full,
     backgroundColor: '#4CAF50',
     justifyContent: 'center',
     alignItems: 'center',
@@ -281,8 +292,7 @@ const styles = StyleSheet.create({
   },
   coverPlaceholder: {
     width: '100%',
-    backgroundColor: Colors.light.surfaceVariant,
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -294,7 +304,6 @@ const styles = StyleSheet.create({
   },
   statsText: {
     textAlign: 'center',
-    color: Colors.light.textSecondary,
     fontSize: 16,
   },
   buttonContainer: {
@@ -302,7 +311,7 @@ const styles = StyleSheet.create({
     maxWidth: 400,
   },
   button: {
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
   },
 });
 

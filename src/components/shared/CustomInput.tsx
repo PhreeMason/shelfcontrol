@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { Typography } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import React from 'react';
 import { Control, Controller, FieldValues, Path } from 'react-hook-form';
@@ -34,7 +35,8 @@ const CustomInput = <T extends FieldValues>({
       name={name}
       render={({
         field: { value, onChange, onBlur },
-        fieldState: { error },
+        fieldState: { error, isTouched },
+        formState,
       }) => (
         <View style={styles.container}>
           <TextInput
@@ -67,12 +69,12 @@ const CustomInput = <T extends FieldValues>({
               {
                 backgroundColor: isFocused ? cardColor : blurBackgroundColor,
                 color: textColor,
-                borderColor: error ? dangerColor : borderColor,
+                borderColor: error && (isTouched || formState?.isSubmitted) ? dangerColor : borderColor,
               },
               props.style,
             ]}
           />
-          {error ? (
+          {error && (isTouched || formState?.isSubmitted) ? (
             <ThemedText color="danger" style={styles.error}>
               {error.message}
             </ThemedText>
@@ -90,11 +92,10 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   input: {
+    ...Typography.bodyLarge,
     borderWidth: 2,
     padding: 16,
     borderRadius: 12,
-    fontSize: 16,
-    lineHeight: 20,
   },
   error: {
     minHeight: 18,

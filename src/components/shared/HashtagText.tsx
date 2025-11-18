@@ -1,3 +1,4 @@
+import { Spacing } from '@/constants/Colors';
 import { Hashtag } from '@/types/hashtags.types';
 import { parseTextWithHashtags } from '@/utils/hashtagUtils';
 import React, { useMemo } from 'react';
@@ -97,8 +98,8 @@ export const HashtagText: React.FC<HashtagTextProps> = ({
 const styles = StyleSheet.create({
   hashtag: {
     fontWeight: '600',
-    paddingHorizontal: 4,
+    paddingHorizontal: Spacing.xs,
     borderRadius: 4,
-    marginBottom: -4,
+    marginBottom: Spacing.negative.xs,
   },
 });

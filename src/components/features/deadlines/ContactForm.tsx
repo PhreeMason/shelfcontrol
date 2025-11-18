@@ -1,6 +1,7 @@
 import CustomInput from '@/components/shared/CustomInput';
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import {
   ContactFormData,
@@ -113,27 +114,27 @@ export const ContactForm = ({
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
+    gap: Spacing.md,
   },
   fieldContainer: {
-    gap: 4,
+    gap: Spacing.xs,
   },
   labelRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Spacing.sm,
   },
   label: {
     fontSize: 13,
   },
   error: {
     fontSize: 13,
-    marginTop: -8,
+    marginTop: Spacing.negative.sm,
   },
   buttonRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 8,
+    gap: Spacing.md,
+    marginTop: Spacing.sm,
   },
   submitButton: {
     flex: 1,

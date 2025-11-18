@@ -1496,12 +1496,11 @@ describe('deadlineFormUtils', () => {
       mockGetFormErrors.mockReturnValue({});
     });
 
-    it('should stay on step 2 when validation fails on final step in new mode', async () => {
+    it('should call handleSubmit on final step regardless of validation', async () => {
+      // This test reflects the new behavior where we always call handleSubmit
+      // and let react-hook-form's built-in validation handle the rest
       const config = { currentStep: 2, totalSteps: 2, canGoBack: true };
-      mockTrigger.mockResolvedValue(false);
-      mockGetFormErrors.mockReturnValue({
-        type: { message: 'Required' },
-      });
+      const mockSetFocus = jest.fn();
 
       const navigation = createFormNavigation(
         config,
@@ -1510,17 +1509,21 @@ describe('deadlineFormUtils', () => {
         'eBook',
         mockSetCurrentStep,
         'new',
-        mockGetFormErrors
+        mockGetFormErrors,
+        mockSetFocus
       );
 
       await navigation.nextStep();
 
+      // In the new implementation, handleSubmit is always called on the final step
+      // react-hook-form's handleSubmit will handle validation internally
+      expect(mockHandleSubmit).toHaveBeenCalled();
       expect(mockSetCurrentStep).not.toHaveBeenCalled();
-      expect(mockHandleSubmit).not.toHaveBeenCalled();
     });
 
-    it('should submit when validation passes on final step', async () => {
+    it('should call handleSubmit on final step', async () => {
       const config = { currentStep: 2, totalSteps: 2, canGoBack: true };
+      const mockSetFocus = jest.fn();
       mockTrigger.mockResolvedValue(true);
 
       const navigation = createFormNavigation(
@@ -1530,12 +1533,13 @@ describe('deadlineFormUtils', () => {
         'eBook',
         mockSetCurrentStep,
         'new',
-        mockGetFormErrors
+        mockGetFormErrors,
+        mockSetFocus
       );
 
       await navigation.nextStep();
 
-      expect(mockTrigger).toHaveBeenCalledWith();
+      // handleSubmit is always called on the final step
       expect(mockHandleSubmit).toHaveBeenCalled();
       expect(mockSetCurrentStep).not.toHaveBeenCalled();
     });

@@ -103,7 +103,7 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
       <View style={styles.header}>
         <View style={styles.titleColumn}>
           <ThemedText variant="title">Tags</ThemedText>
-          <ThemedText variant="secondary" style={styles.benefitText}>
+          <ThemedText variant="secondary" style={styles.benefitMargin}>
             Filter and organize quickly
           </ThemedText>
         </View>
@@ -123,7 +123,9 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
               style={styles.addIcon}
             />
             <ThemedText
-              style={[styles.addButtonText, { color: colors.darkPurple }]}
+              typography="titleMedium"
+              color="darkPurple"
+              style={styles.addButtonText}
             >
               Add
             </ThemedText>
@@ -186,7 +188,9 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
                   ]}
                 >
                   <ThemedText
-                    style={[styles.ghostTagText, { color: colors.primary }]}
+                    typography="bodyLarge"
+                    color="primary"
+                    style={styles.ghostTagText}
                   >
                     Fall reads
                   </ThemedText>
@@ -201,13 +205,19 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
                   ]}
                 >
                   <ThemedText
-                    style={[styles.ghostTagText, { color: colors.primary }]}
+                    typography="bodyLarge"
+                    color="primary"
+                    style={styles.ghostTagText}
                   >
                     fantasy
                   </ThemedText>
                 </View>
               </View>
-              <ThemedText variant="secondary" style={styles.emptyCta}>
+              <ThemedText
+                typography="labelLarge"
+                color="textSecondary"
+                style={styles.emptyCta}
+              >
                 Add your first tag to organize
               </ThemedText>
             </Pressable>
@@ -215,7 +225,7 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
         </View>
       )}
 
-      <ThemedText variant="secondary" style={styles.helpText}>
+      <ThemedText variant="secondary" style={styles.helpTextCenter}>
         Organize your books with tags for easy filtering
       </ThemedText>
     </ThemedView>
@@ -242,8 +252,7 @@ const styles = StyleSheet.create({
   titleColumn: {
     flex: 1,
   },
-  benefitText: {
-    fontSize: 14,
+  benefitMargin: {
     marginTop: 2,
   },
   addButton: {
@@ -260,8 +269,6 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   addButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
     transform: [{ translateY: 1 }],
   },
   tagsList: {
@@ -300,16 +307,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   ghostTagText: {
-    fontSize: 15,
     opacity: 0.5,
   },
   emptyCta: {
     textAlign: 'center',
-    fontSize: 14,
-    fontWeight: '500',
   },
-  helpText: {
-    fontSize: 14,
+  helpTextCenter: {
     textAlign: 'center',
   },
 });

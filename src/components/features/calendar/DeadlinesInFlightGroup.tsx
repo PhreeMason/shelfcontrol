@@ -83,21 +83,22 @@ export const DeadlinesInFlightGroup: React.FC<DeadlinesInFlightGroupProps> = ({
     >
       {/* Header */}
       <Pressable
-        style={({ pressed }) => [styles.header, pressed && styles.pressed]}
+        style={({ pressed }) => [
+          styles.header,
+          pressed && { backgroundColor: colors.surfaceVariant },
+        ]}
         onPress={handleToggle}
       >
         <View style={styles.headerContent}>
           <View style={styles.iconContainer}>
-            <IconSymbol name="books.vertical.fill" size={20} color="#6366F1" />
+            <IconSymbol name="books.vertical.fill" size={20} color={colors.primary} />
           </View>
           <View style={styles.headerTextContent}>
-            <ThemedText style={styles.headerTitle}>
+            <ThemedText typography="titleMedium">
               Books in progress ({sortedDeadlines.length})
             </ThemedText>
             {targetText && (
-              <ThemedText
-                style={[styles.headerSubtitle, { color: colors.textMuted }]}
-              >
+              <ThemedText typography="bodyMedium" color="textMuted">
                 Total: {targetText}
               </ThemedText>
             )}
@@ -107,7 +108,7 @@ export const DeadlinesInFlightGroup: React.FC<DeadlinesInFlightGroupProps> = ({
         <IconSymbol
           name="chevron.down"
           size={20}
-          color="#64748B"
+          color={colors.textSecondary}
           style={{
             transform: [{ rotate: isExpanded ? '180deg' : '0deg' }],
           }}
@@ -152,9 +153,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  pressed: {
-    backgroundColor: '#F7FAFC',
-  },
   headerContent: {
     flex: 1,
     flexDirection: 'row',
@@ -166,13 +164,6 @@ const styles = StyleSheet.create({
   headerTextContent: {
     flex: 1,
     gap: 2,
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  headerSubtitle: {
-    fontSize: 14,
   },
   expandedContent: {
     borderTopWidth: 1,

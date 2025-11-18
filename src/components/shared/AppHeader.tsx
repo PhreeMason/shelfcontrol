@@ -49,7 +49,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         )}
 
         <ThemedText
-          variant="headline"
+          typography="headlineSmall"
           style={[styles.headerTitle, { color: colors.textOnPrimary }]}
         >
           {title}
@@ -72,9 +72,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   headerTitle: {
-    fontSize: 24,
-    lineHeight: 32,
-    fontWeight: '600',
     flex: 1,
     textAlign: 'center',
   },

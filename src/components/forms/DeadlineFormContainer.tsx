@@ -5,6 +5,7 @@ import {
   ThemedText,
   ThemedView,
 } from '@/components/themed';
+import { Spacing } from '@/constants/Colors';
 import { useFormFlowTracking } from '@/hooks/analytics/useFormFlowTracking';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
@@ -26,6 +27,8 @@ import {
   createFormatChangeHandler,
   createPriorityChangeHandler,
   createSuccessToast,
+  findEarliestErrorStep,
+  getFirstErrorField,
   getFormDefaultValues,
   handleBookSelection,
   initializeFormState,
@@ -105,10 +108,11 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     watch,
     setValue,
     trigger,
+    setFocus,
     formState: reactHookFormState,
   } = useForm<DeadlineFormData>({
     resolver: zodResolver(deadlineFormSchema),
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: getFormDefaultValues(mode),
   });
@@ -140,9 +144,6 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       setSelectedFormat(newFormat);
       setSelectedPriority(newPriority);
       isInitialized.current = true;
-      // Trigger validation after populating form from params
-      // Use setTimeout to ensure setValue calls complete first
-      setTimeout(() => trigger(), 0);
     } else if (mode === 'edit' && existingDeadline) {
       const {
         selectedFormat: editFormat,
@@ -153,11 +154,8 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       setSelectedPriority(editPriority);
       setSelectedStatus(editStatus);
       isInitialized.current = true;
-      // Trigger validation after populating form from existing deadline
-      // Use setTimeout to ensure setValue calls complete first
-      setTimeout(() => trigger(), 0);
     }
-  }, [mode, stableParams, existingDeadline, setValue, trigger]);
+  }, [mode, stableParams, existingDeadline, setValue]);
 
   useEffect(() => {
     if (currentStep === totalSteps && scrollViewRef.current) {
@@ -280,6 +278,25 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     }
   };
 
+  const onValidationError = () => {
+    const errors = reactHookFormState.errors;
+    const earliestErrorStep = findEarliestErrorStep(errors, mode);
+    const firstErrorField = getFirstErrorField(errors, mode);
+
+    // Focus on the first error field to show validation errors and scroll to it
+    if (firstErrorField) {
+      setFocus(firstErrorField as keyof DeadlineFormData);
+    }
+
+    // Navigate to the step with the error if it's not the current step
+    if (
+      earliestErrorStep !== null &&
+      earliestErrorStep !== currentStep
+    ) {
+      setCurrentStep(earliestErrorStep);
+    }
+  };
+
   // Navigation handlers
   const navigation = createFormNavigation(
     {
@@ -288,11 +305,12 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       canGoBack: true,
     },
     trigger,
-    () => handleSubmit(onSubmit)(),
+    () => handleSubmit(onSubmit, onValidationError)(),
     selectedFormat,
     setCurrentStep,
     mode,
-    () => reactHookFormState.errors
+    () => reactHookFormState.errors,
+    setFocus
   );
 
   // Event handlers
@@ -365,9 +383,9 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
         ]}
       >
         <ThemedText
+          typography="titleMedium"
+          color="textOnPrimary"
           style={[
-            styles.saveText,
-            { color: colors.textOnPrimary },
             (!isValid || isSubmitting) && styles.saveTextDisabled,
           ]}
         >
@@ -399,7 +417,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
             <ThemedButton
               title="Go Back"
               onPress={() => router.back()}
-              style={{ marginTop: 16 }}
+              style={{ marginTop: Spacing.md }}
             />
           </ThemedView>
         </ThemedView>
@@ -485,11 +503,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
                   : 'Continue'
             }
             onPress={navigation.nextStep}
-            disabled={
-              currentStep === totalSteps
-                ? !reactHookFormState.isValid || isSubmitting
-                : isSubmitting
-            }
+            disabled={isSubmitting}
             style={{ flex: 1 }}
           />
         </ThemedView>
@@ -507,24 +521,20 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: Spacing.md,
   },
   navButtons: {
     flexDirection: 'row',
-    gap: 16,
-    padding: 16,
-    marginBottom: 20,
+    gap: Spacing.md,
+    padding: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   saveButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
   },
   saveButtonDisabled: {
     opacity: 0.5,
-  },
-  saveText: {
-    fontSize: 16,
-    fontWeight: '600',
   },
   saveTextDisabled: {
     opacity: 0.7,

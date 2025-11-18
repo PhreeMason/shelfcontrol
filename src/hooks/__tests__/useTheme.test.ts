@@ -117,14 +117,6 @@ describe('useTheme hooks', () => {
     });
 
     describe('Typography System Validation', () => {
-      it('should include display typography scales', () => {
-        const theme = useTheme();
-
-        expect(theme.typography).toHaveProperty('displayLarge');
-        expect(theme.typography).toHaveProperty('displayMedium');
-        expect(theme.typography).toHaveProperty('displaySmall');
-      });
-
       it('should include headline typography scales', () => {
         const theme = useTheme();
 

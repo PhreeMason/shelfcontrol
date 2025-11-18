@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Spacing } from '@/constants/Colors';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useThemeColor';
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, {
@@ -19,15 +19,25 @@ const LegendItem: React.FC<LegendItemProps> = ({ color, label }) => {
   return (
     <View style={styles.legendItem}>
       <View style={[styles.dot, { backgroundColor: color }]} />
-      <ThemedText style={styles.legendLabel}>{label}</ThemedText>
+      <ThemedText typography="labelMedium">{label}</ThemedText>
     </View>
   );
 };
 
 export const CalendarLegend: React.FC = () => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
   const rotation = useSharedValue(0);
+
+  const dynamicStyles = {
+    container: {
+      backgroundColor: colors.surface,
+      borderRadius: borderRadius.md,
+    },
+    infoContainer: {
+      borderTopColor: colors.border,
+    },
+  };
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
@@ -39,7 +49,7 @@ export const CalendarLegend: React.FC = () => {
   }));
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface }]}>
+    <View style={[styles.container, dynamicStyles.container]}>
       {/* Header */}
       <Pressable
         onPress={toggleExpanded}
@@ -54,7 +64,7 @@ export const CalendarLegend: React.FC = () => {
         accessibilityState={{ expanded: isExpanded }}
         accessibilityHint="Double tap to toggle the calendar legend explanation"
       >
-        <ThemedText style={styles.headerText}>Calendar Legend</ThemedText>
+        <ThemedText typography="titleSmall">Calendar Legend</ThemedText>
         <Animated.View style={chevronStyle}>
           <IconSymbol name="chevron.down" size={20} color={colors.text} />
         </Animated.View>
@@ -63,15 +73,15 @@ export const CalendarLegend: React.FC = () => {
       {/* Legend Content */}
       {isExpanded && (
         <View style={styles.content}>
-          <LegendItem color="#9CA3AF" label="Activity event" />
-          <LegendItem color="#7a5a8c" label="On track due date" />
-          <LegendItem color="#d4a46a" label="Tight due date" />
-          <LegendItem color="#c8696e" label="Urgent/Overdue due date" />
+          <LegendItem color={colors.pending} label="Activity event" />
+          <LegendItem color={colors.good} label="On track due date" />
+          <LegendItem color={colors.approaching} label="Tight due date" />
+          <LegendItem color={colors.urgent} label="Urgent/Overdue due date" />
 
           {/* Multiple dots info */}
-          <View style={styles.infoContainer}>
+          <View style={[styles.infoContainer, dynamicStyles.infoContainer]}>
             <IconSymbol name="info.circle" size={14} color={colors.textMuted} />
-            <ThemedText variant="muted" style={styles.infoText}>
+            <ThemedText typography="bodySmall" color="textMuted" style={styles.infoText}>
               Multiple dots can appear on dates with both activities and due
               dates
             </ThemedText>
@@ -85,7 +95,6 @@ export const CalendarLegend: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     marginVertical: Spacing.md,
-    borderRadius: 8,
     overflow: 'hidden',
   },
   header: {
@@ -97,10 +106,6 @@ const styles = StyleSheet.create({
   },
   headerPressed: {
     opacity: 0.7,
-  },
-  headerText: {
-    fontSize: 14,
-    fontWeight: '600',
   },
   content: {
     paddingHorizontal: Spacing.md,
@@ -117,10 +122,6 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
   },
-  legendLabel: {
-    fontSize: 13,
-    fontWeight: '500',
-  },
   infoContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -128,10 +129,8 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xs,
     paddingTop: Spacing.xs,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0, 0, 0, 0.05)',
   },
   infoText: {
     flex: 1,
-    fontSize: 12,
   },
 });

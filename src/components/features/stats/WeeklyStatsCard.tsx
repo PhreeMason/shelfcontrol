@@ -1,6 +1,7 @@
 import LinearProgressBar from '@/components/shared/LinearProgressBar';
 import { ThemedText } from '@/components/themed';
 import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
+import { Spacing } from '@/constants/Colors';
 import { STATS_CONSTANTS } from '@/constants/statsConstants';
 import { useTheme } from '@/hooks/useTheme';
 import { WeeklyStats } from '@/types/stats.types';
@@ -268,11 +269,11 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 12,
     borderWidth: 2,
-    padding: 20,
-    marginBottom: 16,
+    padding: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   content: {
-    gap: 20,
+    gap: Spacing.lg,
   },
   label: {
     fontSize: 18,
@@ -280,7 +281,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   numbersSection: {
-    gap: 5,
+    gap: Spacing.xs,
   },
   numberRow: {
     flexDirection: 'row',
@@ -309,25 +310,25 @@ const styles = StyleSheet.create({
   statusLabelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Spacing.sm,
   },
   progressSection: {
-    gap: 8,
+    gap: Spacing.sm,
   },
   percentageText: {
     fontSize: 14,
     fontWeight: '600',
     lineHeight: 20,
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
   detailsSection: {
-    paddingTop: 16,
+    paddingTop: Spacing.md,
     borderTopWidth: 1,
-    gap: 8,
+    gap: Spacing.sm,
   },
   detailRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: Spacing.sm,
     alignItems: 'flex-start',
   },
   bullet: {

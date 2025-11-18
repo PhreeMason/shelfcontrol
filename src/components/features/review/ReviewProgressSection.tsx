@@ -1,5 +1,6 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
-import { BorderRadius, Colors, Spacing } from '@/constants/Colors';
+import { BorderRadius, Spacing } from '@/constants/Colors';
+import { useTheme } from '@/hooks/useTheme';
 import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { useReviewTrackingMutation } from '@/hooks/useReviewTrackingMutation';
 import { useDeadlines } from '@/providers/DeadlineProvider';
@@ -21,6 +22,7 @@ interface ReviewProgressSectionProps {
 const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
   deadline,
 }) => {
+  const { colors } = useTheme();
   const latestStatus = getDeadlineStatus(deadline);
   const isToReview = latestStatus === 'to_review';
 
@@ -101,7 +103,7 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
   if (isLoading) {
     return (
       <ThemedView style={styles.loadingContainer}>
-        <ActivityIndicator size="small" color={Colors.light.primary} />
+        <ActivityIndicator size="small" color={colors.primary} />
       </ThemedView>
     );
   }
@@ -131,7 +133,7 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
 
         {isToReview && (
           <>
-            <ThemedText style={styles.reminderText}>
+            <ThemedText typography="labelSmall" color="textSecondary" style={styles.reminderText}>
               Reminder: Submit review links to publisher if required
             </ThemedText>
 
@@ -157,7 +159,6 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.light.background,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     marginVertical: Spacing.md,
@@ -168,7 +169,6 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   loadingContainer: {
-    backgroundColor: Colors.light.background,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     marginTop: Spacing.md,
@@ -179,10 +179,8 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   reminderText: {
-    fontSize: 11,
-    color: Colors.light.textSecondary,
     textAlign: 'center',
-    marginBottom: -10,
+    marginBottom: Spacing.negative.sm,
   },
   actionButton: {
     paddingVertical: Spacing.md,

@@ -1,10 +1,11 @@
-import { CompletedBooksCarousel } from '@/components/features/profile/CompletedBooksCarousel';
+import { CompletedBooksCarousel } from '@/components/features/stats/CompletedBooksCarousel';
 import { MostProductiveListeningDaysCard } from '@/components/features/stats/MostProductiveListeningDaysCard';
 import { MostProductiveReadingDaysCard } from '@/components/features/stats/MostProductiveReadingDaysCard';
 import { WeeklyListeningCard } from '@/components/features/stats/WeeklyListeningCard';
 import { WeeklyReadingCard } from '@/components/features/stats/WeeklyReadingCard';
 import AppHeader from '@/components/shared/AppHeader';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { getCompletedThisYear } from '@/utils/deadlineUtils';
@@ -62,7 +63,7 @@ export default function Stats() {
         />
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <ThemedText style={styles.loadingText}>
+          <ThemedText typography="bodyLarge" style={styles.loadingText}>
             Loading your reading statistics...
           </ThemedText>
         </View>
@@ -83,11 +84,13 @@ export default function Stats() {
           showBackButton={false}
         />
         <View style={styles.centerContainer}>
-          <ThemedText style={styles.errorTitle}>
+          <ThemedText typography="titleSubLarge" style={styles.errorTitle}>
             Unable to Load Statistics
           </ThemedText>
           <ThemedText
-            style={[styles.errorMessage, { color: colors.textMuted }]}
+            typography="bodyMedium"
+            color="textMuted"
+            style={styles.errorMessage}
           >
             {error.message ||
               'An error occurred while loading your reading data.'}
@@ -97,7 +100,8 @@ export default function Stats() {
             onPress={() => refetch()}
           >
             <ThemedText
-              style={[styles.retryButtonText, { color: colors.textOnPrimary }]}
+              typography="titleMedium"
+              color="textOnPrimary"
             >
               Try Again
             </ThemedText>
@@ -149,7 +153,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   innerContainer: {
-    padding: 20,
+    padding: Spacing.lg,
   },
   iosContainer: {
     marginBottom: 80, // Accounts for iOS tab bar height + safe area padding
@@ -158,31 +162,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: Spacing.lg,
   },
   loadingText: {
-    marginTop: 16,
-    fontSize: 16,
+    marginTop: Spacing.md,
   },
   errorTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: Spacing.md,
     textAlign: 'center',
   },
   errorMessage: {
-    fontSize: 14,
     textAlign: 'center',
-    marginBottom: 24,
-    lineHeight: 20,
+    marginBottom: Spacing.lg,
   },
   retryButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
     borderRadius: 8,
-  },
-  retryButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
   },
 });

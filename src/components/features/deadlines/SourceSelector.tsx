@@ -53,6 +53,7 @@ export const SourceSelector = ({
         ]}
       >
         <ThemedText
+          typography="titleMedium"
           color={selectedOption ? 'text' : 'textMuted'}
           style={styles.selectText}
         >
@@ -98,6 +99,7 @@ export const SourceSelector = ({
                 }}
               >
                 <ThemedText
+                  typography="titleMedium"
                   color={value === item.value ? 'primary' : 'text'}
                   style={styles.dropdownItemText}
                 >
@@ -119,7 +121,7 @@ export const SourceSelector = ({
       )}
 
       {options.length === 0 && (
-        <ThemedText color="textMuted" style={styles.noOptions}>
+        <ThemedText typography="bodyMedium" color="textMuted" style={styles.noOptions}>
           No sources available. Add a source or publisher to the book first.
         </ThemedText>
       )}
@@ -143,7 +145,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   selectText: {
-    fontSize: 16,
     flex: 1,
   },
   chevron: {
@@ -166,11 +167,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   dropdownItemText: {
-    fontSize: 16,
     flex: 1,
   },
   noOptions: {
-    fontSize: 14,
     fontStyle: 'italic',
     marginTop: 4,
   },

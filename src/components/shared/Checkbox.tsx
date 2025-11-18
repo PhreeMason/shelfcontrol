@@ -39,7 +39,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
           <IconSymbol name="checkmark" size={18} color={colors.textOnPrimary} />
         )}
       </View>
-      <ThemedText style={[styles.label, disabled && { opacity: 0.5 }]}>
+      <ThemedText typography="bodyLarge" style={[disabled && { opacity: 0.5 }]}>
         {label}
       </ThemedText>
     </TouchableOpacity>
@@ -59,9 +59,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  label: {
-    fontSize: 16,
   },
 });
 

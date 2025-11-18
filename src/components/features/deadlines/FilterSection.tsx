@@ -1,7 +1,7 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Colors } from '@/constants/Colors';
+import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
   BookFormat,
@@ -75,6 +75,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   animatedStyle,
   onLayout,
 }) => {
+  const { colors } = useTheme();
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const {
     deadlines,
@@ -164,12 +165,16 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                     <IconSymbol
                       name="star.fill"
                       size={12}
-                      color={Colors.light.urgent}
+                      color={colors.urgent}
                     />
                   </View>
                 )}
                 <ThemedButton
-                  title={`${option.label}`}
+                  title={
+                    option.key === 'active' || option.key === 'pending'
+                      ? option.label
+                      : `${option.label} (${statusCounts[option.key]})`
+                  }
                   style={styles.filterButton}
                   variant={isSelected ? 'primary' : 'outline'}
                   onPress={() => {
@@ -214,7 +219,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffffff',
+    // backgroundColor set by ThemedView or parent
   },
   filterContainer: {
     maxHeight: 60,

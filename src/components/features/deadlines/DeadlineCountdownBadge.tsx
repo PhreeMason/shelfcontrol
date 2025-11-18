@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
@@ -15,6 +16,8 @@ export function DeadlineCountdownBadge({
   countdownColor,
   reviewDaysLeft,
 }: DeadlineCountdownBadgeProps) {
+  const { colors } = useTheme();
+
   // Responsive font sizing based on number of digits
   const getDaysFontSize = (days: number) => {
     const digits = days.toString().length;
@@ -63,7 +66,7 @@ export function DeadlineCountdownBadge({
               <ThemedText
                 style={[
                   styles.daysNumber,
-                  { color: '#FFFFFF', fontSize: reviewDaysFontSize },
+                  { color: colors.textInverse, fontSize: reviewDaysFontSize },
                 ]}
               >
                 {reviewDaysLeft}
@@ -84,7 +87,7 @@ export function DeadlineCountdownBadge({
             <ThemedText
               style={[
                 styles.daysNumber,
-                { color: '#FFFFFF', fontSize: daysFontSize },
+                { color: colors.textInverse, fontSize: daysFontSize },
               ]}
             >
               {daysLeft}

@@ -977,13 +977,7 @@ describe('DeadlineFormContainer', () => {
       // Verify we're on the final step
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
 
-      // Wait for form validation to complete and button to be enabled
-      await waitFor(() => {
-        const submitButton = screen.getByText('Add Book');
-        expect(submitButton).toBeTruthy();
-      });
-
-      // Trigger form submission
+      // Button is always enabled - validation happens on press
       const submitButton = screen.getByText('Add Book');
       fireEvent.press(submitButton);
 
@@ -1017,12 +1011,7 @@ describe('DeadlineFormContainer', () => {
       // Verify we're on the final step
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
 
-      // Wait for form validation to complete and button to be enabled
-      await waitFor(() => {
-        const submitButton = screen.getByText('Update Book');
-        expect(submitButton).toBeTruthy();
-      });
-
+      // Button is always enabled - validation happens on press
       const submitButton = screen.getByText('Update Book');
       fireEvent.press(submitButton);
 
@@ -1061,12 +1050,7 @@ describe('DeadlineFormContainer', () => {
       // Verify we're on the final step
       expect(screen.getByTestId('priority-selector')).toBeTruthy();
 
-      // Wait for form validation to complete and button to be enabled
-      await waitFor(() => {
-        const submitButton = screen.getByText('Add Book');
-        expect(submitButton).toBeTruthy();
-      });
-
+      // Button is always enabled - validation happens on press
       const submitButton = screen.getByText('Add Book');
       fireEvent.press(submitButton);
 

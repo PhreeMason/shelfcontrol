@@ -1,7 +1,8 @@
 import Checkbox from '@/components/shared/Checkbox';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
-import { BorderRadius, Colors, FontFamily, Spacing } from '@/constants/Colors';
+import { BorderRadius, Spacing } from '@/constants/Colors';
+import { useTheme } from '@/hooks/useTheme';
 import { analytics } from '@/lib/analytics/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -38,6 +39,7 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
   onUpdateUrl,
   readOnly = false,
 }) => {
+  const { colors } = useTheme();
   const [webViewModal, setWebViewModal] = useState<{
     visible: boolean;
     url: string;
@@ -164,7 +166,7 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
   if (platforms.length === 0) {
     return (
       <ThemedView style={styles.emptyContainer}>
-        <ThemedText variant="secondary" style={styles.emptyText}>
+        <ThemedText typography="bodySmall" color="textSecondary">
           No platforms configured
         </ThemedText>
       </ThemedView>
@@ -185,7 +187,7 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
                   disabled={readOnly}
                 />
                 {platform.posted && platform.posted_date && (
-                  <ThemedText style={styles.postedDate}>
+                  <ThemedText typography="bodySmall" color="textSecondary">
                     {formatDate(platform.posted_date)}
                   </ThemedText>
                 )}
@@ -201,9 +203,16 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
                       <View style={styles.urlInputContainer}>
                         <View style={styles.inputRow}>
                           <TextInput
-                            style={styles.urlInput}
+                            style={[
+                              styles.urlInput,
+                              {
+                                backgroundColor: colors.background,
+                                color: colors.text,
+                                borderColor: colors.border,
+                              },
+                            ]}
                             placeholder="Paste review URL (optional)"
-                            placeholderTextColor={Colors.light.textMuted}
+                            placeholderTextColor={colors.textMuted}
                             value={currentUrl}
                             onChangeText={onChange}
                             onBlur={() => {
@@ -232,7 +241,7 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
                             }
                             style={styles.viewReviewLink}
                           >
-                            <ThemedText style={styles.viewReviewText}>
+                            <ThemedText typography="bodySmall" color="primary" style={styles.viewReviewText}>
                               View Review →
                             </ThemedText>
                           </Pressable>
@@ -270,10 +279,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: Spacing.sm,
   },
-  postedDate: {
-    fontSize: 12,
-    color: Colors.light.textSecondary,
-  },
   urlInputContainer: {
     marginLeft: 36,
     gap: Spacing.xs,
@@ -285,30 +290,21 @@ const styles = StyleSheet.create({
   },
   urlInput: {
     flex: 1,
-    backgroundColor: Colors.light.background,
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.sm,
-    fontSize: 13,
-    fontFamily: FontFamily.regular,
-    color: Colors.light.text,
+    fontSize: 12,
     borderWidth: 1,
-    borderColor: Colors.light.border,
   },
   viewReviewLink: {
     alignSelf: 'flex-start',
   },
   viewReviewText: {
-    fontSize: 12,
-    color: Colors.light.primary,
-    fontFamily: FontFamily.medium,
+    fontWeight: '500',
   },
   emptyContainer: {
     paddingVertical: Spacing.md,
     alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 13,
   },
 });
 

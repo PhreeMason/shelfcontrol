@@ -1,5 +1,6 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Typography } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import { DeadlineContact } from '@/types/contacts.types';
 import * as Clipboard from 'expo-clipboard';
@@ -53,7 +54,7 @@ export const ContactCard = ({
               ]}
             >
               <IconSymbol name="person.fill" size={16} color={colors.primary} />
-              <ThemedText style={styles.infoText}>
+              <ThemedText typography="bodyMedium" style={styles.infoText}>
                 {contact.contact_name}
               </ThemedText>
             </Pressable>
@@ -68,7 +69,9 @@ export const ContactCard = ({
               ]}
             >
               <IconSymbol name="envelope" size={16} color={colors.primary} />
-              <ThemedText style={styles.infoText}>{contact.email}</ThemedText>
+              <ThemedText typography="bodyMedium" style={styles.infoText}>
+                {contact.email}
+              </ThemedText>
             </Pressable>
           )}
 
@@ -81,7 +84,7 @@ export const ContactCard = ({
               ]}
             >
               <IconSymbol name="at" size={16} color={colors.primary} />
-              <ThemedText style={styles.infoText}>
+              <ThemedText typography="bodyMedium" style={styles.infoText}>
                 {contact.username}
               </ThemedText>
             </Pressable>
@@ -113,7 +116,11 @@ export const ContactCard = ({
         <View
           style={[styles.copySuccessBadge, { backgroundColor: colors.success }]}
         >
-          <ThemedText style={styles.copySuccessText}>Copied!</ThemedText>
+          <ThemedText
+            style={[styles.copySuccessText, { color: colors.textInverse }]}
+          >
+            Copied!
+          </ThemedText>
         </View>
       )}
     </View>
@@ -143,7 +150,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   infoText: {
-    fontSize: 14,
     flex: 1,
   },
   actions: {
@@ -164,8 +170,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   copySuccessText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '600',
+    ...Typography.labelMedium,
   },
 });
