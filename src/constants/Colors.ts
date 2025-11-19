@@ -27,6 +27,7 @@ export const Colors = {
     primaryContainer: '#E0F2FE',
     onPrimary: '#FFFFFF',
     onPrimaryContainer: '#0c4a6e',
+    backgroundPrimary: '#d8cbf3ff',
 
     // Secondary colors
     secondary: '#64748B',
@@ -39,6 +40,7 @@ export const Colors = {
     accentContainer: '#F3F4F6',
     onAccent: '#FFFFFF',
     onAccentContainer: '#5B21B6',
+    backgroundAccent: '#f4c4c8ff',
 
     // Border colors
     border: '#E2E8F0',
@@ -130,6 +132,8 @@ export const Colors = {
     primaryContainer: '#E0F2FE',
     onPrimary: '#FFFFFF',
     onPrimaryContainer: '#0c4a6e',
+    backgroundPrimary: '#d8cbf3ff',
+
 
     // Secondary colors
     secondary: '#64748B',
@@ -142,6 +146,7 @@ export const Colors = {
     accentContainer: '#F3F4F6',
     onAccent: '#FFFFFF',
     onAccentContainer: '#5B21B6',
+    backgroundAccent: '#f4c4c8ff',
 
     // Border colors
     border: '#E2E8F0',

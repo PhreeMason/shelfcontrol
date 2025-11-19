@@ -123,7 +123,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
     minWidth: 100,
-    transform: [{ translateX: -10 }],
   },
   countdownSquare: {
     width: 72,

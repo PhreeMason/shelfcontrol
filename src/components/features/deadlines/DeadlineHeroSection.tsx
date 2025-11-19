@@ -1,6 +1,7 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useTheme';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -95,14 +96,10 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
 
 const styles = StyleSheet.create({
   heroCardContainer: {
-    padding: Spacing.md,
+    padding: Spacing.xs,
     borderRadius: BorderRadius.md,
     marginBottom: Spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    ...Shadows.subtle,
   },
   primaryActionButton: {
     flexDirection: 'row',

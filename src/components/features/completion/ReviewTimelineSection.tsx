@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
   dateInput: {
     borderWidth: 2,
-    padding: Spacing.lg,
+    padding: Spacing.md,
     borderRadius: BorderRadius.md,
     flexDirection: 'row',
     alignItems: 'center',

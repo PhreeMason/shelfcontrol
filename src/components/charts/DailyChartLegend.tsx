@@ -27,11 +27,11 @@ export function DailyChartLegend({ testID }: DailyChartLegendProps) {
         </ThemedText>
       </View>
 
-      {/* Your progress indicator */}
+      {/* Your pace indicator */}
       <View style={styles.legendItem}>
         <View style={[styles.solidLine, { backgroundColor: colors.primary }]} />
         <ThemedText style={styles.legendText} variant="muted">
-          Your progress
+          Your pace
         </ThemedText>
       </View>
     </View>

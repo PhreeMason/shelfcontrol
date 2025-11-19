@@ -197,6 +197,64 @@ export const createThemedStyle = {
   },
 };
 
+// Shadow system - 5 levels of elevation
+export const Shadows = {
+  // Standard shadow levels (black)
+  subtle: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  light: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  medium: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  elevated: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  premium: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+
+  // Optional themed variants
+  themed: {
+    primary: {
+      shadowColor: '#B8A9D9', // colors.primary
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    soft: {
+      shadowColor: 'rgba(139, 90, 140, 0.12)',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 1,
+      shadowRadius: 32,
+      elevation: 8,
+    },
+  },
+} as const;
+
 // Common style mixins
 export const StyleMixins = {
   get card() {
@@ -223,14 +281,8 @@ export const StyleMixins = {
     };
   },
 
-  shadow: {
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  get shadow() {
+    return Shadows.light;
   },
 
   center: {
@@ -300,13 +352,7 @@ export const StyleMixins = {
       card: {
         borderRadius: BorderRadius.lg,
         padding: Spacing.lg,
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+        ...Shadows.light,
       },
       modal: {
         borderRadius: BorderRadius.xl,
@@ -323,6 +369,7 @@ export type TypographyToken = keyof typeof Typography;
 export type SpacingToken = keyof typeof Spacing;
 export type BorderRadiusToken = keyof typeof BorderRadius;
 export type FontFamilyToken = keyof typeof FontFamily;
+export type ShadowToken = keyof typeof Shadows;
 export type ButtonVariant = keyof typeof ComponentVariants.button;
 export type SurfaceVariant = keyof typeof ComponentVariants.surface;
 export type TextVariant = keyof typeof ComponentVariants.text;

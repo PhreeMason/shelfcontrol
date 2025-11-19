@@ -1,8 +1,9 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { BorderRadius, Spacing } from '@/constants/Colors';
-import { useTheme } from '@/hooks/useTheme';
+import { Shadows } from '@/constants/Theme';
 import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { useReviewTrackingMutation } from '@/hooks/useReviewTrackingMutation';
+import { useTheme } from '@/hooks/useTheme';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getDeadlineStatus } from '@/utils/deadlineActionUtils';
@@ -165,12 +166,8 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
-    marginVertical: Spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    marginBottom: Spacing.md,
+    ...Shadows.subtle,
   },
   loadingContainer: {
     borderRadius: BorderRadius.md,

@@ -22,20 +22,32 @@ export const CHART_CONFIG = {
   Y_AXIS_BUFFER_MULTIPLIER: 1.2,
 
   /**
-   * Initial spacing before first data point (in pixels)
+   * Initial spacing before first data point (in pixels) - multi-day view
    */
   INITIAL_SPACING: 15,
 
   /**
-   * Default chart width (in pixels)
+   * Initial spacing before first data point (in pixels) - intraday view
+   * Increased to ensure first time label (e.g., "12:00 AM") is fully visible
+   */
+  INITIAL_SPACING_INTRADAY: 40,
+
+  /**
+   * Default chart width for multi-day view (in pixels)
    * Used when adjustToWidth is enabled
    */
   DEFAULT_WIDTH: 320,
 
   /**
+   * Default chart width for intraday view (in pixels)
+   * Wider to accommodate time-based labels
+   */
+  DEFAULT_WIDTH_INTRADAY: 380,
+
+  /**
    * Default chart height (in pixels)
    */
-  DEFAULT_HEIGHT: 180,
+  DEFAULT_HEIGHT: 200,
 
   /**
    * Minimum value for y-axis max
@@ -117,17 +129,23 @@ export const CHART_STYLING = {
   /**
    * Font size for x-axis labels
    */
-  X_AXIS_LABEL_FONT_SIZE: 11,
+  X_AXIS_LABEL_FONT_SIZE: 12,
 
   /**
-   * Width for x-axis label text
+   * Width for x-axis label text (multi-day format like "1/5")
    */
   X_AXIS_LABEL_WIDTH: 30,
 
   /**
+   * Width for x-axis label text (intraday time format like "3:30 PM")
+   * Time labels need more space than date labels
+   */
+  X_AXIS_LABEL_WIDTH_INTRADAY: 65,
+
+  /**
    * Font size for y-axis labels
    */
-  Y_AXIS_LABEL_FONT_SIZE: 10,
+  Y_AXIS_LABEL_FONT_SIZE: 11,
 } as const;
 
 /**

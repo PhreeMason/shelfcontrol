@@ -421,6 +421,16 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
           testID="save-and-finish-button"
           style={styles.primaryButton}
         />
+        {mode === 'edit' && (
+          <ThemedButton
+            title="Cancel"
+            variant="ghost"
+            onPress={() => router.back()}
+            disabled={isSubmitting}
+            testID="cancel-button"
+            style={styles.primaryButton}
+          />
+        )}
         {mode === 'create' && (
           <ThemedText
             typography="bodyMedium"

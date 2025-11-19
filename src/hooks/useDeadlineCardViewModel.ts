@@ -12,7 +12,7 @@ import {
 } from '@/utils/deadlineDisplayUtils';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { GestureResponderEvent, Platform, ViewStyle } from 'react-native';
+import { GestureResponderEvent, ViewStyle } from 'react-native';
 
 interface DeadlineCardViewModel {
   display: {
@@ -28,7 +28,6 @@ interface DeadlineCardViewModel {
   styling: {
     borderColor: string;
     countdownColor: string;
-    shadowStyle: ViewStyle;
     cardContainerStyle: ViewStyle;
   };
   componentProps: {
@@ -103,22 +102,6 @@ export function useDeadlineCardViewModel({
   );
   const { reviewDueDate, unpostedCount, totalPlatformCount } =
     useReviewTracking(deadline.id, isToReview);
-
-  const shadowStyle = useMemo(
-    () =>
-      Platform.select({
-        ios: {
-          shadowColor: 'rgba(184, 169, 217, 0.1)',
-          shadowOffset: { width: 2, height: 8 },
-          shadowOpacity: 0.25,
-          shadowRadius: 8,
-        },
-        android: {
-          elevation: 1,
-        },
-      }) as ViewStyle,
-    []
-  );
 
   const handleCardPress = () => {
     if (!disableNavigation) {
@@ -213,9 +196,8 @@ export function useDeadlineCardViewModel({
   const cardContainerStyle = useMemo(
     () => ({
       borderColor,
-      ...(isArchived && shadowStyle),
     }),
-    [borderColor, isArchived, shadowStyle]
+    [borderColor]
   );
 
   return {
@@ -232,7 +214,6 @@ export function useDeadlineCardViewModel({
     styling: {
       borderColor,
       countdownColor,
-      shadowStyle,
       cardContainerStyle,
     },
     componentProps: {

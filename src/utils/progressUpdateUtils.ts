@@ -1,33 +1,4 @@
-import { ProgressInputMode } from '@/types/progressInput.types';
 import { formatProgressDisplay } from './deadlineUtils';
-
-export const calculateNewProgress = (
-  currentFormValue: string | number | undefined,
-  increment: number,
-  currentProgress: number,
-  totalQuantity: number,
-  inputMode: ProgressInputMode = 'direct'
-): number => {
-  let numericValue: number;
-
-  if (typeof currentFormValue === 'number' && !isNaN(currentFormValue)) {
-    numericValue = currentFormValue;
-  } else if (typeof currentFormValue === 'string') {
-    const parsed = parseFloat(currentFormValue.trim());
-    numericValue = isNaN(parsed) ? currentProgress : parsed;
-  } else {
-    numericValue = currentProgress;
-  }
-
-  let actualIncrement = increment;
-
-  if (inputMode === 'percentage') {
-    actualIncrement = Math.round((increment / 100) * totalQuantity);
-  }
-
-  const newProgress = numericValue + actualIncrement;
-  return Math.max(0, Math.min(totalQuantity, newProgress));
-};
 
 /**
  * Determines if backward progress warning should be shown

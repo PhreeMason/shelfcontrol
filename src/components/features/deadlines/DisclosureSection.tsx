@@ -1,6 +1,7 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing, Typography } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import {
   useCreateTemplate,
   useGetTemplates,
@@ -322,12 +323,6 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
               color={colors.darkPurple}
               style={styles.addIcon}
             />
-            <ThemedText
-              typography="titleMedium"
-              style={[styles.addButtonText, { color: colors.darkPurple }]}
-            >
-              Add
-            </ThemedText>
           </Pressable>
         )}
         {!isEditing && currentDisclosure && (
@@ -590,12 +585,8 @@ const styles = StyleSheet.create({
   section: {
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
-    marginVertical: Spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    marginBottom: Spacing.md,
+    ...Shadows.subtle,
   },
   header: {
     flexDirection: 'row',
@@ -635,10 +626,6 @@ const styles = StyleSheet.create({
   },
   addIcon: {
     marginRight: 2,
-  },
-  addButtonText: {
-    fontWeight: '600',
-    transform: [{ translateY: 1 }],
   },
   actions: {
     flexDirection: 'row',

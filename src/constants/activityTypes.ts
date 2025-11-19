@@ -27,7 +27,7 @@ export interface ActivityTypeConfig {
  */
 export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
   progress: {
-    icon: 'arrow.up.right',
+    icon: 'chart.line.uptrend.xyaxis',
     color: '#0a7ea4', // Teal - positive progress
     label: 'Progress Update',
   },
@@ -37,7 +37,7 @@ export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
     label: 'Note Added',
   },
   status: {
-    icon: 'arrow.triangle.2.circlepath',
+    icon: 'arrow.left.arrow.right',
     color: Colors.light.darkPink, // Pink - state change
     label: 'Status Change',
   },

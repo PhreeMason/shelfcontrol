@@ -19,6 +19,18 @@ export type ThemedTextProps = TextProps & {
    * Direct typography token for explicit size/weight control (e.g., 'titleLarge', 'bodySmall')
    * Use this when you need specific typography independent of semantic variants.
    * Overrides the variant's typography if both are provided.
+   *
+   * IMPORTANT: When using this prop, do NOT spread Typography tokens in your StyleSheet.
+   * The typography prop automatically applies the token. Use the style prop only for
+   * non-typography styles like spacing, alignment, and layout.
+   *
+   * ❌ DON'T:
+   * <ThemedText typography="bodySmall" style={styles.label}>
+   * const styles = { label: { ...Typography.bodySmall, textAlign: 'center' } }
+   *
+   * ✅ DO:
+   * <ThemedText typography="bodySmall" style={styles.label}>
+   * const styles = { label: { textAlign: 'center' } }
    */
   typography?: TypographyToken;
   /**

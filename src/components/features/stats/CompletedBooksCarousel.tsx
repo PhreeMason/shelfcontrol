@@ -110,7 +110,7 @@ export const CompletedBooksCarousel: React.FC<CompletedBooksCarouselProps> = ({
   return (
     <ThemedView style={[styles.container, dynamicStyles.container]}>
       <ThemedText typography="titleMediumPlus" style={styles.sectionTitle}>
-        Books completed: {completedDeadlines.length}
+        {completedDeadlines.length} Books completed this year
       </ThemedText>
       <ScrollView
         horizontal

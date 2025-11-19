@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
@@ -109,11 +110,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.08)',
-    shadowColor: 'rgba(0,0,0,0.2)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 5,
+    ...Shadows.elevated,
     zIndex: 20,
   },
   contentContainer: {

@@ -138,7 +138,7 @@ describe('calendarUtils', () => {
       const activity = createMockActivity(
         'deadline_due',
         '2025-01-15',
-        '2025-01-15T00:00:00Z',
+        '2025-01-15T12:00:00Z',
         'deadline-1',
         'The Great Gatsby'
       );
@@ -179,7 +179,7 @@ describe('calendarUtils', () => {
       const activity = createMockActivity(
         'deadline_due',
         '2025-01-15',
-        '2025-01-15T00:00:00Z',
+        '2025-01-15T12:00:00Z',
         'nonexistent-deadline',
         'The Great Gatsby'
       );
@@ -197,21 +197,21 @@ describe('calendarUtils', () => {
         createMockActivity(
           'progress',
           '2025-01-15',
-          '2025-01-15T10:00:00Z',
+          '2025-01-15T15:00:00Z',
           'd1',
           'Book A'
         ),
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd2',
           'Book B'
         ),
         createMockActivity(
           'note',
           '2025-01-15',
-          '2025-01-15T14:00:00Z',
+          '2025-01-15T18:00:00Z',
           'd3',
           'Book C'
         ),
@@ -229,21 +229,21 @@ describe('calendarUtils', () => {
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd1',
           'Zebra Book'
         ),
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd2',
           'Apple Book'
         ),
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd3',
           'Mango Book'
         ),
@@ -293,28 +293,28 @@ describe('calendarUtils', () => {
         createMockActivity(
           'progress',
           '2025-01-15',
-          '2025-01-15T14:00:00Z',
+          '2025-01-15T18:00:00Z',
           'd1',
           'Book A'
         ),
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd2',
           'Zebra Book'
         ),
         createMockActivity(
           'note',
           '2025-01-15',
-          '2025-01-15T10:00:00Z',
+          '2025-01-15T15:00:00Z',
           'd3',
           'Book C'
         ),
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd4',
           'Apple Book'
         ),
@@ -324,8 +324,8 @@ describe('calendarUtils', () => {
 
       expect(result[0].book_title).toBe('Apple Book');
       expect(result[1].book_title).toBe('Zebra Book');
-      expect(result[2].activity_timestamp).toBe('2025-01-15T10:00:00Z');
-      expect(result[3].activity_timestamp).toBe('2025-01-15T14:00:00Z');
+      expect(result[2].activity_timestamp).toBe('2025-01-15T15:00:00Z');
+      expect(result[3].activity_timestamp).toBe('2025-01-15T18:00:00Z');
     });
 
     it('should handle empty array', () => {
@@ -428,7 +428,7 @@ describe('calendarUtils', () => {
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd1',
           'The Great Gatsby'
         ),
@@ -465,21 +465,21 @@ describe('calendarUtils', () => {
         createMockActivity(
           'progress',
           '2025-01-15',
-          '2025-01-15T14:00:00Z',
+          '2025-01-15T18:00:00Z',
           'd1',
           'Book A'
         ),
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd2',
           'Book B'
         ),
         createMockActivity(
           'note',
           '2025-01-15',
-          '2025-01-15T10:00:00Z',
+          '2025-01-15T15:00:00Z',
           'd3',
           'Book C'
         ),
@@ -512,7 +512,7 @@ describe('calendarUtils', () => {
         createMockActivity(
           'progress',
           '2025-01-15',
-          '2025-01-15T10:00:00Z',
+          '2025-01-15T15:00:00Z',
           'd1',
           'Book A'
         ),
@@ -535,7 +535,7 @@ describe('calendarUtils', () => {
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd1',
           'The Great Gatsby'
         ),
@@ -564,14 +564,14 @@ describe('calendarUtils', () => {
         createMockActivity(
           'progress',
           '2025-01-15',
-          '2025-01-15T10:00:00Z',
+          '2025-01-15T15:00:00Z',
           'd2',
           'Book B'
         ),
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd1',
           'The Great Gatsby'
         ),
@@ -605,14 +605,14 @@ describe('calendarUtils', () => {
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd1',
           'Book A'
         ),
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd2',
           'Book B'
         ),
@@ -645,7 +645,7 @@ describe('calendarUtils', () => {
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'd1',
           'The Great Gatsby'
         ),
@@ -669,7 +669,7 @@ describe('calendarUtils', () => {
         createMockActivity(
           'deadline_due',
           '2025-01-15',
-          '2025-01-15T00:00:00Z',
+          '2025-01-15T12:00:00Z',
           'nonexistent',
           'The Great Gatsby'
         ),

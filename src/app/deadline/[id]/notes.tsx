@@ -3,7 +3,9 @@ import AppHeader from '@/components/shared/AppHeader';
 import { HashtagText } from '@/components/shared/HashtagText';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
+import { ActionSheet } from '@/components/ui/ActionSheet';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
 import { useGetAllHashtags, useGetAllNoteHashtags } from '@/hooks/useHashtags';
@@ -33,6 +35,7 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -52,6 +55,8 @@ const Notes = () => {
   const [showTypeahead, setShowTypeahead] = useState(false);
   const [selectedHashtagIds, setSelectedHashtagIds] = useState<string[]>([]);
   const [showFilterSheet, setShowFilterSheet] = useState(false);
+  const [selectedNoteForActions, setSelectedNoteForActions] = useState<DeadlineNote | null>(null);
+  const [isActionSheetVisible, setIsActionSheetVisible] = useState(false);
 
   const { data: deadline } = useGetDeadlineById(id);
   const { data: bookData } = useFetchBookById(deadline?.book_id ?? null);
@@ -260,6 +265,12 @@ const Notes = () => {
       </View>
     ) : null;
 
+  const handleLongPress = (note: DeadlineNote) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setSelectedNoteForActions(note);
+    setIsActionSheetVisible(true);
+  };
+
   const renderNote = ({
     item,
     index,
@@ -271,30 +282,22 @@ const Notes = () => {
     const progressText = `At ${item.deadline_progress}%`;
     const isLateItemInList = index === 0;
     return (
-      <View
-        style={[styles.noteItem, isLateItemInList && { borderBottomWidth: 0 }]}
-      >
-        <HashtagText
-          text={item.note_text}
-          hashtags={allHashtags}
-          style={[styles.noteText, { color: colors.text }]}
-          onHashtagPress={handleHashtagPress}
-        />
-        <View style={styles.noteFooter}>
-          <ThemedText style={styles.noteMetadata}>
-            {formattedDate} • {progressText}
-          </ThemedText>
-          <View style={styles.noteActions}>
-            <TouchableOpacity
-              onPress={() => handleCopyNote(item)}
-              style={styles.iconButton}
-            >
-              <IconSymbol
-                name="doc.on.clipboard"
-                size={18}
-                color={colors.textSecondary}
-              />
-            </TouchableOpacity>
+      <Pressable onLongPress={() => handleLongPress(item)}>
+        <ThemedView
+          backgroundColor='backgroundSecondary'
+          borderRadius='md'
+          style={[styles.noteItem, { margin: 10 }, isLateItemInList && { borderBottomWidth: 0 }]}
+        >
+          <HashtagText
+            text={item.note_text}
+            hashtags={allHashtags}
+            style={[styles.noteText, { color: colors.text }]}
+            onHashtagPress={handleHashtagPress}
+          />
+          <View style={styles.noteFooter}>
+            <ThemedText style={styles.noteMetadata}>
+              {formattedDate} • {progressText}
+            </ThemedText>
             <TouchableOpacity
               onPress={() => handleEditNote(item)}
               style={styles.iconButton}
@@ -305,19 +308,9 @@ const Notes = () => {
                 color={colors.textSecondary}
               />
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleDeleteNote(item)}
-              style={styles.iconButton}
-            >
-              <IconSymbol
-                name="trash.fill"
-                size={18}
-                color={colors.textSecondary}
-              />
-            </TouchableOpacity>
           </View>
-        </View>
-      </View>
+        </ThemedView>
+      </Pressable>
     );
   };
 
@@ -349,7 +342,7 @@ const Notes = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
-        keyboardVerticalOffset={100}
+        keyboardVerticalOffset={80}
       >
         <FlatList
           data={filteredNotes || []}
@@ -409,8 +402,9 @@ const Notes = () => {
           </View>
         )}
 
-        <View
-          style={[styles.inputContainer, { borderTopColor: colors.border }]}
+        <ThemedView
+          borderRadius='sm'
+          style={[styles.inputContainer]}
         >
           <View style={styles.inputWrapper}>
             <TextInput
@@ -464,7 +458,7 @@ const Notes = () => {
               </ThemedText>
             )}
           </TouchableOpacity>
-        </View>
+        </ThemedView>
       </KeyboardAvoidingView>
 
       <NoteFilterSheet
@@ -474,6 +468,35 @@ const Notes = () => {
         selectedHashtagIds={selectedHashtagIds}
         onHashtagsChange={setSelectedHashtagIds}
         filteredCount={filteredNotes.length}
+      />
+
+      <ActionSheet
+        visible={isActionSheetVisible}
+        onClose={() => {
+          setIsActionSheetVisible(false);
+          setSelectedNoteForActions(null);
+        }}
+        options={[
+          {
+            label: 'Copy',
+            icon: 'doc.on.clipboard',
+            onPress: () => {
+              if (selectedNoteForActions) {
+                handleCopyNote(selectedNoteForActions);
+              }
+            },
+          },
+          {
+            label: 'Delete',
+            icon: 'trash.fill',
+            variant: 'destructive',
+            onPress: () => {
+              if (selectedNoteForActions) {
+                handleDeleteNote(selectedNoteForActions);
+              }
+            },
+          },
+        ]}
       />
     </SafeAreaView>
   );
@@ -520,9 +543,8 @@ const styles = StyleSheet.create({
   },
   noteItem: {
     paddingTop: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
     paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   noteText: {
     fontSize: 16,
@@ -537,10 +559,6 @@ const styles = StyleSheet.create({
   noteMetadata: {
     fontSize: 13,
     opacity: 0.6,
-  },
-  noteActions: {
-    flexDirection: 'row',
-    gap: 8,
   },
   iconButton: {
     padding: 4,
@@ -558,9 +576,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
-    padding: 12,
-    borderTopWidth: 1,
+    padding: 8,
     gap: 8,
   },
   inputWrapper: {
@@ -584,9 +600,9 @@ const styles = StyleSheet.create({
   sendButton: {
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderRadius: BorderRadius.md,
+    alignSelf: 'flex-end',
+    height: 40,
   },
   sendButtonDisabled: {
     opacity: 0.5,

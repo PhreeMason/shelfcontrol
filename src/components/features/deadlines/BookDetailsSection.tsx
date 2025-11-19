@@ -1,5 +1,6 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { BorderRadius, Spacing } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -29,8 +30,8 @@ const BookDetailsSection = ({
           style={[
             styles.detailRow,
             {
-              backgroundColor: colors.surfaceVariant,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceContainer,
+              borderColor: colors.outline+'50',
             },
           ]}
         >
@@ -47,8 +48,8 @@ const BookDetailsSection = ({
               style={[
                 styles.detailRow,
                 {
-                  backgroundColor: colors.surfaceVariant,
-                  borderColor: colors.border,
+                  backgroundColor: colors.surfaceContainer,
+                  borderColor: colors.outline+'50',
                 },
               ]}
             >
@@ -64,8 +65,8 @@ const BookDetailsSection = ({
           style={[
             styles.detailRow,
             {
-              backgroundColor: colors.surfaceVariant,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceContainer,
+              borderColor: colors.outline+'50',
             },
           ]}
         >
@@ -80,8 +81,8 @@ const BookDetailsSection = ({
           style={[
             styles.detailRow,
             {
-              backgroundColor: colors.surfaceVariant,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceContainer,
+              borderColor: colors.outline+'50',
             },
           ]}
         >
@@ -94,8 +95,8 @@ const BookDetailsSection = ({
           style={[
             styles.detailRow,
             {
-              backgroundColor: colors.surfaceVariant,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceContainer,
+              borderColor: colors.outline+'50',
             },
           ]}
         >
@@ -110,8 +111,8 @@ const BookDetailsSection = ({
           style={[
             styles.detailRow,
             {
-              backgroundColor: colors.surfaceVariant,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceContainer,
+              borderColor: colors.outline+'50',
             },
           ]}
         >
@@ -124,8 +125,8 @@ const BookDetailsSection = ({
           style={[
             styles.detailRow,
             {
-              backgroundColor: colors.surfaceVariant,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceContainer,
+              borderColor: colors.outline+'50',
             },
           ]}
         >
@@ -145,12 +146,8 @@ const styles = StyleSheet.create({
   section: {
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
-    marginVertical: Spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    marginBottom: Spacing.md,
+    ...Shadows.subtle,
   },
   sectionTitle: {
     flexDirection: 'row',

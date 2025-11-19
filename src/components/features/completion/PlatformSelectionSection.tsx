@@ -54,7 +54,7 @@ export const PlatformSelectionSection: React.FC<
 
   // Build complete ordered platform list - PRESERVE EXISTING ORDER
   const allPlatformsOrdered = useMemo(() => {
-    const platforms: Array<{ name: string; source: string }> = [];
+    const platforms: { name: string; source: string }[] = [];
 
     // IMPORTANT: Maintain existing categorization order
     categorizedPlatforms.usedPresets.forEach(p =>

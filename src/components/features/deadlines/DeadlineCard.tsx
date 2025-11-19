@@ -31,7 +31,7 @@ export function DeadlineCard({
         ]}
       >
         <View
-          style={[styles.cardContainer, viewModel.styling.cardContainerStyle]}
+          style={[styles.cardContainer, viewModel.styling.cardContainerStyle, disableNavigation && { flex: 1, borderWidth: 0, padding: 0, width: '100%' }]}
         >
           <View style={styles.bookContent}>
             <DeadlineBookCover {...viewModel.componentProps.bookCover} />

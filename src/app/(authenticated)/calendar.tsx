@@ -1,4 +1,5 @@
 import { ActivityTimelineItem } from '@/components/features/calendar/ActivityTimelineItem';
+import { CalendarFilterToggle } from '@/components/features/calendar/CalendarFilterToggle';
 import { CalendarLegend } from '@/components/features/calendar/CalendarLegend';
 import { DeadlineDueCard } from '@/components/features/calendar/DeadlineDueCard';
 import AppHeader from '@/components/shared/AppHeader';
@@ -6,11 +7,13 @@ import { ThemedText } from '@/components/themed';
 import { useGetDailyActivities } from '@/hooks/useCalendar';
 import { useTheme } from '@/hooks/useTheme';
 import { useDeadlines } from '@/providers/DeadlineProvider';
+import { usePreferences } from '@/providers/PreferencesProvider';
 import { validateDailyActivities } from '@/types/calendar.types';
 import {
   calculateMarkedDates,
   transformActivitiesToAgendaItems,
 } from '@/utils/calendarUtils';
+import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { Calendar, DateData } from 'react-native-calendars';
@@ -31,7 +34,9 @@ function generateAgendaItemKey(
 }
 
 export default function CalendarScreen() {
+  const router = useRouter();
   const { colors } = useTheme();
+  const { showAllCalendarActivities } = usePreferences();
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split('T')[0]
   );
@@ -63,22 +68,38 @@ export default function CalendarScreen() {
     [rawActivities]
   );
 
+  // Filter activities based on user preference
+  const filteredActivities = useMemo(() => {
+    if (showAllCalendarActivities) {
+      return activities;
+    }
+
+    // Show only deadline due dates
+    return activities.filter(activity => {
+      if (activity.activity_type === 'deadline_due') {
+        return true;
+      }
+
+      return false;
+    });
+  }, [activities, showAllCalendarActivities]);
+
   // Get deadline calculations
   const { deadlines, getDeadlineCalculations } = useDeadlines();
 
   // Transform activities to agenda format
   const agendaItems = useMemo(() => {
     return transformActivitiesToAgendaItems(
-      activities,
+      filteredActivities,
       deadlines,
       getDeadlineCalculations
     );
-  }, [activities, deadlines, getDeadlineCalculations]);
+  }, [filteredActivities, deadlines, getDeadlineCalculations]);
 
   // Calculate marked dates for calendar dots
   const markedDates = useMemo(() => {
     const marked = calculateMarkedDates(
-      activities,
+      filteredActivities,
       deadlines,
       getDeadlineCalculations
     );
@@ -99,7 +120,7 @@ export default function CalendarScreen() {
 
     return marked;
   }, [
-    activities,
+    filteredActivities,
     deadlines,
     getDeadlineCalculations,
     selectedDate,
@@ -153,6 +174,7 @@ export default function CalendarScreen() {
           title="Activity Calendar"
           onBack={NOOP}
           showBackButton={false}
+          rightElement={<CalendarFilterToggle />}
         />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" />
@@ -175,6 +197,7 @@ export default function CalendarScreen() {
           title="Activity Calendar"
           onBack={NOOP}
           showBackButton={false}
+          rightElement={<CalendarFilterToggle />}
         />
         <View style={styles.errorContainer}>
           <ThemedText style={styles.errorText}>
@@ -197,6 +220,7 @@ export default function CalendarScreen() {
         title="Activity Calendar"
         onBack={NOOP}
         showBackButton={false}
+        rightElement={<CalendarFilterToggle />}
       />
       <View style={styles.content}>
         <View style={styles.calendarContainer}>
@@ -227,7 +251,7 @@ export default function CalendarScreen() {
           style={styles.activitiesList}
           contentContainerStyle={styles.activitiesContent}
         >
-          <CalendarLegend />
+          <CalendarLegend showAllActivities={showAllCalendarActivities} />
 
           {isFetching && (
             <View style={styles.inlineLoadingContainer}>
@@ -249,6 +273,7 @@ export default function CalendarScreen() {
                     index
                   )}
                   agendaItem={item}
+                  onPress={() => router.push(`/deadline/${item.activity.deadline_id}`)}
                 />
               ))}
 
@@ -261,6 +286,13 @@ export default function CalendarScreen() {
                     index
                   )}
                   activity={item.activity}
+                  onPress={() => {
+                    if (item.activityType === 'note') {
+                      router.push(`/deadline/${item.activity.deadline_id}/notes`);
+                    } else {
+                      router.push(`/deadline/${item.activity.deadline_id}`);
+                    }
+                  }}
                 />
               ))}
             </View>

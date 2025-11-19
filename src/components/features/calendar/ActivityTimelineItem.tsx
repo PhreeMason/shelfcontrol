@@ -54,8 +54,8 @@ export const ActivityTimelineItem: React.FC<ActivityTimelineItemProps> =
 
         {/* Content Column */}
         <View style={[styles.content, { borderColor: colors.border }]}>
-          <ThemedText typography="bodyLarge" style={styles.label}>
-            {config.label}
+          <ThemedText typography="bodyLarge" style={styles.label} numberOfLines={1}>
+            {details.label}
           </ThemedText>
           <ThemedText variant="muted" numberOfLines={2}>
             {details.text}
@@ -70,6 +70,7 @@ export const ActivityTimelineItem: React.FC<ActivityTimelineItemProps> =
  */
 function getActivityDetails(activity: ActivityTimelineItemProps['activity']): {
   time: string;
+  label: string;
   text: string;
 } {
   const {
@@ -82,17 +83,18 @@ function getActivityDetails(activity: ActivityTimelineItemProps['activity']): {
   // Format time from timestamp
   const time = formatActivityTime(activity_timestamp);
 
-  let text = book_title;
+  // Label is always the book title
+  const label = book_title;
+
+  let text = '';
 
   switch (activity_type) {
     case 'progress': {
       const { current_progress, previous_progress, format } = metadata || {};
-      if (
-        current_progress !== undefined &&
-        previous_progress !== undefined &&
-        current_progress !== previous_progress
-      ) {
-        const change = current_progress - previous_progress;
+      if (current_progress !== undefined && current_progress !== null) {
+        // Default previous_progress to 0 if null or undefined
+        const prevProgress = previous_progress ?? 0;
+        const change = current_progress - prevProgress;
         const bookFormat = (format || 'physical') as
           | 'physical'
           | 'eBook'
@@ -101,14 +103,14 @@ function getActivityDetails(activity: ActivityTimelineItemProps['activity']): {
         // Format the progress change based on book format (audiobooks show as "Xh Ym" or "Xh")
         if (bookFormat === 'audio') {
           const formattedChange = formatAudiobookTime(change);
-          const formattedPrevious = formatAudiobookTime(previous_progress);
+          const formattedPrevious = formatAudiobookTime(prevProgress);
           const formattedCurrent = formatAudiobookTime(current_progress);
-          text = `${book_title} - Read ${formattedChange} (${formattedPrevious} → ${formattedCurrent})`;
+          text = `Read ${formattedChange} (${formattedPrevious} → ${formattedCurrent})`;
         } else {
-          text = `${book_title} - Read ${change} pages (${previous_progress} → ${current_progress})`;
+          text = `Read ${change} pages (${prevProgress} → ${current_progress})`;
         }
       } else {
-        text = `${book_title} - Progress updated`;
+        text = 'Progress updated';
       }
       break;
     }
@@ -120,9 +122,9 @@ function getActivityDetails(activity: ActivityTimelineItemProps['activity']): {
           note_text.length > 50
             ? note_text.substring(0, 50) + '...'
             : note_text;
-        text = `${book_title} - "${truncated}"`;
+        text = `"${truncated}"`;
       } else {
-        text = `${book_title} - Note added`;
+        text = 'Note added';
       }
       break;
     }
@@ -130,11 +132,11 @@ function getActivityDetails(activity: ActivityTimelineItemProps['activity']): {
     case 'status': {
       const { status, previous_status } = metadata;
       if (status && previous_status) {
-        text = `${book_title} - ${formatStatus(previous_status)} → ${formatStatus(status)}`;
+        text = `${formatStatus(previous_status)} → ${formatStatus(status)}`;
       } else if (status) {
-        text = `${book_title} - ${formatStatus(status)}`;
+        text = `Status changed to ${formatStatus(status)}`;
       } else {
-        text = `${book_title} - Status changed`;
+        text = 'Status changed';
       }
       break;
     }
@@ -142,9 +144,9 @@ function getActivityDetails(activity: ActivityTimelineItemProps['activity']): {
     case 'review': {
       const { platform_name } = metadata;
       if (platform_name) {
-        text = `${book_title} - Posted to ${platform_name}`;
+        text = `Posted to ${platform_name}`;
       } else {
-        text = `${book_title} - Review posted`;
+        text = 'Review posted';
       }
       break;
     }
@@ -152,9 +154,9 @@ function getActivityDetails(activity: ActivityTimelineItemProps['activity']): {
     case 'deadline_created': {
       const { format } = metadata;
       if (format) {
-        text = `${book_title} (${formatBookFormat(format)}) - Deadline created`;
+        text = `Due date created (${formatBookFormat(format)})`;
       } else {
-        text = `${book_title} - Deadline created`;
+        text = 'Due date created';
       }
       break;
     }
@@ -163,7 +165,7 @@ function getActivityDetails(activity: ActivityTimelineItemProps['activity']): {
       text = book_title;
   }
 
-  return { time, text };
+  return { time, label, text };
 }
 
 const styles = StyleSheet.create({

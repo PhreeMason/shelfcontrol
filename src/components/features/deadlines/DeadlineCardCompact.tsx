@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { Spacing } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import { useDeadlineCardViewModel } from '@/hooks/useDeadlineCardViewModel';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
@@ -144,11 +145,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 8,
-    shadowColor: 'rgba(0,0,0,0.1)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 3,
+    ...Shadows.medium,
   },
   progressBarContainer: {
     marginTop: Spacing.sm,

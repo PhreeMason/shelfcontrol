@@ -1,6 +1,7 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import {
   useAddContact,
   useDeleteContact,
@@ -144,7 +145,7 @@ export const DeadlineContactsSection = ({
         <View style={styles.titleColumn}>
           <ThemedText variant="title">Contacts</ThemedText>
           <ThemedText variant="secondary" style={styles.benefitMargin}>
-            Track publisher relationships
+            Save publisher contacts for updates
           </ThemedText>
         </View>
         {!isAdding && !editingContactId && (
@@ -161,13 +162,6 @@ export const DeadlineContactsSection = ({
               color={colors.darkPurple}
               style={styles.addIcon}
             />
-            <ThemedText
-              typography="titleMedium"
-              color="darkPurple"
-              style={styles.addButtonText}
-            >
-              Add
-            </ThemedText>
           </Pressable>
         )}
       </View>
@@ -267,12 +261,8 @@ const styles = StyleSheet.create({
   section: {
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
-    marginVertical: Spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    marginBottom: Spacing.md,
+    ...Shadows.subtle,
   },
   header: {
     flexDirection: 'row',
@@ -298,9 +288,6 @@ const styles = StyleSheet.create({
   },
   addIcon: {
     marginRight: 2,
-  },
-  addButtonText: {
-    transform: [{ translateY: 1 }],
   },
   contactsList: {
     gap: 12,

@@ -3,24 +3,26 @@
  * Shows cumulative daily progress vs. required pace for a reading deadline
  */
 
-import React, { useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { LineChart, CurveType } from 'react-native-gifted-charts';
 import { ThemedText, ThemedView } from '@/components/themed';
+import {
+  CHART_ANIMATION,
+  CHART_CONFIG,
+  CHART_STYLING,
+} from '@/constants/ChartConfig';
+import { BorderRadius, Spacing } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useTheme';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   calculateDailyCumulativeProgress,
   transformToDailyChartData,
 } from '@/utils/dailyChartDataUtils';
-import { DailyChartLegend } from './DailyChartLegend';
-import {
-  CHART_ANIMATION,
-  CHART_CONFIG,
-  CHART_STYLING,
-} from '@/constants/ChartConfig';
 import { normalizeServerDate } from '@/utils/dateNormalization';
-import { BorderRadius } from '@/constants/Colors';
+import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { CurveType, LineChart } from 'react-native-gifted-charts';
+import { DailyChartLegend } from './DailyChartLegend';
+import { DailyChartTooltip } from './DailyChartTooltip';
 
 interface DailyReadingChartProps {
   deadline: ReadingDeadlineWithProgress;
@@ -91,6 +93,13 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
     );
   }, [deadline, chartEndDate]);
 
+  // Detect if this is intraday data (time-based labels vs date-based)
+  const isIntradayData = useMemo(() => {
+    if (dailyData.length === 0) return false;
+    // Intraday data uses time format like "3:30 PM" which contains AM/PM
+    return dailyData[0].date.includes('AM') || dailyData[0].date.includes('PM');
+  }, [dailyData]);
+
   // Transform data for chart
   const chartData = useMemo(() => {
     if (dailyData.length === 0) {
@@ -130,6 +139,17 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
         CHART_CONFIG.Y_AXIS_ROUNDING_FACTOR
     ) * CHART_CONFIG.Y_AXIS_ROUNDING_FACTOR;
 
+  // Use appropriate widths based on data type (intraday vs multi-day)
+  const chartWidth = isIntradayData
+    ? CHART_CONFIG.DEFAULT_WIDTH_INTRADAY
+    : CHART_CONFIG.DEFAULT_WIDTH;
+  const labelWidth = isIntradayData
+    ? CHART_STYLING.X_AXIS_LABEL_WIDTH_INTRADAY
+    : CHART_STYLING.X_AXIS_LABEL_WIDTH;
+  const initialSpacing = isIntradayData
+    ? CHART_CONFIG.INITIAL_SPACING_INTRADAY
+    : CHART_CONFIG.INITIAL_SPACING;
+
   return (
     <ThemedView style={styles.container} testID="daily-reading-chart">
       {/* Title */}
@@ -149,27 +169,23 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
           thickness={2}
           startOpacity={0}
           endOpacity={0}
-          hideDataPoints={true}
           // Actual line styling (solid primary color with area fill and visible data points on activity days)
           color2={colors.primary}
           thickness2={3}
-          hideDataPoints2={false}
           startFillColor2={colors.primary}
           endFillColor2={colors.primary}
           startOpacity2={0.2}
           endOpacity2={0.05}
           // Chart dimensions
-          width={CHART_CONFIG.DEFAULT_WIDTH}
+          width={chartWidth}
           height={CHART_CONFIG.DEFAULT_HEIGHT}
-          adjustToWidth
+          // Spacing
+          initialSpacing={initialSpacing}
           // Curve style
           curved
           curveType={CurveType.QUADRATIC}
           // Area fill
           areaChart
-          areaChart2
-          // Spacing
-          initialSpacing={CHART_CONFIG.INITIAL_SPACING}
           // Axes
           xAxisThickness={CHART_STYLING.AXIS_THICKNESS}
           yAxisThickness={CHART_STYLING.AXIS_THICKNESS}
@@ -179,7 +195,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
           xAxisLabelTextStyle={{
             color: colors.textMuted,
             fontSize: CHART_STYLING.X_AXIS_LABEL_FONT_SIZE,
-            width: CHART_STYLING.X_AXIS_LABEL_WIDTH,
+            width: labelWidth,
             textAlign: 'center',
           }}
           yAxisTextStyle={{
@@ -194,6 +210,22 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
           // Animation
           isAnimated={CHART_ANIMATION.ENABLED}
           animationDuration={CHART_ANIMATION.DURATION}
+          rotateLabel
+          // Interactive pointer configuration
+          pointerConfig={{
+            pointerLabelComponent: (items: any) => (
+              <DailyChartTooltip items={items} format={deadline.format} />
+            ),
+            activatePointersOnLongPress: true,
+            showPointerStrip: true,
+            // pointerStripUptoDataPoint: true,
+            pointerStripColor: colors.border,
+            pointer1Color: colors.textMuted,
+            pointer2Color: colors.primary,
+            persistPointer: false,
+            pointerStripWidth: 1,
+            autoAdjustPointerLabelPosition: false,
+          }}
         />
       </View>
 
@@ -205,13 +237,11 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
 
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
     padding: 20,
     borderRadius: BorderRadius.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    marginBottom: Spacing.md,
+    ...Shadows.subtle,
   },
   emptyContainer: {
     padding: 20,

@@ -20,6 +20,14 @@ import {
 } from 'react';
 
 export type DeadlineViewMode = 'list' | 'compact';
+export type MetricViewMode = 'remaining' | 'current';
+export type MetricViewModePreferences = Record<BookFormat, MetricViewMode>;
+
+export const DEFAULT_METRIC_VIEW_MODES: MetricViewModePreferences = {
+  physical: 'current',
+  eBook: 'current',
+  audio: 'current',
+};
 
 interface PreferencesContextType {
   selectedFilter: FilterType;
@@ -41,8 +49,13 @@ interface PreferencesContextType {
   progressInputModes: ProgressInputModePreferences;
   getProgressInputMode: (format: BookFormat) => ProgressInputMode;
   setProgressInputMode: (format: BookFormat, mode: ProgressInputMode) => void;
+  metricViewModes: MetricViewModePreferences;
+  getMetricViewMode: (format: BookFormat) => MetricViewMode;
+  setMetricViewMode: (format: BookFormat, mode: MetricViewMode) => void;
   deadlineViewMode: DeadlineViewMode;
   setDeadlineViewMode: (mode: DeadlineViewMode) => void;
+  showAllCalendarActivities: boolean;
+  setShowAllCalendarActivities: (show: boolean) => void;
   isLoading: boolean;
 }
 
@@ -66,8 +79,13 @@ const PreferencesContext = createContext<PreferencesContextType>({
   progressInputModes: DEFAULT_PROGRESS_INPUT_MODES,
   getProgressInputMode: () => 'direct',
   setProgressInputMode: () => {},
+  metricViewModes: DEFAULT_METRIC_VIEW_MODES,
+  getMetricViewMode: () => 'current',
+  setMetricViewMode: () => {},
   deadlineViewMode: 'list',
   setDeadlineViewMode: () => {},
+  showAllCalendarActivities: false,
+  setShowAllCalendarActivities: () => {},
   isLoading: true,
 });
 
@@ -81,7 +99,9 @@ const STORAGE_KEYS = {
   EXCLUDED_STATUSES: '@preferences/excludedStatuses',
   SORT_ORDER: '@preferences/sortOrder',
   PROGRESS_INPUT_MODES: '@preferences/progressInputModes',
+  METRIC_VIEW_MODES: '@preferences/metricViewModes',
   DEADLINE_VIEW_MODE: '@preferences/deadlineViewMode',
+  SHOW_ALL_CALENDAR_ACTIVITIES: '@preferences/showAllCalendarActivities',
 };
 
 export default function PreferencesProvider({ children }: PropsWithChildren) {
@@ -101,8 +121,12 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
   const [sortOrder, setSortOrderState] = useState<SortOrder>('default');
   const [progressInputModes, setProgressInputModesState] =
     useState<ProgressInputModePreferences>(DEFAULT_PROGRESS_INPUT_MODES);
+  const [metricViewModes, setMetricViewModesState] =
+    useState<MetricViewModePreferences>(DEFAULT_METRIC_VIEW_MODES);
   const [deadlineViewMode, setDeadlineViewModeState] =
     useState<DeadlineViewMode>('list');
+  const [showAllCalendarActivities, setShowAllCalendarActivitiesState] =
+    useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -118,7 +142,9 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           savedExcludedStatuses,
           savedSortOrder,
           savedProgressInputModes,
+          savedMetricViewModes,
           savedDeadlineViewMode,
+          savedShowAllCalendarActivities,
         ] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FILTER),
           AsyncStorage.getItem(STORAGE_KEYS.TIME_RANGE_FILTER),
@@ -129,7 +155,9 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           AsyncStorage.getItem(STORAGE_KEYS.EXCLUDED_STATUSES),
           AsyncStorage.getItem(STORAGE_KEYS.SORT_ORDER),
           AsyncStorage.getItem(STORAGE_KEYS.PROGRESS_INPUT_MODES),
+          AsyncStorage.getItem(STORAGE_KEYS.METRIC_VIEW_MODES),
           AsyncStorage.getItem(STORAGE_KEYS.DEADLINE_VIEW_MODE),
+          AsyncStorage.getItem(STORAGE_KEYS.SHOW_ALL_CALENDAR_ACTIVITIES),
         ]);
 
         if (savedFilter) {
@@ -165,8 +193,18 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
             JSON.parse(savedProgressInputModes) as ProgressInputModePreferences
           );
         }
+        if (savedMetricViewModes) {
+          setMetricViewModesState(
+            JSON.parse(savedMetricViewModes) as MetricViewModePreferences
+          );
+        }
         if (savedDeadlineViewMode) {
           setDeadlineViewModeState(savedDeadlineViewMode as DeadlineViewMode);
+        }
+        if (savedShowAllCalendarActivities !== null) {
+          setShowAllCalendarActivitiesState(
+            savedShowAllCalendarActivities === 'true'
+          );
         }
       } catch (error) {
         console.error('Error loading preferences:', error);
@@ -285,12 +323,44 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     }
   };
 
+  const getMetricViewMode = (format: BookFormat): MetricViewMode => {
+    return metricViewModes[format] || 'current';
+  };
+
+  const setMetricViewMode = async (
+    format: BookFormat,
+    mode: MetricViewMode
+  ) => {
+    try {
+      const updatedModes = { ...metricViewModes, [format]: mode };
+      setMetricViewModesState(updatedModes);
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.METRIC_VIEW_MODES,
+        JSON.stringify(updatedModes)
+      );
+    } catch (error) {
+      console.error('Error saving metric view mode preference:', error);
+    }
+  };
+
   const setDeadlineViewMode = async (mode: DeadlineViewMode) => {
     try {
       setDeadlineViewModeState(mode);
       await AsyncStorage.setItem(STORAGE_KEYS.DEADLINE_VIEW_MODE, mode);
     } catch (error) {
       console.error('Error saving deadline view mode preference:', error);
+    }
+  };
+
+  const setShowAllCalendarActivities = async (show: boolean) => {
+    try {
+      setShowAllCalendarActivitiesState(show);
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.SHOW_ALL_CALENDAR_ACTIVITIES,
+        String(show)
+      );
+    } catch (error) {
+      console.error('Error saving calendar filter preference:', error);
     }
   };
 
@@ -314,8 +384,13 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     progressInputModes,
     getProgressInputMode,
     setProgressInputMode,
+    metricViewModes,
+    getMetricViewMode,
+    setMetricViewMode,
     deadlineViewMode,
     setDeadlineViewMode,
+    showAllCalendarActivities,
+    setShowAllCalendarActivities,
     isLoading,
   };
 

@@ -9,6 +9,7 @@ import { Stack } from 'expo-router';
 import { PostHogProvider } from 'posthog-react-native';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const queryClient = new QueryClient();
 
@@ -30,28 +31,30 @@ export default function RootLayout() {
   }
 
   return (
-    <PostHogProvider client={posthog}>
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <PreferencesProvider>
-            <DeadlineProvider>
-              <Stack>
-                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="(authenticated)"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="deadline"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-            </DeadlineProvider>
-          </PreferencesProvider>
-          <Toast config={toastConfig} />
-        </QueryClientProvider>
-      </AuthProvider>
-    </PostHogProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PostHogProvider client={posthog}>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <PreferencesProvider>
+              <DeadlineProvider>
+                <Stack>
+                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="(authenticated)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="deadline"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+              </DeadlineProvider>
+            </PreferencesProvider>
+            <Toast config={toastConfig} />
+          </QueryClientProvider>
+        </AuthProvider>
+      </PostHogProvider>
+    </GestureHandlerRootView>
   );
 }

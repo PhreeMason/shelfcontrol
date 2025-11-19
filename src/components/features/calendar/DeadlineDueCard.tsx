@@ -34,6 +34,12 @@ export const DeadlineDueCard: React.FC<DeadlineDueCardProps> = React.memo(
         : null;
     const statusText = latestStatus ? formatStatus(latestStatus) : 'Unknown';
 
+    // Determine progress text based on format
+    const progressText =
+      deadline.format === 'audio'
+        ? `${progressPercentage}% listened`
+        : `${progressPercentage}% read`;
+
     return (
       <Pressable
         testID="deadline-due-card"
@@ -42,8 +48,8 @@ export const DeadlineDueCard: React.FC<DeadlineDueCardProps> = React.memo(
         disabled={!onPress}
       >
         <View style={styles.timeColumn}>
-          <ThemedText typography="labelSmall" color="textMuted">
-            All Day
+          <ThemedText typography="labelMedium" color="textMuted">
+            Due Today
           </ThemedText>
         </View>
 
@@ -79,9 +85,7 @@ export const DeadlineDueCard: React.FC<DeadlineDueCardProps> = React.memo(
             <ThemedText variant="muted" style={styles.separator}>
               •
             </ThemedText>
-            <ThemedText variant="muted">
-              {progressPercentage}% complete
-            </ThemedText>
+            <ThemedText variant="muted">{progressText}</ThemedText>
           </View>
         </View>
       </Pressable>
@@ -94,14 +98,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 6,
-    gap: 15,
+    gap: 10,
   },
   pressed: {
     opacity: 0.7,
   },
   timeColumn: {
-    width: 60,
-    paddingRight: Spacing.sm,
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
@@ -116,7 +118,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1, // Ensure icon appears above the line
-    borderWidth: 3, // Thicker border for urgency color
+    borderWidth: 2, // Thicker border for urgency color
   },
   content: {
     flex: 1,

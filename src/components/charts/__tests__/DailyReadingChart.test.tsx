@@ -21,9 +21,12 @@ jest.mock('../DailyChartLegend', () => ({
 }));
 
 // Mock react-native-gifted-charts
+let mockLineChartProps: any = {};
 jest.mock('react-native-gifted-charts', () => ({
-  LineChart: () => {
+  LineChart: (props: any) => {
     const React = require('react');
+    // Store props for test verification
+    mockLineChartProps = props;
     return React.createElement('View', { testID: 'line-chart' });
   },
   CurveType: { QUADRATIC: 0 },
@@ -76,7 +79,7 @@ const createMockProgress = (
 
 describe('DailyReadingChart', () => {
   describe('Component Structure', () => {
-    it('should render chart when no progress data but has reading status', () => {
+    it('should render empty state when no progress data', () => {
       const mockDeadline = createMockDeadline({
         status: [createMockStatus('reading', '2025-01-01T00:00:00Z')],
         progress: [],
@@ -84,12 +87,11 @@ describe('DailyReadingChart', () => {
 
       render(<DailyReadingChart deadline={mockDeadline} />);
 
-      // Should render chart with required pace line, even with no progress
-      expect(screen.getByTestId('daily-reading-chart')).toBeTruthy();
-      expect(screen.getByTestId('line-chart')).toBeTruthy();
+      // Should show empty state since chart now requires progress data
+      expect(screen.getByTestId('daily-chart-empty')).toBeTruthy();
     });
 
-    it('should render empty state when no reading status', () => {
+    it('should render chart when progress data exists', () => {
       const mockDeadline = createMockDeadline({
         status: [],
         progress: [createMockProgress(100, '2025-01-10T00:00:00Z')],
@@ -97,7 +99,8 @@ describe('DailyReadingChart', () => {
 
       render(<DailyReadingChart deadline={mockDeadline} />);
 
-      expect(screen.getByTestId('daily-chart-empty')).toBeTruthy();
+      // Should render chart even without status, as long as progress exists
+      expect(screen.getByTestId('daily-reading-chart')).toBeTruthy();
     });
 
     it('should render chart when data is available', () => {
@@ -240,7 +243,7 @@ describe('DailyReadingChart', () => {
   });
 
   describe('Edge Cases', () => {
-    it('should handle empty status array', () => {
+    it('should handle empty status array with progress data', () => {
       const mockDeadline = createMockDeadline({
         status: [],
         progress: [createMockProgress(100, '2025-01-10T00:00:00Z')],
@@ -248,7 +251,8 @@ describe('DailyReadingChart', () => {
 
       render(<DailyReadingChart deadline={mockDeadline} />);
 
-      expect(screen.getByTestId('daily-chart-empty')).toBeTruthy();
+      // Should render chart since progress data exists (even without status)
+      expect(screen.getByTestId('daily-reading-chart')).toBeTruthy();
     });
 
     it('should handle missing progress array', () => {
@@ -261,9 +265,8 @@ describe('DailyReadingChart', () => {
 
       render(<DailyReadingChart deadline={mockDeadline} />);
 
-      // Should render chart even with undefined progress, showing required pace line
-      expect(screen.getByTestId('daily-reading-chart')).toBeTruthy();
-      expect(screen.getByTestId('line-chart')).toBeTruthy();
+      // Should show empty state when progress is missing
+      expect(screen.getByTestId('daily-chart-empty')).toBeTruthy();
     });
 
     it('should handle single progress entry', () => {
@@ -289,6 +292,28 @@ describe('DailyReadingChart', () => {
       // Should show empty state since pace cannot be calculated
       expect(screen.getByTestId('daily-chart-empty')).toBeTruthy();
     });
+
+    it('should handle same-day completion (added and completed on same day)', () => {
+      const mockDeadline = createMockDeadline({
+        deadline_date: '2025-01-15',
+        total_quantity: 310,
+        status: [
+          createMockStatus('reading', '2025-01-15T08:00:00Z'),
+          createMockStatus('complete', '2025-01-15T22:00:00Z'),
+        ],
+        progress: [
+          createMockProgress(100, '2025-01-15T10:00:00Z'),
+          createMockProgress(310, '2025-01-15T20:00:00Z'),
+        ],
+      });
+
+      render(<DailyReadingChart deadline={mockDeadline} />);
+
+      // Should render chart for same-day completion
+      expect(screen.getByTestId('daily-reading-chart')).toBeTruthy();
+      expect(screen.getByTestId('chart-title')).toBeTruthy();
+      expect(screen.getByTestId('line-chart')).toBeTruthy();
+    });
   });
 
   describe('Status Ordering', () => {
@@ -306,6 +331,106 @@ describe('DailyReadingChart', () => {
 
       // Should render chart for completed deadline
       expect(screen.getByTestId('daily-reading-chart')).toBeTruthy();
+    });
+  });
+
+  describe('Interactive Features', () => {
+    beforeEach(() => {
+      // Reset mock props before each test
+      mockLineChartProps = {};
+    });
+
+    it('should configure pointerConfig for interactive tooltips', () => {
+      const mockDeadline = createMockDeadline({
+        status: [createMockStatus('reading', '2025-01-01T00:00:00Z')],
+        progress: [
+          createMockProgress(50, '2025-01-05T00:00:00Z'),
+          createMockProgress(100, '2025-01-10T00:00:00Z'),
+        ],
+      });
+
+      render(<DailyReadingChart deadline={mockDeadline} />);
+
+      // Verify pointerConfig is set
+      expect(mockLineChartProps.pointerConfig).toBeDefined();
+    });
+
+    it('should set activatePointersOnLongPress to preserve scrolling', () => {
+      const mockDeadline = createMockDeadline({
+        status: [createMockStatus('reading', '2025-01-01T00:00:00Z')],
+        progress: [createMockProgress(100, '2025-01-10T00:00:00Z')],
+      });
+
+      render(<DailyReadingChart deadline={mockDeadline} />);
+
+      expect(
+        mockLineChartProps.pointerConfig?.activatePointersOnLongPress
+      ).toBe(true);
+    });
+
+    it('should configure pointer strip to show at data points', () => {
+      const mockDeadline = createMockDeadline({
+        status: [createMockStatus('reading', '2025-01-01T00:00:00Z')],
+        progress: [createMockProgress(100, '2025-01-10T00:00:00Z')],
+      });
+
+      render(<DailyReadingChart deadline={mockDeadline} />);
+
+      const { pointerConfig } = mockLineChartProps;
+      expect(pointerConfig?.showPointerStrip).toBe(true);
+      expect(pointerConfig?.pointerStripUptoDataPoint).toBe(true);
+      expect(pointerConfig?.pointerStripWidth).toBe(1);
+    });
+
+    it('should set pointer colors to match theme', () => {
+      const mockDeadline = createMockDeadline({
+        status: [createMockStatus('reading', '2025-01-01T00:00:00Z')],
+        progress: [createMockProgress(100, '2025-01-10T00:00:00Z')],
+      });
+
+      render(<DailyReadingChart deadline={mockDeadline} />);
+
+      const { pointerConfig } = mockLineChartProps;
+      expect(pointerConfig?.pointer1Color).toBeDefined(); // Required line color
+      expect(pointerConfig?.pointer2Color).toBeDefined(); // Actual line color
+      expect(pointerConfig?.pointerStripColor).toBeDefined();
+    });
+
+    it('should configure pointer to not persist after interaction', () => {
+      const mockDeadline = createMockDeadline({
+        status: [createMockStatus('reading', '2025-01-01T00:00:00Z')],
+        progress: [createMockProgress(100, '2025-01-10T00:00:00Z')],
+      });
+
+      render(<DailyReadingChart deadline={mockDeadline} />);
+
+      expect(mockLineChartProps.pointerConfig?.persistPointer).toBe(false);
+    });
+
+    it('should enable auto-adjust for pointer label position', () => {
+      const mockDeadline = createMockDeadline({
+        status: [createMockStatus('reading', '2025-01-01T00:00:00Z')],
+        progress: [createMockProgress(100, '2025-01-10T00:00:00Z')],
+      });
+
+      render(<DailyReadingChart deadline={mockDeadline} />);
+
+      expect(
+        mockLineChartProps.pointerConfig?.autoAdjustPointerLabelPosition
+      ).toBe(true);
+    });
+
+    it('should provide pointerLabelComponent function', () => {
+      const mockDeadline = createMockDeadline({
+        status: [createMockStatus('reading', '2025-01-01T00:00:00Z')],
+        progress: [createMockProgress(100, '2025-01-10T00:00:00Z')],
+      });
+
+      render(<DailyReadingChart deadline={mockDeadline} />);
+
+      expect(
+        typeof mockLineChartProps.pointerConfig?.pointerLabelComponent
+      ).toBe('function');
     });
   });
 });

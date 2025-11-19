@@ -349,3 +349,8 @@ Tests:
 
 Rationale:
 This approach prevents subtle off-by-one issues caused by implicit timezone shifts on date-only values while preserving correct instant-based ordering for true timestamps.
+
+# daily progress chart
+- The graph should not start until the first progress update.
+- The graph is blank when you start and complete a book all in the same day
+- dont show on pending

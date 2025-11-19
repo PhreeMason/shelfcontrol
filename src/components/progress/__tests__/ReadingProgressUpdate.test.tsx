@@ -6,7 +6,6 @@ import {
   useDeleteFutureProgress,
 } from '@/hooks/useDeadlines';
 import { useDeadlines } from '@/providers/DeadlineProvider';
-import { usePreferences } from '@/providers/PreferencesProvider';
 import Toast from 'react-native-toast-message';
 import { router } from 'expo-router';
 
@@ -28,9 +27,6 @@ jest.mock('@/providers/DeadlineProvider', () => ({
   useDeadlines: jest.fn(),
 }));
 
-jest.mock('@/providers/PreferencesProvider', () => ({
-  usePreferences: jest.fn(),
-}));
 
 jest.mock('react-native-toast-message', () => ({
   show: jest.fn(),
@@ -41,55 +37,62 @@ const mockAlert = jest.fn();
 Alert.alert = mockAlert;
 
 // Mock child components completely to isolate testing
-jest.mock('@/components/progress/ProgressBar', () => {
+jest.mock('@/components/progress/MetricCard', () => {
   const React = require('react');
-  return function MockProgressBar() {
-    return React.createElement('View', { testID: 'progress-bar' });
+  return function MockMetricCard() {
+    return React.createElement('View', { testID: 'metric-card' });
   };
 });
 
-jest.mock('@/components/progress/ProgressHeader', () => {
+jest.mock('@/components/progress/DateRangeDisplay', () => {
   const React = require('react');
-  return function MockProgressHeader() {
-    return React.createElement('View', { testID: 'progress-header' });
+  return function MockDateRangeDisplay() {
+    return React.createElement('View', { testID: 'date-range-display' });
   };
 });
 
-jest.mock('@/components/progress/ProgressInput', () => {
+jest.mock('@/components/features/deadlines/DeadlineCardActions', () => {
   const React = require('react');
-  return function MockProgressInput() {
-    return React.createElement('View', { testID: 'progress-input' });
+  return {
+    DeadlineCardActions: function MockDeadlineCardActions() {
+      return React.createElement('View', { testID: 'deadline-card-actions' });
+    },
   };
 });
 
-jest.mock('@/components/progress/ProgressStats', () => {
+// Mock react-native-gesture-handler
+jest.mock('react-native-gesture-handler', () => {
   const React = require('react');
-  return function MockProgressStats() {
-    return React.createElement('View', { testID: 'progress-stats' });
+  const { View } = require('react-native');
+  return {
+    GestureDetector: ({ children }: any) => children,
+    Gesture: {
+      Pan: () => ({
+        onStart: jest.fn().mockReturnThis(),
+        onUpdate: jest.fn().mockReturnThis(),
+        onEnd: jest.fn().mockReturnThis(),
+        enabled: jest.fn().mockReturnThis(),
+      }),
+    },
+    GestureHandlerRootView: ({ children, ...props }: any) =>
+      React.createElement(View, props, children),
   };
 });
 
-jest.mock('@/components/progress/QuickActionButtons', () => {
+// Mock react-native-reanimated
+jest.mock('react-native-reanimated', () => {
   const React = require('react');
-  const { View, Text } = require('react-native');
-  return function MockQuickActionButtons(props: any) {
-    const { onQuickUpdate, inputMode } = props;
-    const suffix = inputMode === 'percentage' ? '%' : '';
-
-    React.useEffect(() => {
-      if (onQuickUpdate) {
-        onQuickUpdate(10);
-      }
-    }, [onQuickUpdate]);
-
-    return React.createElement(
-      View,
-      { testID: 'quick-action-buttons' },
-      React.createElement(Text, {}, `-1${suffix}`),
-      React.createElement(Text, {}, `+1${suffix}`),
-      React.createElement(Text, {}, `+5${suffix}`),
-      React.createElement(Text, {}, `+10${suffix}`)
-    );
+  const { View } = require('react-native');
+  const Animated = {
+    View: ({ children, ...props }: any) =>
+      React.createElement(View, props, children),
+  };
+  return {
+    __esModule: true,
+    useSharedValue: jest.fn((initial) => ({ value: initial })),
+    useAnimatedStyle: jest.fn(() => ({})),
+    runOnJS: jest.fn((fn) => fn),
+    default: Animated,
   };
 });
 
@@ -167,36 +170,20 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
     );
     (useDeleteFutureProgress as jest.Mock).mockReturnValue(mockDeleteMutation);
     (useDeadlines as jest.Mock).mockReturnValue(mockDeadlineContext);
-    (usePreferences as jest.Mock).mockReturnValue({
-      getProgressInputMode: jest.fn().mockReturnValue('direct'),
-    });
   });
 
   describe('Component Structure', () => {
     it('should render all main sub-components', () => {
       render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
-      expect(screen.getByTestId('progress-header')).toBeTruthy();
-      expect(screen.getByTestId('progress-input')).toBeTruthy();
-      expect(screen.getByTestId('progress-stats')).toBeTruthy();
-      expect(screen.getByTestId('progress-bar')).toBeTruthy();
-      expect(screen.getByTestId('quick-action-buttons')).toBeTruthy();
+      expect(screen.getByTestId('metric-card')).toBeTruthy();
+      expect(screen.getByTestId('date-range-display')).toBeTruthy();
+      expect(screen.getByTestId('deadline-card-actions')).toBeTruthy();
     });
 
-    it('should render the update progress button', () => {
+    it('should render the update button', () => {
       render(<ReadingProgressUpdate deadline={mockDeadline} />);
-      expect(screen.getByText('Update Progress')).toBeTruthy();
-    });
-
-    it('should render correct label for physical format', () => {
-      render(<ReadingProgressUpdate deadline={mockDeadline} />);
-      expect(screen.getByText('Quick update pages:')).toBeTruthy();
-    });
-
-    it('should render correct label for audio format', () => {
-      const audioDeadline = { ...mockDeadline, format: 'audio' as const };
-      render(<ReadingProgressUpdate deadline={audioDeadline} />);
-      expect(screen.getByText('Quick update time (minutes):')).toBeTruthy();
+      expect(screen.getByText('Update')).toBeTruthy();
     });
 
     it('should show updating state when mutation is pending', () => {
@@ -239,7 +226,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
       render(
         <ReadingProgressUpdate deadline={mockDeadline} timeSpentReading={30} />
       );
-      expect(screen.getByText('Update Progress')).toBeTruthy();
+      expect(screen.getByText('Update')).toBeTruthy();
     });
 
     it('should handle onProgressSubmitted callback prop', () => {
@@ -250,7 +237,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           onProgressSubmitted={onProgressSubmitted}
         />
       );
-      expect(screen.getByText('Update Progress')).toBeTruthy();
+      expect(screen.getByText('Update')).toBeTruthy();
     });
   });
 
@@ -258,19 +245,19 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
     it('should handle physical format deadline', () => {
       const physicalDeadline = { ...mockDeadline, format: 'physical' as const };
       render(<ReadingProgressUpdate deadline={physicalDeadline} />);
-      expect(screen.getByText('Quick update pages:')).toBeTruthy();
+      expect(screen.getByTestId('metric-card')).toBeTruthy();
     });
 
     it('should handle eBook format deadline', () => {
       const ebookDeadline = { ...mockDeadline, format: 'eBook' as const };
       render(<ReadingProgressUpdate deadline={ebookDeadline} />);
-      expect(screen.getByText('Quick update pages:')).toBeTruthy();
+      expect(screen.getByTestId('metric-card')).toBeTruthy();
     });
 
     it('should handle audio format deadline', () => {
       const audioDeadline = { ...mockDeadline, format: 'audio' as const };
       render(<ReadingProgressUpdate deadline={audioDeadline} />);
-      expect(screen.getByText('Quick update time (minutes):')).toBeTruthy();
+      expect(screen.getByTestId('metric-card')).toBeTruthy();
     });
   });
 
@@ -295,7 +282,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
       render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
-      const button = screen.getByText('Update Progress');
+      const button = screen.getByText('Update');
       expect(button).toBeTruthy();
     });
   });
@@ -325,7 +312,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
         const { unmount } = render(
           <ReadingProgressUpdate deadline={mockDeadline} />
         );
-        expect(screen.getByText('Update Progress')).toBeTruthy();
+        expect(screen.getByText('Update')).toBeTruthy();
         unmount();
       });
     });
@@ -338,7 +325,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
       } as any;
 
       render(<ReadingProgressUpdate deadline={minimalDeadline} />);
-      expect(screen.getByText('Update Progress')).toBeTruthy();
+      expect(screen.getByText('Update')).toBeTruthy();
     });
   });
 
@@ -356,7 +343,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
         // Trigger the form submission by pressing the button
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         expect(mockUpdateMutation.mutate).toHaveBeenCalled();
@@ -378,7 +365,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           />
         );
 
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         expect(mockUpdateMutation.mutate).toHaveBeenCalledWith(
@@ -402,7 +389,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         expect(Toast.show).toHaveBeenCalledWith({
@@ -427,7 +414,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         expect(Toast.show).toHaveBeenCalledWith({
@@ -471,7 +458,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         // Should show completion dialog because isBookComplete(300, 300) = true
@@ -522,7 +509,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           />
         );
 
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         expect(onProgressSubmitted).toHaveBeenCalled();
@@ -538,7 +525,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         // Note: The actual message format might be different, let's check what we actually get
@@ -570,7 +557,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         expect(mockDeleteMutation.mutate).toHaveBeenCalledWith(
@@ -583,18 +570,6 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
       });
     });
 
-    describe('Quick Action Integration', () => {
-      it('should call setValue when quick action is triggered', () => {
-        render(<ReadingProgressUpdate deadline={mockDeadline} />);
-
-        // The QuickActionButtons mock will automatically call onQuickUpdate with 10
-        expect(mockSetValue).toHaveBeenCalledWith(
-          'currentProgress',
-          expect.any(Number),
-          { shouldValidate: false }
-        );
-      });
-    });
 
     describe('Complex Integration Scenarios', () => {
       it('should handle book completion with onProgressSubmitted callback', () => {
@@ -643,7 +618,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
           />
         );
 
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         expect(router.push).toHaveBeenCalledWith(
@@ -685,7 +660,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         // Should delete future progress first, then update
@@ -709,7 +684,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         // Should not call mutation when progress hasn't changed
@@ -733,7 +708,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         render(<ReadingProgressUpdate deadline={mockDeadline} />);
 
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         expect(consoleSpy).toHaveBeenCalledWith(
@@ -744,7 +719,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
         consoleSpy.mockRestore();
       });
 
-      it('should handle audio format with different labels', () => {
+      it('should handle audio format correctly', () => {
         const audioDeadline = { ...mockDeadline, format: 'audio' as const };
         const {
           createProgressUpdateSchema,
@@ -752,93 +727,11 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         render(<ReadingProgressUpdate deadline={audioDeadline} />);
 
-        expect(screen.getByText('Quick update time (minutes):')).toBeTruthy();
+        expect(screen.getByTestId('metric-card')).toBeTruthy();
         expect(createProgressUpdateSchema).toHaveBeenCalledWith(300, 'audio');
       });
     });
 
-    describe('Percentage Mode Integration', () => {
-      it('should use percentage mode for quick updates when preference is set', () => {
-        (usePreferences as jest.Mock).mockReturnValue({
-          getProgressInputMode: jest.fn().mockReturnValue('percentage'),
-        });
-
-        const calculations = {
-          urgencyLevel: 'good',
-          currentProgress: 100,
-          totalQuantity: 500,
-          remaining: 400,
-          progressPercentage: 20,
-        };
-
-        (useDeadlines as jest.Mock).mockReturnValue({
-          getDeadlineCalculations: jest.fn().mockReturnValue(calculations),
-        });
-
-        mockGetValues.mockReturnValue({ currentProgress: 100 });
-
-        render(<ReadingProgressUpdate deadline={mockDeadline} />);
-
-        expect(mockSetValue).toHaveBeenCalledWith(
-          'currentProgress',
-          expect.any(Number),
-          { shouldValidate: false }
-        );
-      });
-
-      it('should display % suffix on quick buttons in percentage mode', () => {
-        (usePreferences as jest.Mock).mockReturnValue({
-          getProgressInputMode: jest.fn().mockReturnValue('percentage'),
-        });
-
-        render(<ReadingProgressUpdate deadline={mockDeadline} />);
-
-        expect(screen.getByText('+1%')).toBeTruthy();
-        expect(screen.getByText('+5%')).toBeTruthy();
-        expect(screen.getByText('+10%')).toBeTruthy();
-        expect(screen.getByText('-1%')).toBeTruthy();
-      });
-
-      it('should not display % suffix in direct mode', () => {
-        (usePreferences as jest.Mock).mockReturnValue({
-          getProgressInputMode: jest.fn().mockReturnValue('direct'),
-        });
-
-        render(<ReadingProgressUpdate deadline={mockDeadline} />);
-
-        expect(screen.queryByText('+1%')).toBeNull();
-        expect(screen.getByText('+1')).toBeTruthy();
-      });
-
-      it('should calculate percentage increments correctly for 500-page book', () => {
-        (usePreferences as jest.Mock).mockReturnValue({
-          getProgressInputMode: jest.fn().mockReturnValue('percentage'),
-        });
-
-        const calculations = {
-          urgencyLevel: 'good',
-          currentProgress: 100,
-          totalQuantity: 500,
-          remaining: 400,
-          progressPercentage: 20,
-        };
-
-        (useDeadlines as jest.Mock).mockReturnValue({
-          getDeadlineCalculations: jest.fn().mockReturnValue(calculations),
-        });
-
-        mockGetValues.mockReturnValue({ currentProgress: 100 });
-
-        render(<ReadingProgressUpdate deadline={mockDeadline} />);
-
-        const lastCall =
-          mockSetValue.mock.calls[mockSetValue.mock.calls.length - 1];
-        const newValue = lastCall[1];
-
-        expect(newValue).toBeGreaterThan(100);
-        expect(newValue).toBeLessThanOrEqual(500);
-      });
-    });
 
     describe('Paused State Handling', () => {
       it('should display paused message when deadline is paused', () => {
@@ -882,7 +775,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         render(<ReadingProgressUpdate deadline={pausedDeadline} />);
 
-        const button = screen.getByText('Update Progress');
+        const button = screen.getByText('Update');
         fireEvent.press(button);
 
         expect(mockUpdateMutation.mutate).not.toHaveBeenCalled();
@@ -926,6 +819,123 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
         expect(screen.queryByText(/Paused on/)).toBeNull();
       });
+    });
+  });
+
+  describe('Increment/Decrement Buttons', () => {
+    it('should render increment and decrement buttons', () => {
+      render(<ReadingProgressUpdate deadline={mockDeadline} />);
+
+      const decrementButton = screen.getByLabelText('Decrease progress by 1');
+      const incrementButton = screen.getByLabelText('Increase progress by 1');
+
+      expect(decrementButton).toBeTruthy();
+      expect(incrementButton).toBeTruthy();
+    });
+
+    it('should call setValue when decrement button is pressed', () => {
+      mockGetValues.mockReturnValue({ currentProgress: 150 });
+
+      render(<ReadingProgressUpdate deadline={mockDeadline} />);
+
+      const decrementButton = screen.getByLabelText('Decrease progress by 1');
+      fireEvent.press(decrementButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith(
+        'currentProgress',
+        149,
+        { shouldValidate: false }
+      );
+    });
+
+    it('should call setValue when increment button is pressed', () => {
+      mockGetValues.mockReturnValue({ currentProgress: 150 });
+
+      render(<ReadingProgressUpdate deadline={mockDeadline} />);
+
+      const incrementButton = screen.getByLabelText('Increase progress by 1');
+      fireEvent.press(incrementButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith(
+        'currentProgress',
+        151,
+        { shouldValidate: false }
+      );
+    });
+
+    it('should not decrement below 0', () => {
+      mockDeadlineContext.getDeadlineCalculations.mockReturnValue({
+        urgencyLevel: 'good',
+        currentProgress: 0,
+        totalQuantity: 300,
+        remaining: 300,
+        progressPercentage: 0,
+      });
+
+      render(<ReadingProgressUpdate deadline={mockDeadline} />);
+
+      const decrementButton = screen.getByLabelText('Decrease progress by 1');
+
+      // Button should be disabled when at 0
+      expect(decrementButton.props.accessibilityState?.disabled).toBe(true);
+    });
+
+    it('should not increment above total quantity', () => {
+      mockDeadlineContext.getDeadlineCalculations.mockReturnValue({
+        urgencyLevel: 'good',
+        currentProgress: 300,
+        totalQuantity: 300,
+        remaining: 0,
+        progressPercentage: 100,
+      });
+
+      render(<ReadingProgressUpdate deadline={mockDeadline} />);
+
+      const incrementButton = screen.getByLabelText('Increase progress by 1');
+
+      // Button should be disabled when at max
+      expect(incrementButton.props.accessibilityState?.disabled).toBe(true);
+    });
+
+    it('should disable both buttons when deadline is paused', () => {
+      const pausedDeadline = {
+        ...mockDeadline,
+        status: [{ status: 'paused', created_at: '2024-11-30T00:00:00Z' }],
+      };
+
+      render(<ReadingProgressUpdate deadline={pausedDeadline} />);
+
+      const decrementButton = screen.getByLabelText('Decrease progress by 1');
+      const incrementButton = screen.getByLabelText('Increase progress by 1');
+
+      expect(decrementButton.props.accessibilityState?.disabled).toBe(true);
+      expect(incrementButton.props.accessibilityState?.disabled).toBe(true);
+    });
+
+    it('should work for audio format deadlines', () => {
+      const audioDeadline = {
+        ...mockDeadline,
+        format: 'audio' as const,
+      };
+
+      mockDeadlineContext.getDeadlineCalculations.mockReturnValue({
+        urgencyLevel: 'good',
+        currentProgress: 120, // 2 hours in minutes
+        totalQuantity: 600, // 10 hours in minutes
+        remaining: 480,
+        progressPercentage: 20,
+      });
+
+      render(<ReadingProgressUpdate deadline={audioDeadline} />);
+
+      const incrementButton = screen.getByLabelText('Increase progress by 1');
+      fireEvent.press(incrementButton);
+
+      expect(mockSetValue).toHaveBeenCalledWith(
+        'currentProgress',
+        121,
+        { shouldValidate: false }
+      );
     });
   });
 });

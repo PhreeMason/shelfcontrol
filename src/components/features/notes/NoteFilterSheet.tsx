@@ -229,5 +229,6 @@ const styles = StyleSheet.create({
   },
   footerButton: {
     flex: 1,
+    margin: 5,
   },
 });

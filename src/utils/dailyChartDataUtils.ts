@@ -45,20 +45,52 @@ export const getReadingStartDate = (
 };
 
 /**
+ * Gets the date of the first progress update for a deadline
+ * Used to determine when actual reading/listening activity started
+ * @param deadline - The deadline to check
+ * @returns The created_at date of the first progress entry (excluding ignored entries), or null if no progress exists
+ */
+export const getFirstProgressDate = (
+  deadline: ReadingDeadlineWithProgress
+): string | null => {
+  if (!deadline.progress || deadline.progress.length === 0) {
+    return null;
+  }
+
+  // Filter out ignored progress entries
+  const validProgress = deadline.progress.filter(p => !p.ignore_in_calcs);
+
+  if (validProgress.length === 0) {
+    return null;
+  }
+
+  // Sort by created_at to find the earliest entry
+  const sortedProgress = [...validProgress].sort((a, b) => {
+    const aTime = normalizeServerDate(a.created_at).valueOf();
+    const bTime = normalizeServerDate(b.created_at).valueOf();
+    return aTime - bTime;
+  });
+
+  return sortedProgress[0].created_at;
+};
+
+/**
  * Calculates the required daily pace using hero card formula
  * REUSED FROM: statsUtils.ts line 114 (requiredPace = total_quantity / totalTimelineDays)
+ * Now uses first progress date instead of reading status date
  * @param deadline - The deadline to calculate pace for
  * @returns Required units per day, or null if cannot be calculated
  */
 export const calculateRequiredDailyPace = (
   deadline: ReadingDeadlineWithProgress
 ): number | null => {
-  const readingStartDate = getReadingStartDate(deadline);
-  if (!readingStartDate) {
+  const firstProgressDate = getFirstProgressDate(deadline);
+  if (!firstProgressDate) {
+    // No progress data - cannot calculate pace
     return null;
   }
 
-  const startDate = normalizeServerDate(readingStartDate).startOf('day');
+  const startDate = normalizeServerDate(firstProgressDate).startOf('day');
   const deadlineDate = normalizeServerDate(deadline.deadline_date).startOf(
     'day'
   );
@@ -66,12 +98,17 @@ export const calculateRequiredDailyPace = (
   // Calculate total timeline (days from start to deadline)
   const totalTimelineDays = deadlineDate.diff(startDate, 'day');
 
-  if (totalTimelineDays <= 0) {
+  // Only return null if deadline is in the past
+  if (totalTimelineDays < 0) {
     return null;
   }
 
+  // For same-day completion (totalTimelineDays = 0), ensure at least 1 day
+  // This allows books added and completed on the same day to display on the chart
+  const adjustedDays = Math.max(1, totalTimelineDays);
+
   // HERO CARD FORMULA: requiredPace = total_quantity / totalTimelineDays
-  const requiredPace = deadline.total_quantity / totalTimelineDays;
+  const requiredPace = deadline.total_quantity / adjustedDays;
   return requiredPace;
 };
 
@@ -128,10 +165,72 @@ export const hasDailyActivity = (
 };
 
 /**
+ * Calculates intraday progress when all reading happens on a single day
+ * Used for same-day book completions to show time-based progression
+ * @param deadline - The deadline with progress entries
+ * @param startDate - The day to calculate for
+ * @param requiredDailyPace - The required daily pace (pages/day)
+ * @returns Array of time-based progress points
+ */
+export const calculateIntradayProgress = (
+  deadline: ReadingDeadlineWithProgress,
+  startDate: Dayjs,
+  requiredDailyPace: number
+): DailyProgressPoint[] => {
+  // Get all valid progress entries for this day
+  const validProgress = deadline.progress
+    .filter(p => !p.ignore_in_calcs)
+    .filter(p => {
+      const entryDate = normalizeServerDate(p.created_at);
+      return entryDate.isSame(startDate, 'day');
+    })
+    .sort((a, b) => {
+      // Sort by timestamp (oldest to newest)
+      const aTime = normalizeServerDate(a.created_at).valueOf();
+      const bTime = normalizeServerDate(b.created_at).valueOf();
+      return aTime - bTime;
+    });
+
+  const points: DailyProgressPoint[] = [];
+
+  // Add starting point at beginning of day (midnight with 0 progress)
+  const dayStart = startDate.startOf('day');
+  points.push({
+    date: dayStart.format('h:mm A'),  // "12:00 AM"
+    fullDate: dayStart,
+    required: requiredDailyPace, // Daily required pace (e.g., 14 pages/day)
+    actual: 0,
+    dailyActual: 0,
+    hasActivity: false,
+  });
+
+  // Add point for each progress entry
+  validProgress.forEach(progress => {
+    const timestamp = normalizeServerDate(progress.created_at);
+    points.push({
+      date: timestamp.format('h:mm A'),  // "3:30 PM"
+      fullDate: timestamp,
+      required: requiredDailyPace, // All points show daily requirement
+      actual: progress.current_progress,
+      dailyActual: 0, // Will calculate below
+      hasActivity: true,
+    });
+  });
+
+  // Calculate dailyActual (incremental progress at each point)
+  for (let i = 1; i < points.length; i++) {
+    points[i].dailyActual = points[i].actual - points[i - 1].actual;
+  }
+
+  return points;
+};
+
+/**
  * Calculates daily cumulative progress for both actual and required using hero card logic
  * CALCULATION REUSED FROM: statsUtils.ts lines 118-121
  * - daysElapsed = date.diff(startDate, 'day') + 1
  * - expectedProgress = daysElapsed * requiredPace
+ * Now uses first progress date instead of reading status date
  *
  * @param deadline - The deadline to calculate for
  * @param days - Number of days to include (default 7)
@@ -143,19 +242,26 @@ export const calculateDailyCumulativeProgress = (
   days: number = 7,
   endDate?: Dayjs
 ): DailyProgressPoint[] => {
-  const readingStartDate = getReadingStartDate(deadline);
+  const firstProgressDate = getFirstProgressDate(deadline);
   const requiredPace = calculateRequiredDailyPace(deadline);
 
-  if (!readingStartDate || requiredPace === null) {
-    // Cannot calculate - return empty array
+  if (!firstProgressDate || requiredPace === null) {
+    // Cannot calculate - return empty array (no progress data)
     return [];
   }
 
-  const startDate = normalizeServerDate(readingStartDate).startOf('day');
+  const startDate = normalizeServerDate(firstProgressDate).startOf('day');
   const today = dayjs().startOf('day');
 
   // Use the earlier of today or endDate as the last day to show
   const lastDay = endDate && endDate.isBefore(today) ? endDate : today;
+
+  // Check if all progress is on a single day (same-day completion)
+  const isSingleDay = startDate.isSame(lastDay, 'day');
+
+  if (isSingleDay) {
+    return calculateIntradayProgress(deadline, startDate, requiredPace);
+  }
 
   const points: DailyProgressPoint[] = [];
 
@@ -299,7 +405,7 @@ export const transformToDailyChartData = (
 
   // Transform actual data - use small radius for line connectivity, larger for activity days
   const actualLineData: LineDataPoint[] = actualData.map(point => ({
-    value: point.actual,
+    value: Math.trunc(point.actual),
     label: point.date,
     dataPointColor: Colors.light.primary,
     // Keep small radius (2) for all points to ensure solid line, larger (6) for activity days
@@ -308,7 +414,7 @@ export const transformToDailyChartData = (
 
   // Transform required data (simpler, no activity indicators)
   const requiredLineData: LineDataPoint[] = requiredData.map(point => ({
-    value: point.required,
+    value: Math.trunc(point.required),
     label: point.date,
   }));
 
