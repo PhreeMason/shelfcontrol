@@ -1,6 +1,5 @@
 import { DB_TABLES } from '@/constants/database';
 import { supabase } from '@/lib/supabase';
-import { Database } from '@/types/database.types';
 
 /**
  * Productivity statistics data types

@@ -1,3 +1,6 @@
+import { WeeklyListeningCard } from '@/components/features/stats/WeeklyListeningCard';
+import { WeeklyReadingCard } from '@/components/features/stats/WeeklyReadingCard';
+import { CompletedBooksCarousel } from '@/components/features/stats/CompletedBooksCarousel';
 import * as deadlineUtils from '@/utils/deadlineUtils';
 import * as statsUtils from '@/utils/statsUtils';
 import { fireEvent, render } from '@testing-library/react-native';
@@ -162,7 +165,7 @@ describe('Stats Screen', () => {
       const { UNSAFE_queryAllByType } = render(<Stats />);
 
       // Should not render the weekly cards when loading
-      const weeklyReadingCards = UNSAFE_queryAllByType('WeeklyReadingCard');
+      const weeklyReadingCards = UNSAFE_queryAllByType(WeeklyReadingCard);
       expect(weeklyReadingCards.length).toBe(0);
     });
   });
@@ -227,9 +230,9 @@ describe('Stats Screen', () => {
     it('should render all main components', () => {
       const { UNSAFE_getAllByType } = render(<Stats />);
 
-      expect(UNSAFE_getAllByType('WeeklyReadingCard').length).toBe(1);
-      expect(UNSAFE_getAllByType('WeeklyListeningCard').length).toBe(1);
-      expect(UNSAFE_getAllByType('CompletedBooksCarousel').length).toBe(1);
+      expect(UNSAFE_getAllByType(WeeklyReadingCard).length).toBe(1);
+      expect(UNSAFE_getAllByType(WeeklyListeningCard).length).toBe(1);
+      expect(UNSAFE_getAllByType(CompletedBooksCarousel).length).toBe(1);
     });
 
     it('should render header', () => {
@@ -241,14 +244,14 @@ describe('Stats Screen', () => {
     it('should pass weekly reading stats to WeeklyReadingCard', () => {
       const { UNSAFE_getByType } = render(<Stats />);
 
-      const weeklyReadingCard = UNSAFE_getByType('WeeklyReadingCard');
+      const weeklyReadingCard = UNSAFE_getByType(WeeklyReadingCard);
       expect(weeklyReadingCard.props.stats).toEqual(mockWeeklyReadingStats);
     });
 
     it('should pass weekly listening stats to WeeklyListeningCard', () => {
       const { UNSAFE_getByType } = render(<Stats />);
 
-      const weeklyListeningCard = UNSAFE_getByType('WeeklyListeningCard');
+      const weeklyListeningCard = UNSAFE_getByType(WeeklyListeningCard);
       expect(weeklyListeningCard.props.stats).toEqual(mockWeeklyListeningStats);
     });
 
@@ -289,7 +292,7 @@ describe('Stats Screen', () => {
 
       const { UNSAFE_getByType } = render(<Stats />);
 
-      const carousel = UNSAFE_getByType('CompletedBooksCarousel');
+      const carousel = UNSAFE_getByType(CompletedBooksCarousel);
       expect(carousel.props.completedDeadlines).toEqual(completedBooks);
     });
   });
@@ -350,7 +353,7 @@ describe('Stats Screen', () => {
       rerender(<Stats />);
 
       const { UNSAFE_getByType } = render(<Stats />);
-      const weeklyReadingCard = UNSAFE_getByType('WeeklyReadingCard');
+      const weeklyReadingCard = UNSAFE_getByType(WeeklyReadingCard);
       expect(weeklyReadingCard.props.stats).toEqual(updatedStats);
     });
 

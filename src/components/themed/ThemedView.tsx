@@ -13,7 +13,7 @@ import {
 export type ThemedViewProps = ViewProps & {
   variant?: SurfaceVariant;
   backgroundColor?: ColorToken;
-  padding?: SpacingToken;
+  padding?: Exclude<SpacingToken, 'negative'>;
   borderRadius?: BorderRadiusToken;
 };
 

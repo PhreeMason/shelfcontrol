@@ -895,7 +895,8 @@ describe('deadlineFormUtils', () => {
         'eBook',
         mockSetCurrentStep,
         'new',
-        () => ({})
+        () => ({}),
+        () => {}
       );
 
       await navigation.nextStep();
@@ -913,7 +914,8 @@ describe('deadlineFormUtils', () => {
         'eBook',
         mockSetCurrentStep,
         'new',
-        () => ({})
+        () => ({}),
+        () => {}
       );
 
       await navigation.nextStep();
@@ -931,7 +933,8 @@ describe('deadlineFormUtils', () => {
         'eBook',
         mockSetCurrentStep,
         'new',
-        () => ({})
+        () => ({}),
+        () => {}
       );
 
       navigation.goBack();

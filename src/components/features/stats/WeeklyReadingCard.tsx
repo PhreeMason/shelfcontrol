@@ -37,7 +37,6 @@ export function WeeklyReadingCard({ stats }: WeeklyReadingCardProps) {
       headerLabel="Books This Week"
       unitsReadLabel="read"
       unitsNeededLabel="needed"
-      averageActivityLabel="Reading"
       daysActivityLabel="Read"
       formatValue={value => formatNumber(value, { unit: 'pages' })}
     />

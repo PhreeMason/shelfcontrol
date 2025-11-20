@@ -521,8 +521,8 @@ describe('calendarUtils', () => {
       const result = calculateMarkedDates(activities, [], mockGetCalculations);
 
       expect(result['2025-01-15']).toBeDefined();
-      expect(result['2025-01-15'].dots).toHaveLength(1);
-      expect(result['2025-01-15'].dots[0]).toEqual({
+      expect(result['2025-01-15']!.dots).toHaveLength(1);
+      expect(result['2025-01-15']!.dots![0]).toEqual({
         key: 'activity',
         color: ACTIVITY_DOT_COLOR,
       });
@@ -550,8 +550,8 @@ describe('calendarUtils', () => {
       );
 
       expect(result['2025-01-15']).toBeDefined();
-      expect(result['2025-01-15'].dots).toHaveLength(1);
-      expect(result['2025-01-15'].dots[0]).toEqual({
+      expect(result['2025-01-15']!.dots).toHaveLength(1);
+      expect(result['2025-01-15']!.dots![0]).toEqual({
         key: 'deadline_0',
         color: '#EF4444',
       });
@@ -585,12 +585,12 @@ describe('calendarUtils', () => {
         mockGetCalculations
       );
 
-      expect(result['2025-01-15'].dots).toHaveLength(2);
-      expect(result['2025-01-15'].dots[0]).toEqual({
+      expect(result['2025-01-15']!.dots).toHaveLength(2);
+      expect(result['2025-01-15']!.dots![0]).toEqual({
         key: 'activity',
         color: ACTIVITY_DOT_COLOR,
       });
-      expect(result['2025-01-15'].dots[1]).toEqual({
+      expect(result['2025-01-15']!.dots![1]).toEqual({
         key: 'deadline_0',
         color: '#EF4444',
       });
@@ -628,9 +628,9 @@ describe('calendarUtils', () => {
         mockGetCalculations
       );
 
-      expect(result['2025-01-15'].dots).toHaveLength(2);
-      expect(result['2025-01-15'].dots[0].color).toBe('#EF4444');
-      expect(result['2025-01-15'].dots[1].color).toBe('#F59E0B');
+      expect(result['2025-01-15']!.dots).toHaveLength(2);
+      expect(result['2025-01-15']!.dots![0].color).toBe('#EF4444');
+      expect(result['2025-01-15']!.dots![1].color).toBe('#F59E0B');
     });
 
     it('should handle empty activities array', () => {
@@ -660,8 +660,8 @@ describe('calendarUtils', () => {
       );
 
       // Should only have the deadline dot, not the activity dot
-      expect(result['2025-01-15'].dots).toHaveLength(1);
-      expect(result['2025-01-15'].dots[0].key).toBe('deadline_0');
+      expect(result['2025-01-15']!.dots).toHaveLength(1);
+      expect(result['2025-01-15']!.dots![0].key).toBe('deadline_0');
     });
 
     it('should handle missing deadline for deadline_due activity', () => {

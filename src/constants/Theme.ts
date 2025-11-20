@@ -166,11 +166,11 @@ export const createThemedStyle = {
 
   surface: (
     _variant: keyof typeof ComponentVariants.surface = 'default',
-    padding?: keyof typeof Spacing,
+    padding?: Exclude<keyof typeof Spacing, 'negative'>,
     borderRadius?: keyof typeof BorderRadius
   ): ViewStyle => {
     return {
-      ...(padding && { padding: Spacing[padding] }),
+      ...(padding && { padding: Spacing[padding] as number }),
       ...(borderRadius && { borderRadius: BorderRadius[borderRadius] }),
     };
   },

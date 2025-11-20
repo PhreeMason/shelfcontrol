@@ -20,14 +20,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/images/icon.png",
+        "foregroundImage": "./src/assets/images/android-icon-2.jpg",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.grizzylabs.shelfControl",
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ],
       "intentFilters": [
         {
           "action": "VIEW",
@@ -57,7 +54,7 @@
           "image": "./src/assets/images/splash.png",
           "imageWidth": 1242,
           "imageHeight": 2688,
-          "resizeMode": "cover",
+          "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
       ],

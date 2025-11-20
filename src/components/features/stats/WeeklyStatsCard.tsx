@@ -51,8 +51,6 @@ interface WeeklyStatsCardProps {
   unitsReadLabel: string;
   /** Label for units needed (e.g., 'needed') */
   unitsNeededLabel: string;
-  /** Label for average activity (e.g., 'Reading', 'Listening') */
-  averageActivityLabel: string;
   /** Label for daily activity (e.g., 'Read', 'Listened') */
   daysActivityLabel: string;
   /** Function to format unit values (pages or time) */
@@ -90,7 +88,6 @@ export function WeeklyStatsCard({
   headerLabel,
   unitsReadLabel,
   unitsNeededLabel,
-  averageActivityLabel,
   daysActivityLabel,
   formatValue,
 }: WeeklyStatsCardProps) {

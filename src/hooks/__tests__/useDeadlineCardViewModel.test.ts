@@ -330,16 +330,14 @@ describe('useDeadlineCardViewModel', () => {
       expect(result.current.styling.countdownColor).toBe('#4CAF50');
     });
 
-    it('should return platform-specific shadow style', () => {
+    it('should return styling with cardContainerStyle', () => {
       const { result } = renderHook(() =>
         useDeadlineCardViewModel({ deadline: mockDeadline })
       );
 
-      expect(result.current.styling.shadowStyle).toBeDefined();
-      expect(
-        result.current.styling.shadowStyle.hasOwnProperty('shadowColor') ||
-          result.current.styling.shadowStyle.hasOwnProperty('elevation')
-      ).toBe(true);
+      expect(result.current.styling.cardContainerStyle).toBeDefined();
+      expect(result.current.styling.borderColor).toBeDefined();
+      expect(result.current.styling.countdownColor).toBeDefined();
     });
 
     it('should include shadow in cardContainerStyle when archived', () => {

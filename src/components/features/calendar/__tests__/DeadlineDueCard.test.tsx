@@ -52,11 +52,14 @@ const createMockAgendaItem = (
     user_id: 'user-1',
     book_id: 'book-1',
     book_title: 'The Great Gatsby',
-    author_name: 'F. Scott Fitzgerald',
+    author: 'F. Scott Fitzgerald',
     deadline_date: '2025-01-20',
     total_quantity: 200,
     format: 'physical',
     type: 'pages',
+    acquisition_source: null,
+    flexibility: 'flexible',
+    publishers: null,
     status: [
       {
         id: 'status-1',
