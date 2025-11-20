@@ -25,7 +25,7 @@ const MetricCard = ({
 
   // Calculate display values
   const remaining = totalQuantity - currentProgress;
-  const percentage = Math.round((currentProgress / totalQuantity) * 100);
+  const percentage = Math.floor((currentProgress / totalQuantity) * 100);
 
   const displayValue =
     viewMode === 'remaining'
@@ -64,18 +64,14 @@ const MetricCard = ({
     >
       {({ pressed }) => (
         <ThemedView
-          borderRadius='md'
-          backgroundColor='surface'
+          borderRadius="md"
+          backgroundColor="surface"
           style={[
             styles.card,
-            pressed && { borderColor: colors.primary, borderWidth: 2 }
+            pressed && { borderColor: colors.primary, borderWidth: 2 },
           ]}
         >
-          <ThemedText
-            variant="title"
-            color="textMuted"
-            style={styles.label}
-          >
+          <ThemedText variant="title" color="textMuted" style={styles.label}>
             {getLabel()}
           </ThemedText>
           <ThemedText

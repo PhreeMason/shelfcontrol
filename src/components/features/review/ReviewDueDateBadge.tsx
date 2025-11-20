@@ -1,3 +1,4 @@
+import LinearProgressBar from '@/components/shared/LinearProgressBar';
 import StatsSummaryCard from '@/components/stats/StatsSummaryCard';
 import { ThemedText } from '@/components/themed';
 import { BorderRadius, Spacing } from '@/constants/Colors';
@@ -64,19 +65,14 @@ const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({
           </ThemedText>
         </View>
 
-        <View
-          style={[styles.progressTrack, { backgroundColor: colors.border }]}
-        >
-          <View
-            style={[
-              styles.progressFill,
-              {
-                width: `${percentage}%`,
-                backgroundColor: colors.primary,
-              },
-            ]}
-          />
-        </View>
+        <LinearProgressBar
+          progressPercentage={percentage}
+          height={10}
+          backgroundColor={colors.border}
+          borderRadius={BorderRadius.full}
+          showShimmer={false}
+          gradientColors={[colors.primary, colors.primary]}
+        />
       </View>
     </StatsSummaryCard>
   );
@@ -98,15 +94,6 @@ const styles = StyleSheet.create({
   },
   progressFraction: {
     fontWeight: '600',
-  },
-  progressTrack: {
-    height: 10,
-    borderRadius: BorderRadius.full,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: BorderRadius.full,
   },
 });
 

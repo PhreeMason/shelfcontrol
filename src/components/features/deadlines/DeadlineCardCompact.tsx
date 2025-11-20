@@ -120,7 +120,7 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
         {countdown.latestStatus !== 'complete' &&
           countdown.latestStatus !== 'did_not_finish' && (
             <ThemedText typography="labelMedium" color="text">
-              {primaryText}
+              {primaryText.replace('remaining', 'left').replace('posted', '')}
             </ThemedText>
           )}
       </View>
@@ -149,7 +149,6 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     marginTop: Spacing.sm,
-    paddingHorizontal: 2,
     height: 4,
     backgroundColor: 'rgba(0, 0, 0, 0.15)',
     borderRadius: 2,
