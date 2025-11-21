@@ -11,11 +11,12 @@ import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getDeadlineStatus } from '@/utils/deadlineActionUtils';
 import { calculateProgress } from '@/utils/deadlineCore';
+import { formatProgressDisplay } from '@/utils/deadlineUtils';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import ProgressCheckDialog from '../../completion/ProgressCheckDialog';
 import MarkCompleteDialog from '../../review/MarkCompleteDialog';
 import {
+  Alert,
   Modal,
   Pressable,
   StyleSheet,
@@ -69,16 +70,17 @@ interface StatusOption {
  * - paused → complete (Mark Complete)
  * - paused → did_not_finish (Did Not Finish)
  *
- * ### Special Transitions (Show dialogs first)
- * - reading → to_review: Shows ProgressCheckDialog if progress < 100%
+ * ### Special Transitions (Show dialogs/alerts first)
+ * - reading → to_review: Shows native Alert.alert() if progress < 100%
  * - to_review → complete: Shows MarkCompleteDialog warning about unposted reviews
  *
  * ## Dialog State Management
  *
  * Uses discriminated union pattern for dialog state:
  * - `{ type: 'none' }` - No dialog shown
- * - `{ type: 'progress_check', targetStatus }` - ProgressCheckDialog shown
  * - `{ type: 'mark_complete' }` - MarkCompleteDialog shown
+ *
+ * Note: Progress check now uses native Alert.alert() instead of a modal dialog
  *
  * ## Terminal States
  *
@@ -126,7 +128,6 @@ export const StatusChangeActionSheet: React.FC<
   // Dialog state management
   type DialogState =
     | { type: 'none' }
-    | { type: 'progress_check'; targetStatus: string }
     | { type: 'mark_complete' };
 
   const [dialogState, setDialogState] = useState<DialogState>({ type: 'none' });
@@ -249,8 +250,28 @@ export const StatusChangeActionSheet: React.FC<
     if (targetStatus === DEADLINE_STATUS.TO_REVIEW) {
       // Check if book is not at 100% progress
       if (!isFullyComplete) {
-        // Show ProgressCheckDialog to ask if user finished all pages
-        setDialogState({ type: 'progress_check', targetStatus: 'to_review' });
+        // Show native alert to ask if user finished all pages
+        const progressText = formatProgressDisplay(deadline.format, currentProgress);
+        const totalText = formatProgressDisplay(deadline.format, totalQuantity);
+        const unitLabel = deadline.format === 'audio' ? 'time' : 'pages';
+
+        Alert.alert(
+          `Did you finish all ${totalText} ${unitLabel}?`,
+          `You're currently at ${progressText} of ${totalText}.`,
+          [
+            {
+              text: "No, I didn't finish everything",
+              onPress: handleProgressCheckDidNotFinish,
+              style: 'cancel',
+            },
+            {
+              text: `Yes, mark all ${deadline.format === 'audio' ? 'time as listened' : 'pages as read'}`,
+              onPress: handleProgressCheckMarkAllPages,
+              style: 'default',
+            },
+          ],
+          { cancelable: true }
+        );
         return;
       }
       // Book is at 100%, proceed directly to completion flow
@@ -389,7 +410,7 @@ export const StatusChangeActionSheet: React.FC<
     }
   };
 
-  // Handler for ProgressCheckDialog - User confirms they finished all pages
+  // Handler for Alert.alert - User confirms they finished all pages
   const handleProgressCheckMarkAllPages = () => {
     // First, update progress to 100%
     updateProgress(
@@ -416,11 +437,10 @@ export const StatusChangeActionSheet: React.FC<
     );
   };
 
-  // Handler for ProgressCheckDialog - User says they didn't finish
+  // Handler for Alert.alert - User says they didn't finish
   const handleProgressCheckDidNotFinish = () => {
     setDialogState({ type: 'none' });
     onClose();
-    // Route to completion flow
     router.push(`/deadline/${deadline.id}/completion-flow`);
   };
 
@@ -624,20 +644,11 @@ export const StatusChangeActionSheet: React.FC<
           />
         </Animated.View>
       </Pressable>
-      {/* Progress Check Dialog */}
-      <ProgressCheckDialog
-        visible={dialogState.type === 'progress_check'}
-        totalPages={totalQuantity}
-        currentProgress={currentProgress}
-        format={deadline.format}
-        onMarkAllPages={handleProgressCheckMarkAllPages}
-        onDidNotFinish={handleProgressCheckDidNotFinish}
-        onClose={() => setDialogState({ type: 'none' })}
-      />
       {/* Mark Complete Dialog */}
       <MarkCompleteDialog
         visible={dialogState.type === 'mark_complete' && !isLoadingPlatforms}
         platforms={platforms}
+        deadline={deadline}
         onComplete={handleMarkComplete}
         onCancel={() => setDialogState({ type: 'none' })}
       />

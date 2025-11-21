@@ -1,6 +1,8 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { calculateProgress } from '@/utils/deadlineCore';
 import React from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
@@ -15,6 +17,7 @@ interface Platform {
 interface MarkCompleteDialogProps {
   visible: boolean;
   platforms: Platform[];
+  deadline: ReadingDeadlineWithProgress;
   onComplete: () => void;
   onCancel: () => void;
 }
@@ -22,12 +25,18 @@ interface MarkCompleteDialogProps {
 const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
   visible,
   platforms,
+  deadline,
   onComplete,
   onCancel,
 }) => {
   const { colors } = useTheme();
   const unpostedPlatforms = platforms.filter(p => !p.posted);
   const allPosted = unpostedPlatforms.length === 0;
+
+  // Calculate if the book was completed or DNF
+  const currentProgress = calculateProgress(deadline);
+  const totalQuantity = deadline.total_quantity || 0;
+  const wasCompleted = currentProgress >= totalQuantity;
 
   return (
     <Modal
@@ -43,14 +52,16 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
             {allPosted ? (
               <>
                 <ThemedText typography="headlineSmall" style={styles.title}>
-                  All reviews posted!
+                  {wasCompleted ? 'All reviews posted!' : 'Did Not Finish'}
                 </ThemedText>
                 <ThemedText
                   typography="bodyMedium"
                   color="textSecondary"
                   style={styles.message}
                 >
-                  Move this book to Completed?
+                  {wasCompleted
+                    ? 'Move this book to Completed?'
+                    : 'Move this book to DNF?'}
                 </ThemedText>
                 <View style={styles.buttonContainer}>
                   <ThemedButton
@@ -59,7 +70,9 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
                     onPress={onCancel}
                   />
                   <ThemedButton
-                    title="Yes, Complete It →"
+                    title={
+                      wasCompleted ? 'Yes, Complete It →' : 'Yes, Mark as DNF →'
+                    }
                     variant="primary"
                     onPress={onComplete}
                   />
@@ -110,7 +123,11 @@ const MarkCompleteDialog: React.FC<MarkCompleteDialogProps> = ({
                     onPress={onCancel}
                   />
                   <ThemedButton
-                    title="That's okay, mark complete"
+                    title={
+                      wasCompleted
+                        ? "That's okay, mark complete"
+                        : "That's okay, mark as DNF"
+                    }
                     textStyle={{ fontWeight: '700' }}
                     variant="primary"
                     onPress={onComplete}

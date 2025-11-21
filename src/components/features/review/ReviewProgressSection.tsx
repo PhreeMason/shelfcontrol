@@ -155,6 +155,7 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
       <MarkCompleteDialog
         visible={showMarkCompleteDialog}
         platforms={platforms}
+        deadline={deadline}
         onComplete={handleMarkComplete}
         onCancel={() => setShowMarkCompleteDialog(false)}
       />
