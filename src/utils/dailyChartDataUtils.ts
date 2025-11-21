@@ -196,7 +196,7 @@ export const calculateIntradayProgress = (
   // Add starting point at beginning of day (midnight with 0 progress)
   const dayStart = startDate.startOf('day');
   points.push({
-    date: dayStart.format('h:mm A'),  // "12:00 AM"
+    date: dayStart.format('h:mm A'),
     fullDate: dayStart,
     required: requiredDailyPace, // Daily required pace (e.g., 14 pages/day)
     actual: 0,
@@ -208,7 +208,7 @@ export const calculateIntradayProgress = (
   validProgress.forEach(progress => {
     const timestamp = normalizeServerDate(progress.created_at);
     points.push({
-      date: timestamp.format('h:mm A'),  // "3:30 PM"
+      date: timestamp.format('h:mm A'), // "3:30 PM"
       fullDate: timestamp,
       required: requiredDailyPace, // All points show daily requirement
       actual: progress.current_progress,

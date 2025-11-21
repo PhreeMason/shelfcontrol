@@ -81,6 +81,10 @@ export const MAPPING = {
   'info.circle': 'info',
   photo: 'photo',
   link: 'link',
+  'checkmark.seal.fill': 'verified',
+  'hand.thumbsdown.fill': 'thumb-down',
+  'arrow.uturn.backward.circle.fill': 'undo',
+  'archivebox.fill': 'archive',
 } as IconMapping;
 
 /**

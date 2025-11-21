@@ -273,7 +273,9 @@ export default function CalendarScreen() {
                     index
                   )}
                   agendaItem={item}
-                  onPress={() => router.push(`/deadline/${item.activity.deadline_id}`)}
+                  onPress={() =>
+                    router.push(`/deadline/${item.activity.deadline_id}`)
+                  }
                 />
               ))}
 
@@ -288,7 +290,9 @@ export default function CalendarScreen() {
                   activity={item.activity}
                   onPress={() => {
                     if (item.activityType === 'note') {
-                      router.push(`/deadline/${item.activity.deadline_id}/notes`);
+                      router.push(
+                        `/deadline/${item.activity.deadline_id}/notes`
+                      );
                     } else {
                       router.push(`/deadline/${item.activity.deadline_id}`);
                     }

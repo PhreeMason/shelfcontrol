@@ -56,5 +56,6 @@ export const STATUS_ICONS = {
   CHEVRON_RIGHT: 'chevron.right',
 } as const;
 
-export type DeadlineCardIcon = typeof DEADLINE_CARD_ICONS[keyof typeof DEADLINE_CARD_ICONS];
-export type StatusIcon = typeof STATUS_ICONS[keyof typeof STATUS_ICONS];
+export type DeadlineCardIcon =
+  (typeof DEADLINE_CARD_ICONS)[keyof typeof DEADLINE_CARD_ICONS];
+export type StatusIcon = (typeof STATUS_ICONS)[keyof typeof STATUS_ICONS];

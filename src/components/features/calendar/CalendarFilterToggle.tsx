@@ -19,11 +19,11 @@ export function CalendarFilterToggle() {
 
   const isIOS = Platform.OS === 'ios';
 
-  const borderRadius = BorderRadius.full
+  const borderRadius = BorderRadius.full;
 
   return (
     <ThemedIconButton
-    style={{ borderRadius, backgroundColor: 'transparent' }}
+      style={{ borderRadius, backgroundColor: 'transparent' }}
       icon={
         showAllCalendarActivities
           ? 'line.3.horizontal.decrease.circle.fill'
@@ -31,7 +31,9 @@ export function CalendarFilterToggle() {
       }
       variant="ghost"
       size={isIOS ? 'md' : 'sm'}
-      iconColor={isIOS ? 'surface' : showAllCalendarActivities ? 'surface' : 'text'}
+      iconColor={
+        isIOS ? 'surface' : showAllCalendarActivities ? 'surface' : 'text'
+      }
       onPress={handleToggle}
       accessibilityLabel={
         showAllCalendarActivities
@@ -41,4 +43,3 @@ export function CalendarFilterToggle() {
     />
   );
 }
-

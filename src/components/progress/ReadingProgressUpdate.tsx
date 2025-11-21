@@ -34,10 +34,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  runOnJS,
-  useSharedValue
-} from 'react-native-reanimated';
+import Animated, { runOnJS, useSharedValue } from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 
 // Slider constants
@@ -65,11 +62,7 @@ const ReadingProgressUpdate = ({
   const { colors } = useTheme();
   const { getDeadlineCalculations } = useDeadlines();
   const calculations = getDeadlineCalculations(deadline);
-  const {
-    urgencyLevel,
-    currentProgress,
-    totalQuantity,
-  } = calculations;
+  const { urgencyLevel, currentProgress, totalQuantity } = calculations;
 
   // Preferences for metric view mode (persisted per format)
   const { getMetricViewMode, setMetricViewMode } = usePreferences();
@@ -284,11 +277,14 @@ const ReadingProgressUpdate = ({
   const pausedDate = isPaused ? getPausedDate(deadline) : null;
 
   // Update scrubber value and form (called from gesture)
-  const updateScrubberValue = useCallback((value: number) => {
-    const roundedValue = Math.round(value);
-    setScrubberValue(roundedValue);
-    setValue('currentProgress', roundedValue, { shouldValidate: false });
-  }, [setValue]);
+  const updateScrubberValue = useCallback(
+    (value: number) => {
+      const roundedValue = Math.round(value);
+      setScrubberValue(roundedValue);
+      setValue('currentProgress', roundedValue, { shouldValidate: false });
+    },
+    [setValue]
+  );
 
   // Decrement progress by 1
   const handleDecrement = useCallback(() => {
@@ -311,11 +307,13 @@ const ReadingProgressUpdate = ({
     .onStart(() => {
       dragStartValue.value = offset.value;
     })
-    .onUpdate((event) => {
+    .onUpdate(event => {
       'worklet';
 
       // Calculate absolute finger position on slider (1:1 mapping)
-      const fingerPosition = dragStartValue.value + ((event.translationX / sliderWidth) * totalQuantity);
+      const fingerPosition =
+        dragStartValue.value +
+        (event.translationX / sliderWidth) * totalQuantity;
 
       // Clamp and set thumb position directly
       offset.value = clamp(fingerPosition, 0, totalQuantity);
@@ -395,17 +393,14 @@ const ReadingProgressUpdate = ({
               {/* Slider Container */}
               <View
                 style={styles.sliderContainer}
-                onLayout={(event) => {
+                onLayout={event => {
                   setSliderWidth(event.nativeEvent.layout.width);
                 }}
                 ref={sliderContainerRef}
               >
                 {/* Background Track */}
                 <View
-                  style={[
-                    styles.track,
-                    { backgroundColor: colors.border },
-                  ]}
+                  style={[styles.track, { backgroundColor: colors.border }]}
                 />
 
                 {/* Filled Track (Progress) */}
@@ -457,9 +452,7 @@ const ReadingProgressUpdate = ({
 
           {/* Save Button */}
           <ThemedButton
-            title={
-              updateProgressMutation.isPending ? 'Updating...' : 'Update'
-            }
+            title={updateProgressMutation.isPending ? 'Updating...' : 'Update'}
             variant="primary"
             onPress={handleSubmit(onSubmitProgress)}
             disabled={updateProgressMutation.isPending || isPaused}
@@ -499,8 +492,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   controlButton: {
-    minWidth: 36,
-    minHeight: 36,
+    minWidth: 30,
+    minHeight: 30,
   },
   sliderContainer: {
     flex: 1,

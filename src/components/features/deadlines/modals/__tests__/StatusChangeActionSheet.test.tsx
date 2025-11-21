@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { StatusChangeActionSheet } from '../StatusChangeActionSheet';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { useUpdateDeadlineProgress } from '@/hooks/useDeadlines';
@@ -11,9 +12,7 @@ import type { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 // Import Toast for assertions
 const Toast = require('react-native-toast-message/lib/src/Toast').Toast;
 
-// Get mocked dialog components for assertions
-const ProgressCheckDialog =
-  require('../../../completion/ProgressCheckDialog').default;
+// Get mocked dialog component for assertions
 const MarkCompleteDialog =
   require('../../../review/MarkCompleteDialog').default;
 
@@ -36,11 +35,6 @@ jest.mock('@/hooks/useDeadlines', () => ({
 
 jest.mock('@/hooks/useReviewTrackingData', () => ({
   useReviewTrackingData: jest.fn(),
-}));
-
-jest.mock('../../../completion/ProgressCheckDialog', () => ({
-  __esModule: true,
-  default: jest.fn(() => null),
 }));
 
 jest.mock('../../../review/MarkCompleteDialog', () => ({
@@ -190,9 +184,11 @@ describe('StatusChangeActionSheet', () => {
       colors: mockColors,
     });
 
-    // Reset dialog component mocks
-    (ProgressCheckDialog as jest.Mock).mockImplementation(() => null);
+    // Reset dialog component mock
     (MarkCompleteDialog as jest.Mock).mockImplementation(() => null);
+
+    // Mock Alert.alert
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
   });
 
   describe('Component Structure', () => {
@@ -544,7 +540,7 @@ describe('StatusChangeActionSheet', () => {
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('should show ProgressCheckDialog for reading to to_review when progress < 100%', () => {
+    it('should show Alert.alert for reading to to_review when progress < 100%', () => {
       const deadline = createMockDeadline('reading', 100); // progress < total_quantity (300)
       render(
         <StatusChangeActionSheet
@@ -557,8 +553,8 @@ describe('StatusChangeActionSheet', () => {
       const toReviewButton = screen.getByTestId('status-option-to_review');
       fireEvent.press(toReviewButton);
 
-      // Should show ProgressCheckDialog, not navigate directly
-      expect(ProgressCheckDialog).toHaveBeenCalled();
+      // Should show native Alert.alert, not navigate directly
+      expect(Alert.alert).toHaveBeenCalled();
       expect(mockRouterPush).not.toHaveBeenCalled();
     });
 
