@@ -60,6 +60,7 @@ const createMockAgendaItem = (
     acquisition_source: null,
     flexibility: 'flexible',
     publishers: null,
+    cover_image_url: null,
     status: [
       {
         id: 'status-1',

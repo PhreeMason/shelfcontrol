@@ -163,6 +163,8 @@ export const prepareDeadlineDetailsFromForm = (
     publishers: filteredPublishers?.length ? filteredPublishers : null,
     flexibility: selectedPriority,
     book_id: data.book_id || null,
+    // Initialize cover_image_url - will be overwritten by upload/URL logic in form container
+    cover_image_url: null,
   };
 
   if (existingDeadline) {
@@ -170,6 +172,8 @@ export const prepareDeadlineDetailsFromForm = (
       id: existingDeadline.id,
       ...baseDetails,
       book_id: data.book_id || existingDeadline.book_id || null,
+      // Preserve existing cover_image_url unless explicitly changed
+      cover_image_url: existingDeadline.cover_image_url,
       user_id: existingDeadline.user_id,
       created_at: existingDeadline.created_at,
       updated_at: new Date().toISOString(),
@@ -310,6 +314,19 @@ export const populateFormFromDeadline = (
     );
     setValue('flexibility', deadline.flexibility || 'flexible');
     setValue('book_id', deadline.book_id || undefined);
+
+    // Set cover image fields
+    setValue('cover_image_url', deadline.cover_image_url || undefined);
+    // Determine the mode based on the URL
+    if (deadline.cover_image_url) {
+      if (deadline.cover_image_url.startsWith('http')) {
+        setValue('cover_image_source', 'url');
+      } else {
+        setValue('cover_image_source', 'upload');
+      }
+    } else {
+      setValue('cover_image_source', 'none');
+    }
 
     const selectedFormat = deadline.format || 'physical';
     const selectedPriority = (deadline.flexibility || 'flexible') as
@@ -509,6 +526,11 @@ export const handleBookSelection = (
   if (book?.publisher) {
     setValue('publishers', [book.publisher]);
     setValue('isPublisherAutofilled', true);
+  }
+
+  // Store book's cover for preview
+  if (book?.cover_image_url) {
+    setValue('book_cover_image_url', book.cover_image_url);
   }
 
   setCurrentStep(2);

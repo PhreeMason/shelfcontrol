@@ -38,6 +38,7 @@ describe('showDuplicateBookWarning', () => {
     acquisition_source: null,
     flexibility: 'flexible',
     publishers: null,
+    cover_image_url: null,
     progress: [
       {
         id: 'progress-1',

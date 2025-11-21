@@ -27,6 +27,36 @@ export const Layout = {
    * Modal vertical positioning offset
    */
   MODAL_VERTICAL_OFFSET: 100,
+
+  /**
+   * Cover image preview width (book cover aspect ratio)
+   * Used in CoverImagePicker component
+   */
+  COVER_IMAGE_PREVIEW_WIDTH: 160,
+
+  /**
+   * Cover image preview height (book cover aspect ratio 2:3)
+   * Used in CoverImagePicker component
+   */
+  COVER_IMAGE_PREVIEW_HEIGHT: 240,
+
+  /**
+   * Standard input field height
+   * Used for consistent input sizing across forms
+   */
+  INPUT_HEIGHT: 44,
+
+  /**
+   * Input icon offset for absolute positioned icons
+   * Matches INPUT_HEIGHT for proper alignment
+   */
+  INPUT_ICON_OFFSET: 44,
+
+  /**
+   * Remove/close button size (circular)
+   * Used for overlay close buttons
+   */
+  REMOVE_BUTTON_SIZE: 32,
 } as const;
 
 export type LayoutKey = keyof typeof Layout;

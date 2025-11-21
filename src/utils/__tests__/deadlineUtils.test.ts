@@ -42,6 +42,7 @@ const createMockDeadline = (
   flexibility: 'flexible',
   created_at: createdAt,
   updated_at: updatedAt || createdAt,
+  cover_image_url: null,
   progress: progress.map((p, index) => ({
     id: `progress-${index}`,
     deadline_id: id,

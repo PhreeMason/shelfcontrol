@@ -88,6 +88,8 @@ export const MUTATION_KEYS = {
     DID_NOT_FINISH: 'didNotFinishDeadline',
     UPDATE_STATUS: 'updateDeadlineStatus',
     DELETE_FUTURE_PROGRESS: 'deleteFutureProgress',
+    UPLOAD_COVER: 'uploadDeadlineCover',
+    DELETE_COVER: 'deleteDeadlineCover',
   },
   NOTES: {
     ADD: 'addNote',

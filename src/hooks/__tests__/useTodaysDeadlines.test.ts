@@ -46,6 +46,7 @@ describe('useTodaysDeadlines', () => {
       type: 'Personal',
       publishers: null,
       flexibility: 'flexible' as const,
+      cover_image_url: null,
       progress: [],
     };
 
@@ -354,6 +355,7 @@ describe('useTodaysDeadlines', () => {
         type: 'Personal' as const,
         publishers: null,
         flexibility: 'flexible' as const,
+        cover_image_url: null,
         progress: [],
       };
 

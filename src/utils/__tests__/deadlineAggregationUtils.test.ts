@@ -31,6 +31,7 @@ const createMockDeadline = (
   user_id: 'user123',
   created_at: '2024-01-01',
   updated_at: '2024-01-01',
+  cover_image_url: null,
   progress: [],
   status: [],
 });
@@ -479,6 +480,7 @@ describe('deadlineAggregationUtils', () => {
           publishers: null,
           created_at: now.toISOString(),
           updated_at: now.toISOString(),
+          cover_image_url: null,
           progress: [
             {
               id: 'p1',
@@ -522,6 +524,7 @@ describe('deadlineAggregationUtils', () => {
           publishers: null,
           created_at: new Date('2024-01-20T08:00:00Z').toISOString(),
           updated_at: new Date('2024-01-20T08:00:00Z').toISOString(),
+          cover_image_url: null,
           progress: [
             {
               id: 'p1',
@@ -566,6 +569,7 @@ describe('deadlineAggregationUtils', () => {
           publishers: null,
           created_at: yesterday.toISOString(),
           updated_at: today.toISOString(),
+          cover_image_url: null,
           progress: [
             {
               id: 'p1',

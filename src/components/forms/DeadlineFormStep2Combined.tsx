@@ -1,4 +1,5 @@
 import AcquisitionSourceTypeaheadInput from '@/components/shared/AcquisitionSourceTypeaheadInput';
+import CoverImagePicker from '@/components/shared/CoverImagePicker';
 import CustomInput from '@/components/shared/CustomInput';
 import TypeTypeaheadInput from '@/components/shared/TypeTypeaheadInput';
 import { ThemedText } from '@/components/themed';
@@ -57,6 +58,7 @@ export const DeadlineFormStep2Combined = ({
 
   // Watch values
   const watchedBookId = useWatch({ control, name: 'book_id' });
+  const bookCoverImageUrl = useWatch({ control, name: 'book_cover_image_url' });
   const isPublisherAutofilled = useWatch({
     control,
     name: 'isPublisherAutofilled',
@@ -137,7 +139,53 @@ export const DeadlineFormStep2Combined = ({
   return (
     <View style={{ flex: 1, gap: Spacing.lg }}>
       {/* ========== BOOK DETAILS SECTION ========== */}
-      <ThemedText style={styles.sectionHeader}>BOOK DETAILS</ThemedText>
+      <ThemedText
+        typography="titleSmall"
+        style={{
+          marginTop: Spacing.sm,
+          marginBottom: Spacing.negative.sm,
+          opacity: 0.7,
+          letterSpacing: 0.5,
+        }}
+      >
+        BOOK DETAILS
+      </ThemedText>
+
+      <View>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
+          Cover Image
+        </ThemedText>
+        <Controller
+          control={control}
+          name="cover_image_url"
+          render={({ field: { onChange, value } }) => (
+            <Controller
+              control={control}
+              name="cover_image_source"
+              render={({
+                field: { onChange: onModeChange, value: modeValue },
+              }) => (
+                <CoverImagePicker
+                  value={value || null}
+                  onImageChange={onChange}
+                  mode={(modeValue as 'upload' | 'url' | 'none') || 'none'}
+                  onModeChange={newMode => {
+                    onModeChange(newMode);
+                    if (newMode === 'none') {
+                      onChange(null);
+                    }
+                  }}
+                  editable={true}
+                  defaultPreviewUrl={bookCoverImageUrl || null}
+                />
+              )}
+            />
+          )}
+        />
+      </View>
 
       <View>
         <ThemedText
@@ -259,7 +307,15 @@ export const DeadlineFormStep2Combined = ({
 
       {/* ========== ADDITIONAL INFORMATION SECTION ========== */}
       <View style={styles.sectionDivider} />
-      <ThemedText style={styles.sectionHeader}>
+      <ThemedText
+        typography="titleSmall"
+        style={{
+          marginTop: Spacing.sm,
+          marginBottom: Spacing.negative.sm,
+          opacity: 0.7,
+          letterSpacing: 0.5,
+        }}
+      >
         ADDITIONAL INFORMATION
       </ThemedText>
 
@@ -380,7 +436,17 @@ export const DeadlineFormStep2Combined = ({
 
       {/* ========== READING SCHEDULE SECTION ========== */}
       <View style={styles.sectionDivider} />
-      <ThemedText style={styles.sectionHeader}>READING SCHEDULE</ThemedText>
+      <ThemedText
+        typography="titleSmall"
+        style={{
+          marginTop: Spacing.sm,
+          marginBottom: Spacing.negative.sm,
+          opacity: 0.7,
+          letterSpacing: 0.5,
+        }}
+      >
+        READING SCHEDULE
+      </ThemedText>
 
       <View>
         <ThemedText variant="default" style={{ marginBottom: Spacing.sm }}>
@@ -539,14 +605,18 @@ export const DeadlineFormStep2Combined = ({
           { backgroundColor: colors.surface, borderColor: colors.border },
         ]}
       >
-        <ThemedText color="good" style={styles.summaryTitle}>
+        <ThemedText
+          typography="titleMediumPlus"
+          color="good"
+          style={{ marginBottom: Spacing.sm }}
+        >
           ✓ Ready to {mode === 'new' ? 'Add' : 'Update'}
         </ThemedText>
         {watchedValues.bookTitle && watchedValues.deadline ? (
           <ThemedText
+            typography="bodyMedium"
             color="primary"
-            style={styles.summaryText}
-            variant="label"
+            style={{ fontWeight: 'bold' }}
           >
             {watchedValues.bookTitle}{' '}
             <ThemedText>
@@ -568,14 +638,6 @@ export const DeadlineFormStep2Combined = ({
 };
 
 const styles = StyleSheet.create({
-  sectionHeader: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.negative.sm,
-    opacity: 0.7,
-    letterSpacing: 0.5,
-  },
   sectionDivider: {
     height: Spacing.md,
   },
@@ -611,15 +673,5 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     marginTop: Spacing.sm,
     borderWidth: 2,
-  },
-  summaryTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: Spacing.sm,
-  },
-  summaryText: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: 'bold',
   },
 });

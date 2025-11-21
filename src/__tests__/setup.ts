@@ -96,9 +96,11 @@ jest.mock('@tanstack/react-query', () => ({
 }));
 
 // Mock Toast
-jest.mock('react-native-toast-message', () => ({
-  show: jest.fn(),
-  hide: jest.fn(),
+jest.mock('react-native-toast-message/lib/src/Toast', () => ({
+  Toast: {
+    show: jest.fn(),
+    hide: jest.fn(),
+  },
 }));
 
 // Mock Linear Gradient

@@ -1,4 +1,8 @@
-import { AVATAR_CONFIG, STORAGE_BUCKETS } from '@/constants/database';
+import {
+  ALTERNATE_COVER_CONFIG,
+  AVATAR_CONFIG,
+  STORAGE_BUCKETS,
+} from '@/constants/database';
 import { supabase } from '@/lib/supabase';
 
 class StorageService {
@@ -66,6 +70,64 @@ class StorageService {
     } catch (error) {
       console.error('Error testing avatars bucket:', error);
       return false;
+    }
+  }
+
+  async setupAlternateCoversBucket() {
+    try {
+      const { data: buckets, error: listError } =
+        await supabase.storage.listBuckets();
+
+      if (listError) {
+        console.error('Error listing buckets:', listError);
+        return { success: false, error: listError };
+      }
+
+      const alternateCoversBucketExists = buckets?.some(
+        bucket => bucket.id === STORAGE_BUCKETS.ALTERNATE_COVERS
+      );
+
+      if (!alternateCoversBucketExists) {
+        const { data, error: createError } =
+          await supabase.storage.createBucket(
+            STORAGE_BUCKETS.ALTERNATE_COVERS,
+            {
+              public: true,
+              allowedMimeTypes: ALTERNATE_COVER_CONFIG.ALLOWED_MIME_TYPES,
+              fileSizeLimit: ALTERNATE_COVER_CONFIG.MAX_FILE_SIZE,
+            }
+          );
+
+        if (createError) {
+          console.error('Error creating alternate covers bucket:', createError);
+          return { success: false, error: createError };
+        }
+
+        return { success: true, data };
+      } else {
+        const { data, error: updateError } =
+          await supabase.storage.updateBucket(
+            STORAGE_BUCKETS.ALTERNATE_COVERS,
+            {
+              public: true,
+              allowedMimeTypes: ALTERNATE_COVER_CONFIG.ALLOWED_MIME_TYPES,
+              fileSizeLimit: ALTERNATE_COVER_CONFIG.MAX_FILE_SIZE,
+            }
+          );
+
+        if (updateError) {
+          console.error('Error updating alternate covers bucket:', updateError);
+          return { success: false, error: updateError };
+        }
+
+        return { success: true, data };
+      }
+    } catch (error) {
+      console.error(
+        'Unexpected error setting up alternate covers bucket:',
+        error
+      );
+      return { success: false, error };
     }
   }
 

@@ -18,6 +18,7 @@ export const DB_TABLES = {
 
 export const STORAGE_BUCKETS = {
   AVATARS: 'avatars',
+  ALTERNATE_COVERS: 'alternate-covers',
 } as const;
 
 export const AVATAR_CONFIG = {
@@ -28,6 +29,13 @@ export const AVATAR_CONFIG = {
     'image/gif',
     'image/webp',
   ] as string[],
+  MAX_FILE_SIZE: 5242880,
+  SIGNED_URL_EXPIRY: 90 * 24 * 60 * 60,
+} as const;
+
+export const ALTERNATE_COVER_CONFIG = {
+  FILE_PREFIX: 'cover-',
+  ALLOWED_MIME_TYPES: ['image/jpeg', 'image/png', 'image/webp'] as string[],
   MAX_FILE_SIZE: 5242880,
   SIGNED_URL_EXPIRY: 90 * 24 * 60 * 60,
 } as const;

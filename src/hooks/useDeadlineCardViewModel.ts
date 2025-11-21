@@ -5,6 +5,7 @@ import { analytics } from '@/lib/analytics/client';
 import { dayjs } from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { getCoverImageUrl } from '@/utils/coverImageUtils';
 import { calculateLocalDaysLeft } from '@/utils/dateNormalization';
 import {
   formatCapacityMessage,
@@ -200,12 +201,17 @@ export function useDeadlineCardViewModel({
     [borderColor]
   );
 
+  // Prioritize deadline's custom cover over book's cover
+  const coverImageUrl = getCoverImageUrl(
+    deadline.cover_image_url || bookData?.cover_image_url
+  );
+
   return {
     display: {
       title: deadline.book_title,
       primaryText,
       secondaryText,
-      coverImageUrl: bookData?.cover_image_url,
+      coverImageUrl,
     },
     progress: {
       progressPercentage,
@@ -218,7 +224,7 @@ export function useDeadlineCardViewModel({
     },
     componentProps: {
       bookCover: {
-        coverImageUrl: bookData?.cover_image_url,
+        coverImageUrl,
         deadline,
         daysLeft,
       },

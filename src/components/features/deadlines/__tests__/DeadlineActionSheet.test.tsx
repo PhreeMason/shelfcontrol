@@ -18,6 +18,7 @@ const mockDeadline: ReadingDeadlineWithProgress = {
   acquisition_source: null,
   type: 'Personal',
   publishers: null,
+  cover_image_url: null,
   progress: [],
   status: [],
 };

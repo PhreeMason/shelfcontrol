@@ -371,7 +371,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 36; // 256 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       expect(result.length).toBe(3); // Start (midnight) + 2 progress entries
       expect(result[0].actual).toBe(0); // Starts at 0
@@ -393,7 +397,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 36; // 256 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       // First point should be midnight
       expect(result[0].date).toBe('12:00 AM');
@@ -409,7 +417,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 36; // 256 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       expect(result.length).toBe(2); // Start + 1 entry
       expect(result[0].actual).toBe(0);
@@ -429,7 +441,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 43; // 300 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       expect(result.length).toBe(4); // Start + 3 entries
       expect(result[0].actual).toBe(0); // Midnight
@@ -453,7 +469,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 43; // 300 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       expect(result.length).toBe(3); // Start + 2 valid entries (ignoring 999)
       expect(result[1].actual).toBe(100);
@@ -475,7 +495,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 43; // 300 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       expect(result.length).toBe(3); // Start + 2 entries from Jan 15 only
       expect(result[1].actual).toBe(100);
@@ -497,7 +521,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 43; // 300 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       expect(result[0].dailyActual).toBe(0); // Midnight start
       expect(result[1].dailyActual).toBe(100); // 0 → 100
@@ -516,7 +544,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 36; // 256 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       // All points should have required = requiredDailyPace
       expect(result.every(p => p.required === 36)).toBe(true);
@@ -530,7 +562,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 36; // 256 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       // First point should be at midnight
       expect(result[0].date).toBe('12:00 AM');
@@ -550,7 +586,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 36; // 256 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       // Should only have the midnight starting point
       expect(result.length).toBe(1);
@@ -575,7 +615,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 36; // 256 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       // Should only have the midnight starting point
       expect(result.length).toBe(1);
@@ -597,7 +641,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 71; // 500 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       expect(result.length).toBe(6); // Start + 5 entries
       expect(result[0].actual).toBe(0);
@@ -620,7 +668,11 @@ describe('dailyChartDataUtils', () => {
       const startDate = dayjs('2025-01-15');
       const requiredDailyPace = 36; // 256 / 7 days
 
-      const result = calculateIntradayProgress(deadline, startDate, requiredDailyPace);
+      const result = calculateIntradayProgress(
+        deadline,
+        startDate,
+        requiredDailyPace
+      );
 
       // All fullDate values should be Dayjs objects
       expect(result.every(p => dayjs.isDayjs(p.fullDate))).toBe(true);

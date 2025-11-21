@@ -7,6 +7,10 @@ import {
 } from '@/components/themed';
 import { Spacing } from '@/constants/Colors';
 import { useFormFlowTracking } from '@/hooks/analytics/useFormFlowTracking';
+import {
+  useDeleteDeadlineCover,
+  useUploadDeadlineCover,
+} from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { SelectedBook } from '@/types/bookSearch';
@@ -42,7 +46,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DeadlineFormStep1 } from './DeadlineFormStep1';
@@ -61,6 +65,8 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
   const params = useLocalSearchParams();
   const { colors } = useTheme();
   const { addDeadline, updateDeadline } = useDeadlines();
+  const { mutateAsync: uploadCover } = useUploadDeadlineCover();
+  const { mutateAsync: deleteCover } = useDeleteDeadlineCover();
 
   // Determine steps and initial step
   const formSteps =
@@ -95,6 +101,10 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     useState(formState.deadlineFromPublicationDate || false);
   const [previousPageCount, setPreviousPageCount] = useState(
     formState.previousPageCount || null
+  );
+  // Track uploaded cover path for cleanup on error
+  const [uploadedCoverPath, setUploadedCoverPath] = useState<string | null>(
+    null
   );
 
   const isInitialized = useRef(false);
@@ -204,7 +214,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     watchedValues.currentMinutes,
   ]);
 
-  const onSubmit = (data: DeadlineFormData) => {
+  const onSubmit = async (data: DeadlineFormData) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
@@ -223,17 +233,78 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
 
     const statusValue = selectedStatus === 'pending' ? 'pending' : 'reading';
 
+    // Handle cover image based on source mode
+    if (
+      data.cover_image_source === 'upload' &&
+      data.cover_image_url?.startsWith('file://')
+    ) {
+      // Upload mode: Upload file and get storage path
+      try {
+        const oldCoverPath =
+          mode === 'edit' ? (existingDeadline?.cover_image_url ?? null) : null;
+        const { path } = await uploadCover({
+          uri: data.cover_image_url,
+          oldCoverPath,
+        });
+        // Track uploaded path for cleanup if deadline creation fails
+        setUploadedCoverPath(path);
+        // Update deadlineDetails with the storage path
+        deadlineDetails.cover_image_url = path;
+      } catch (error) {
+        setIsSubmitting(false);
+        createErrorToast(mode)(error as Error);
+        return;
+      }
+    } else if (data.cover_image_source === 'url' && data.cover_image_url) {
+      // URL mode: Use the URL directly
+      let finalUrl = data.cover_image_url.trim();
+
+      // Auto-prepend https:// if missing protocol
+      if (!finalUrl.match(/^https?:\/\//)) {
+        finalUrl = `https://${finalUrl}`;
+      }
+
+      // Validate it looks like a URL (has protocol + domain with at least one dot)
+      if (finalUrl.match(/^https?:\/\/[^.]+\..+/)) {
+        deadlineDetails.cover_image_url = finalUrl;
+      } else {
+        setIsSubmitting(false);
+        Alert.alert(
+          'Invalid URL',
+          'Please provide a valid image URL (e.g., example.com/image.jpg)'
+        );
+        return;
+      }
+    } else if (data.cover_image_source === 'none' || !data.cover_image_url) {
+      // No custom cover - set to null to fall back to book cover
+      deadlineDetails.cover_image_url = null;
+    }
+
     const successCallback = () => {
       if (mode === 'new') {
         formFlowTracking.markCompleted();
       }
+
+      // Clear uploaded cover path since deadline was created successfully
+      setUploadedCoverPath(null);
 
       // Don't set isSubmitting to false - we're navigating away immediately
       // and keeping the button disabled prevents duplicate submissions
       createSuccessToast(mode)();
     };
 
-    const errorCallback = (error: Error) => {
+    const errorCallback = async (error: Error) => {
+      // Clean up uploaded cover image if deadline creation failed
+      if (uploadedCoverPath) {
+        try {
+          await deleteCover(uploadedCoverPath);
+          console.log('Cleaned up orphaned cover image:', uploadedCoverPath);
+        } catch (cleanupError) {
+          console.warn('Failed to clean up cover image:', cleanupError);
+          // Don't block error handling if cleanup fails
+        }
+        setUploadedCoverPath(null);
+      }
       setIsSubmitting(false);
       createErrorToast(mode)(error);
     };
@@ -242,14 +313,14 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       const bookData =
         data.api_id || data.google_volume_id || data.isbn || data.book_id
           ? {
-              ...(data.api_id && { api_id: data.api_id }),
-              ...(data.api_source && { api_source: data.api_source }),
-              ...(data.google_volume_id && {
-                google_volume_id: data.google_volume_id,
-              }),
-              ...(data.isbn && { isbn: data.isbn }),
-              ...(data.book_id && { book_id: data.book_id }),
-            }
+            ...(data.api_id && { api_id: data.api_id }),
+            ...(data.api_source && { api_source: data.api_source }),
+            ...(data.google_volume_id && {
+              google_volume_id: data.google_volume_id,
+            }),
+            ...(data.isbn && { isbn: data.isbn }),
+            ...(data.book_id && { book_id: data.book_id }),
+          }
           : undefined;
 
       const bookSource = data.api_id ? 'search' : 'manual';
@@ -350,8 +421,8 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
 
   const hasExistingProgressRecords = Boolean(
     mode === 'edit' &&
-      existingDeadline?.progress &&
-      existingDeadline.progress.length > 1
+    existingDeadline?.progress &&
+    existingDeadline.progress.length > 1
   );
 
   // Save button for header - shown on Step 2 (new mode) or always (edit mode)

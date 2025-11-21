@@ -4,15 +4,16 @@ import { useTheme } from '@/hooks/useTheme';
 import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getProgressAsOfDate } from '@/utils/chartDataUtils';
+import { getCoverImageUrl } from '@/utils/coverImageUtils';
 import {
   parseServerDateOnly,
   parseServerDateTime,
 } from '@/utils/dateNormalization';
-import { formatProgressDisplay } from '@/utils/deadlineUtils';
 import {
   getBookCoverIcon,
   getGradientBackground,
 } from '@/utils/deadlineDisplayUtils';
+import { formatProgressDisplay } from '@/utils/deadlineUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -73,6 +74,10 @@ export const DeadlineInFlightItem: React.FC<DeadlineInFlightItemProps> = ({
     router.push(`/deadline/${deadline.id}`);
   };
 
+  const coverImageUrl = getCoverImageUrl(
+    deadline.cover_image_url || bookData?.cover_image_url
+  );
+
   return (
     <Pressable
       style={({ pressed }) => [
@@ -83,9 +88,9 @@ export const DeadlineInFlightItem: React.FC<DeadlineInFlightItemProps> = ({
       onPress={handlePress}
     >
       {/* Book Cover */}
-      {bookData?.cover_image_url ? (
+      {coverImageUrl ? (
         <Image
-          source={{ uri: bookData.cover_image_url }}
+          source={{ uri: coverImageUrl }}
           style={styles.cover}
           resizeMode="cover"
         />

@@ -343,6 +343,7 @@ describe('DeadlineFormContainer', () => {
     publishers: null,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
+    cover_image_url: null,
     progress: [],
   };
 

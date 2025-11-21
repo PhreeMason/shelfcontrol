@@ -116,6 +116,7 @@ describe('deadlineModalUtils', () => {
       publishers: null,
       created_at: '2024-01-01T00:00:00.000Z',
       updated_at: '2024-01-01T00:00:00.000Z',
+      cover_image_url: null,
       progress: [],
       status: [],
     };
@@ -386,6 +387,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [],
         status: [],
       };
@@ -409,6 +411,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [
           {
             id: '1',
@@ -442,6 +445,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [
           {
             id: '1',
@@ -475,6 +479,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [
           {
             id: '1',
@@ -518,6 +523,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [
           {
             id: '1',
@@ -570,6 +576,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [
           {
             id: '2',
@@ -615,6 +622,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [],
         status: [],
       };
@@ -638,6 +646,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [
           {
             id: '1',
@@ -671,6 +680,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [
           {
             id: '1',
@@ -722,6 +732,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [
           {
             id: '1',
@@ -782,6 +793,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [
           {
             id: '1',
@@ -848,6 +860,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [],
         status: [],
       };
@@ -873,6 +886,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [
           {
             id: '1',
@@ -918,6 +932,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [
           {
             id: '1',
@@ -963,6 +978,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [],
         status: [],
       };
@@ -988,6 +1004,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [],
         status: [],
       };
@@ -1013,6 +1030,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [],
         status: [],
       };
@@ -1082,6 +1100,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: new Date().toISOString(),
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [],
         status: [],
       };
@@ -1108,6 +1127,7 @@ describe('deadlineModalUtils', () => {
         publishers: null,
         created_at: twoWeeksAgo.toISOString(),
         updated_at: '2024-01-01',
+        cover_image_url: null,
         progress: [],
         status: [],
       };
