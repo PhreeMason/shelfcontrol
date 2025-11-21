@@ -1,7 +1,4 @@
-import {
-  getPreviewImageUri,
-  isShowingDefaultImage,
-} from '../coverImageUtils';
+import { getPreviewImageUri, isShowingDefaultImage } from '../coverImageUtils';
 
 describe('coverImageUtils', () => {
   describe('getPreviewImageUri', () => {
@@ -140,7 +137,7 @@ describe('coverImageUtils', () => {
           'http://example.com/image.jpg',
         ];
 
-        uris.forEach((uri) => {
+        uris.forEach(uri => {
           expect(getPreviewImageUri('upload', uri, null)).toBe(uri);
           expect(getPreviewImageUri('url', uri, null)).toBe(uri);
         });
@@ -182,7 +179,7 @@ describe('coverImageUtils', () => {
           'data:image/jpeg;base64,/9j/4AAQ...',
         ];
 
-        urls.forEach((url) => {
+        urls.forEach(url => {
           expect(isShowingDefaultImage('none', url)).toBe(true);
         });
       });
@@ -226,14 +223,10 @@ describe('coverImageUtils', () => {
     describe('edge cases', () => {
       it('should handle all combinations of mode and default', () => {
         const modes = ['upload', 'url', 'none'] as const;
-        const defaults = [
-          'https://example.com/default.jpg',
-          null,
-          '',
-        ] as const;
+        const defaults = ['https://example.com/default.jpg', null, ''] as const;
 
-        modes.forEach((mode) => {
-          defaults.forEach((defaultUrl) => {
+        modes.forEach(mode => {
+          defaults.forEach(defaultUrl => {
             const result = isShowingDefaultImage(mode, defaultUrl);
 
             // Only true when mode is 'none' and default is truthy
@@ -265,10 +258,7 @@ describe('coverImageUtils', () => {
         // Verify it uses Boolean check (falsy values return false)
         expect(isShowingDefaultImage('none', null)).toBe(false);
         expect(
-          isShowingDefaultImage(
-            'none',
-            undefined as unknown as string | null
-          )
+          isShowingDefaultImage('none', undefined as unknown as string | null)
         ).toBe(false);
       });
 

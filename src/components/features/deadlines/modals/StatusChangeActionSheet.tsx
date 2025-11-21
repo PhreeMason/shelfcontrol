@@ -126,9 +126,7 @@ export const StatusChangeActionSheet: React.FC<
     ] || [];
 
   // Dialog state management
-  type DialogState =
-    | { type: 'none' }
-    | { type: 'mark_complete' };
+  type DialogState = { type: 'none' } | { type: 'mark_complete' };
 
   const [dialogState, setDialogState] = useState<DialogState>({ type: 'none' });
 
@@ -191,7 +189,7 @@ export const StatusChangeActionSheet: React.FC<
         color: colors.good,
         description: '➜ No review needed',
         disabled: !isFullyComplete,
-        ...((!isFullyComplete) && {
+        ...(!isFullyComplete && {
           disabledReason: 'Update progress to 100% to mark as complete',
         }),
       },
@@ -251,7 +249,10 @@ export const StatusChangeActionSheet: React.FC<
       // Check if book is not at 100% progress
       if (!isFullyComplete) {
         // Show native alert to ask if user finished all pages
-        const progressText = formatProgressDisplay(deadline.format, currentProgress);
+        const progressText = formatProgressDisplay(
+          deadline.format,
+          currentProgress
+        );
         const totalText = formatProgressDisplay(deadline.format, totalQuantity);
         const unitLabel = deadline.format === 'audio' ? 'time' : 'pages';
 
@@ -599,7 +600,10 @@ export const StatusChangeActionSheet: React.FC<
                     </View>
                     <View style={styles.optionTextContainer}>
                       {isDisabled ? (
-                        <ThemedText typography="titleMedium" color="disabledText">
+                        <ThemedText
+                          typography="titleMedium"
+                          color="disabledText"
+                        >
                           {option.label}
                         </ThemedText>
                       ) : (
@@ -627,7 +631,9 @@ export const StatusChangeActionSheet: React.FC<
                     <IconSymbol
                       name="chevron.right"
                       size={16}
-                      color={isDisabled ? colors.disabled : colors.textSecondary}
+                      color={
+                        isDisabled ? colors.disabled : colors.textSecondary
+                      }
                     />
                   </TouchableOpacity>
                 );

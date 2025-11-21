@@ -17,11 +17,7 @@ export default function CompletionFlowPage() {
   const { colors } = useTheme();
 
   // Always fetch fresh deadline data from database to ensure we have the latest progress
-  const {
-    data: deadline,
-    isLoading,
-    error,
-  } = useGetDeadlineById(id);
+  const { data: deadline, isLoading, error } = useGetDeadlineById(id);
 
   if (isLoading) {
     return (

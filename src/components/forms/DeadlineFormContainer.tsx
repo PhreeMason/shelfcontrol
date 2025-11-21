@@ -313,14 +313,14 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       const bookData =
         data.api_id || data.google_volume_id || data.isbn || data.book_id
           ? {
-            ...(data.api_id && { api_id: data.api_id }),
-            ...(data.api_source && { api_source: data.api_source }),
-            ...(data.google_volume_id && {
-              google_volume_id: data.google_volume_id,
-            }),
-            ...(data.isbn && { isbn: data.isbn }),
-            ...(data.book_id && { book_id: data.book_id }),
-          }
+              ...(data.api_id && { api_id: data.api_id }),
+              ...(data.api_source && { api_source: data.api_source }),
+              ...(data.google_volume_id && {
+                google_volume_id: data.google_volume_id,
+              }),
+              ...(data.isbn && { isbn: data.isbn }),
+              ...(data.book_id && { book_id: data.book_id }),
+            }
           : undefined;
 
       const bookSource = data.api_id ? 'search' : 'manual';
@@ -421,8 +421,8 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
 
   const hasExistingProgressRecords = Boolean(
     mode === 'edit' &&
-    existingDeadline?.progress &&
-    existingDeadline.progress.length > 1
+      existingDeadline?.progress &&
+      existingDeadline.progress.length > 1
   );
 
   // Save button for header - shown on Step 2 (new mode) or always (edit mode)

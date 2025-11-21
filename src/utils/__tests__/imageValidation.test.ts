@@ -307,7 +307,7 @@ describe('imageValidation', () => {
           'https://example.com/image.jpg',
         ];
 
-        uris.forEach((uri) => {
+        uris.forEach(uri => {
           const result: ImagePicker.ImagePickerResult = {
             canceled: false,
             assets: [

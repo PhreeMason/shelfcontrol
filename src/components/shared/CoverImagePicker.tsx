@@ -228,10 +228,16 @@ const CoverImagePicker: React.FC<CoverImagePickerProps> = ({
             )}
             {editable && (
               <TouchableOpacity
-                testID={mode === 'upload' ? 'cancel-upload-button' : 'cancel-url-button'}
+                testID={
+                  mode === 'upload'
+                    ? 'cancel-upload-button'
+                    : 'cancel-url-button'
+                }
                 style={[styles.removeButton, { backgroundColor: colors.error }]}
                 onPress={handleClear}
-                accessibilityLabel={mode === 'upload' ? 'Cancel upload' : 'Cancel URL input'}
+                accessibilityLabel={
+                  mode === 'upload' ? 'Cancel upload' : 'Cancel URL input'
+                }
               >
                 <IconSymbol name="xmark" size={16} color={colors.textInverse} />
               </TouchableOpacity>
@@ -307,11 +313,7 @@ const CoverImagePicker: React.FC<CoverImagePickerProps> = ({
             accessibilityHint="Opens image picker to select a cover"
             accessibilityState={{ selected: false }}
           >
-            <IconSymbol
-              name="photo"
-              size={24}
-              color={colors.text}
-            />
+            <IconSymbol name="photo" size={24} color={colors.text} />
             <ThemedText
               typography="bodyMedium"
               color="text"
@@ -336,11 +338,7 @@ const CoverImagePicker: React.FC<CoverImagePickerProps> = ({
             accessibilityHint="Enter a web URL for the cover image"
             accessibilityState={{ selected: false }}
           >
-            <IconSymbol
-              name="link"
-              size={24}
-              color={colors.text}
-            />
+            <IconSymbol name="link" size={24} color={colors.text} />
             <ThemedText
               typography="bodyMedium"
               color="text"

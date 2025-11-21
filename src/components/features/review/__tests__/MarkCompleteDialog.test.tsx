@@ -82,40 +82,38 @@ describe('MarkCompleteDialog', () => {
     },
   ];
 
-  const createMockDeadline = (
-    currentProgress: number,
-    totalQuantity: number
-  ) => ({
-    id: 'dl_123',
-    user_id: 'user_1',
-    book_id: 'book_1',
-    book_title: 'Test Book',
-    format: 'physical' as const,
-    total_quantity: totalQuantity,
-    deadline_date: '2025-02-01',
-    created_at: '2025-01-01T00:00:00Z',
-    updated_at: '2025-01-01T00:00:00Z',
-    progress: [
-      {
-        id: 'prog_1',
-        deadline_id: 'dl_123',
-        current_progress: currentProgress,
-        ignore_in_calcs: false,
-        time_spent_reading: null,
-        created_at: '2025-01-20T00:00:00Z',
-        updated_at: '2025-01-20T00:00:00Z',
-      },
-    ],
-    status: [
-      {
-        id: 'st_1',
-        deadline_id: 'dl_123',
-        status: 'to_review',
-        created_at: '2025-01-20T00:00:00Z',
-        updated_at: '2025-01-20T00:00:00Z',
-      },
-    ],
-  } as any);
+  const createMockDeadline = (currentProgress: number, totalQuantity: number) =>
+    ({
+      id: 'dl_123',
+      user_id: 'user_1',
+      book_id: 'book_1',
+      book_title: 'Test Book',
+      format: 'physical' as const,
+      total_quantity: totalQuantity,
+      deadline_date: '2025-02-01',
+      created_at: '2025-01-01T00:00:00Z',
+      updated_at: '2025-01-01T00:00:00Z',
+      progress: [
+        {
+          id: 'prog_1',
+          deadline_id: 'dl_123',
+          current_progress: currentProgress,
+          ignore_in_calcs: false,
+          time_spent_reading: null,
+          created_at: '2025-01-20T00:00:00Z',
+          updated_at: '2025-01-20T00:00:00Z',
+        },
+      ],
+      status: [
+        {
+          id: 'st_1',
+          deadline_id: 'dl_123',
+          status: 'to_review',
+          created_at: '2025-01-20T00:00:00Z',
+          updated_at: '2025-01-20T00:00:00Z',
+        },
+      ],
+    }) as any;
 
   beforeEach(() => {
     jest.clearAllMocks();
