@@ -31,7 +31,7 @@ export const calculateProgressPercentage = (
     deadline.total_quantity
   );
   if (!totalQuantity) return 0;
-  return Math.round((currentProgress / totalQuantity) * 100);
+  return Math.floor((currentProgress / totalQuantity) * 100);
 };
 
 export const getUnitForFormat = (

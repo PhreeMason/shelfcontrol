@@ -73,7 +73,7 @@ describe('MetricCard', () => {
         />
       );
 
-      expect(screen.getByText('TIME LEFT')).toBeTruthy();
+      expect(screen.getByText('TIME REMAINING')).toBeTruthy();
       expect(screen.getByText('4h 0m')).toBeTruthy();
       expect(screen.getByText('33% complete')).toBeTruthy();
     });
@@ -92,7 +92,7 @@ describe('MetricCard', () => {
 
       expect(screen.getByText('CURRENT POSITION')).toBeTruthy();
       expect(screen.getByText('4h 1m')).toBeTruthy();
-      expect(screen.getByText('41% complete')).toBeTruthy();
+      expect(screen.getByText('40% complete')).toBeTruthy();
     });
 
     it('formats time display correctly', () => {
@@ -143,7 +143,9 @@ describe('MetricCard', () => {
       );
 
       const card = screen.getByRole('button');
-      expect(card.props.accessibilityLabel).toContain('Toggle between current progress');
+      expect(card.props.accessibilityLabel).toContain(
+        'Toggle between current progress'
+      );
       expect(card.props.accessibilityLabel).toContain('PAGES LEFT');
     });
 
@@ -160,7 +162,9 @@ describe('MetricCard', () => {
       );
 
       const card = screen.getByRole('button');
-      expect(card.props.accessibilityLabel).toContain('Toggle between remaining progress');
+      expect(card.props.accessibilityLabel).toContain(
+        'Toggle between remaining progress'
+      );
       expect(card.props.accessibilityLabel).toContain('CURRENT POSITION');
     });
   });

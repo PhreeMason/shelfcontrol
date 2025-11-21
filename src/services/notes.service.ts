@@ -47,7 +47,7 @@ class NotesService {
       const totalQuantity = deadlineData?.total_quantity || 0;
 
       progressPercentage = totalQuantity
-        ? Math.round((currentProgress / totalQuantity) * 100)
+        ? Math.floor((currentProgress / totalQuantity) * 100)
         : 0;
     }
 

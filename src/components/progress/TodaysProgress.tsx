@@ -23,7 +23,7 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
   current,
   type = 'reading',
 }) => {
-  const progressPercentage = Math.round((current / total) * 100);
+  const progressPercentage = Math.floor((current / total) * 100);
   const isListening = type === PROGRESS_TYPE.LISTENING;
   const icon = isListening ? '🎧' : '📖';
   const label = isListening ? 'Listening' : 'Reading';
