@@ -281,7 +281,7 @@ class ReviewTrackingService {
     const postedPlatforms = allPlatforms?.filter(p => p.posted).length || 0;
     const completion_percentage =
       totalPlatforms > 0
-        ? Math.round((postedPlatforms / totalPlatforms) * 100)
+        ? Math.floor((postedPlatforms / totalPlatforms) * 100)
         : 0;
 
     return { completion_percentage };
@@ -423,7 +423,7 @@ class ReviewTrackingService {
     const postedPlatforms = platforms?.filter(p => p.posted).length || 0;
     const completion_percentage =
       totalPlatforms > 0
-        ? Math.round((postedPlatforms / totalPlatforms) * 100)
+        ? Math.floor((postedPlatforms / totalPlatforms) * 100)
         : 0;
 
     return {

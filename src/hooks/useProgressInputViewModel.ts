@@ -92,7 +92,7 @@ export function useProgressInputViewModel({
 
   const percentageFromValue = useMemo(() => {
     if (!isPercentage || totalQuantity === 0) return 0;
-    return Math.round((value / totalQuantity) * 100);
+    return Math.floor((value / totalQuantity) * 100);
   }, [isPercentage, value, totalQuantity]);
 
   const remainingTimeFromValue = useMemo(() => {

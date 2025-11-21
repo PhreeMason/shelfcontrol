@@ -29,6 +29,28 @@ export const PROGRESS_TYPE = {
   LISTENING: 'listening',
 } as const;
 
+/**
+ * Valid status transitions map
+ *
+ * Defines which status changes are allowed from each current status.
+ * Used by both the service layer (for validation) and UI (for displaying options).
+ *
+ * Terminal states (complete, did_not_finish, rejected, withdrew) have no valid transitions.
+ */
+export const VALID_STATUS_TRANSITIONS: Record<
+  DeadlineStatusEnum,
+  DeadlineStatusEnum[]
+> = {
+  pending: ['reading', 'rejected', 'withdrew'],
+  reading: ['paused', 'to_review', 'complete', 'did_not_finish'],
+  paused: ['reading', 'complete', 'did_not_finish'],
+  to_review: ['complete', 'did_not_finish'],
+  complete: [],
+  did_not_finish: [],
+  rejected: [],
+  withdrew: [],
+};
+
 export type DeadlineStatus = DeadlineStatusEnum;
 export type ActivityState =
   (typeof ACTIVITY_STATE)[keyof typeof ACTIVITY_STATE];

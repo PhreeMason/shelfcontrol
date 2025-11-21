@@ -31,7 +31,7 @@ const BookDetailsSection = ({
             styles.detailRow,
             {
               backgroundColor: colors.surfaceContainer,
-              borderColor: colors.outline+'50',
+              borderColor: colors.outline + '50',
             },
           ]}
         >
@@ -49,7 +49,7 @@ const BookDetailsSection = ({
                 styles.detailRow,
                 {
                   backgroundColor: colors.surfaceContainer,
-                  borderColor: colors.outline+'50',
+                  borderColor: colors.outline + '50',
                 },
               ]}
             >
@@ -66,7 +66,7 @@ const BookDetailsSection = ({
             styles.detailRow,
             {
               backgroundColor: colors.surfaceContainer,
-              borderColor: colors.outline+'50',
+              borderColor: colors.outline + '50',
             },
           ]}
         >
@@ -82,7 +82,7 @@ const BookDetailsSection = ({
             styles.detailRow,
             {
               backgroundColor: colors.surfaceContainer,
-              borderColor: colors.outline+'50',
+              borderColor: colors.outline + '50',
             },
           ]}
         >
@@ -96,7 +96,7 @@ const BookDetailsSection = ({
             styles.detailRow,
             {
               backgroundColor: colors.surfaceContainer,
-              borderColor: colors.outline+'50',
+              borderColor: colors.outline + '50',
             },
           ]}
         >
@@ -112,7 +112,7 @@ const BookDetailsSection = ({
             styles.detailRow,
             {
               backgroundColor: colors.surfaceContainer,
-              borderColor: colors.outline+'50',
+              borderColor: colors.outline + '50',
             },
           ]}
         >
@@ -126,7 +126,7 @@ const BookDetailsSection = ({
             styles.detailRow,
             {
               backgroundColor: colors.surfaceContainer,
-              borderColor: colors.outline+'50',
+              borderColor: colors.outline + '50',
             },
           ]}
         >

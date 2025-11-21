@@ -1,18 +1,12 @@
 import { DeadlineCardActions } from '../DeadlineCardActions';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import {
-  fireEvent,
-  render,
-  screen,
-} from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import { router } from 'expo-router';
 import React from 'react';
-import Toast from 'react-native-toast-message';
 
 jest.mock('@/providers/DeadlineProvider');
 jest.mock('expo-router');
-jest.mock('react-native-toast-message');
 
 jest.mock('@/components/themed/ThemedText', () => ({
   ThemedText: ({ children, testID, ...props }: any) => {
@@ -51,11 +45,22 @@ jest.mock('../modals/UpdateDeadlineDateModal', () => ({
   },
 }));
 
+jest.mock('../modals/StatusChangeActionSheet', () => ({
+  StatusChangeActionSheet: ({ visible, onClose, testID }: any) => {
+    const React = require('react');
+    return visible
+      ? React.createElement('View', {
+          testID: testID || 'status-change-action-sheet',
+          onPress: onClose,
+        })
+      : null;
+  },
+}));
+
 const mockUseDeadlines = useDeadlines as jest.MockedFunction<
   typeof useDeadlines
 >;
 const mockRouter = router as jest.Mocked<typeof router>;
-const mockToast = Toast as jest.Mocked<typeof Toast>;
 
 describe('DeadlineCardActions', () => {
   const mockPauseDeadline = jest.fn();
@@ -76,6 +81,7 @@ describe('DeadlineCardActions', () => {
     acquisition_source: null,
     type: 'Personal',
     publishers: null,
+    cover_image_url: null,
     status: [
       {
         id: 'status-1',
@@ -117,133 +123,38 @@ describe('DeadlineCardActions', () => {
     });
   });
 
-  describe('Hook Integration', () => {
-    it('should call useDeadlines hook', () => {
-      render(<DeadlineCardActions deadline={baseDeadline} />);
-      expect(mockUseDeadlines).toHaveBeenCalled();
-    });
-  });
-
-  describe('Status Button - Reading Deadline', () => {
-    it('should call pauseDeadline when status button is pressed for reading deadline', () => {
+  describe('Status Button', () => {
+    it('should open StatusChangeActionSheet when status button is pressed', () => {
       const { getAllByRole } = render(
         <DeadlineCardActions deadline={baseDeadline} />
       );
 
+      expect(screen.queryByTestId('status-change-action-sheet')).toBeNull();
+
       const statusButton = getAllByRole('button')[0];
       fireEvent.press(statusButton);
 
-      expect(mockPauseDeadline).toHaveBeenCalledWith(
-        'deadline-123',
-        expect.any(Function),
-        expect.any(Function)
-      );
+      expect(screen.getByTestId('status-change-action-sheet')).toBeTruthy();
     });
 
-    it('should show success toast when pausing deadline succeeds', () => {
-      const { getAllByRole } = render(
+    it('should close StatusChangeActionSheet when onClose is called', () => {
+      const { getAllByRole, rerender } = render(
         <DeadlineCardActions deadline={baseDeadline} />
       );
 
+      // Open the modal
       const statusButton = getAllByRole('button')[0];
       fireEvent.press(statusButton);
 
-      const successCallback = mockPauseDeadline.mock.calls[0][1];
-      successCallback();
+      expect(screen.getByTestId('status-change-action-sheet')).toBeTruthy();
 
-      expect(mockToast.show).toHaveBeenCalledWith({
-        type: 'success',
-        text1: 'Test Book has been paused.',
-        visibilityTime: 1500,
-        position: 'top',
-      });
-    });
+      // Simulate closing the modal by pressing it (mock triggers onClose)
+      fireEvent.press(screen.getByTestId('status-change-action-sheet'));
 
-    it('should show error toast when pausing deadline fails', () => {
-      const { getAllByRole } = render(
-        <DeadlineCardActions deadline={baseDeadline} />
-      );
+      // Re-render to reflect state change
+      rerender(<DeadlineCardActions deadline={baseDeadline} />);
 
-      const statusButton = getAllByRole('button')[0];
-      fireEvent.press(statusButton);
-
-      const errorCallback = mockPauseDeadline.mock.calls[0][2];
-      errorCallback(new Error('Network error'));
-
-      expect(mockToast.show).toHaveBeenCalledWith({
-        type: 'error',
-        text1: 'Failed to pause reading',
-        visibilityTime: 2000,
-        position: 'top',
-      });
-    });
-  });
-
-  describe('Status Button - Paused Deadline', () => {
-    const pausedDeadline: ReadingDeadlineWithProgress = {
-      ...baseDeadline,
-      status: [
-        {
-          id: 'status-2',
-          deadline_id: 'deadline-123',
-          status: 'paused' as const,
-          created_at: '2024-01-01T00:00:00Z',
-          updated_at: '2024-01-01T00:00:00Z',
-        },
-      ],
-    };
-
-    it('should call resumeDeadline when status button is pressed for paused deadline', () => {
-      const { getAllByRole } = render(
-        <DeadlineCardActions deadline={pausedDeadline} />
-      );
-
-      const statusButton = getAllByRole('button')[0];
-      fireEvent.press(statusButton);
-
-      expect(mockResumeDeadline).toHaveBeenCalledWith(
-        'deadline-123',
-        expect.any(Function),
-        expect.any(Function)
-      );
-    });
-
-    it('should show success toast when resuming deadline succeeds', () => {
-      const { getAllByRole } = render(
-        <DeadlineCardActions deadline={pausedDeadline} />
-      );
-
-      const statusButton = getAllByRole('button')[0];
-      fireEvent.press(statusButton);
-
-      const successCallback = mockResumeDeadline.mock.calls[0][1];
-      successCallback();
-
-      expect(mockToast.show).toHaveBeenCalledWith({
-        type: 'success',
-        text1: 'Test Book is now active.',
-        visibilityTime: 1500,
-        position: 'top',
-      });
-    });
-
-    it('should show error toast when resuming deadline fails', () => {
-      const { getAllByRole } = render(
-        <DeadlineCardActions deadline={pausedDeadline} />
-      );
-
-      const statusButton = getAllByRole('button')[0];
-      fireEvent.press(statusButton);
-
-      const errorCallback = mockResumeDeadline.mock.calls[0][2];
-      errorCallback(new Error('Network error'));
-
-      expect(mockToast.show).toHaveBeenCalledWith({
-        type: 'error',
-        text1: 'Failed to resume reading',
-        visibilityTime: 2000,
-        position: 'top',
-      });
+      expect(screen.queryByTestId('status-change-action-sheet')).toBeNull();
     });
   });
 
@@ -253,9 +164,7 @@ describe('DeadlineCardActions', () => {
         <DeadlineCardActions deadline={baseDeadline} />
       );
 
-      expect(
-        screen.queryByTestId('update-deadline-date-modal')
-      ).toBeNull();
+      expect(screen.queryByTestId('update-deadline-date-modal')).toBeNull();
 
       const calendarButton = getAllByRole('button')[1];
       fireEvent.press(calendarButton);
@@ -314,21 +223,19 @@ describe('DeadlineCardActions', () => {
   });
 
   describe('Accessibility', () => {
-    it('should have correct accessibility labels for reading deadline', () => {
+    it('should have correct accessibility labels for all buttons', () => {
       const { getAllByRole } = render(
         <DeadlineCardActions deadline={baseDeadline} />
       );
 
       const buttons = getAllByRole('button');
-      expect(buttons[0].props.accessibilityLabel).toBe('Pause reading');
-      expect(buttons[1].props.accessibilityLabel).toBe(
-        'Update deadline date'
-      );
+      expect(buttons[0].props.accessibilityLabel).toBe('Change status');
+      expect(buttons[1].props.accessibilityLabel).toBe('Update due date');
       expect(buttons[2].props.accessibilityLabel).toBe('Edit deadline');
       expect(buttons[3].props.accessibilityLabel).toBe('View notes');
     });
 
-    it('should have correct accessibility label for paused deadline', () => {
+    it('should have consistent status button label regardless of status', () => {
       const pausedDeadline: ReadingDeadlineWithProgress = {
         ...baseDeadline,
         status: [
@@ -347,7 +254,7 @@ describe('DeadlineCardActions', () => {
       );
 
       const statusButton = getAllByRole('button')[0];
-      expect(statusButton.props.accessibilityLabel).toBe('Resume reading');
+      expect(statusButton.props.accessibilityLabel).toBe('Change status');
     });
   });
 
@@ -377,7 +284,7 @@ describe('DeadlineCardActions', () => {
       expect(screen.getByText('Status')).toBeTruthy();
     });
 
-    it('should handle multiple status entries and use the latest', () => {
+    it('should handle multiple status entries', () => {
       const multiStatusDeadline: ReadingDeadlineWithProgress = {
         ...baseDeadline,
         status: [
@@ -403,7 +310,7 @@ describe('DeadlineCardActions', () => {
       );
 
       const statusButton = getAllByRole('button')[0];
-      expect(statusButton.props.accessibilityLabel).toBe('Resume reading');
+      expect(statusButton.props.accessibilityLabel).toBe('Change status');
     });
   });
 });

@@ -1,13 +1,13 @@
 import { ThemedText } from '@/components/themed/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { DEADLINE_CARD_ICONS } from '@/constants/icons';
+import { Layout } from '@/constants/Layout';
 import { useTheme } from '@/hooks/useThemeColor';
-import { useDeadlines } from '@/providers/DeadlineProvider';
 import type { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { getDeadlineStatus, getStatusFlags } from '@/utils/deadlineActionUtils';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import Toast from 'react-native-toast-message';
+import { StatusChangeActionSheet } from './modals/StatusChangeActionSheet';
 import { UpdateDeadlineDateModal } from './modals/UpdateDeadlineDateModal';
 
 interface DeadlineCardActionsProps {
@@ -18,57 +18,8 @@ export const DeadlineCardActions: React.FC<DeadlineCardActionsProps> = ({
   deadline,
 }) => {
   const { colors } = useTheme();
-  const { pauseDeadline, resumeDeadline } = useDeadlines();
   const [showDateModal, setShowDateModal] = useState(false);
-
-  const latestStatus = getDeadlineStatus(deadline);
-  const { isPaused } = getStatusFlags(latestStatus);
-
-  const handleStatusToggle = () => {
-    if (isPaused) {
-      resumeDeadline(
-        deadline.id,
-        () => {
-          Toast.show({
-            type: 'success',
-            text1: `${deadline.book_title} is now active.`,
-            visibilityTime: 1500,
-            position: 'top',
-          });
-        },
-        error => {
-          console.error('Failed to resume reading:', error);
-          Toast.show({
-            type: 'error',
-            text1: 'Failed to resume reading',
-            visibilityTime: 2000,
-            position: 'top',
-          });
-        }
-      );
-    } else {
-      pauseDeadline(
-        deadline.id,
-        () => {
-          Toast.show({
-            type: 'success',
-            text1: `${deadline.book_title} has been paused.`,
-            visibilityTime: 1500,
-            position: 'top',
-          });
-        },
-        error => {
-          console.error('Failed to pause reading:', error);
-          Toast.show({
-            type: 'error',
-            text1: 'Failed to pause reading',
-            visibilityTime: 2000,
-            position: 'top',
-          });
-        }
-      );
-    }
-  };
+  const [showStatusModal, setShowStatusModal] = useState(false);
 
   const handleEditPress = () => {
     router.push(`/deadline/${deadline.id}/edit`);
@@ -84,18 +35,15 @@ export const DeadlineCardActions: React.FC<DeadlineCardActionsProps> = ({
         {/* Status Button */}
         <TouchableOpacity
           style={styles.button}
-          onPress={handleStatusToggle}
-          accessibilityLabel={isPaused ? 'Resume reading' : 'Pause reading'}
+          onPress={() => setShowStatusModal(true)}
+          accessibilityLabel="Change status"
           accessibilityRole="button"
         >
           <View
-            style={[
-              styles.iconCircle,
-              { backgroundColor: colors.surface },
-            ]}
+            style={[styles.iconCircle, { backgroundColor: colors.surface }]}
           >
             <IconSymbol
-              name="arrow.left.arrow.right"
+              name={DEADLINE_CARD_ICONS.CHANGE_STATUS}
               size={20}
               color={colors.primary}
             />
@@ -109,17 +57,14 @@ export const DeadlineCardActions: React.FC<DeadlineCardActionsProps> = ({
         <TouchableOpacity
           style={styles.button}
           onPress={() => setShowDateModal(true)}
-          accessibilityLabel="Update deadline date"
+          accessibilityLabel="Update due date"
           accessibilityRole="button"
         >
           <View
-            style={[
-              styles.iconCircle,
-              { backgroundColor: colors.surface },
-            ]}
+            style={[styles.iconCircle, { backgroundColor: colors.surface }]}
           >
             <IconSymbol
-              name="calendar.badge.clock"
+              name={DEADLINE_CARD_ICONS.UPDATE_DATE}
               size={20}
               color={colors.primary}
             />
@@ -137,13 +82,10 @@ export const DeadlineCardActions: React.FC<DeadlineCardActionsProps> = ({
           accessibilityRole="button"
         >
           <View
-            style={[
-              styles.iconCircle,
-              { backgroundColor: colors.surface },
-            ]}
+            style={[styles.iconCircle, { backgroundColor: colors.surface }]}
           >
             <IconSymbol
-              name="pencil"
+              name={DEADLINE_CARD_ICONS.EDIT}
               size={20}
               color={colors.primary}
             />
@@ -161,13 +103,10 @@ export const DeadlineCardActions: React.FC<DeadlineCardActionsProps> = ({
           accessibilityRole="button"
         >
           <View
-            style={[
-              styles.iconCircle,
-              { backgroundColor: colors.surface },
-            ]}
+            style={[styles.iconCircle, { backgroundColor: colors.surface }]}
           >
             <IconSymbol
-              name="note.text"
+              name={DEADLINE_CARD_ICONS.NOTES}
               size={20}
               color={colors.primary}
             />
@@ -182,6 +121,12 @@ export const DeadlineCardActions: React.FC<DeadlineCardActionsProps> = ({
         deadline={deadline}
         visible={showDateModal}
         onClose={() => setShowDateModal(false)}
+      />
+
+      <StatusChangeActionSheet
+        deadline={deadline}
+        visible={showStatusModal}
+        onClose={() => setShowStatusModal(false)}
       />
     </>
   );
@@ -198,8 +143,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconCircle: {
-    width: 48,
-    height: 48,
+    width: Layout.ICON_CIRCLE_SIZE,
+    height: Layout.ICON_CIRCLE_SIZE,
     justifyContent: 'center',
     alignItems: 'center',
   },

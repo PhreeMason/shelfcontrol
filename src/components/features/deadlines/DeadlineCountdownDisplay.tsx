@@ -102,12 +102,12 @@ export function DeadlineCountdownDisplay({
             <ThemedText
               style={[styles.countdownNumber, { color: countdownColor }]}
             >
-              {daysLeft}
+              {Math.abs(daysLeft)}
             </ThemedText>
             <ThemedText
               style={[styles.countdownLabel, { color: countdownColor }]}
             >
-              days
+              {daysLeft < 0 ? 'days over' : 'days'}
             </ThemedText>
           </>
         )}

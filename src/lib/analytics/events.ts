@@ -105,6 +105,10 @@ export interface EventPropertiesMap {
 
   deadline_resumed: Record<string, never>;
 
+  deadline_rejected: Record<string, never>;
+
+  deadline_withdrew: Record<string, never>;
+
   deadline_card_clicked: {
     deadline_status: DeadlineStatus;
     deadline_format: ReadingFormat;

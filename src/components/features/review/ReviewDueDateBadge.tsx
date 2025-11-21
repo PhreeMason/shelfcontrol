@@ -26,7 +26,7 @@ const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({
 
   const isOverdue = daysUntilDue < 0;
   const percentage =
-    totalCount > 0 ? Math.round((postedCount / totalCount) * 100) : 0;
+    totalCount > 0 ? Math.floor((postedCount / totalCount) * 100) : 0;
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {

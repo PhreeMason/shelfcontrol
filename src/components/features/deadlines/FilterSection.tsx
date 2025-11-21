@@ -198,7 +198,10 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         </ScrollView>
 
         <View style={styles.searchAndToggleContainer}>
-          <SearchBar searchQuery={searchQuery} onSearchChange={onSearchChange} />
+          <SearchBar
+            searchQuery={searchQuery}
+            onSearchChange={onSearchChange}
+          />
           <ViewToggleControl />
         </View>
       </View>

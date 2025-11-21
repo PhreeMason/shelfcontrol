@@ -61,6 +61,7 @@ export function createMockDeadline(
     total_quantity: totalQuantity,
     format,
     flexibility: 'flexible',
+    cover_image_url: null,
     created_at: '2024-01-01',
     updated_at: '2024-01-01',
     progress: progress.map((p, index) => ({

@@ -134,7 +134,6 @@ export const Colors = {
     onPrimaryContainer: '#0c4a6e',
     backgroundPrimary: '#d8cbf3ff',
 
-
     // Secondary colors
     secondary: '#64748B',
     secondaryContainer: '#F1F5F9',

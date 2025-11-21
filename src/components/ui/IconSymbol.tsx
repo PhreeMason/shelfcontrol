@@ -79,6 +79,8 @@ export const MAPPING = {
   'arrow.triangle.2.circlepath': 'sync',
   star: 'star-border',
   'info.circle': 'info',
+  photo: 'photo',
+  link: 'link',
 } as IconMapping;
 
 /**

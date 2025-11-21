@@ -27,7 +27,6 @@ jest.mock('@/providers/DeadlineProvider', () => ({
   useDeadlines: jest.fn(),
 }));
 
-
 jest.mock('react-native-toast-message', () => ({
   show: jest.fn(),
 }));
@@ -89,9 +88,9 @@ jest.mock('react-native-reanimated', () => {
   };
   return {
     __esModule: true,
-    useSharedValue: jest.fn((initial) => ({ value: initial })),
+    useSharedValue: jest.fn(initial => ({ value: initial })),
     useAnimatedStyle: jest.fn(() => ({})),
-    runOnJS: jest.fn((fn) => fn),
+    runOnJS: jest.fn(fn => fn),
     default: Animated,
   };
 });
@@ -570,7 +569,6 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
       });
     });
 
-
     describe('Complex Integration Scenarios', () => {
       it('should handle book completion with onProgressSubmitted callback', () => {
         const onProgressSubmitted = jest.fn();
@@ -732,7 +730,6 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
       });
     });
 
-
     describe('Paused State Handling', () => {
       it('should display paused message when deadline is paused', () => {
         const pausedDeadline = {
@@ -841,11 +838,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
       const decrementButton = screen.getByLabelText('Decrease progress by 1');
       fireEvent.press(decrementButton);
 
-      expect(mockSetValue).toHaveBeenCalledWith(
-        'currentProgress',
-        149,
-        { shouldValidate: false }
-      );
+      expect(mockSetValue).toHaveBeenCalledWith('currentProgress', 149, {
+        shouldValidate: false,
+      });
     });
 
     it('should call setValue when increment button is pressed', () => {
@@ -856,11 +851,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
       const incrementButton = screen.getByLabelText('Increase progress by 1');
       fireEvent.press(incrementButton);
 
-      expect(mockSetValue).toHaveBeenCalledWith(
-        'currentProgress',
-        151,
-        { shouldValidate: false }
-      );
+      expect(mockSetValue).toHaveBeenCalledWith('currentProgress', 151, {
+        shouldValidate: false,
+      });
     });
 
     it('should not decrement below 0', () => {
@@ -931,11 +924,9 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
       const incrementButton = screen.getByLabelText('Increase progress by 1');
       fireEvent.press(incrementButton);
 
-      expect(mockSetValue).toHaveBeenCalledWith(
-        'currentProgress',
-        121,
-        { shouldValidate: false }
-      );
+      expect(mockSetValue).toHaveBeenCalledWith('currentProgress', 121, {
+        shouldValidate: false,
+      });
     });
   });
 });

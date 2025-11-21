@@ -44,7 +44,7 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
 
   const progressPercentage =
     deadline.total_quantity > 0
-      ? Math.round((currentProgress / deadline.total_quantity) * 100)
+      ? Math.floor((currentProgress / deadline.total_quantity) * 100)
       : 0;
 
   const formattedCompletionDate = completionDate

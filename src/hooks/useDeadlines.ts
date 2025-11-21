@@ -104,6 +104,51 @@ export const useUpdateDeadlineDate = () => {
   });
 };
 
+export const useUploadDeadlineCover = () => {
+  const { session } = useAuth();
+  const userId = session?.user?.id;
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: [MUTATION_KEYS.DEADLINES.UPLOAD_COVER],
+    mutationFn: async ({
+      uri,
+      oldCoverPath,
+    }: {
+      uri: string;
+      oldCoverPath?: string | null;
+    }) => {
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      return deadlinesService.uploadCoverImage(userId, uri, oldCoverPath);
+    },
+    onSuccess: () => {
+      if (userId) {
+        // Invalidate all deadlines to refresh any that might display this cover
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
+      }
+    },
+    onError: error => {
+      console.error('Error uploading cover image:', error);
+    },
+  });
+};
+
+export const useDeleteDeadlineCover = () => {
+  return useMutation({
+    mutationKey: [MUTATION_KEYS.DEADLINES.DELETE_COVER],
+    mutationFn: async (coverPath: string) => {
+      return deadlinesService.deleteCoverImage(coverPath);
+    },
+    onError: error => {
+      console.error('Error deleting cover image:', error);
+    },
+  });
+};
+
 export const useDeleteDeadline = () => {
   const { session } = useAuth();
   const userId = session?.user?.id;
@@ -360,6 +405,12 @@ export const usePauseDeadline = () =>
 
 export const useResumeDeadline = () =>
   useUpdateDeadlineStatus(DEADLINE_STATUS.READING);
+
+export const useRejectDeadline = () =>
+  useUpdateDeadlineStatus(DEADLINE_STATUS.REJECTED);
+
+export const useWithdrawDeadline = () =>
+  useUpdateDeadlineStatus(DEADLINE_STATUS.WITHDREW);
 
 export const useGetDeadlineById = (deadlineId: string | undefined) => {
   const { session } = useAuth();

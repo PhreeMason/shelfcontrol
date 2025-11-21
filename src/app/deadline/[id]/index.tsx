@@ -137,7 +137,7 @@ const DeadlineView = () => {
         <ThemedKeyboardAwareScrollView
           contentContainerStyle={{ paddingBottom: 100 }}
           keyboardShouldPersistTaps="handled"
-          style={[styles.content, {backgroundColor:'transparent'}]}
+          style={[styles.content, { backgroundColor: 'transparent' }]}
         >
           <DeadlineHeroSection
             isPending={isPending}
@@ -154,7 +154,9 @@ const DeadlineView = () => {
           <ReviewProgressSection deadline={deadline} />
           {shouldShowStats ? <ReadingStats deadline={deadline} /> : null}
 
-          {latestStatus !== 'pending' ? <DailyReadingChart deadline={deadline} /> : null}
+          {latestStatus !== 'pending' ? (
+            <DailyReadingChart deadline={deadline} />
+          ) : null}
 
           <DeadlineContactsSection deadline={deadline} />
 

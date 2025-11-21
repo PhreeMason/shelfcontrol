@@ -55,7 +55,8 @@ const Notes = () => {
   const [showTypeahead, setShowTypeahead] = useState(false);
   const [selectedHashtagIds, setSelectedHashtagIds] = useState<string[]>([]);
   const [showFilterSheet, setShowFilterSheet] = useState(false);
-  const [selectedNoteForActions, setSelectedNoteForActions] = useState<DeadlineNote | null>(null);
+  const [selectedNoteForActions, setSelectedNoteForActions] =
+    useState<DeadlineNote | null>(null);
   const [isActionSheetVisible, setIsActionSheetVisible] = useState(false);
 
   const { data: deadline } = useGetDeadlineById(id);
@@ -284,9 +285,13 @@ const Notes = () => {
     return (
       <Pressable onLongPress={() => handleLongPress(item)}>
         <ThemedView
-          backgroundColor='backgroundSecondary'
-          borderRadius='md'
-          style={[styles.noteItem, { margin: 10 }, isLateItemInList && { borderBottomWidth: 0 }]}
+          backgroundColor="backgroundSecondary"
+          borderRadius="md"
+          style={[
+            styles.noteItem,
+            { margin: 10 },
+            isLateItemInList && { borderBottomWidth: 0 },
+          ]}
         >
           <HashtagText
             text={item.note_text}
@@ -402,10 +407,7 @@ const Notes = () => {
           </View>
         )}
 
-        <ThemedView
-          borderRadius='sm'
-          style={[styles.inputContainer]}
-        >
+        <ThemedView borderRadius="sm" style={[styles.inputContainer]}>
           <View style={styles.inputWrapper}>
             <TextInput
               style={[
