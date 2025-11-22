@@ -345,7 +345,7 @@ export const DeadlineFormStep2Combined = ({
           control={control}
           name="acquisition_source"
           testID="input-acquisition-source"
-          placeholder="Select a source or add a new new one"
+          placeholder="Select a source or add a new one"
         />
       </View>
 

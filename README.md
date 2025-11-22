@@ -269,6 +269,7 @@ Before committing code, ensure:
 - **Analytics**: Track important user actions via PostHog
 - **Date handling**: Always use `dateNormalization.ts` helpers for server dates
 - **ID generation**: Use `generateId()` with appropriate prefixes
+- **Modals**: Avoid nesting React Native `Modal` components as this can cause touch responder issues. Instead, use `Alert.alert()` for simple confirmations or state-based modal switching for multi-step flows. See [ARCHITECTURE.md - UI Patterns](./ARCHITECTURE.md#modal-best-practices) for details
 
 ## Architecture
 
