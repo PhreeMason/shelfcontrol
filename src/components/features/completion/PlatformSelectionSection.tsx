@@ -103,12 +103,7 @@ export const PlatformSelectionSection: React.FC<
       topSectionPlatforms: topSection,
       moreSectionPlatforms: unselectedRemaining,
     };
-  }, [
-    allPlatformsOrdered,
-    first3Platforms,
-    remainingPlatforms,
-    selectedPlatforms,
-  ]);
+  }, [first3Platforms, remainingPlatforms, selectedPlatforms]);
 
   const handleAddCustomPlatform = () => {
     addCustomPlatform();

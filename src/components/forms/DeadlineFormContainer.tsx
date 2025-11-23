@@ -459,15 +459,9 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
         </ThemedText>
       </TouchableOpacity>
     );
-  }, [
-    mode,
-    currentStep,
-    reactHookFormState.isValid,
-    isSubmitting,
-    handleSubmit,
-    onSubmit,
-    colors,
-  ]);
+    // handleSubmit and onSubmit are excluded - button visuals only depend on state, not handler references
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, currentStep, reactHookFormState, isSubmitting]);
 
   // Show error if deadline not found in edit mode
   if (mode === 'edit' && !existingDeadline) {

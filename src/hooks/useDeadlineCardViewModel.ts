@@ -138,10 +138,7 @@ export function useDeadlineCardViewModel({
   );
 
   const primaryText = useMemo(() => {
-    if (urgencyLevel === 'overdue') {
-      return formatRemainingDisplay(remaining, deadline.format);
-    }
-
+    // Check status first - to_review takes priority over urgency
     if (latestStatus === 'to_review') {
       if (totalPlatformCount === 0) {
         return 'No reviews to post';
@@ -150,10 +147,11 @@ export function useDeadlineCardViewModel({
         return 'All reviews posted';
       }
       const postedCount = totalPlatformCount - unpostedCount;
-      if (unpostedCount === 1) {
-        return `${postedCount} of ${totalPlatformCount} reviews posted`;
-      }
       return `${postedCount} of ${totalPlatformCount} reviews posted`;
+    }
+
+    if (urgencyLevel === 'overdue') {
+      return formatRemainingDisplay(remaining, deadline.format);
     }
 
     return capacityMessage;

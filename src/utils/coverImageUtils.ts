@@ -1,3 +1,6 @@
+import { STORAGE_BUCKETS } from '@/constants/database';
+import { supabase } from '@/lib/supabase';
+
 /**
  * Cover image mode type definition
  */
@@ -85,9 +88,6 @@ export const isShowingDefaultImage = (
  * @param pathOrUrl - The stored cover image value (URL, file URI, or path)
  * @returns The public URL to display, or null if input is empty
  */
-import { STORAGE_BUCKETS } from '@/constants/database';
-import { supabase } from '@/lib/supabase';
-
 export const getCoverImageUrl = (
   pathOrUrl: string | null | undefined
 ): string | null => {

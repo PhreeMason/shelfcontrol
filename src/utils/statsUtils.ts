@@ -790,9 +790,6 @@ const groupProgressByDayOfWeek = (
   });
 
   // Group progress entries by day of week
-  let totalEntriesInRange = 0;
-  let totalEntriesOutOfRange = 0;
-
   for (const deadline of filteredDeadlines) {
     for (const entry of deadline.progress) {
       if (entry.ignore_in_calcs) {
@@ -808,9 +805,6 @@ const groupProgressByDayOfWeek = (
       if (isInRange) {
         const dayOfWeek = entryDate.day(); // 0 = Sunday, 6 = Saturday
         dayMap.get(dayOfWeek)!.push(entry);
-        totalEntriesInRange++;
-      } else {
-        totalEntriesOutOfRange++;
       }
     }
   }

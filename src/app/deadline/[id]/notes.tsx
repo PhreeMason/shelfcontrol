@@ -70,12 +70,14 @@ const Notes = () => {
   const isSubmitting =
     addNoteMutation.isPending || updateNoteMutation.isPending;
 
+  // Track note creation abandonment on unmount only - captures state at unmount time
   useEffect(() => {
     return () => {
       if (noteText.trim().length > 0 && !editingNoteId) {
         analytics.track('note_creation_cancelled');
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Detect hashtag typing for typeahead

@@ -291,12 +291,12 @@ describe('useDeadlineCardViewModel', () => {
       expect(result.current.display.secondaryText).toBe('Completed: N/A');
     });
 
-    it('should return undefined coverImageUrl when no book data', () => {
+    it('should return null coverImageUrl when no book data', () => {
       const { result } = renderHook(() =>
         useDeadlineCardViewModel({ deadline: mockDeadline })
       );
 
-      expect(result.current.display.coverImageUrl).toBeUndefined();
+      expect(result.current.display.coverImageUrl).toBeNull();
     });
 
     it('should return coverImageUrl from book data when available', () => {
@@ -375,7 +375,7 @@ describe('useDeadlineCardViewModel', () => {
       );
 
       expect(result.current.componentProps.bookCover).toEqual({
-        coverImageUrl: undefined,
+        coverImageUrl: null,
         deadline: mockDeadline,
         daysLeft: 5,
       });
@@ -682,6 +682,67 @@ describe('useDeadlineCardViewModel', () => {
       );
 
       expect(result.current.display.primaryText).toBe('No reviews to post');
+    });
+
+    it('should prioritize to_review status over overdue urgency', () => {
+      // This tests the fix for the bug where to_review books showed "Complete!"
+      // when urgencyLevel was 'overdue'
+      (useDeadlineCardState as jest.Mock).mockReturnValue({
+        ...defaultMockCardState,
+        latestStatus: 'to_review',
+        isToReview: true,
+        isNotReading: true,
+      });
+      mockDeadlines.getDeadlineCalculations.mockReturnValue({
+        ...defaultMockCalculations,
+        urgencyLevel: 'overdue',
+        remaining: 0, // Book is complete
+      });
+      (useReviewTracking as jest.Mock).mockReturnValue({
+        reviewDueDate: '2025-10-25',
+        unpostedCount: 2,
+        totalPlatformCount: 4,
+        isLoading: false,
+      });
+
+      const { result } = renderHook(() =>
+        useDeadlineCardViewModel({ deadline: mockDeadline })
+      );
+
+      // Should show review count, NOT "Complete!" or remaining pages
+      expect(result.current.display.primaryText).toBe('2 of 4 reviews posted');
+      expect(formatRemainingDisplay).not.toHaveBeenCalled();
+    });
+
+    it('should show review count even when remaining is 0 and urgency is overdue', () => {
+      // Additional test ensuring the fix works when remaining = 0
+      // (which would normally trigger "Complete!" via formatRemainingDisplay)
+      (useDeadlineCardState as jest.Mock).mockReturnValue({
+        ...defaultMockCardState,
+        latestStatus: 'to_review',
+        isToReview: true,
+        isNotReading: true,
+      });
+      mockDeadlines.getDeadlineCalculations.mockReturnValue({
+        ...defaultMockCalculations,
+        urgencyLevel: 'overdue',
+        remaining: 0,
+      });
+      (useReviewTracking as jest.Mock).mockReturnValue({
+        reviewDueDate: '2025-10-25',
+        unpostedCount: 0,
+        totalPlatformCount: 2,
+        isLoading: false,
+      });
+      (formatRemainingDisplay as jest.Mock).mockReturnValue('Complete!');
+
+      const { result } = renderHook(() =>
+        useDeadlineCardViewModel({ deadline: mockDeadline })
+      );
+
+      // Should show "All reviews posted", not "Complete!"
+      expect(result.current.display.primaryText).toBe('All reviews posted');
+      expect(formatRemainingDisplay).not.toHaveBeenCalled();
     });
 
     it('should handle complete status', () => {

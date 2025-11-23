@@ -1,16 +1,16 @@
 import LinearProgressBar from '@/components/shared/LinearProgressBar';
 import { Typography } from '@/constants/Colors';
+import { PROGRESS_TYPE } from '@/constants/status';
 import { useTheme } from '@/hooks/useThemeColor';
+import {
+  getDisplayValue,
+  getEncouragementMessage,
+  getProgressBackgroundColor,
+  getRemainingText,
+} from '@/utils/todaysProgressUtils';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ThemedText, ThemedView } from '../themed';
-import {
-  getDisplayValue,
-  getRemainingText,
-  getEncouragementMessage,
-  getProgressBackgroundColor,
-} from '@/utils/todaysProgressUtils';
-import { PROGRESS_TYPE } from '@/constants/status';
 
 type TodaysProgressProps = {
   total: number;

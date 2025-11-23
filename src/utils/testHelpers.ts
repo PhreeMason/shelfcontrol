@@ -3,6 +3,7 @@
  */
 
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { dayjs } from '@/lib/dayjs';
 
 /**
  * Creates a mock deadline for testing
@@ -100,7 +101,6 @@ export const mockThemeColors = {
  * Simply returns a dayjs instance from the date string
  */
 export const mockNormalizeServerDate = (date: string) => {
-  const dayjs = require('@/lib/dayjs').dayjs;
   return dayjs(date);
 };
 

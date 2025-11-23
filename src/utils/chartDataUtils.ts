@@ -52,7 +52,7 @@ export const getBookReadingDays = (
       progressRead: Number(progressRead.toFixed(2)),
       format: deadline.format as 'physical' | 'eBook' | 'audio',
     }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .sort((a, b) => parseServerDateOnly(a.date).valueOf() - parseServerDateOnly(b.date).valueOf());
 
   return result;
 };
@@ -81,7 +81,7 @@ export const getAllUserReadingDays = (
       progressRead: Number(progressRead.toFixed(2)),
       format: 'physical' as const,
     }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .sort((a, b) => parseServerDateOnly(a.date).valueOf() - parseServerDateOnly(b.date).valueOf());
 
   return result;
 };
@@ -188,8 +188,8 @@ const isProgressArraySorted = (
   if (progressArray.length <= 1) return true;
 
   for (let i = 0; i < progressArray.length - 1; i++) {
-    const currentTime = new Date(progressArray[i].created_at).getTime();
-    const nextTime = new Date(progressArray[i + 1].created_at).getTime();
+    const currentTime = normalizeServerDate(progressArray[i].created_at).valueOf();
+    const nextTime = normalizeServerDate(progressArray[i + 1].created_at).valueOf();
     if (currentTime > nextTime) {
       return false;
     }
@@ -250,7 +250,8 @@ export const getProgressAsOfDate = (
     ? relevantProgress
     : [...relevantProgress].sort((a, b) => {
         return (
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          normalizeServerDate(a.created_at).valueOf() -
+          normalizeServerDate(b.created_at).valueOf()
         );
       });
 
@@ -589,6 +590,6 @@ export const getAllUserActivityDays = (
 
   // Sort by date (oldest to newest)
   return activityDays.sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    (a, b) => parseServerDateOnly(a.date).valueOf() - parseServerDateOnly(b.date).valueOf()
   );
 };
