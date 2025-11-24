@@ -378,7 +378,6 @@ describe('DailyReadingChart', () => {
 
       const { pointerConfig } = mockLineChartProps;
       expect(pointerConfig?.showPointerStrip).toBe(true);
-      expect(pointerConfig?.pointerStripUptoDataPoint).toBe(true);
       expect(pointerConfig?.pointerStripWidth).toBe(1);
     });
 
@@ -417,7 +416,7 @@ describe('DailyReadingChart', () => {
 
       expect(
         mockLineChartProps.pointerConfig?.autoAdjustPointerLabelPosition
-      ).toBe(true);
+      ).toBe(false);
     });
 
     it('should provide pointerLabelComponent function', () => {

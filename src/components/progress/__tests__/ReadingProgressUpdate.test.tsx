@@ -177,7 +177,7 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
 
       expect(screen.getByTestId('metric-card')).toBeTruthy();
       expect(screen.getByTestId('date-range-display')).toBeTruthy();
-      expect(screen.getByTestId('deadline-card-actions')).toBeTruthy();
+      // NOTE: deadline-card-actions removed from component
     });
 
     it('should render the update button', () => {

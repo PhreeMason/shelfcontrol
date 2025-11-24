@@ -40,6 +40,7 @@ jest.mock('@/lib/dayjs', () => ({
 jest.mock('@/utils/dateNormalization', () => {
   const actualDayjs = jest.requireActual('dayjs');
   return {
+    normalizeServerDate: jest.fn((date: string) => actualDayjs(date)),
     parseServerDateOnly: jest.fn((date: string) => actualDayjs(date)),
     parseServerDateTime: jest.fn((date: string) => actualDayjs(date)),
   };

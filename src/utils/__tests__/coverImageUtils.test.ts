@@ -129,24 +129,24 @@ describe('coverImageUtils', () => {
       });
 
       it('should handle different URI formats', () => {
-        const uris = [
-          'file://path/to/image.jpg',
-          'content://media/external/images/123',
-          'data:image/jpeg;base64,/9j/4AAQ...',
-          'https://example.com/image.jpg',
-          'http://example.com/image.jpg',
-        ];
+        // URIs that start with http/https or file:// are returned as-is
+        expect(getPreviewImageUri('upload', 'file://path/to/image.jpg', null)).toBe('file://path/to/image.jpg');
+        expect(getPreviewImageUri('upload', 'https://example.com/image.jpg', null)).toBe('https://example.com/image.jpg');
+        expect(getPreviewImageUri('upload', 'http://example.com/image.jpg', null)).toBe('http://example.com/image.jpg');
 
-        uris.forEach(uri => {
-          expect(getPreviewImageUri('upload', uri, null)).toBe(uri);
-          expect(getPreviewImageUri('url', uri, null)).toBe(uri);
-        });
+        // Other URIs get converted to storage URLs
+        expect(getPreviewImageUri('upload', 'content://media/external/images/123', null)).toBe('https://example.com/storage/content://media/external/images/123');
+        expect(getPreviewImageUri('upload', 'data:image/jpeg;base64,/9j/4AAQ...', null)).toBe('https://example.com/storage/data:image/jpeg;base64,/9j/4AAQ...');
+
+        // URL mode always returns value as-is
+        expect(getPreviewImageUri('url', 'file://path/to/image.jpg', null)).toBe('file://path/to/image.jpg');
+        expect(getPreviewImageUri('url', 'https://example.com/image.jpg', null)).toBe('https://example.com/image.jpg');
       });
 
       it('should handle whitespace-only values as falsy', () => {
         // Note: Current implementation treats ' ' as truthy
-        // This documents current behavior
-        expect(getPreviewImageUri('upload', ' ', null)).toBe(' ');
+        // Upload mode generates storage URL, URL mode returns as-is
+        expect(getPreviewImageUri('upload', ' ', null)).toBe('https://example.com/storage/ ');
         expect(getPreviewImageUri('url', ' ', null)).toBe(' ');
       });
 
