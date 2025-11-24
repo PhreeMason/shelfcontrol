@@ -141,13 +141,13 @@ export function useDeadlineCardViewModel({
     // Check status first - to_review takes priority over urgency
     if (latestStatus === 'to_review') {
       if (totalPlatformCount === 0) {
-        return 'No reviews to post';
+        return 'No reviews to track';
       }
       if (unpostedCount === 0) {
-        return 'All reviews posted';
+        return 'All posted';
       }
       const postedCount = totalPlatformCount - unpostedCount;
-      return `${postedCount} of ${totalPlatformCount} reviews posted`;
+      return `${postedCount} of ${totalPlatformCount} posted`;
     }
 
     if (urgencyLevel === 'overdue') {

@@ -96,7 +96,17 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
 
       {/* Book Info Below Cover */}
       <View style={styles.infoContainer}>
-        {/* Due Date - Split long messages into two lines */}
+
+
+        {/* Pace Required - Only show for active deadlines */}
+        {countdown.latestStatus !== 'complete' &&
+          countdown.latestStatus !== 'did_not_finish' && (
+            <ThemedText typography="labelLarge" color="text">
+              {primaryText.replace('remaining', 'left')}
+            </ThemedText>
+          )}
+
+                {/* Due Date - Split long messages into two lines */}
         {dateDisplay.type === 'single' ? (
           <ThemedText typography="bodySmall" color="textSecondary">
             {dateDisplay.text}
@@ -115,14 +125,6 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
             </ThemedText>
           </>
         )}
-
-        {/* Pace Required - Only show for active deadlines */}
-        {countdown.latestStatus !== 'complete' &&
-          countdown.latestStatus !== 'did_not_finish' && (
-            <ThemedText typography="labelMedium" color="text">
-              {primaryText.replace('remaining', 'left').replace('posted', '')}
-            </ThemedText>
-          )}
       </View>
     </Pressable>
   );
