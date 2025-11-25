@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
@@ -73,14 +74,11 @@ export function DeadlineCountdownBadge({
                 {reviewDaysLeft}
               </ThemedText>
             ) : (
-              <ThemedText
-                style={[
-                  styles.emoji,
-                  { paddingTop: Platform.select({ ios: 3, android: 2 }) },
-                ]}
-              >
-                📝
-              </ThemedText>
+              <IconSymbol
+                name="pencil.and.scribble"
+                size={26}
+                color={colors.textInverse}
+              />
             )}
           </>
         ) : (

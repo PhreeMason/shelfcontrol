@@ -2,7 +2,7 @@
   "expo": {
     "name": "ShelfControl",
     "slug": "shelfControl",
-    "version": "1.49.0",
+    "version": "1.49.2",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
     "scheme": "shelfcontrol",
@@ -16,13 +16,15 @@
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to let you choose a profile picture.",
         "NSCameraUsageDescription": "This app needs access to your camera to let you take a profile picture.",
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "buildNumber": "5"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/android-logo-2.png",
         "backgroundColor": "#ffffff"
       },
+      "versionCode": 5,
       "edgeToEdgeEnabled": true,
       "package": "com.grizzylabs.shelfControl",
       "intentFilters": [

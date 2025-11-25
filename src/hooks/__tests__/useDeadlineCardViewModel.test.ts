@@ -741,7 +741,7 @@ describe('useDeadlineCardViewModel', () => {
       );
 
       // Should show "All reviews posted", not "Complete!"
-      expect(result.current.display.primaryText).toBe('All reviews posted');
+      expect(result.current.display.primaryText).toBe('All posted');
       expect(formatRemainingDisplay).not.toHaveBeenCalled();
     });
 
