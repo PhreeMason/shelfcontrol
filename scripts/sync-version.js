@@ -5,6 +5,11 @@ const path = require('path');
 
 function syncVersion() {
   try {
+    // Detect platform from environment variable or command-line argument
+    const platform = process.env.EAS_BUILD_PLATFORM ||
+      process.argv.find(arg => arg.startsWith('--platform='))?.split('=')[1] ||
+      process.argv[process.argv.indexOf('--platform') + 1];
+
     const packageJsonPath = path.join(__dirname, '..', 'package.json');
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
     const version = packageJson.version;
@@ -34,20 +39,38 @@ function syncVersion() {
     // Sync version
     appJson.expo.version = version;
 
-    // Auto-increment build numbers
-    const newBuildNumber = (parseInt(currentBuildNumber || '0', 10) + 1).toString();
-    const newVersionCode = (currentVersionCode || 0) + 1;
+    // Auto-increment build numbers based on platform
+    let newBuildNumber = currentBuildNumber;
+    let newVersionCode = currentVersionCode;
 
-    appJson.expo.ios.buildNumber = newBuildNumber;
-    appJson.expo.android.versionCode = newVersionCode;
+    if (platform === 'ios') {
+      newBuildNumber = (parseInt(currentBuildNumber || '0', 10) + 1).toString();
+      appJson.expo.ios.buildNumber = newBuildNumber;
+      console.log('🍎 Building for iOS - incrementing buildNumber only');
+    } else if (platform === 'android') {
+      newVersionCode = (currentVersionCode || 0) + 1;
+      appJson.expo.android.versionCode = newVersionCode;
+      console.log('🤖 Building for Android - incrementing versionCode only');
+    } else {
+      // If platform is not specified, increment both (backward compatibility)
+      newBuildNumber = (parseInt(currentBuildNumber || '0', 10) + 1).toString();
+      newVersionCode = (currentVersionCode || 0) + 1;
+      appJson.expo.ios.buildNumber = newBuildNumber;
+      appJson.expo.android.versionCode = newVersionCode;
+      console.log('⚠️  Platform not specified - incrementing both build numbers');
+    }
 
     // Write updated app.json
     fs.writeFileSync(appJsonPath, JSON.stringify(appJson, null, 2) + '\n');
 
     // Print summary
     console.log('✅ Version synced:', version);
-    console.log(`✅ iOS buildNumber: ${currentBuildNumber} → ${newBuildNumber}`);
-    console.log(`✅ Android versionCode: ${currentVersionCode} → ${newVersionCode}`);
+    if (platform === 'ios' || !platform) {
+      console.log(`✅ iOS buildNumber: ${currentBuildNumber} → ${newBuildNumber}`);
+    }
+    if (platform === 'android' || !platform) {
+      console.log(`✅ Android versionCode: ${currentVersionCode} → ${newVersionCode}`);
+    }
     console.log('📝 Updated app.json');
 
     return true;
