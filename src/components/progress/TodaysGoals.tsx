@@ -72,7 +72,7 @@ const TodaysGoals: React.FC = () => {
               No reading goals set for today
             </ThemedText>
             <ThemedText style={styles.emptyStateSubText} variant="muted">
-              Add a book deadline to start tracking your progress
+              Add a book with a due date to start tracking your progress
             </ThemedText>
           </View>
         )}

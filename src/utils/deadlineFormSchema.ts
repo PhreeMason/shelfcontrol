@@ -21,7 +21,7 @@ export const deadlineFormSchema = z
       .optional(),
     isPublisherAutofilled: z.boolean().optional(),
     deadline: z.date({
-      required_error: 'Deadline is required',
+      required_error: 'Due date is required',
     }),
     totalQuantity: z.coerce
       .number({
@@ -52,7 +52,7 @@ export const deadlineFormSchema = z
       .min(0, 'Progress cannot be negative')
       .optional(),
     flexibility: z.enum(['flexible', 'strict'], {
-      errorMap: () => ({ message: 'Please select deadline flexibility' }),
+      errorMap: () => ({ message: 'Please select pace flexibility' }),
     }),
     status: z.enum(['pending', 'active'], {
       errorMap: () => ({ message: 'Please select a status' }),

@@ -84,9 +84,9 @@ export const createErrorToast = (
   error?: { message?: string }
 ): ToastConfig => {
   const messages = {
-    complete: 'Failed to complete deadline',
-    delete: 'Failed to delete deadline',
-    reactivate: 'Failed to reactivate deadline',
+    complete: 'Failed to mark as complete',
+    delete: 'Failed to remove book',
+    reactivate: 'Failed to reactivate book',
     start: 'Failed to start reading',
   };
 
@@ -117,7 +117,7 @@ export const createDeleteConfirmAlert = (
   bookTitle: string,
   onConfirm: () => void
 ): AlertConfig => ({
-  title: 'Delete Deadline',
+  title: 'Remove Book',
   message: `Are you sure you want to delete "${bookTitle}"? This action cannot be undone.`,
   buttons: [
     {
@@ -153,9 +153,9 @@ export const createCompleteConfirmAlert = (
 
 export const createUpdateDeadlinePromptAlert = (
   deadlineId: string,
-  message: string = 'Would you like to update the deadline date?'
+  message: string = 'Would you like to update the due date?'
 ): AlertConfig => ({
-  title: 'Update Deadline?',
+  title: 'Update Due Date?',
   message,
   buttons: [
     {
@@ -176,7 +176,7 @@ export const createReadAgainPromptAlert = (
   onConfirm: () => void
 ): AlertConfig => ({
   title: 'Read Again?',
-  message: `Create a new deadline to read "${bookTitle}" again?`,
+  message: `Create a new due date to read "${bookTitle}" again?`,
   buttons: [
     { text: 'Cancel', style: 'cancel' },
     {
