@@ -57,7 +57,12 @@
           "imageWidth": 1080,
           "imageHeight": 1920,
           "resizeMode": "cover",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#ffffff",
+          "android": {
+            "image": "./src/assets/images/android-splash.png",
+            "resizeMode": "cover",
+            "backgroundColor": "#ffffff"
+          }
         }
       ],
       "expo-web-browser",
