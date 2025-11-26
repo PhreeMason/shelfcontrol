@@ -44,7 +44,7 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
 
   const progressPercentage =
     deadline.total_quantity > 0
-      ? Math.round((currentProgress / deadline.total_quantity) * 100)
+      ? Math.floor((currentProgress / deadline.total_quantity) * 100)
       : 0;
 
   const formattedCompletionDate = completionDate
@@ -143,17 +143,11 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
       <ThemedView style={styles.timeline}>
         <ThemedText typography="titleMedium">Reading Timeline</ThemedText>
         <View style={[styles.timelineItem, dynamicStyles.timelineItem]}>
-          <ThemedText variant="muted">
-            Started
-          </ThemedText>
-          <ThemedText typography="labelLarge">
-            {formattedStartDate}
-          </ThemedText>
+          <ThemedText variant="muted">Started</ThemedText>
+          <ThemedText typography="labelLarge">{formattedStartDate}</ThemedText>
         </View>
         <View style={[styles.timelineItem, dynamicStyles.timelineItem]}>
-          <ThemedText variant="muted">
-            Finished
-          </ThemedText>
+          <ThemedText variant="muted">Finished</ThemedText>
           <ThemedText typography="labelLarge">
             {formattedCompletionDate}
           </ThemedText>
@@ -169,9 +163,7 @@ const ReadingStats: React.FC<ReadingStatsProps> = ({ deadline }) => {
           </ThemedText>
         </View>
         <View style={[styles.timelineItem, dynamicStyles.timelineItem]}>
-          <ThemedText variant="muted">
-            Format
-          </ThemedText>
+          <ThemedText variant="muted">Format</ThemedText>
           <ThemedText typography="labelLarge">
             {formatBookFormat(deadline.format)}
           </ThemedText>

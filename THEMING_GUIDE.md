@@ -12,11 +12,12 @@ A comprehensive guide to using the ShelfControl token-based theming system for c
 2. [Typography Tokens](#typography-tokens)
 3. [Color Tokens](#color-tokens)
 4. [Spacing Tokens](#spacing-tokens)
-5. [ThemedText Component](#themedtext-component)
-6. [ThemedView Component](#themedview-component)
-7. [Migration Patterns](#migration-patterns)
-8. [Anti-Patterns](#anti-patterns)
-9. [Examples](#examples)
+5. [Shadow Tokens](#shadow-tokens)
+6. [ThemedText Component](#themedtext-component)
+7. [ThemedView Component](#themedview-component)
+8. [Migration Patterns](#migration-patterns)
+9. [Anti-Patterns](#anti-patterns)
+10. [Examples](#examples)
 
 ---
 
@@ -27,6 +28,7 @@ ShelfControl uses a **token-based design system** to ensure consistency and make
 - **Typography Tokens**: 11 predefined font size/weight/lineHeight combinations
 - **Color Tokens**: 50+ semantic color names (e.g., `text`, `primary`, `error`)
 - **Spacing Tokens**: 7 spacing values (4px - 60px)
+- **Shadow Tokens**: 5 elevation levels (subtle to premium)
 - **Border Radius Tokens**: 7 radius values (0px - 9999px)
 
 ### Philosophy
@@ -502,6 +504,286 @@ const styles = StyleSheet.create({
 
 ---
 
+## Shadow Tokens
+
+### Complete Shadow Scale
+
+ShelfControl uses a **5-level shadow system** for consistent elevation and depth:
+
+| Token | shadowOffset | shadowOpacity | shadowRadius | elevation | Use Case |
+|-------|-------------|---------------|--------------|-----------|----------|
+| **Shadows.subtle** | {0, 1} | 0.05 | 2 | 1 | Cards, sections, subtle elevation |
+| **Shadows.light** | {0, 2} | 0.1 | 4 | 2 | Raised surfaces, default cards |
+| **Shadows.medium** | {0, 2} | 0.2 | 6 | 3 | Buttons, important cards, interactive elements |
+| **Shadows.elevated** | {0, 4} | 0.25 | 8 | 4 | Dropdowns, modals, FABs |
+| **Shadows.premium** | {0, 8} | 0.3 | 16 | 8 | Hero elements, featured content |
+
+All shadows use `shadowColor: '#000'` by default for consistency.
+
+### Themed Shadow Variants
+
+For special branded elements, use themed shadow variants:
+
+| Token | shadowColor | Use Case |
+|-------|-------------|----------|
+| **Shadows.themed.primary** | #B8A9D9 | Primary branded elements, auth CTAs |
+| **Shadows.themed.soft** | rgba(139, 90, 140, 0.12) | Premium cards, hero sections |
+
+### Shadow Token Usage
+
+```typescript
+import { Shadows } from '@/constants/Theme';
+
+const styles = StyleSheet.create({
+  // ❌ DON'T DO THIS - Hardcoded shadow values
+  card: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+
+  // ✅ DO THIS - Use shadow token
+  card: {
+    ...Shadows.light,
+  },
+
+  // ✅ Also valid - Use specific shadow level
+  fab: {
+    ...Shadows.elevated,
+  },
+
+  // ✅ Themed variant for branded elements
+  authButton: {
+    ...Shadows.themed.primary,
+  },
+});
+```
+
+### Shadow Level Guidelines
+
+#### Level 1 - Subtle (Most Common)
+**Use for:** Default card elevation, section containers, list items
+```typescript
+const styles = StyleSheet.create({
+  sectionCard: {
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    ...Shadows.subtle,  // Barely visible, gentle separation
+  },
+});
+```
+
+#### Level 2 - Light
+**Use for:** Standard cards, raised surfaces, default elevation
+```typescript
+const styles = StyleSheet.create({
+  card: {
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    ...Shadows.light,  // Standard card shadow
+  },
+});
+```
+
+#### Level 3 - Medium
+**Use for:** Interactive buttons, emphasized cards, slider thumbs
+```typescript
+const styles = StyleSheet.create({
+  button: {
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    ...Shadows.medium,  // Clear affordance for interaction
+  },
+});
+```
+
+#### Level 4 - Elevated
+**Use for:** Floating action buttons, dropdowns, modals, overlays
+```typescript
+const styles = StyleSheet.create({
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    ...Shadows.elevated,  // Strong elevation, floats above content
+  },
+});
+```
+
+#### Level 5 - Premium
+**Use for:** Hero cards, featured content, special announcements
+```typescript
+const styles = StyleSheet.create({
+  heroCard: {
+    padding: Spacing.xl,
+    borderRadius: BorderRadius.xl,
+    ...Shadows.premium,  // Maximum depth and presence
+  },
+});
+```
+
+### Platform Considerations
+
+**iOS vs Android:**
+- iOS uses `shadowColor`, `shadowOffset`, `shadowOpacity`, `shadowRadius`
+- Android primarily uses `elevation` (numeric value)
+- Shadow tokens include both for cross-platform consistency
+
+**Note:** All shadow tokens include both iOS and Android properties, ensuring consistent appearance across platforms.
+
+### Migration Patterns
+
+#### Pattern 1: Direct Replacement
+
+```typescript
+// ❌ BEFORE
+const styles = StyleSheet.create({
+  card: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+});
+
+// ✅ AFTER
+import { Shadows } from '@/constants/Theme';
+
+const styles = StyleSheet.create({
+  card: {
+    ...Shadows.subtle,
+  },
+});
+```
+
+#### Pattern 2: Combining with Other Styles
+
+```typescript
+// ✅ Shadows work well with other theme tokens
+import { Shadows, Spacing, BorderRadius } from '@/constants/Theme';
+
+const styles = StyleSheet.create({
+  card: {
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    ...Shadows.light,
+    // Add other custom styles after shadow
+    marginBottom: Spacing.md,
+  },
+});
+```
+
+#### Pattern 3: Conditional Shadows
+
+```typescript
+import { Platform } from 'react-native';
+import { Shadows } from '@/constants/Theme';
+
+const styles = StyleSheet.create({
+  card: {
+    ...(Platform.OS === 'ios' ? Shadows.medium : Shadows.light),
+  },
+});
+```
+
+### Common Value Mappings
+
+When migrating existing code, use these mappings:
+
+| Old Shadow Values | Closest Token | Notes |
+|------------------|---------------|-------|
+| opacity: 0.05, radius: 2, elevation: 1 | `Shadows.subtle` | Exact match |
+| opacity: 0.1, radius: 4, elevation: 2-3 | `Shadows.light` | Standard card shadow |
+| opacity: 0.2, radius: 6, elevation: 3 | `Shadows.medium` | Interactive elements |
+| opacity: 0.25, radius: 8, elevation: 4-5 | `Shadows.elevated` | FABs, modals |
+| opacity: 0.3, radius: 16, elevation: 8 | `Shadows.premium` | Hero elements |
+
+### Anti-Patterns
+
+#### ❌ Anti-Pattern 1: Custom Shadow Values
+
+```typescript
+// DON'T
+const styles = StyleSheet.create({
+  card: {
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 3 },  // Non-standard values
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 2.5,
+  },
+});
+
+// DO
+const styles = StyleSheet.create({
+  card: {
+    ...Shadows.light,  // Use standard token
+  },
+});
+```
+
+#### ❌ Anti-Pattern 2: Inline Shadow Styles
+
+```typescript
+// DON'T
+<View style={{
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+}}>
+
+// DO
+<View style={styles.card}>
+
+const styles = StyleSheet.create({
+  card: {
+    ...Shadows.light,
+  },
+});
+```
+
+#### ❌ Anti-Pattern 3: Mixing Shadow Properties
+
+```typescript
+// DON'T - Partially using token
+const styles = StyleSheet.create({
+  card: {
+    ...Shadows.light,
+    shadowOpacity: 0.3,  // Overriding token value
+  },
+});
+
+// DO - Use the appropriate shadow level
+const styles = StyleSheet.create({
+  card: {
+    ...Shadows.elevated,  // If you need more opacity, use elevated
+  },
+});
+```
+
+### Using StyleMixins
+
+For convenience, `StyleMixins.shadow` defaults to `Shadows.light`:
+
+```typescript
+import { StyleMixins } from '@/constants/Theme';
+
+const styles = StyleSheet.create({
+  card: {
+    ...StyleMixins.shadow,  // Same as Shadows.light
+  },
+});
+```
+
+**Note:** Prefer using `Shadows` directly for clarity about which shadow level you're using.
+
+---
+
 ## ThemedText Component
 
 ### API Reference
@@ -529,7 +811,9 @@ type ThemedTextProps = {
 
 1. **Typography**: `typography` prop > `variant`'s typography
 2. **Color**: `color` prop > `variant`'s color
-3. **Style**: `style` prop applies last (for spacing, etc.)
+3. **Style**: `style` prop applies last (for spacing, layout, alignment, etc.)
+
+**IMPORTANT:** When using `typography` or `color` props, do NOT duplicate these in the StyleSheet. The props handle the styling automatically. Use `style` only for non-typography, non-color styles like spacing, alignment, and layout.
 
 ### Usage Patterns
 
@@ -603,10 +887,10 @@ type ThemedTextProps = {
 
 #### Pattern 4: Custom Spacing/Layout
 
-**Use style prop for non-typography styles:**
+**Use style prop ONLY for non-typography styles:**
 
 ```typescript
-// Typography + color tokens + custom spacing
+// ✅ CORRECT: Typography via prop, spacing/layout via style
 <ThemedText
   typography="titleMediumPlus"
   color="primary"
@@ -614,7 +898,26 @@ type ThemedTextProps = {
 >
   Centered Header
 </ThemedText>
+
+// ❌ WRONG: Don't put typography in StyleSheet when using typography prop
+const styles = StyleSheet.create({
+  header: {
+    ...Typography.titleMediumPlus,  // Redundant!
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+});
+<ThemedText typography="titleMediumPlus" style={styles.header}>
+  Centered Header
+</ThemedText>
 ```
+
+**Remember:** The `typography` and `color` props handle styling. The `style` prop is for:
+- Spacing (margin, padding)
+- Layout (flexbox, positioning)
+- Alignment (textAlign)
+- Transforms
+- Other non-typography, non-color styles
 
 ---
 
@@ -754,7 +1057,43 @@ const styles = StyleSheet.create({
 </ThemedText>
 ```
 
-### ❌ Anti-Pattern 2: Custom Font Sizes
+### ❌ Anti-Pattern 2: Redundant Typography in StyleSheet with ThemedText
+
+**DON'T:**
+```typescript
+// Redundant! Typography is applied twice
+<ThemedText typography="bodySmall" style={styles.label}>
+  Label
+</ThemedText>
+
+const styles = StyleSheet.create({
+  label: {
+    ...Typography.bodySmall,  // ❌ Already applied by typography prop!
+    textAlign: 'center',
+  },
+});
+```
+
+**DO:**
+```typescript
+// ThemedText's typography prop handles the font styling
+<ThemedText typography="bodySmall" style={styles.label}>
+  Label
+</ThemedText>
+
+const styles = StyleSheet.create({
+  label: {
+    textAlign: 'center',  // ✅ Only non-typography styles
+  },
+});
+```
+
+**Why this matters:**
+- ThemedText's `typography` prop automatically applies the typography token
+- StyleSheet should only contain non-typography styles (spacing, alignment, transforms, etc.)
+- The `style` prop is applied **after** typography/variant, so it's for overrides and layout only
+
+### ❌ Anti-Pattern 3: Custom Font Sizes
 
 **DON'T:**
 ```typescript
@@ -779,7 +1118,7 @@ const styles = StyleSheet.create({
 <ThemedText typography="titleSubLarge">
 ```
 
-### ❌ Anti-Pattern 3: Missing lineHeight
+### ❌ Anti-Pattern 4: Missing lineHeight
 
 **DON'T:**
 ```typescript
@@ -798,7 +1137,7 @@ const styles = StyleSheet.create({
 <ThemedText typography="titleMediumPlus">
 ```
 
-### ❌ Anti-Pattern 4: Hardcoded Colors
+### ❌ Anti-Pattern 5: Hardcoded Colors
 
 **DON'T:**
 ```typescript

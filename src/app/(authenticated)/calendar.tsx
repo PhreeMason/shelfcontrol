@@ -1,23 +1,27 @@
 import { ActivityTimelineItem } from '@/components/features/calendar/ActivityTimelineItem';
+import { CalendarFilterToggle } from '@/components/features/calendar/CalendarFilterToggle';
 import { CalendarLegend } from '@/components/features/calendar/CalendarLegend';
 import { DeadlineDueCard } from '@/components/features/calendar/DeadlineDueCard';
+import { ReviewDueCard } from '@/components/features/calendar/ReviewDueCard';
 import AppHeader from '@/components/shared/AppHeader';
 import { ThemedText } from '@/components/themed';
 import { useGetDailyActivities } from '@/hooks/useCalendar';
 import { useTheme } from '@/hooks/useTheme';
 import { useDeadlines } from '@/providers/DeadlineProvider';
+import { usePreferences } from '@/providers/PreferencesProvider';
 import { validateDailyActivities } from '@/types/calendar.types';
 import {
   calculateMarkedDates,
   transformActivitiesToAgendaItems,
 } from '@/utils/calendarUtils';
+import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { Calendar, DateData } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Empty function constant for callbacks that don't need to do anything
-const NOOP = () => {};
+const NOOP = () => { };
 
 /**
  * Generate a unique key for agenda items in the list
@@ -31,7 +35,9 @@ function generateAgendaItemKey(
 }
 
 export default function CalendarScreen() {
+  const router = useRouter();
   const { colors } = useTheme();
+  const { excludedCalendarActivities } = usePreferences();
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split('T')[0]
   );
@@ -63,22 +69,34 @@ export default function CalendarScreen() {
     [rawActivities]
   );
 
+  // Filter activities based on user preference
+  const filteredActivities = useMemo(() => {
+    return activities.filter(activity => {
+      // Check if this activity type is excluded
+      if (excludedCalendarActivities.includes(activity.activity_type)) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [activities, excludedCalendarActivities]);
+
   // Get deadline calculations
   const { deadlines, getDeadlineCalculations } = useDeadlines();
 
   // Transform activities to agenda format
   const agendaItems = useMemo(() => {
     return transformActivitiesToAgendaItems(
-      activities,
+      filteredActivities,
       deadlines,
       getDeadlineCalculations
     );
-  }, [activities, deadlines, getDeadlineCalculations]);
+  }, [filteredActivities, deadlines, getDeadlineCalculations]);
 
   // Calculate marked dates for calendar dots
   const markedDates = useMemo(() => {
     const marked = calculateMarkedDates(
-      activities,
+      filteredActivities,
       deadlines,
       getDeadlineCalculations
     );
@@ -99,7 +117,7 @@ export default function CalendarScreen() {
 
     return marked;
   }, [
-    activities,
+    filteredActivities,
     deadlines,
     getDeadlineCalculations,
     selectedDate,
@@ -121,10 +139,19 @@ export default function CalendarScreen() {
     [selectedDateActivities]
   );
 
+  // Separate review_due activities (all-day cards like deadline_due)
+  const reviewDueActivities = useMemo(
+    () =>
+      selectedDateActivities.filter(
+        item => item.activityType === 'review_due'
+      ),
+    [selectedDateActivities]
+  );
+
   const otherActivities = useMemo(
     () =>
       selectedDateActivities.filter(
-        item => item.activityType !== 'deadline_due'
+        item => item.activityType !== 'deadline_due' && item.activityType !== 'review_due'
       ),
     [selectedDateActivities]
   );
@@ -153,6 +180,7 @@ export default function CalendarScreen() {
           title="Activity Calendar"
           onBack={NOOP}
           showBackButton={false}
+          rightElement={<CalendarFilterToggle />}
         />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" />
@@ -175,6 +203,7 @@ export default function CalendarScreen() {
           title="Activity Calendar"
           onBack={NOOP}
           showBackButton={false}
+          rightElement={<CalendarFilterToggle />}
         />
         <View style={styles.errorContainer}>
           <ThemedText style={styles.errorText}>
@@ -197,6 +226,7 @@ export default function CalendarScreen() {
         title="Activity Calendar"
         onBack={NOOP}
         showBackButton={false}
+        rightElement={<CalendarFilterToggle />}
       />
       <View style={styles.content}>
         <View style={styles.calendarContainer}>
@@ -227,7 +257,7 @@ export default function CalendarScreen() {
           style={styles.activitiesList}
           contentContainerStyle={styles.activitiesContent}
         >
-          <CalendarLegend />
+          <CalendarLegend showAllActivities={true} />
 
           {isFetching && (
             <View style={styles.inlineLoadingContainer}>
@@ -249,6 +279,24 @@ export default function CalendarScreen() {
                     index
                   )}
                   agendaItem={item}
+                  onPress={() =>
+                    router.push(`/deadline/${item.activity.deadline_id}`)
+                  }
+                />
+              ))}
+
+              {/* Review Due Items (All-Day) - Rendered After Deadlines */}
+              {reviewDueActivities.map((item, index) => (
+                <ReviewDueCard
+                  key={generateAgendaItemKey(
+                    item.activity.deadline_id,
+                    'review_due',
+                    index
+                  )}
+                  activity={item.activity}
+                  onPress={() =>
+                    router.push(`/deadline/${item.activity.deadline_id}`)
+                  }
                 />
               ))}
 
@@ -261,6 +309,15 @@ export default function CalendarScreen() {
                     index
                   )}
                   activity={item.activity}
+                  onPress={() => {
+                    if (item.activityType === 'note') {
+                      router.push(
+                        `/deadline/${item.activity.deadline_id}/notes`
+                      );
+                    } else {
+                      router.push(`/deadline/${item.activity.deadline_id}`);
+                    }
+                  }}
                 />
               ))}
             </View>

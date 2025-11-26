@@ -40,12 +40,12 @@ export function useFormFlowTracking(
     currentStepRef.current = currentStep;
   }, [currentStep]);
 
+  // Track form abandonment on unmount - intentionally empty deps for unmount-only tracking
   useEffect(() => {
+    const mountTime = mountTimeRef.current;
     return () => {
       if (!hasSubmittedRef.current) {
-        const timeSpent = Math.round(
-          (Date.now() - mountTimeRef.current) / 1000
-        );
+        const timeSpent = Math.round((Date.now() - mountTime) / 1000);
         const lastStep = currentStepRef.current;
 
         if (flowType === 'deadline_creation' && mode === 'new') {
@@ -65,12 +65,13 @@ export function useFormFlowTracking(
         }
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const stepName = stepNames[currentStep - 1] || 'unknown';
     callbacks?.onStepChange?.(currentStep, stepName);
-  }, [currentStep]);
+  }, [currentStep, stepNames, callbacks]);
 
   const markCompleted = () => {
     hasSubmittedRef.current = true;

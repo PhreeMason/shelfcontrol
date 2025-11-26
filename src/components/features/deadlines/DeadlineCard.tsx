@@ -31,7 +31,16 @@ export function DeadlineCard({
         ]}
       >
         <View
-          style={[styles.cardContainer, viewModel.styling.cardContainerStyle]}
+          style={[
+            styles.cardContainer,
+            viewModel.styling.cardContainerStyle,
+            disableNavigation && {
+              flex: 1,
+              borderWidth: 0,
+              padding: 0,
+              width: '100%',
+            },
+          ]}
         >
           <View style={styles.bookContent}>
             <DeadlineBookCover {...viewModel.componentProps.bookCover} />
@@ -70,7 +79,7 @@ export function DeadlineCard({
                       />
                     </View>
                     <ThemedText variant="muted" style={styles.progressLabel}>
-                      {Math.round(viewModel.progress.progressPercentage)}%
+                      {Math.floor(viewModel.progress.progressPercentage)}%
                     </ThemedText>
                   </View>
                 )}

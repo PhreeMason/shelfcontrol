@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { Spacing } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import { useDeadlineCardViewModel } from '@/hooks/useDeadlineCardViewModel';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
@@ -95,7 +96,17 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
 
       {/* Book Info Below Cover */}
       <View style={styles.infoContainer}>
-        {/* Due Date - Split long messages into two lines */}
+
+
+        {/* Pace Required - Only show for active deadlines */}
+        {countdown.latestStatus !== 'complete' &&
+          countdown.latestStatus !== 'did_not_finish' && (
+            <ThemedText typography="labelLarge" color="text">
+              {primaryText.replace('remaining', 'left')}
+            </ThemedText>
+          )}
+
+                {/* Due Date - Split long messages into two lines */}
         {dateDisplay.type === 'single' ? (
           <ThemedText typography="bodySmall" color="textSecondary">
             {dateDisplay.text}
@@ -114,14 +125,6 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
             </ThemedText>
           </>
         )}
-
-        {/* Pace Required - Only show for active deadlines */}
-        {countdown.latestStatus !== 'complete' &&
-          countdown.latestStatus !== 'did_not_finish' && (
-            <ThemedText typography="labelMedium" color="text">
-              {primaryText}
-            </ThemedText>
-          )}
       </View>
     </Pressable>
   );
@@ -144,15 +147,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 8,
-    shadowColor: 'rgba(0,0,0,0.1)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 3,
+    ...Shadows.medium,
   },
   progressBarContainer: {
     marginTop: Spacing.sm,
-    paddingHorizontal: 2,
     height: 4,
     backgroundColor: 'rgba(0, 0, 0, 0.15)',
     borderRadius: 2,

@@ -10,7 +10,8 @@ export type ActivityType =
   | 'progress'
   | 'status'
   | 'note'
-  | 'review';
+  | 'review'
+  | 'review_due';
 
 /**
  * Configuration for each activity type including icon, color, and label
@@ -27,7 +28,7 @@ export interface ActivityTypeConfig {
  */
 export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
   progress: {
-    icon: 'arrow.up.right',
+    icon: 'chart.line.uptrend.xyaxis',
     color: '#0a7ea4', // Teal - positive progress
     label: 'Progress Update',
   },
@@ -37,7 +38,7 @@ export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
     label: 'Note Added',
   },
   status: {
-    icon: 'arrow.triangle.2.circlepath',
+    icon: 'arrow.left.arrow.right',
     color: Colors.light.darkPink, // Pink - state change
     label: 'Status Change',
   },
@@ -55,6 +56,11 @@ export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
     icon: 'calendar.badge.clock',
     color: 'dynamic', // Uses urgency color from getDeadlineCalculations
     label: 'Deadline Due',
+  },
+  review_due: {
+    icon: 'square.and.pencil',
+    color: Colors.light.orange, // Orange - matches review
+    label: 'Review Due',
   },
 } as const;
 

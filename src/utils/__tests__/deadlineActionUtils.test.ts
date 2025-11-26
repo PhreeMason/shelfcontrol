@@ -189,7 +189,7 @@ describe('deadlineActionUtils', () => {
       expect(toast).toEqual({
         swipeable: true,
         type: 'error',
-        text1: 'Failed to complete deadline',
+        text1: 'Failed to mark as complete',
         text2: 'Please try again',
         autoHide: true,
         visibilityTime: 1500,
@@ -202,7 +202,7 @@ describe('deadlineActionUtils', () => {
       expect(toast).toEqual({
         swipeable: true,
         type: 'error',
-        text1: 'Failed to delete deadline',
+        text1: 'Failed to remove book',
         text2: 'Please try again',
         autoHide: true,
         visibilityTime: 1500,
@@ -215,7 +215,7 @@ describe('deadlineActionUtils', () => {
       expect(toast).toEqual({
         swipeable: true,
         type: 'error',
-        text1: 'Failed to reactivate deadline',
+        text1: 'Failed to reactivate book',
         text2: 'Please try again',
         autoHide: true,
         visibilityTime: 1500,
@@ -254,7 +254,7 @@ describe('deadlineActionUtils', () => {
       const alert = createDeleteConfirmAlert('Test Book', mockOnConfirm);
 
       expect(alert).toEqual({
-        title: 'Delete Deadline',
+        title: 'Remove Book',
         message:
           'Are you sure you want to delete "Test Book"? This action cannot be undone.',
         buttons: [
@@ -316,8 +316,8 @@ describe('deadlineActionUtils', () => {
       const alert = createUpdateDeadlinePromptAlert('deadline-123');
 
       expect(alert).toEqual({
-        title: 'Update Deadline?',
-        message: 'Would you like to update the deadline date?',
+        title: 'Update Due Date?',
+        message: 'Would you like to update the due date?',
         buttons: [
           {
             text: 'Not Now',
@@ -359,7 +359,7 @@ describe('deadlineActionUtils', () => {
 
       expect(alert).toEqual({
         title: 'Read Again?',
-        message: 'Create a new deadline to read "Test Book" again?',
+        message: 'Create a new due date to read "Test Book" again?',
         buttons: [
           { text: 'Cancel', style: 'cancel' },
           {

@@ -38,6 +38,7 @@ describe('showDuplicateBookWarning', () => {
     acquisition_source: null,
     flexibility: 'flexible',
     publishers: null,
+    cover_image_url: null,
     progress: [
       {
         id: 'progress-1',
@@ -82,7 +83,7 @@ describe('showDuplicateBookWarning', () => {
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'warning',
-        text1: 'This book already has a deadline',
+        text1: 'This book already has a due date',
         text2: expect.stringContaining('Status: reading'),
       })
     );
@@ -104,7 +105,7 @@ describe('showDuplicateBookWarning', () => {
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'warning',
-        text1: 'This book already has a deadline',
+        text1: 'This book already has a due date',
       })
     );
   });

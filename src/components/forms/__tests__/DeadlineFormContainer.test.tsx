@@ -1,7 +1,12 @@
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import DeadlineFormContainer from '../DeadlineFormContainer';
@@ -338,6 +343,7 @@ describe('DeadlineFormContainer', () => {
     publishers: null,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
+    cover_image_url: null,
     progress: [],
   };
 

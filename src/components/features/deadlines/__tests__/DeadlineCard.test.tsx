@@ -135,6 +135,7 @@ describe('DeadlineCard', () => {
       acquisition_source: null,
       type: 'Personal',
       publishers: null,
+      cover_image_url: null,
       status: [
         {
           id: 'status-1',
@@ -273,7 +274,7 @@ describe('DeadlineCard', () => {
 
       render(<DeadlineCard deadline={mockDeadline} />);
 
-      expect(screen.getByText('74%')).toBeTruthy();
+      expect(screen.getByText('73%')).toBeTruthy();
     });
 
     it('should render progress bar with overdue urgency color', () => {

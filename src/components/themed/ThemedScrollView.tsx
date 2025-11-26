@@ -12,7 +12,7 @@ import {
 export type ThemedScrollViewProps = ScrollViewProps & {
   variant?: SurfaceVariant;
   backgroundColor?: ColorToken;
-  padding?: SpacingToken;
+  padding?: Exclude<SpacingToken, 'negative'>;
 };
 
 export function ThemedScrollView({

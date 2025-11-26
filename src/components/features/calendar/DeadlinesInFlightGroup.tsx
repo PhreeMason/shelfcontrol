@@ -91,7 +91,11 @@ export const DeadlinesInFlightGroup: React.FC<DeadlinesInFlightGroupProps> = ({
       >
         <View style={styles.headerContent}>
           <View style={styles.iconContainer}>
-            <IconSymbol name="books.vertical.fill" size={20} color={colors.primary} />
+            <IconSymbol
+              name="books.vertical.fill"
+              size={20}
+              color={colors.primary}
+            />
           </View>
           <View style={styles.headerTextContent}>
             <ThemedText typography="titleMedium">

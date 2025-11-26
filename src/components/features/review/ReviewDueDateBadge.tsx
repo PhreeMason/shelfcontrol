@@ -1,3 +1,4 @@
+import LinearProgressBar from '@/components/shared/LinearProgressBar';
 import StatsSummaryCard from '@/components/stats/StatsSummaryCard';
 import { ThemedText } from '@/components/themed';
 import { BorderRadius, Spacing } from '@/constants/Colors';
@@ -25,7 +26,7 @@ const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({
 
   const isOverdue = daysUntilDue < 0;
   const percentage =
-    totalCount > 0 ? Math.round((postedCount / totalCount) * 100) : 0;
+    totalCount > 0 ? Math.floor((postedCount / totalCount) * 100) : 0;
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -48,25 +49,30 @@ const ReviewDueDateBadge: React.FC<ReviewDueDateBadgeProps> = ({
     >
       <View style={styles.progressSection}>
         <View style={styles.progressLabelContainer}>
-          <ThemedText typography="bodyMedium" color="textSecondary" style={styles.progressLabel}>
+          <ThemedText
+            typography="bodyMedium"
+            color="textSecondary"
+            style={styles.progressLabel}
+          >
             Reviews Posted
           </ThemedText>
-          <ThemedText typography="bodyMedium" color="primary" style={styles.progressFraction}>
+          <ThemedText
+            typography="bodyMedium"
+            color="primary"
+            style={styles.progressFraction}
+          >
             {postedCount}/{totalCount}
           </ThemedText>
         </View>
 
-        <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
-          <View
-            style={[
-              styles.progressFill,
-              {
-                width: `${percentage}%`,
-                backgroundColor: colors.primary,
-              },
-            ]}
-          />
-        </View>
+        <LinearProgressBar
+          progressPercentage={percentage}
+          height={10}
+          backgroundColor={colors.border}
+          borderRadius={BorderRadius.full}
+          showShimmer={false}
+          gradientColors={[colors.primary, colors.primary]}
+        />
       </View>
     </StatsSummaryCard>
   );
@@ -88,15 +94,6 @@ const styles = StyleSheet.create({
   },
   progressFraction: {
     fontWeight: '600',
-  },
-  progressTrack: {
-    height: 10,
-    borderRadius: BorderRadius.full,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: BorderRadius.full,
   },
 });
 

@@ -99,10 +99,7 @@ export default function Stats() {
             style={[styles.retryButton, { backgroundColor: colors.primary }]}
             onPress={() => refetch()}
           >
-            <ThemedText
-              typography="titleMedium"
-              color="textOnPrimary"
-            >
+            <ThemedText typography="titleMedium" color="textOnPrimary">
               Try Again
             </ThemedText>
           </TouchableOpacity>
@@ -135,10 +132,9 @@ export default function Stats() {
 
           <WeeklyReadingCard stats={weeklyReadingStats} />
           <MostProductiveReadingDaysCard />
-          
+
           <WeeklyListeningCard stats={weeklyListeningStats} />
           <MostProductiveListeningDaysCard />
-
         </ThemedView>
       </ScrollView>
     </SafeAreaView>

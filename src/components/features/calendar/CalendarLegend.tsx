@@ -24,7 +24,13 @@ const LegendItem: React.FC<LegendItemProps> = ({ color, label }) => {
   );
 };
 
-export const CalendarLegend: React.FC = () => {
+interface CalendarLegendProps {
+  showAllActivities?: boolean;
+}
+
+export const CalendarLegend: React.FC<CalendarLegendProps> = ({
+  showAllActivities = false,
+}) => {
   const { colors, borderRadius } = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
   const rotation = useSharedValue(0);
@@ -73,19 +79,31 @@ export const CalendarLegend: React.FC = () => {
       {/* Legend Content */}
       {isExpanded && (
         <View style={styles.content}>
-          <LegendItem color={colors.pending} label="Activity event" />
+          {showAllActivities && (
+            <LegendItem color={colors.pending} label="Activity event" />
+          )}
           <LegendItem color={colors.good} label="On track due date" />
           <LegendItem color={colors.approaching} label="Tight due date" />
           <LegendItem color={colors.urgent} label="Urgent/Overdue due date" />
 
           {/* Multiple dots info */}
-          <View style={[styles.infoContainer, dynamicStyles.infoContainer]}>
-            <IconSymbol name="info.circle" size={14} color={colors.textMuted} />
-            <ThemedText typography="bodySmall" color="textMuted" style={styles.infoText}>
-              Multiple dots can appear on dates with both activities and due
-              dates
-            </ThemedText>
-          </View>
+          {showAllActivities && (
+            <View style={[styles.infoContainer, dynamicStyles.infoContainer]}>
+              <IconSymbol
+                name="info.circle"
+                size={14}
+                color={colors.textMuted}
+              />
+              <ThemedText
+                typography="bodySmall"
+                color="textMuted"
+                style={styles.infoText}
+              >
+                Multiple dots can appear on dates with both activities and due
+                dates
+              </ThemedText>
+            </View>
+          )}
         </View>
       )}
     </View>

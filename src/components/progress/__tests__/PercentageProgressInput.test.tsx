@@ -71,7 +71,8 @@ describe('PercentageProgressInput', () => {
       render(
         <PercentageProgressInput {...defaultProps} format="eBook" value={150} />
       );
-      expect(screen.getByText(/= 152 pages/)).toBeTruthy();
+      // 37% of 400 = 148 pages
+      expect(screen.getByText(/= 148 pages/)).toBeTruthy();
     });
 
     it('should render formatted time for audiobooks', () => {

@@ -9,6 +9,7 @@
     "flexibility": "strict",
     "format": "audio",
     "total_quantity": 454,
+    "cover_image_url": null,
     "created_at": "2025-09-15T21:03:54.226893+00:00",
     "updated_at": "2025-09-15T21:03:54.226893+00:00",
     "progress": [
@@ -41,6 +42,7 @@
     "flexibility": "flexible",
     "format": "eBook",
     "total_quantity": 160,
+    "cover_image_url": null,
     "created_at": "2025-09-14T17:51:51.268438+00:00",
     "updated_at": "2025-09-14T17:51:51.268438+00:00",
     "progress": [
@@ -73,6 +75,7 @@
     "flexibility": "flexible",
     "format": "audio",
     "total_quantity": 311,
+    "cover_image_url": null,
     "created_at": "2025-09-14T08:44:44.311798+00:00",
     "updated_at": "2025-09-15T04:00:33.551675+00:00",
     "progress": [
@@ -105,6 +108,7 @@
     "flexibility": "strict",
     "format": "physical",
     "total_quantity": 52,
+    "cover_image_url": null,
     "created_at": "2025-09-02T16:12:12.310799+00:00",
     "updated_at": "2025-09-02T16:12:12.310799+00:00",
     "progress": [
@@ -137,6 +141,7 @@
     "flexibility": "strict",
     "format": "physical",
     "total_quantity": 176,
+    "cover_image_url": null,
     "created_at": "2025-08-24T01:54:16.843025+00:00",
     "updated_at": "2025-09-14T00:23:45.918+00:00",
     "progress": [
@@ -225,6 +230,7 @@
     "flexibility": "flexible",
     "format": "physical",
     "total_quantity": 1918,
+    "cover_image_url": null,
     "created_at": "2025-08-24T01:34:10.7445+00:00",
     "updated_at": "2025-08-24T06:12:55.912+00:00",
     "progress": [
@@ -257,6 +263,7 @@
     "flexibility": "strict",
     "format": "audio",
     "total_quantity": 3307,
+    "cover_image_url": null,
     "created_at": "2025-08-23T14:11:33.432896+00:00",
     "updated_at": "2025-09-15T03:56:41.127258+00:00",
     "progress": [
@@ -520,6 +527,7 @@
     "flexibility": "flexible",
     "format": "eBook",
     "total_quantity": 349,
+    "cover_image_url": null,
     "created_at": "2025-08-15T19:08:07.306991+00:00",
     "updated_at": "2025-08-24T05:54:21.33+00:00",
     "progress": [
@@ -560,6 +568,7 @@
     "flexibility": "flexible",
     "format": "audio",
     "total_quantity": 2893,
+    "cover_image_url": null,
     "created_at": "2025-08-12T00:37:29.148535+00:00",
     "updated_at": "2025-08-12T00:37:29.148535+00:00",
     "progress": [
@@ -639,6 +648,7 @@
     "flexibility": "strict",
     "format": "physical",
     "total_quantity": 22,
+    "cover_image_url": null,
     "created_at": "2025-08-09T02:04:38.720052+00:00",
     "updated_at": "2025-09-08T06:05:01.854+00:00",
     "progress": [
@@ -743,6 +753,7 @@
     "flexibility": "flexible",
     "format": "physical",
     "total_quantity": 210,
+    "cover_image_url": null,
     "created_at": "2025-08-01T04:43:56.50344+00:00",
     "updated_at": "2025-08-24T05:50:42.28+00:00",
     "progress": [
@@ -807,6 +818,7 @@
     "flexibility": "strict",
     "format": "audio",
     "total_quantity": 552,
+    "cover_image_url": null,
     "created_at": "2025-07-06T16:20:15.773459+00:00",
     "updated_at": "2025-07-06T16:20:15.773459+00:00",
     "progress": [
@@ -870,6 +882,7 @@
     "flexibility": "strict",
     "format": "audio",
     "total_quantity": 1677,
+    "cover_image_url": null,
     "created_at": "2025-07-01T18:52:46.430375+00:00",
     "updated_at": "2025-07-01T18:52:46.430375+00:00",
     "progress": [
@@ -1101,6 +1114,7 @@
     "flexibility": "flexible",
     "format": "physical",
     "total_quantity": 52,
+    "cover_image_url": null,
     "created_at": "2025-06-26T21:13:29.617564+00:00",
     "updated_at": "2025-08-24T05:41:12.149+00:00",
     "progress": [
@@ -1169,6 +1183,7 @@
     "flexibility": "flexible",
     "format": "physical",
     "total_quantity": 374,
+    "cover_image_url": null,
     "created_at": "2025-06-26T04:03:53.45453+00:00",
     "updated_at": "2025-08-12T00:33:31.028+00:00",
     "progress": [
@@ -1216,6 +1231,7 @@
     "flexibility": "strict",
     "format": "audio",
     "total_quantity": 2734,
+    "cover_image_url": null,
     "created_at": "2025-06-24T23:13:21.422152+00:00",
     "updated_at": "2025-06-24T23:13:21.422152+00:00",
     "progress": [
@@ -1319,6 +1335,7 @@
     "flexibility": "strict",
     "format": "audio",
     "total_quantity": 6000,
+    "cover_image_url": null,
     "created_at": "2025-06-22T06:59:29.797049+00:00",
     "updated_at": "2025-06-22T06:59:29.797049+00:00",
     "progress": [
@@ -1887,6 +1904,7 @@
     "flexibility": "strict",
     "format": "audio",
     "total_quantity": 1432,
+    "cover_image_url": null,
     "created_at": "2025-06-21T06:56:48.16655+00:00",
     "updated_at": "2025-09-15T03:56:47.033856+00:00",
     "progress": [
@@ -1949,6 +1967,7 @@
     "flexibility": "flexible",
     "format": "audio",
     "total_quantity": 519,
+    "cover_image_url": null,
     "created_at": "2025-06-21T05:46:43.766915+00:00",
     "updated_at": "2025-08-10T06:15:48.703+00:00",
     "progress": [
@@ -2036,6 +2055,7 @@
     "flexibility": "strict",
     "format": "audio",
     "total_quantity": 1720,
+    "cover_image_url": null,
     "created_at": "2025-06-21T05:46:43.766915+00:00",
     "updated_at": "2025-06-21T05:46:43.766915+00:00",
     "progress": [

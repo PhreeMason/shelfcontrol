@@ -1,6 +1,7 @@
 import DailyReadingChart from '@/components/charts/DailyReadingChart';
 import BookDetailsSection from '@/components/features/deadlines/BookDetailsSection';
 import { DeadlineActionSheet } from '@/components/features/deadlines/DeadlineActionSheet';
+import { DeadlineActionsSection } from '@/components/features/deadlines/DeadlineActionsSection';
 import { DeadlineContactsSection } from '@/components/features/deadlines/DeadlineContactsSection';
 import DeadlineHeroSection from '@/components/features/deadlines/DeadlineHeroSection';
 import { DeadlineTagsSection } from '@/components/features/deadlines/DeadlineTagsSection';
@@ -16,12 +17,14 @@ import {
   ThemedView,
 } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Shadows } from '@/constants/Theme';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
 import { getDeadlineSourceOptions } from '@/utils/getDeadlineSourceOptions';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
@@ -122,55 +125,66 @@ const DeadlineView = () => {
   return (
     <SafeAreaView
       edges={['right', 'bottom', 'left']}
-      style={[styles.container, { backgroundColor: colors.surfaceVariant }]}
+      style={[styles.container]}
     >
-      <DeadlineViewHeader {...headerProps} />
-      <ThemedKeyboardAwareScrollView
-        contentContainerStyle={{ paddingBottom: 100 }}
-        keyboardShouldPersistTaps="handled"
-        style={[styles.content, { backgroundColor: colors.surfaceVariant }]}
+      <LinearGradient
+        colors={[colors.backgroundAccent, colors.backgroundPrimary]}
+        style={{ flex: 1 }}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
       >
-        <DeadlineHeroSection
-          isPending={isPending}
-          isPaused={isPaused}
+        <DeadlineViewHeader {...headerProps} />
+        <ThemedKeyboardAwareScrollView
+          contentContainerStyle={{ paddingBottom: 100 }}
+          keyboardShouldPersistTaps="handled"
+          style={[styles.content, { backgroundColor: 'transparent' }]}
+        >
+          <DeadlineHeroSection
+            isPending={isPending}
+            isPaused={isPaused}
+            deadline={deadline}
+          />
+
+          <DeadlineActionsSection deadline={deadline} />
+
+          {shouldShowProgress ? (
+            <ReadingProgressUpdate deadline={deadline} />
+          ) : null}
+
+          <ReviewProgressSection deadline={deadline} />
+          {shouldShowStats ? <ReadingStats deadline={deadline} /> : null}
+
+          {latestStatus !== 'pending' ? (
+            <DailyReadingChart deadline={deadline} />
+          ) : null}
+
+          <DeadlineContactsSection deadline={deadline} />
+
+          <DeadlineTagsSection deadline={deadline} />
+
+          {shouldShowDisclosure ? (
+            <DisclosureSection deadline={deadline} />
+          ) : null}
+
+          <BookDetailsSection deadline={deadline} />
+        </ThemedKeyboardAwareScrollView>
+
+        <Pressable
+          onPress={() => setShowActionSheet(true)}
+          style={({ pressed }) => [
+            styles.fab,
+            { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 },
+          ]}
+        >
+          <IconSymbol name="ellipsis" size={30} color={colors.textOnPrimary} />
+        </Pressable>
+
+        <DeadlineActionSheet
           deadline={deadline}
+          visible={showActionSheet}
+          onClose={() => setShowActionSheet(false)}
         />
-
-        {shouldShowProgress ? (
-          <ReadingProgressUpdate deadline={deadline} />
-        ) : null}
-
-        <ReviewProgressSection deadline={deadline} />
-        {shouldShowStats ? <ReadingStats deadline={deadline} /> : null}
-
-        <DailyReadingChart deadline={deadline} />
-
-        <DeadlineContactsSection deadline={deadline} />
-
-        <DeadlineTagsSection deadline={deadline} />
-
-        {shouldShowDisclosure ? (
-          <DisclosureSection deadline={deadline} />
-        ) : null}
-
-        <BookDetailsSection deadline={deadline} />
-      </ThemedKeyboardAwareScrollView>
-
-      <Pressable
-        onPress={() => setShowActionSheet(true)}
-        style={({ pressed }) => [
-          styles.fab,
-          { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 },
-        ]}
-      >
-        <IconSymbol name="ellipsis" size={30} color={colors.textOnPrimary} />
-      </Pressable>
-
-      <DeadlineActionSheet
-        deadline={deadline}
-        visible={showActionSheet}
-        onClose={() => setShowActionSheet(false)}
-      />
+      </LinearGradient>
     </SafeAreaView>
   );
 };
@@ -193,11 +207,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 100,
     gap: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
+    ...Shadows.elevated,
   },
 });
 

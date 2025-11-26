@@ -156,7 +156,10 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
               You finished!
             </ThemedText>
             <View style={[styles.quoteContainer, styles.mediumShadow]}>
-              <ThemedText variant="secondary" style={[styles.quoteText, dynamicStyles.quoteText]}>
+              <ThemedText
+                variant="secondary"
+                style={[styles.quoteText, dynamicStyles.quoteText]}
+              >
                 {randomQuote}
               </ThemedText>
             </View>
@@ -184,7 +187,11 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
               </View>
             ) : (
               <ThemedView
-                style={[styles.coverPlaceholder, dynamicStyles.coverPlaceholder, { height: coverHeight }]}
+                style={[
+                  styles.coverPlaceholder,
+                  dynamicStyles.coverPlaceholder,
+                  { height: coverHeight },
+                ]}
               >
                 <ThemedText style={styles.coverPlaceholderText}>📖</ThemedText>
               </ThemedView>
@@ -194,10 +201,16 @@ const CompletionFormStep1: React.FC<CompletionFormStep1Props> = ({
           <Animated.View
             style={[styles.statsContainer, { opacity: statsOpacity }]}
           >
-            <ThemedText variant="secondary" style={[styles.statsText, dynamicStyles.statsText]}>
+            <ThemedText
+              variant="secondary"
+              style={[styles.statsText, dynamicStyles.statsText]}
+            >
               {formatDate(startDate)} → {formatDate(finishDate)}
             </ThemedText>
-            <ThemedText variant="secondary" style={[styles.statsText, dynamicStyles.statsText]}>
+            <ThemedText
+              variant="secondary"
+              style={[styles.statsText, dynamicStyles.statsText]}
+            >
               {duration} {duration === 1 ? 'day' : 'days'} •{' '}
               {deadline.format === 'audio'
                 ? `${formatProgressDisplay(deadline.format, currentProgress)} / ${formatProgressDisplay(deadline.format, deadline.total_quantity || 0)} listened`

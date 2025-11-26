@@ -262,9 +262,7 @@ export function formatAudioUnitsPerDay(
   const hours = Math.floor(units / 60);
   const minutes = Math.round(units % 60);
   if (hours > 0) {
-    return minutes > 0
-      ? `${hours}h ${minutes}m/day`
-      : `${hours}h/day`;
+    return minutes > 0 ? `${hours}h ${minutes}m/day` : `${hours}h/day`;
   }
   return `${Math.round(units)} minutes/day`;
 }
@@ -298,9 +296,7 @@ export function formatUnitsPerDay(
     const hours = Math.floor(units / 60);
     const minutes = units % 60;
     if (hours > 0) {
-      return minutes > 0
-        ? `${hours}h ${minutes}m/day`
-        : `${hours}h/day`;
+      return minutes > 0 ? `${hours}h ${minutes}m/day` : `${hours}h/day`;
     }
     return `${minutes} minutes/day`;
   }

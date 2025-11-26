@@ -52,11 +52,15 @@ const createMockAgendaItem = (
     user_id: 'user-1',
     book_id: 'book-1',
     book_title: 'The Great Gatsby',
-    author_name: 'F. Scott Fitzgerald',
+    author: 'F. Scott Fitzgerald',
     deadline_date: '2025-01-20',
     total_quantity: 200,
     format: 'physical',
     type: 'pages',
+    acquisition_source: null,
+    flexibility: 'flexible',
+    publishers: null,
+    cover_image_url: null,
     status: [
       {
         id: 'status-1',
@@ -135,8 +139,8 @@ describe('DeadlineDueCard', () => {
       // Should have status
       expect(screen.getByText('Reading')).toBeTruthy();
 
-      // Should have progress percentage
-      expect(screen.getByText('50% complete')).toBeTruthy();
+      // Should have progress percentage (physical format = "read")
+      expect(screen.getByText('50% read')).toBeTruthy();
     });
 
     it('should be pressable when onPress is provided', () => {
@@ -219,7 +223,7 @@ describe('DeadlineDueCard', () => {
 
       render(<DeadlineDueCard agendaItem={agendaItem} />);
 
-      expect(screen.getByText('75% complete')).toBeTruthy();
+      expect(screen.getByText('75% read')).toBeTruthy();
     });
 
     it('should handle 0% progress', () => {
@@ -231,7 +235,7 @@ describe('DeadlineDueCard', () => {
 
       render(<DeadlineDueCard agendaItem={agendaItem} />);
 
-      expect(screen.getByText('0% complete')).toBeTruthy();
+      expect(screen.getByText('0% read')).toBeTruthy();
     });
 
     it('should handle 100% progress', () => {
@@ -243,7 +247,7 @@ describe('DeadlineDueCard', () => {
 
       render(<DeadlineDueCard agendaItem={agendaItem} />);
 
-      expect(screen.getByText('100% complete')).toBeTruthy();
+      expect(screen.getByText('100% read')).toBeTruthy();
     });
 
     it('should round progress percentage', () => {
@@ -255,7 +259,7 @@ describe('DeadlineDueCard', () => {
 
       render(<DeadlineDueCard agendaItem={agendaItem} />);
 
-      expect(screen.getByText('33% complete')).toBeTruthy();
+      expect(screen.getByText('33% read')).toBeTruthy();
     });
   });
 
@@ -371,25 +375,37 @@ describe('DeadlineDueCard', () => {
       expect(title.props.numberOfLines).toBe(1);
     });
 
-    it('should handle different book formats', () => {
-      const formats: ReadingDeadlineWithProgress['format'][] = [
-        'physical',
-        'eBook',
-        'audio',
-      ];
-
-      formats.forEach(format => {
-        const agendaItem = createMockAgendaItem({
-          deadline: { format },
-        });
-
-        const { getByText, unmount } = render(
-          <DeadlineDueCard agendaItem={agendaItem} />
-        );
-
-        expect(getByText('The Great Gatsby')).toBeTruthy();
-        unmount();
+    it('should display "read" for physical format', () => {
+      const agendaItem = createMockAgendaItem({
+        deadline: { format: 'physical' },
+        calculations: { progressPercentage: 50 },
       });
+
+      render(<DeadlineDueCard agendaItem={agendaItem} />);
+
+      expect(screen.getByText('50% read')).toBeTruthy();
+    });
+
+    it('should display "read" for eBook format', () => {
+      const agendaItem = createMockAgendaItem({
+        deadline: { format: 'eBook' },
+        calculations: { progressPercentage: 75 },
+      });
+
+      render(<DeadlineDueCard agendaItem={agendaItem} />);
+
+      expect(screen.getByText('75% read')).toBeTruthy();
+    });
+
+    it('should display "listened" for audio format', () => {
+      const agendaItem = createMockAgendaItem({
+        deadline: { format: 'audio' },
+        calculations: { progressPercentage: 60 },
+      });
+
+      render(<DeadlineDueCard agendaItem={agendaItem} />);
+
+      expect(screen.getByText('60% listened')).toBeTruthy();
     });
 
     it('should display metadata row with separator', () => {
@@ -399,7 +415,7 @@ describe('DeadlineDueCard', () => {
 
       expect(screen.getByText('Reading')).toBeTruthy();
       expect(screen.getByText('•')).toBeTruthy();
-      expect(screen.getByText('50% complete')).toBeTruthy();
+      expect(screen.getByText('50% read')).toBeTruthy();
     });
   });
 

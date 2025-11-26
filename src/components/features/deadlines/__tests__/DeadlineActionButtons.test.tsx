@@ -87,6 +87,7 @@ describe('DeadlineActionButtons', () => {
     acquisition_source: null,
     type: 'Personal',
     publishers: null,
+    cover_image_url: null,
     status: [
       {
         id: 'status-1',

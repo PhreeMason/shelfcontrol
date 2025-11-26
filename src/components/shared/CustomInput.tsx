@@ -69,7 +69,10 @@ const CustomInput = <T extends FieldValues>({
               {
                 backgroundColor: isFocused ? cardColor : blurBackgroundColor,
                 color: textColor,
-                borderColor: error && (isTouched || formState?.isSubmitted) ? dangerColor : borderColor,
+                borderColor:
+                  error && (isTouched || formState?.isSubmitted)
+                    ? dangerColor
+                    : borderColor,
               },
               props.style,
             ]}

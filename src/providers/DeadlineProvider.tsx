@@ -5,10 +5,12 @@ import {
   useDidNotFinishDeadline,
   useGetDeadlines,
   usePauseDeadline,
+  useRejectDeadline,
   useResumeDeadline,
   useStartReadingDeadline,
   useUpdateDeadline,
   useUpdateDeadlineDate,
+  useWithdrawDeadline,
 } from '@/hooks/useDeadlines';
 import { analytics } from '@/lib/analytics/client';
 import type { DeadlineStatus as AnalyticsDeadlineStatus } from '@/lib/analytics/events';
@@ -128,6 +130,16 @@ interface DeadlineContextType {
     onSuccess?: () => void,
     onError?: (error: Error) => void
   ) => void;
+  rejectDeadline: (
+    deadlineId: string,
+    onSuccess?: () => void,
+    onError?: (error: Error) => void
+  ) => void;
+  withdrawDeadline: (
+    deadlineId: string,
+    onSuccess?: () => void,
+    onError?: (error: Error) => void
+  ) => void;
   getDeadlineCalculations: (deadline: ReadingDeadlineWithProgress) => {
     currentProgress: number;
     totalQuantity: number;
@@ -213,6 +225,8 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
   const { mutate: didNotFinishDeadlineMutation } = useDidNotFinishDeadline();
   const { mutate: pauseDeadlineMutation } = usePauseDeadline();
   const { mutate: resumeDeadlineMutation } = useResumeDeadline();
+  const { mutate: rejectDeadlineMutation } = useRejectDeadline();
+  const { mutate: withdrawDeadlineMutation } = useWithdrawDeadline();
 
   const {
     active: activeDeadlines,
@@ -559,6 +573,46 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     [resumeDeadlineMutation]
   );
 
+  const rejectDeadline = useCallback(
+    (
+      deadlineId: string,
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      rejectDeadlineMutation(deadlineId, {
+        onSuccess: () => {
+          analytics.track('deadline_rejected');
+          onSuccess?.();
+        },
+        onError: (error: Error) => {
+          console.error('Error rejecting book:', error);
+          onError?.(error);
+        },
+      });
+    },
+    [rejectDeadlineMutation]
+  );
+
+  const withdrawDeadline = useCallback(
+    (
+      deadlineId: string,
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      withdrawDeadlineMutation(deadlineId, {
+        onSuccess: () => {
+          analytics.track('deadline_withdrew');
+          onSuccess?.();
+        },
+        onError: (error: Error) => {
+          console.error('Error withdrawing from book:', error);
+          onError?.(error);
+        },
+      });
+    },
+    [withdrawDeadlineMutation]
+  );
+
   const value: DeadlineContextType = {
     deadlines,
     activeDeadlines,
@@ -584,6 +638,8 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     didNotFinishDeadline,
     pauseDeadline,
     resumeDeadline,
+    rejectDeadline,
+    withdrawDeadline,
 
     getDeadlineCalculations,
 

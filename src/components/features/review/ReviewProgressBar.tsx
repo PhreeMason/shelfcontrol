@@ -15,7 +15,7 @@ const ReviewProgressBar: React.FC<ReviewProgressBarProps> = ({
 }) => {
   const { colors } = useTheme();
   const percentage =
-    totalCount > 0 ? Math.round((postedCount / totalCount) * 100) : 0;
+    totalCount > 0 ? Math.floor((postedCount / totalCount) * 100) : 0;
 
   return (
     <View style={styles.container}>
@@ -23,7 +23,11 @@ const ReviewProgressBar: React.FC<ReviewProgressBarProps> = ({
         <ThemedText typography="bodyMedium" color="textSecondary">
           Reviews Posted
         </ThemedText>
-        <ThemedText typography="bodyMedium" color="primary" style={styles.fraction}>
+        <ThemedText
+          typography="bodyMedium"
+          color="primary"
+          style={styles.fraction}
+        >
           {postedCount}/{totalCount}
         </ThemedText>
       </View>

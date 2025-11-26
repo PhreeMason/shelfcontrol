@@ -1,7 +1,7 @@
 {
   "name": "shelfcontrol",
   "main": "expo-router/entry",
-  "version": "1.45.0",
+  "version": "1.51.0",
   "scripts": {
     "start": "expo start -c --clear",
     "reset-project": "node ./scripts/reset-project.js",
@@ -16,6 +16,7 @@
     "typecheck": "npx tsc --noEmit",
     "prebuild": "npx expo prebuild --clean",
     "build:android:expo": "node scripts/sync-version.js && npx eas build --platform android --profile preview",
+    "build:android:expo:production": "node scripts/sync-version.js && npx eas build --platform android --profile production",
     "build:ios:expo": "node scripts/sync-version.js && npx eas build --platform ios",
     "submit:ios": "npx eas submit --platform ios --latest",
     "build:local": "npx eas build --platform android --profile preview --local",
@@ -46,6 +47,7 @@
     "@types/uuid": "^10.0.0",
     "aes-js": "^3.1.2",
     "base64-arraybuffer": "^1.0.2",
+    "ci": "^2.3.0",
     "dayjs": "^1.11.13",
     "expo": "~53.0.23",
     "expo-apple-authentication": "~7.2.4",

@@ -172,7 +172,7 @@ describe('NotesService', () => {
     it('should calculate progress percentage correctly', async () => {
       const mockProgressData = [{ current_progress: 45 }];
       const mockDeadlineData = { total_quantity: 200 };
-      const expectedPercentage = Math.round((45 / 200) * 100); // 23%
+      const expectedPercentage = Math.floor((45 / 200) * 100); // 22%
 
       const mockProgressSelect = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
@@ -215,7 +215,7 @@ describe('NotesService', () => {
 
       expect(mockNoteInsert).toHaveBeenCalledWith(
         expect.objectContaining({
-          deadline_progress: 23,
+          deadline_progress: 22,
         })
       );
     });

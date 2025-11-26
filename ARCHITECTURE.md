@@ -587,6 +587,68 @@ The deadline feature shows the complete data flow through all architectural laye
 └─────────────────────┘
 ```
 
+## UI Patterns & Anti-Patterns
+
+### Modal Best Practices
+
+**❌ NEVER nest React Native Modal components**
+
+Nesting modals can cause critical touch responder issues where Pressable/TouchableOpacity components fail to respond to user input.
+
+**Problem**: When multiple React modals dismiss simultaneously and navigation occurs in the same event loop tick, the new screen may render before the old modal's component tree is fully unmounted. This prevents React Native's touch responder system from properly initializing, resulting in non-functional buttons.
+
+**Example of nested modals (DON'T DO THIS)**:
+```typescript
+// ❌ BAD: Nested modals
+<Modal visible={outerModalVisible}>
+  <Modal visible={innerModalVisible}>
+    {/* Inner modal content */}
+  </Modal>
+</Modal>
+```
+
+**Solutions**:
+
+1. **Use native Alert.alert() for simple confirmations**:
+   ```typescript
+   // ✅ GOOD: Native alert instead of custom modal
+   Alert.alert(
+     'Confirmation Title',
+     'Are you sure?',
+     [
+       { text: 'Cancel', style: 'cancel' },
+       { text: 'Confirm', onPress: handleConfirm },
+     ]
+   );
+   ```
+
+2. **Use state management to show modals sequentially**:
+   ```typescript
+   // ✅ GOOD: Single modal with state switching
+   const [modalState, setModalState] = useState<'none' | 'step1' | 'step2'>('none');
+
+   <Modal visible={modalState !== 'none'}>
+     {modalState === 'step1' && <Step1Content />}
+     {modalState === 'step2' && <Step2Content />}
+   </Modal>
+   ```
+
+3. **Ensure modals fully dismiss before navigation**:
+   ```typescript
+   // ✅ GOOD: Wait for modal to close before navigating
+   const handleComplete = () => {
+     onClose(); // Close modal
+     // Use setTimeout or onModalHide callback before navigation
+     setTimeout(() => router.push('/next-screen'), 100);
+   };
+   ```
+
+**Key Learnings**:
+- Nested React modals interfere with touch event handling
+- Native UI elements (`Alert.alert()`) are more reliable for simple confirmations
+- Synchronous navigation after modal dismissal is risky
+- Always test touch interactions when components render as initial screens vs. after state changes
+
 ## Summary
 
 ShelfControl's architecture is built on these key principles:

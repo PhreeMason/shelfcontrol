@@ -24,6 +24,19 @@ jest.mock('expo-secure-store', () => ({
   deleteItemAsync: jest.fn(),
 }));
 
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  default: {
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    removeItem: jest.fn(),
+    clear: jest.fn(),
+    getAllKeys: jest.fn(() => Promise.resolve([])),
+    multiGet: jest.fn(() => Promise.resolve([])),
+    multiSet: jest.fn(() => Promise.resolve()),
+    multiRemove: jest.fn(() => Promise.resolve()),
+  },
+}));
+
 jest.mock('expo-router', () => ({
   useRouter: () => ({
     push: jest.fn(),
@@ -61,6 +74,16 @@ jest.mock('@/lib/supabase', () => ({
       single: jest.fn().mockResolvedValue({ data: null, error: null }),
       order: jest.fn().mockReturnThis(),
     })),
+    storage: {
+      from: jest.fn(() => ({
+        getPublicUrl: jest.fn((path: string) => ({
+          data: { publicUrl: `https://example.com/storage/${path}` },
+        })),
+        upload: jest.fn().mockResolvedValue({ data: null, error: null }),
+        remove: jest.fn().mockResolvedValue({ data: null, error: null }),
+        list: jest.fn().mockResolvedValue({ data: [], error: null }),
+      })),
+    },
     functions: {
       invoke: jest.fn().mockResolvedValue({ data: null, error: null }),
     },
@@ -87,18 +110,28 @@ jest.mock('@tanstack/react-query', () => ({
     isLoading: false,
     error: null,
   })),
+  useQueryClient: jest.fn(() => ({
+    invalidateQueries: jest.fn(),
+    setQueryData: jest.fn(),
+    getQueryData: jest.fn(),
+    cancelQueries: jest.fn(),
+  })),
   QueryClient: jest.fn().mockImplementation(() => ({
     invalidateQueries: jest.fn(),
     setQueryData: jest.fn(),
+    getQueryData: jest.fn(),
+    cancelQueries: jest.fn(),
   })),
   QueryClientProvider: ({ children }: { children: React.ReactNode }) =>
     children,
 }));
 
 // Mock Toast
-jest.mock('react-native-toast-message', () => ({
-  show: jest.fn(),
-  hide: jest.fn(),
+jest.mock('react-native-toast-message/lib/src/Toast', () => ({
+  Toast: {
+    show: jest.fn(),
+    hide: jest.fn(),
+  },
 }));
 
 // Mock Linear Gradient

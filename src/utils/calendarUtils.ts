@@ -125,7 +125,10 @@ export function transformActivitiesToAgendaItems(
   const groupedByDate: Record<string, DailyActivity[]> = {};
 
   activities.forEach(activity => {
-    const date = activity.activity_date;
+    // Extract date in user's local timezone to avoid day-offset issues
+    const date = parseServerDateTime(activity.activity_timestamp).format(
+      'YYYY-MM-DD'
+    );
     if (!groupedByDate[date]) {
       groupedByDate[date] = [];
     }
@@ -205,7 +208,10 @@ export function calculateMarkedDates(
   // Group activities by date
   const groupedByDate: Record<string, DailyActivity[]> = {};
   activities.forEach(activity => {
-    const date = activity.activity_date;
+    // Extract date in user's local timezone to avoid day-offset issues
+    const date = parseServerDateTime(activity.activity_timestamp).format(
+      'YYYY-MM-DD'
+    );
     if (!groupedByDate[date]) {
       groupedByDate[date] = [];
     }

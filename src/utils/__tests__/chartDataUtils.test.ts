@@ -40,6 +40,7 @@ jest.mock('@/lib/dayjs', () => ({
 jest.mock('@/utils/dateNormalization', () => {
   const actualDayjs = jest.requireActual('dayjs');
   return {
+    normalizeServerDate: jest.fn((date: string) => actualDayjs(date)),
     parseServerDateOnly: jest.fn((date: string) => actualDayjs(date)),
     parseServerDateTime: jest.fn((date: string) => actualDayjs(date)),
   };
@@ -152,6 +153,7 @@ describe('chartDataUtils', () => {
       status: [],
       created_at: '2024-01-10T10:00:00Z',
       updated_at: '2024-01-20T10:00:00Z',
+      cover_image_url: null,
     };
 
     it('should return empty array when progress is null', () => {
@@ -533,6 +535,7 @@ describe('chartDataUtils', () => {
         status: [],
         created_at: '2024-01-10T10:00:00Z',
         updated_at: '2024-01-20T10:00:00Z',
+        cover_image_url: null,
       };
 
       expect(getCurrentProgressFromDeadline(deadline)).toBe(0);
@@ -557,6 +560,7 @@ describe('chartDataUtils', () => {
         status: [],
         created_at: '2024-01-10T10:00:00Z',
         updated_at: '2024-01-20T10:00:00Z',
+        cover_image_url: null,
       };
 
       expect(getCurrentProgressFromDeadline(deadline)).toBe(0);
@@ -581,6 +585,7 @@ describe('chartDataUtils', () => {
         status: [],
         created_at: '2024-01-10T10:00:00Z',
         updated_at: '2024-01-20T10:00:00Z',
+        cover_image_url: null,
       };
 
       expect(getCurrentProgressFromDeadline(deadline)).toBe(0);
@@ -633,6 +638,7 @@ describe('chartDataUtils', () => {
         status: [],
         created_at: '2024-01-10T10:00:00Z',
         updated_at: '2024-01-20T10:00:00Z',
+        cover_image_url: null,
       };
 
       expect(getCurrentProgressFromDeadline(deadline)).toBe(125);
@@ -667,6 +673,7 @@ describe('chartDataUtils', () => {
         status: [],
         created_at: '2024-01-10T10:00:00Z',
         updated_at: '2024-01-20T10:00:00Z',
+        cover_image_url: null,
       };
 
       expect(getCurrentProgressFromDeadline(deadline)).toBe(42);
@@ -740,6 +747,7 @@ describe('chartDataUtils', () => {
       status: [],
       created_at: '2024-01-10T10:00:00Z',
       updated_at: '2024-01-20T10:00:00Z',
+      cover_image_url: null,
     };
 
     it('should calculate daily minimum using current progress and days left', () => {
@@ -861,6 +869,7 @@ describe('chartDataUtils', () => {
       status: [],
       created_at: '2024-01-10T10:00:00Z',
       updated_at: '2024-01-20T10:00:00Z',
+      cover_image_url: null,
     };
 
     const mockEBookDeadline: ReadingDeadlineWithProgress = {
@@ -891,6 +900,7 @@ describe('chartDataUtils', () => {
       status: [],
       created_at: '2024-01-10T10:00:00Z',
       updated_at: '2024-01-20T10:00:00Z',
+      cover_image_url: null,
     };
 
     const mockAudioDeadline: ReadingDeadlineWithProgress = {
@@ -921,6 +931,7 @@ describe('chartDataUtils', () => {
       status: [],
       created_at: '2024-01-10T10:00:00Z',
       updated_at: '2024-01-20T10:00:00Z',
+      cover_image_url: null,
     };
 
     it('should return empty array when no deadlines provided', () => {
@@ -1211,6 +1222,7 @@ describe('chartDataUtils', () => {
       type: 'Personal',
       publishers: null,
       flexibility: 'strict',
+      cover_image_url: null,
       status: options.status
         ? [
             {
@@ -1905,6 +1917,7 @@ describe('chartDataUtils', () => {
       type: 'Personal',
       publishers: null,
       flexibility: 'strict',
+      cover_image_url: null,
       status: [],
       progress: [],
     });
@@ -2078,6 +2091,7 @@ describe('chartDataUtils', () => {
       type: 'Personal',
       publishers: null,
       flexibility: 'strict',
+      cover_image_url: null,
       status: [
         {
           id: 'status-1',

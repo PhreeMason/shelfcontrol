@@ -1,6 +1,5 @@
 import { DB_TABLES } from '@/constants/database';
 import { supabase } from '@/lib/supabase';
-import { Database } from '@/types/database.types';
 
 /**
  * Productivity statistics data types
@@ -110,15 +109,19 @@ class ProductivityService {
     }
 
     // Transform progress entries
-    const progressEntries: ProductivityProgressEntry[] = progressData.map(entry => ({
-      deadline_id: entry.deadline_id,
-      current_progress: entry.current_progress,
-      created_at: entry.created_at,
-      format: (entry.deadlines as any).format,
-    }));
+    const progressEntries: ProductivityProgressEntry[] = progressData.map(
+      entry => ({
+        deadline_id: entry.deadline_id,
+        current_progress: entry.current_progress,
+        created_at: entry.created_at,
+        format: (entry.deadlines as any).format,
+      })
+    );
 
     // Get unique deadline IDs from progress entries
-    const deadlineIds = Array.from(new Set(progressEntries.map(e => e.deadline_id)));
+    const deadlineIds = Array.from(
+      new Set(progressEntries.map(e => e.deadline_id))
+    );
 
     // Query 2: Fetch baseline progress (max progress before start date) for each deadline
     let baselineQuery = supabase
@@ -163,13 +166,13 @@ class ProductivityService {
       }
     }
 
-    const baselineProgress: DeadlineBaselineProgress[] = Array.from(baselineMap.entries()).map(
-      ([deadlineId, data]) => ({
-        deadline_id: deadlineId,
-        baseline_progress: data.progress,
-        format: data.format as 'physical' | 'eBook' | 'audio',
-      })
-    );
+    const baselineProgress: DeadlineBaselineProgress[] = Array.from(
+      baselineMap.entries()
+    ).map(([deadlineId, data]) => ({
+      deadline_id: deadlineId,
+      baseline_progress: data.progress,
+      format: data.format as 'physical' | 'eBook' | 'audio',
+    }));
 
     return {
       progressEntries,

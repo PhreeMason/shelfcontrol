@@ -125,7 +125,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test Header"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -142,7 +141,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -160,7 +158,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -178,7 +175,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -196,7 +192,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -215,7 +210,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -232,7 +226,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -250,7 +243,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -268,7 +260,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -285,7 +276,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test Header"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -293,7 +283,9 @@ describe('WeeklyStatsCard', () => {
 
       // Accessibility label uses raw numbers, not formatted/abbreviated
       expect(
-        getByLabelText(/Test Header.*350 read.*280 needed.*70 ahead.*Averaging 50 per day/)
+        getByLabelText(
+          /Test Header.*350 read.*280 needed.*70 ahead.*Averaging 50 per day/
+        )
       ).toBeTruthy();
     });
   });
@@ -319,7 +311,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -351,7 +342,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -369,7 +359,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -402,7 +391,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />
@@ -439,7 +427,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Listening"
           unitsReadLabel="listened"
           unitsNeededLabel="needed"
-          averageActivityLabel="Listening"
           daysActivityLabel="Listened"
           formatValue={formatTime}
         />
@@ -471,7 +458,6 @@ describe('WeeklyStatsCard', () => {
           headerLabel="Test"
           unitsReadLabel="read"
           unitsNeededLabel="needed"
-          averageActivityLabel="Reading"
           daysActivityLabel="Read"
           formatValue={defaultFormatValue}
         />

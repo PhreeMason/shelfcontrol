@@ -62,7 +62,9 @@ const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
               contentFit="cover"
             />
           ) : (
-            <ThemedView style={[styles.coverThumbnail, dynamicStyles.coverThumbnail]}>
+            <ThemedView
+              style={[styles.coverThumbnail, dynamicStyles.coverThumbnail]}
+            >
               <ThemedText style={styles.coverEmoji}>📖</ThemedText>
             </ThemedView>
           )}
@@ -79,7 +81,10 @@ const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
             style={[
               styles.selectionButton,
               dynamicStyles.selectionButton,
-              needsReview === true && [styles.selectionButtonSelected, dynamicStyles.selectionButtonSelected],
+              needsReview === true && [
+                styles.selectionButtonSelected,
+                dynamicStyles.selectionButtonSelected,
+              ],
             ]}
             testID="yes-button"
           >
@@ -99,11 +104,19 @@ const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
             style={[
               styles.selectionButton,
               dynamicStyles.selectionButton,
-              needsReview === false && [styles.selectionButtonSelected, dynamicStyles.selectionButtonSelected],
+              needsReview === false && [
+                styles.selectionButtonSelected,
+                dynamicStyles.selectionButtonSelected,
+              ],
             ]}
             testID="no-button"
           >
-            <ThemedText style={[styles.selectionButtonText, dynamicStyles.selectionButtonText]}>
+            <ThemedText
+              style={[
+                styles.selectionButtonText,
+                dynamicStyles.selectionButtonText,
+              ]}
+            >
               No, I'm all done
             </ThemedText>
           </Pressable>
@@ -192,8 +205,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  selectionButtonTextSelected: {
-  },
+  selectionButtonTextSelected: {},
   confirmationContainer: {
     backgroundColor: 'transparent',
   },

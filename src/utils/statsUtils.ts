@@ -491,11 +491,13 @@ export const calculateWeeklyReadingStats = (
 
     // Calculate forward-looking daily pace from start of week (like daily goals)
     // This calculates what's needed from the start of this week, not from the original start date
-    const remainingAtStartOfWeek = deadline.total_quantity - progressAtStartOfWeek;
+    const remainingAtStartOfWeek =
+      deadline.total_quantity - progressAtStartOfWeek;
     const daysLeftFromWeekStart = deadlineDate.diff(weekStart, 'day');
-    const requiredDailyPace = daysLeftFromWeekStart > 0
-      ? remainingAtStartOfWeek / daysLeftFromWeekStart
-      : remainingAtStartOfWeek;
+    const requiredDailyPace =
+      daysLeftFromWeekStart > 0
+        ? remainingAtStartOfWeek / daysLeftFromWeekStart
+        : remainingAtStartOfWeek;
     totalRequiredDailyPace += requiredDailyPace;
 
     const pagesThisWeek = Math.max(
@@ -788,9 +790,6 @@ const groupProgressByDayOfWeek = (
   });
 
   // Group progress entries by day of week
-  let totalEntriesInRange = 0;
-  let totalEntriesOutOfRange = 0;
-
   for (const deadline of filteredDeadlines) {
     for (const entry of deadline.progress) {
       if (entry.ignore_in_calcs) {
@@ -798,15 +797,14 @@ const groupProgressByDayOfWeek = (
       }
 
       const entryDate = normalizeServerDate(entry.created_at);
-      const isInRange = entryDate.isSameOrAfter(dateRange.start) && entryDate.isSameOrBefore(dateRange.end);
+      const isInRange =
+        entryDate.isSameOrAfter(dateRange.start) &&
+        entryDate.isSameOrBefore(dateRange.end);
 
       // Check if entry is within date range
       if (isInRange) {
         const dayOfWeek = entryDate.day(); // 0 = Sunday, 6 = Saturday
         dayMap.get(dayOfWeek)!.push(entry);
-        totalEntriesInRange++;
-      } else {
-        totalEntriesOutOfRange++;
       }
     }
   }

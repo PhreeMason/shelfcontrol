@@ -1,6 +1,7 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useTheme';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -43,7 +44,10 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
           }
         >
           <IconSymbol name="book.fill" size={20} color={colors.surface} />
-          <ThemedText typography="titleMediumPlus" style={{ color: colors.surface }}>
+          <ThemedText
+            typography="titleMediumPlus"
+            style={{ color: colors.surface }}
+          >
             Start Reading
           </ThemedText>
         </TouchableOpacity>
@@ -78,7 +82,10 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
           }
         >
           <IconSymbol name="play.fill" size={20} color={colors.surface} />
-          <ThemedText typography="titleMediumPlus" style={{ color: colors.surface }}>
+          <ThemedText
+            typography="titleMediumPlus"
+            style={{ color: colors.surface }}
+          >
             Resume Reading
           </ThemedText>
         </TouchableOpacity>
@@ -89,14 +96,10 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
 
 const styles = StyleSheet.create({
   heroCardContainer: {
-    padding: Spacing.md,
+    padding: Spacing.xs,
     borderRadius: BorderRadius.md,
     marginBottom: Spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    ...Shadows.subtle,
   },
   primaryActionButton: {
     flexDirection: 'row',

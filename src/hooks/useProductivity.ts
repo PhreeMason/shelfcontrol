@@ -50,9 +50,7 @@ const getHistoricalProductivityDateRange = (): {
  * // entries contains minimal progress data for reading productivity calculations
  * ```
  */
-export const useProductivityData = (
-  format: 'physical' | 'eBook' | 'audio'
-) => {
+export const useProductivityData = (format: 'physical' | 'eBook' | 'audio') => {
   const { session } = useAuth();
   const userId = session?.user?.id;
 

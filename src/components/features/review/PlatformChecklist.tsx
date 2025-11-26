@@ -241,7 +241,11 @@ const PlatformChecklist: React.FC<PlatformChecklistProps> = ({
                             }
                             style={styles.viewReviewLink}
                           >
-                            <ThemedText typography="bodySmall" color="primary" style={styles.viewReviewText}>
+                            <ThemedText
+                              typography="bodySmall"
+                              color="primary"
+                              style={styles.viewReviewText}
+                            >
                               View Review →
                             </ThemedText>
                           </Pressable>

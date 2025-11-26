@@ -1,4 +1,5 @@
 import { QUERY_KEYS } from '@/constants/queryKeys';
+import { analytics } from '@/lib/analytics/client';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   reviewTrackingService,
@@ -78,8 +79,13 @@ export const useCreateReviewTracking = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error, variables) => {
       console.error('Error creating review tracking:', error);
+      analytics.track('review_tracking_creation_failed', {
+        error_message: error.message,
+        deadline_id: variables.deadline_id,
+        platform_count: variables.platforms?.length ?? 0,
+      });
     },
   });
 };

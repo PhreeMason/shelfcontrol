@@ -83,6 +83,10 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
     if (isCompleted) return { label: 'Completed', color: colors.good };
     if (latestStatus === 'did_not_finish')
       return { label: 'Did Not Finish', color: colors.error };
+    if (latestStatus === 'rejected')
+      return { label: 'Rejected', color: colors.error };
+    if (latestStatus === 'withdrew')
+      return { label: 'Withdrew', color: colors.warning };
     return { label: 'Unknown', color: colors.text };
   };
 

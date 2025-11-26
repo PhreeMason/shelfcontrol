@@ -74,7 +74,10 @@ export function useDeadlineCardState(
     const isPending = latestStatus === 'pending';
     const isToReview = latestStatus === 'to_review';
     const isArchived =
-      latestStatus === 'complete' || latestStatus === 'did_not_finish';
+      latestStatus === 'complete' ||
+      latestStatus === 'did_not_finish' ||
+      latestStatus === 'withdrew' ||
+      latestStatus === 'rejected';
     const isNotReading = isPending || isToReview;
 
     let countdownColor = urgencyTextColorMap[urgencyLevel] ?? colors.text;

@@ -52,6 +52,7 @@ export const NoteFilterSheet: React.FC<NoteFilterSheetProps> = ({
     },
   };
 
+  // translateY is a Reanimated shared value with stable reference
   useEffect(() => {
     if (visible) {
       translateY.value = withSpring(0, {
@@ -64,6 +65,7 @@ export const NoteFilterSheet: React.FC<NoteFilterSheetProps> = ({
         stiffness: 90,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -229,5 +231,6 @@ const styles = StyleSheet.create({
   },
   footerButton: {
     flex: 1,
+    margin: 5,
   },
 });

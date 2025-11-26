@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
@@ -29,7 +30,7 @@ export function DeadlineCountdownDisplay({
               ]}
             >
               🏆
-            </ThemedText>
+            </ThemedText> 
             <ThemedText
               style={[
                 styles.countdownLabel,
@@ -77,14 +78,14 @@ export function DeadlineCountdownDisplay({
               </>
             ) : (
               <>
-                <ThemedText
-                  style={[
-                    styles.archivedIcon,
-                    { paddingTop: Platform.select({ ios: 6, android: 3 }) },
-                  ]}
-                >
-                  📝
-                </ThemedText>
+                <IconSymbol
+                  name="pencil.and.scribble"
+                  size={28}
+                  color={countdownColor}
+                  style={{
+                    marginBottom: Platform.select({ ios: 2, android: 0 }),
+                  }}
+                />
                 <ThemedText
                   style={[
                     styles.countdownLabel,
@@ -92,7 +93,7 @@ export function DeadlineCountdownDisplay({
                     { marginTop: Platform.select({ ios: -2, android: 1 }) },
                   ]}
                 >
-                  review
+                  Review
                 </ThemedText>
               </>
             )}
@@ -102,12 +103,12 @@ export function DeadlineCountdownDisplay({
             <ThemedText
               style={[styles.countdownNumber, { color: countdownColor }]}
             >
-              {daysLeft}
+              {Math.abs(daysLeft)}
             </ThemedText>
             <ThemedText
               style={[styles.countdownLabel, { color: countdownColor }]}
             >
-              days
+              {daysLeft < 0 ? 'days over' : 'days'}
             </ThemedText>
           </>
         )}
@@ -123,7 +124,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
     minWidth: 100,
-    transform: [{ translateX: -10 }],
   },
   countdownSquare: {
     width: 72,

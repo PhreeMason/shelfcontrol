@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
 import React, { useState } from 'react';
 import {
@@ -131,14 +132,7 @@ const styles = StyleSheet.create({
     maxWidth: 500,
     borderRadius: 16,
     padding: 24,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
+    ...Shadows.premium,
   },
   header: {
     gap: 8,

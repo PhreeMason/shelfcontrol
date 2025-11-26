@@ -1,4 +1,5 @@
 import { QUERY_KEYS } from '@/constants/queryKeys';
+import { analytics } from '@/lib/analytics/client';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   ReviewTrackingResponse,
@@ -73,12 +74,23 @@ export const useReviewTrackingMutation = (deadlineId: string) => {
 
       return { previousData };
     },
-    onError: (error, _variables, context) => {
+    onError: (error: Error, variables, context) => {
       if (context?.previousData && userId) {
         queryClient.setQueryData(
           QUERY_KEYS.REVIEW_TRACKING.BY_DEADLINE(userId, deadlineId),
           context.previousData
         );
+      }
+
+      // Track each failed platform update
+      if (variables?.params?.platforms) {
+        variables.params.platforms.forEach(platform => {
+          analytics.track('review_platforms_update_failed', {
+            error_message: error.message,
+            deadline_id: deadlineId,
+            platform_name: platform.id, // Using id since name isn't available
+          });
+        });
       }
 
       Toast.show({

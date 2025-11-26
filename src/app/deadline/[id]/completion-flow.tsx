@@ -3,32 +3,23 @@ import { ThemedText, ThemedView } from '@/components/themed';
 import { ROUTES } from '@/constants/routes';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
 import { useTheme } from '@/hooks/useThemeColor';
-import { useDeadlines } from '@/providers/DeadlineProvider';
+import { calculateTotalQuantity } from '@/utils/deadlineCalculations';
+import { calculateProgress } from '@/utils/deadlineCore';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CompletionFlowPage() {
-  const { id, skipToReview } = useLocalSearchParams<{
+  const { id } = useLocalSearchParams<{
     id: string;
-    skipToReview?: string;
   }>();
-  const { deadlines } = useDeadlines();
   const { colors } = useTheme();
 
-  let deadline = deadlines.find(d => d.id === id);
-  const {
-    data: fallbackDeadline,
-    isLoading: isFallbackLoading,
-    error: fallbackError,
-  } = useGetDeadlineById(deadline ? undefined : id);
+  // Always fetch fresh deadline data from database to ensure we have the latest progress
+  const { data: deadline, isLoading, error } = useGetDeadlineById(id);
 
-  if (!deadline && fallbackDeadline) {
-    deadline = fallbackDeadline;
-  }
-
-  if (!deadline && isFallbackLoading) {
+  if (isLoading) {
     return (
       <SafeAreaView
         edges={['right', 'bottom', 'left']}
@@ -46,12 +37,19 @@ export default function CompletionFlowPage() {
     );
   }
 
-  if (!deadline || fallbackError) {
+  if (!deadline || error) {
     router.replace(ROUTES.HOME);
     return null;
   }
 
-  const isDNF = skipToReview === 'true';
+  // Calculate isDNF from actual progress data
+  // User is DNF if they haven't reached the total quantity
+  const currentProgress = calculateProgress(deadline);
+  const totalQuantity = calculateTotalQuantity(
+    deadline.format,
+    deadline.total_quantity
+  );
+  const isDNF = currentProgress < totalQuantity;
 
   return <CompletionFormContainer deadline={deadline} isDNF={isDNF} />;
 }

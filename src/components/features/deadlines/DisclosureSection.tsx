@@ -1,6 +1,7 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing, Typography } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import {
   useCreateTemplate,
   useGetTemplates,
@@ -292,7 +293,13 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                   { backgroundColor: colors.primary },
                 ]}
               >
-                <ThemedText typography="bodyMedium" style={[styles.sourceBadgeText, { color: colors.textInverse }]}>
+                <ThemedText
+                  typography="bodyMedium"
+                  style={[
+                    styles.sourceBadgeText,
+                    { color: colors.textInverse },
+                  ]}
+                >
                   {deadline.disclosure_source_name}
                 </ThemedText>
               </View>
@@ -316,12 +323,6 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
               color={colors.darkPurple}
               style={styles.addIcon}
             />
-            <ThemedText
-              typography="titleMedium"
-              style={[styles.addButtonText, { color: colors.darkPurple }]}
-            >
-              Add
-            </ThemedText>
           </Pressable>
         )}
         {!isEditing && currentDisclosure && (
@@ -416,7 +417,11 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                 ]}
               >
                 {shouldSaveAsTemplate && (
-                  <IconSymbol name="checkmark" size={14} color={colors.textInverse} />
+                  <IconSymbol
+                    name="checkmark"
+                    size={14}
+                    color={colors.textInverse}
+                  />
                 )}
               </View>
               <ThemedText typography="bodyMedium" style={styles.checkboxLabel}>
@@ -465,7 +470,10 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                   },
                 ]}
               >
-                <ThemedText typography="bodyMedium" style={styles.disclosureText}>
+                <ThemedText
+                  typography="bodyMedium"
+                  style={styles.disclosureText}
+                >
                   {currentDisclosure}
                 </ThemedText>
               </View>
@@ -476,7 +484,13 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                     { backgroundColor: colors.success },
                   ]}
                 >
-                  <ThemedText typography="bodyMedium" style={[styles.copySuccessText, { color: colors.textInverse }]}>
+                  <ThemedText
+                    typography="bodyMedium"
+                    style={[
+                      styles.copySuccessText,
+                      { color: colors.textInverse },
+                    ]}
+                  >
                     Copied!
                   </ThemedText>
                 </View>
@@ -536,7 +550,11 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
                   ]}
                 />
               </View>
-              <ThemedText typography="bodyMedium" color="textSecondary" style={styles.emptyCta}>
+              <ThemedText
+                typography="bodyMedium"
+                color="textSecondary"
+                style={styles.emptyCta}
+              >
                 Add required disclosure language
               </ThemedText>
             </Pressable>
@@ -544,7 +562,11 @@ export const DisclosureSection = ({ deadline }: DisclosureSectionProps) => {
         </>
       )}
 
-      <ThemedText typography="bodyMedium" color="textSecondary" style={styles.helpText}>
+      <ThemedText
+        typography="bodyMedium"
+        color="textSecondary"
+        style={styles.helpText}
+      >
         Required disclosure language for reviews from this publisher or PR
         company
       </ThemedText>
@@ -563,12 +585,8 @@ const styles = StyleSheet.create({
   section: {
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
-    marginVertical: Spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    marginBottom: Spacing.md,
+    ...Shadows.subtle,
   },
   header: {
     flexDirection: 'row',
@@ -608,10 +626,6 @@ const styles = StyleSheet.create({
   },
   addIcon: {
     marginRight: 2,
-  },
-  addButtonText: {
-    fontWeight: '600',
-    transform: [{ translateY: 1 }],
   },
   actions: {
     flexDirection: 'row',

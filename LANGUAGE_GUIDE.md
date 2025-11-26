@@ -15,11 +15,13 @@ Terms Users Say (ALWAYS Use)
 ✅ visual calendar
 ✅ overlapping due dates
 ✅ jot down (for notes)
+✅ show
 
 Terms Users DON'T Say (NEVER Use)
 ❌ deadline
 ❌ realistic / reality
 ❌ calculations
+❌ calculate
 ❌ feasibility
 ❌ management
 ❌ workflow

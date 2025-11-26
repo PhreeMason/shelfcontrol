@@ -37,7 +37,6 @@ export function WeeklyListeningCard({ stats }: WeeklyListeningCardProps) {
       headerLabel="Audiobooks This Week"
       unitsReadLabel="listened"
       unitsNeededLabel="needed"
-      averageActivityLabel="Listening"
       daysActivityLabel="Listened"
       formatValue={formatAudioTime}
     />

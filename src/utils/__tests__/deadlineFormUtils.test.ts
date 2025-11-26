@@ -895,7 +895,8 @@ describe('deadlineFormUtils', () => {
         'eBook',
         mockSetCurrentStep,
         'new',
-        () => ({})
+        () => ({}),
+        () => {}
       );
 
       await navigation.nextStep();
@@ -903,7 +904,6 @@ describe('deadlineFormUtils', () => {
       expect(mockSetCurrentStep).toHaveBeenCalledWith(2);
       expect(mockTrigger).not.toHaveBeenCalled();
     });
-
 
     it('should submit form on final step', async () => {
       const config = { ...baseConfig, currentStep: 3 };
@@ -914,7 +914,8 @@ describe('deadlineFormUtils', () => {
         'eBook',
         mockSetCurrentStep,
         'new',
-        () => ({})
+        () => ({}),
+        () => {}
       );
 
       await navigation.nextStep();
@@ -932,7 +933,8 @@ describe('deadlineFormUtils', () => {
         'eBook',
         mockSetCurrentStep,
         'new',
-        () => ({})
+        () => ({}),
+        () => {}
       );
 
       navigation.goBack();

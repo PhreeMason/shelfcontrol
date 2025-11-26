@@ -65,7 +65,15 @@ export const QUERY_KEYS = {
       startDate: string,
       endDate: string,
       format: 'physical' | 'eBook' | 'audio'
-    ) => ['productivity', 'day_of_week', userId, startDate, endDate, format] as const,
+    ) =>
+      [
+        'productivity',
+        'day_of_week',
+        userId,
+        startDate,
+        endDate,
+        format,
+      ] as const,
   },
 } as const;
 
@@ -80,6 +88,8 @@ export const MUTATION_KEYS = {
     DID_NOT_FINISH: 'didNotFinishDeadline',
     UPDATE_STATUS: 'updateDeadlineStatus',
     DELETE_FUTURE_PROGRESS: 'deleteFutureProgress',
+    UPLOAD_COVER: 'uploadDeadlineCover',
+    DELETE_COVER: 'deleteDeadlineCover',
   },
   NOTES: {
     ADD: 'addNote',

@@ -1,4 +1,5 @@
 import AcquisitionSourceTypeaheadInput from '@/components/shared/AcquisitionSourceTypeaheadInput';
+import CoverImagePicker from '@/components/shared/CoverImagePicker';
 import CustomInput from '@/components/shared/CustomInput';
 import TypeTypeaheadInput from '@/components/shared/TypeTypeaheadInput';
 import { ThemedText } from '@/components/themed';
@@ -57,6 +58,7 @@ export const DeadlineFormStep2Combined = ({
 
   // Watch values
   const watchedBookId = useWatch({ control, name: 'book_id' });
+  const bookCoverImageUrl = useWatch({ control, name: 'book_cover_image_url' });
   const isPublisherAutofilled = useWatch({
     control,
     name: 'isPublisherAutofilled',
@@ -137,10 +139,59 @@ export const DeadlineFormStep2Combined = ({
   return (
     <View style={{ flex: 1, gap: Spacing.lg }}>
       {/* ========== BOOK DETAILS SECTION ========== */}
-      <ThemedText style={styles.sectionHeader}>BOOK DETAILS</ThemedText>
+      <ThemedText
+        typography="titleSmall"
+        style={{
+          marginTop: Spacing.sm,
+          marginBottom: Spacing.negative.sm,
+          opacity: 0.7,
+          letterSpacing: 0.5,
+        }}
+      >
+        BOOK DETAILS
+      </ThemedText>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
+          Cover Image
+        </ThemedText>
+        <Controller
+          control={control}
+          name="cover_image_url"
+          render={({ field: { onChange, value } }) => (
+            <Controller
+              control={control}
+              name="cover_image_source"
+              render={({
+                field: { onChange: onModeChange, value: modeValue },
+              }) => (
+                <CoverImagePicker
+                  value={value || null}
+                  onImageChange={onChange}
+                  mode={(modeValue as 'upload' | 'url' | 'none') || 'none'}
+                  onModeChange={newMode => {
+                    onModeChange(newMode);
+                    if (newMode === 'none') {
+                      onChange(null);
+                    }
+                  }}
+                  editable={true}
+                  defaultPreviewUrl={bookCoverImageUrl || null}
+                />
+              )}
+            />
+          )}
+        />
+      </View>
+
+      <View>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Book Title <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
         <CustomInput
@@ -158,7 +209,10 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Author
         </ThemedText>
         <CustomInput
@@ -175,20 +229,29 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Status
         </ThemedText>
         <StatusSelector
           selectedStatus={selectedStatus}
           onSelectStatus={onStatusChange}
         />
-        <ThemedText color="textMuted" style={{ marginTop: Spacing.sm, lineHeight: 18 }}>
+        <ThemedText
+          color="textMuted"
+          style={{ marginTop: Spacing.sm, lineHeight: 18 }}
+        >
           Is this book actively being read or pending?
         </ThemedText>
       </View>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Format
         </ThemedText>
         <FormatSelector
@@ -207,7 +270,10 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           {getTotalQuantityLabel()}
         </ThemedText>
         <View style={{ flexDirection: 'row', gap: Spacing.sm }}>
@@ -241,10 +307,23 @@ export const DeadlineFormStep2Combined = ({
 
       {/* ========== ADDITIONAL INFORMATION SECTION ========== */}
       <View style={styles.sectionDivider} />
-      <ThemedText style={styles.sectionHeader}>ADDITIONAL INFORMATION</ThemedText>
+      <ThemedText
+        typography="titleSmall"
+        style={{
+          marginTop: Spacing.sm,
+          marginBottom: Spacing.negative.sm,
+          opacity: 0.7,
+          letterSpacing: 0.5,
+        }}
+      >
+        ADDITIONAL INFORMATION
+      </ThemedText>
 
       <View style={{ zIndex: 3 }}>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Book Type <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
         <TypeTypeaheadInput
@@ -256,19 +335,25 @@ export const DeadlineFormStep2Combined = ({
       </View>
 
       <View style={{ zIndex: 2 }}>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Source
         </ThemedText>
         <AcquisitionSourceTypeaheadInput
           control={control}
           name="acquisition_source"
           testID="input-acquisition-source"
-          placeholder="Select a source or add a new new one"
+          placeholder="Select a source or add a new one"
         />
       </View>
 
       <View style={{ zIndex: 1 }}>
-        <ThemedText variant="defaultSemiBold" style={{ marginBottom: Spacing.sm }}>
+        <ThemedText
+          variant="defaultSemiBold"
+          style={{ marginBottom: Spacing.sm }}
+        >
           Publishers
         </ThemedText>
         {publishers.length === 0 ? (
@@ -286,7 +371,10 @@ export const DeadlineFormStep2Combined = ({
         ) : (
           <View style={{ gap: Spacing.md }}>
             {publishers.map((_: string, index: number) => (
-              <View key={index} style={{ flexDirection: 'row', gap: Spacing.sm }}>
+              <View
+                key={index}
+                style={{ flexDirection: 'row', gap: Spacing.sm }}
+              >
                 <View style={{ flex: 1 }}>
                   <CustomInput
                     control={control}
@@ -336,7 +424,10 @@ export const DeadlineFormStep2Combined = ({
             </TouchableOpacity>
           </View>
         )}
-        <ThemedText color="textMuted" style={{ marginTop: Spacing.sm, lineHeight: 18 }}>
+        <ThemedText
+          color="textMuted"
+          style={{ marginTop: Spacing.sm, lineHeight: 18 }}
+        >
           {publishers.length >= 5
             ? 'Maximum of 5 publishers reached'
             : 'Add up to 5 publishers for this book'}
@@ -345,7 +436,17 @@ export const DeadlineFormStep2Combined = ({
 
       {/* ========== READING SCHEDULE SECTION ========== */}
       <View style={styles.sectionDivider} />
-      <ThemedText style={styles.sectionHeader}>READING SCHEDULE</ThemedText>
+      <ThemedText
+        typography="titleSmall"
+        style={{
+          marginTop: Spacing.sm,
+          marginBottom: Spacing.negative.sm,
+          opacity: 0.7,
+          letterSpacing: 0.5,
+        }}
+      >
+        READING SCHEDULE
+      </ThemedText>
 
       <View>
         <ThemedText variant="default" style={{ marginBottom: Spacing.sm }}>
@@ -390,11 +491,17 @@ export const DeadlineFormStep2Combined = ({
           )}
         />
         {deadlineFromPublicationDate && (
-          <ThemedText color="primary" style={[styles.autoFilledIndicator,  { marginTop: Spacing.xs }]}>
+          <ThemedText
+            color="primary"
+            style={[styles.autoFilledIndicator, { marginTop: Spacing.xs }]}
+          >
             ✓ Set to book publication date
           </ThemedText>
         )}
-        <ThemedText color="textMuted" style={{ marginTop: Spacing.sm, lineHeight: 18 }}>
+        <ThemedText
+          color="textMuted"
+          style={{ marginTop: Spacing.sm, lineHeight: 18 }}
+        >
           Past dates will be marked as overdue
         </ThemedText>
       </View>
@@ -482,7 +589,10 @@ export const DeadlineFormStep2Combined = ({
           selectedPriority={selectedPriority}
           onSelectPriority={onPriorityChange}
         />
-        <ThemedText color="textMuted" style={{ marginTop: Spacing.sm, lineHeight: 18 }}>
+        <ThemedText
+          color="textMuted"
+          style={{ marginTop: Spacing.sm, lineHeight: 18 }}
+        >
           Can this date be adjusted if needed?
         </ThemedText>
       </View>
@@ -495,14 +605,18 @@ export const DeadlineFormStep2Combined = ({
           { backgroundColor: colors.surface, borderColor: colors.border },
         ]}
       >
-        <ThemedText color="good" style={styles.summaryTitle}>
+        <ThemedText
+          typography="titleMediumPlus"
+          color="good"
+          style={{ marginBottom: Spacing.sm }}
+        >
           ✓ Ready to {mode === 'new' ? 'Add' : 'Update'}
         </ThemedText>
         {watchedValues.bookTitle && watchedValues.deadline ? (
           <ThemedText
+            typography="bodyMedium"
             color="primary"
-            style={styles.summaryText}
-            variant="label"
+            style={{ fontWeight: 'bold' }}
           >
             {watchedValues.bookTitle}{' '}
             <ThemedText>
@@ -524,14 +638,6 @@ export const DeadlineFormStep2Combined = ({
 };
 
 const styles = StyleSheet.create({
-  sectionHeader: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.negative.sm,
-    opacity: 0.7,
-    letterSpacing: 0.5,
-  },
   sectionDivider: {
     height: Spacing.md,
   },
@@ -567,15 +673,5 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     marginTop: Spacing.sm,
     borderWidth: 2,
-  },
-  summaryTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: Spacing.sm,
-  },
-  summaryText: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: 'bold',
   },
 });

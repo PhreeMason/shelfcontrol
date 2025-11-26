@@ -1,4 +1,5 @@
 import { dayjs } from '@/lib/dayjs';
+import { DailyActivity } from '@/types/calendar.types';
 import { convertMinutesToHoursAndMinutes } from '@/utils/audiobookTimeUtils';
 import { calculateLocalDaysLeft } from '@/utils/dateNormalization';
 
@@ -36,7 +37,7 @@ export function useActivityGroup() {
   /**
    * Get formatted details string for an activity
    */
-  const getActivityDetails = (activity): string => {
+  const getActivityDetails = (activity: DailyActivity): string => {
     const { activity_type, metadata } = activity;
 
     // Status label mapping - shared across activity types

@@ -1,4 +1,5 @@
-import { useTheme } from '@/hooks/useTheme';
+import { Spacing } from '@/constants/Colors';
+import { useTheme } from '@/hooks/useThemeColor';
 import { ProgressInputMode } from '@/types/progressInput.types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -28,7 +29,7 @@ const QuickActionButtons: React.FC<QuickActionButtonsProps> = ({
           variant="outline"
           textStyle={{
             fontWeight: '900',
-            color: inc > 0 ? colors.text : colors.accent,
+            color: inc > 0 ? colors.onSecondaryContainer : colors.accent,
           }}
           style={styles.quickBtn}
           onPress={() => onQuickUpdate(inc)}
@@ -43,8 +44,8 @@ const styles = StyleSheet.create({
   quickButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 5,
-    gap: 8,
+    marginBottom: Spacing.xs,
+    gap: Spacing.sm,
   },
   quickBtn: {
     flex: 1,

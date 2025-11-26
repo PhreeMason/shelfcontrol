@@ -1,4 +1,6 @@
 import { ThemedText } from '@/components/themed';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
@@ -72,14 +74,11 @@ export function DeadlineCountdownBadge({
                 {reviewDaysLeft}
               </ThemedText>
             ) : (
-              <ThemedText
-                style={[
-                  styles.emoji,
-                  { paddingTop: Platform.select({ ios: 3, android: 2 }) },
-                ]}
-              >
-                📝
-              </ThemedText>
+              <IconSymbol
+                name="pencil.and.scribble"
+                size={26}
+                color={colors.textInverse}
+              />
             )}
           </>
         ) : (
@@ -109,11 +108,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.08)',
-    shadowColor: 'rgba(0,0,0,0.2)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 5,
+    ...Shadows.elevated,
     zIndex: 20,
   },
   contentContainer: {

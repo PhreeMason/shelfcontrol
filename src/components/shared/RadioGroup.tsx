@@ -67,9 +67,7 @@ const RadioGroup = <T extends FieldValues>({
                     />
                   )}
                 </View>
-                <ThemedText typography="bodyMedium">
-                  {option.label}
-                </ThemedText>
+                <ThemedText typography="bodyMedium">{option.label}</ThemedText>
               </TouchableOpacity>
             ))}
           </View>

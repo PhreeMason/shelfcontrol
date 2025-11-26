@@ -26,7 +26,11 @@ const ProfileHeaderInfo: React.FC<ProfileHeaderInfoProps> = ({
         <ThemedText typography="titleLarge" color="textInverse">
           {displayName}
         </ThemedText>
-        <ThemedText variant="default" color="textInverse" style={styles.username}>
+        <ThemedText
+          variant="default"
+          color="textInverse"
+          style={styles.username}
+        >
           @{username}
         </ThemedText>
       </View>

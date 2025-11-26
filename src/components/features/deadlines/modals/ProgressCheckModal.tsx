@@ -98,7 +98,7 @@ export const ProgressCheckModal: React.FC<ProgressCheckModalProps> = ({
 
   const handleDidNotFinish = () => {
     onClose();
-    router.push(`/deadline/${deadline.id}/completion-flow?skipToReview=true`);
+    router.push(`/deadline/${deadline.id}/completion-flow`);
   };
 
   const handleConfirm = () => {

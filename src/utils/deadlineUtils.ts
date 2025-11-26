@@ -71,6 +71,8 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
       pending.push(deadline);
     } else if (latestStatus === 'paused') {
       paused.push(deadline);
+    } else if (latestStatus === 'rejected' || latestStatus === 'withdrew') {
+      // Skip - these only appear in ALL tab
     } else if (deadlineDate.isBefore(today)) {
       overdue.push(deadline);
     } else {

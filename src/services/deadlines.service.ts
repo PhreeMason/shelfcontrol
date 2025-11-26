@@ -1,5 +1,10 @@
-import { DB_TABLES } from '@/constants/database';
-import { DEADLINE_STATUS } from '@/constants/status';
+import {
+  ALTERNATE_COVER_CONFIG,
+  DB_TABLES,
+  STORAGE_BUCKETS,
+} from '@/constants/database';
+import { DEADLINE_STATUS, VALID_STATUS_TRANSITIONS } from '@/constants/status';
+import { analytics } from '@/lib/analytics/client';
 import { dayjs } from '@/lib/dayjs';
 import { generateId, supabase } from '@/lib/supabase';
 import { Database } from '@/types/database.types';
@@ -364,6 +369,36 @@ class DeadlinesService {
    * Delete a deadline
    */
   async deleteDeadline(userId: string, deadlineId: string) {
+    // Fetch deadline to get cover_image_url before deletion
+    const { data: deadlineResults } = await supabase
+      .from(DB_TABLES.DEADLINES)
+      .select('cover_image_url')
+      .eq('id', deadlineId)
+      .eq('user_id', userId)
+      .limit(1);
+
+    const deadline = deadlineResults?.[0];
+
+    // Clean up cover image from storage if exists
+    if (deadline?.cover_image_url) {
+      try {
+        // Only delete if it's in the alternate-covers bucket (not external URLs)
+        if (
+          deadline.cover_image_url.includes(STORAGE_BUCKETS.ALTERNATE_COVERS)
+        ) {
+          const { error: deleteError } = await supabase.storage
+            .from(STORAGE_BUCKETS.ALTERNATE_COVERS)
+            .remove([deadline.cover_image_url]);
+
+          if (deleteError) {
+            console.warn('Failed to delete cover image:', deleteError);
+          }
+        }
+      } catch (error) {
+        console.warn('Error cleaning up cover image:', error);
+      }
+    }
+
     const { error: progressError } = await supabase
       .from(DB_TABLES.DEADLINE_PROGRESS)
       .delete()
@@ -585,15 +620,6 @@ class DeadlinesService {
     options?: { skipValidation?: boolean; skipRefetch?: boolean }
   ) {
     if (!options?.skipValidation) {
-      const validTransitions: Record<string, string[]> = {
-        pending: ['reading'],
-        reading: ['paused', 'to_review', 'complete', 'did_not_finish'],
-        paused: ['reading', 'complete', 'did_not_finish'],
-        to_review: ['complete', 'did_not_finish'],
-        complete: [],
-        did_not_finish: [],
-      };
-
       const { data: deadlineResults } = await supabase
         .from(DB_TABLES.DEADLINES)
         .select(
@@ -625,7 +651,9 @@ class DeadlinesService {
       if (currentStatusData && currentStatusData.status) {
         const currentStatus = currentStatusData.status;
         const allowedTransitions =
-          validTransitions[currentStatus as string] || [];
+          VALID_STATUS_TRANSITIONS[
+            currentStatus as keyof typeof VALID_STATUS_TRANSITIONS
+          ] || [];
 
         if (!allowedTransitions.includes(status) && currentStatus !== status) {
           throw new Error(
@@ -860,7 +888,79 @@ class DeadlinesService {
       return data || [];
     } catch (error) {
       console.error('Failed to get daily activities:', error);
+      analytics.track('daily_activities_fetch_failed', {
+        error_message: error instanceof Error ? error.message : 'Unknown error',
+      });
       return [];
+    }
+  }
+
+  /**
+   * Upload a cover image for a deadline
+   * @param userId - User ID
+   * @param uri - Local file URI
+   * @param oldCoverPath - Optional path to existing cover to delete
+   * @returns Storage path of uploaded image
+   */
+  async uploadCoverImage(
+    userId: string,
+    uri: string,
+    oldCoverPath?: string | null
+  ) {
+    try {
+      // Clean up old cover if path provided
+      if (oldCoverPath) {
+        try {
+          await supabase.storage
+            .from(STORAGE_BUCKETS.ALTERNATE_COVERS)
+            .remove([oldCoverPath]);
+        } catch (cleanupError) {
+          console.warn('Failed to delete old cover:', cleanupError);
+          // Continue with upload even if cleanup fails
+        }
+      }
+
+      // Convert URI to ArrayBuffer
+      const arraybuffer = await fetch(uri).then(res => res.arrayBuffer());
+
+      // Extract file extension
+      const fileExt = uri.split('.').pop()?.toLowerCase() ?? 'jpeg';
+
+      // Generate unique filename with timestamp
+      const fileName = `${ALTERNATE_COVER_CONFIG.FILE_PREFIX}${Date.now()}.${fileExt}`;
+      const path = `${userId}/deadline-covers/${fileName}`;
+
+      // Upload to storage
+      const { data, error } = await supabase.storage
+        .from(STORAGE_BUCKETS.ALTERNATE_COVERS)
+        .upload(path, arraybuffer, {
+          contentType: `image/${fileExt}`,
+          upsert: true,
+        });
+
+      if (error) throw error;
+
+      return { path: data.path };
+    } catch (err) {
+      console.error('Cover image upload error:', err);
+      throw err;
+    }
+  }
+
+  /**
+   * Delete a cover image from storage
+   * @param coverPath - Storage path to the cover image
+   */
+  async deleteCoverImage(coverPath: string) {
+    try {
+      const { error } = await supabase.storage
+        .from(STORAGE_BUCKETS.ALTERNATE_COVERS)
+        .remove([coverPath]);
+
+      if (error) throw error;
+    } catch (err) {
+      console.error('Cover image deletion error:', err);
+      throw err;
     }
   }
 }

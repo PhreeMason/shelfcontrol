@@ -28,6 +28,7 @@ export const MAPPING = {
   'xmark.circle.fill': 'cancel',
   'chevron.left': 'keyboard-arrow-left',
   plus: 'add',
+  minus: 'remove',
   'info.circle.fill': 'info',
   'checkmark.circle.fill': 'check-circle',
   'exclamationmark.circle.fill': 'error',
@@ -36,6 +37,8 @@ export const MAPPING = {
   'person.circle.fill': 'person',
   'book.fill': 'menu-book',
   'line.3.horizontal.decrease': 'filter-list',
+  'line.3.horizontal.decrease.circle': 'filter-list',
+  'line.3.horizontal.decrease.circle.fill': 'filter-list',
   headphones: 'headphones',
   pencil: 'edit',
   calendar: 'event',
@@ -67,6 +70,7 @@ export const MAPPING = {
   'books.vertical.fill': 'library-books',
   'arrow.left.arrow.right': 'swap-horiz',
   'arrow.up.right': 'trending-up',
+  'chart.line.uptrend.xyaxis': 'trending-up',
   'star.leadinghalf.filled': 'star-half',
   'plus.circle.fill': 'add-circle',
   'play.fill': 'play-circle-fill',
@@ -75,6 +79,12 @@ export const MAPPING = {
   'arrow.triangle.2.circlepath': 'sync',
   star: 'star-border',
   'info.circle': 'info',
+  photo: 'photo',
+  link: 'link',
+  'checkmark.seal.fill': 'verified',
+  'hand.thumbsdown.fill': 'thumb-down',
+  'arrow.uturn.backward.circle.fill': 'undo',
+  'archivebox.fill': 'archive',
 } as IconMapping;
 
 /**

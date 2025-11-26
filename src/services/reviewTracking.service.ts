@@ -1,4 +1,5 @@
 import { DB_TABLES } from '@/constants/database';
+import { analytics } from '@/lib/analytics/client';
 import { generateId, supabase } from '@/lib/supabase';
 import { notesService } from './notes.service';
 
@@ -281,7 +282,7 @@ class ReviewTrackingService {
     const postedPlatforms = allPlatforms?.filter(p => p.posted).length || 0;
     const completion_percentage =
       totalPlatforms > 0
-        ? Math.round((postedPlatforms / totalPlatforms) * 100)
+        ? Math.floor((postedPlatforms / totalPlatforms) * 100)
         : 0;
 
     return { completion_percentage };
@@ -338,6 +339,9 @@ class ReviewTrackingService {
 
     if (error) {
       console.warn('Error fetching user platforms:', error);
+      analytics.track('user_platforms_fetch_failed', {
+        error_message: error.message,
+      });
       return [];
     }
 
@@ -423,7 +427,7 @@ class ReviewTrackingService {
     const postedPlatforms = platforms?.filter(p => p.posted).length || 0;
     const completion_percentage =
       totalPlatforms > 0
-        ? Math.round((postedPlatforms / totalPlatforms) * 100)
+        ? Math.floor((postedPlatforms / totalPlatforms) * 100)
         : 0;
 
     return {

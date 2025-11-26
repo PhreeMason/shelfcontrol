@@ -55,13 +55,12 @@ describe('DeadlineCountdownDisplay', () => {
   });
 
   describe('To review status', () => {
-    it('should display emoji and review label when no review data provided', () => {
+    it('should display icon and review label when no review data provided', () => {
       const { getByText } = render(
         <DeadlineCountdownDisplay {...defaultProps} latestStatus="to_review" />
       );
 
-      expect(getByText('📝')).toBeTruthy();
-      expect(getByText('review')).toBeTruthy();
+      expect(getByText('Review')).toBeTruthy();
     });
 
     it('should display review days left when reviewDaysLeft is provided', () => {

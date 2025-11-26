@@ -514,7 +514,7 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Deadline is required');
+        expect(result.error.issues[0].message).toBe('Due date is required');
       }
     });
   });
@@ -990,7 +990,7 @@ describe('deadlineFormSchema', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.issues[0].message).toBe(
-          'Please select deadline flexibility'
+          'Please select pace flexibility'
         );
       }
     });

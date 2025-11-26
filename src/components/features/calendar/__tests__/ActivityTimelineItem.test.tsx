@@ -66,13 +66,13 @@ describe('ActivityTimelineItem', () => {
       expect(screen.getByText(/AM|PM/)).toBeTruthy();
 
       // Should have icon
-      expect(screen.getByTestId('icon-arrow.up.right')).toBeTruthy();
+      expect(screen.getByTestId('icon-chart.line.uptrend.xyaxis')).toBeTruthy();
 
-      // Should have label
-      expect(screen.getByText('Progress Update')).toBeTruthy();
+      // Should have book title as label
+      expect(screen.getByText('The Great Gatsby')).toBeTruthy();
 
-      // Should have book title in details
-      expect(screen.getByText(/The Great Gatsby/)).toBeTruthy();
+      // Should have progress details in description
+      expect(screen.getByText(/Read 50 pages/)).toBeTruthy();
     });
 
     it('should be pressable when onPress is provided', () => {
@@ -99,11 +99,9 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(screen.getByText('Progress Update')).toBeTruthy();
-      expect(
-        screen.getByText('The Great Gatsby - Read 45 pages (120 → 165)')
-      ).toBeTruthy();
-      expect(screen.getByTestId('icon-arrow.up.right')).toBeTruthy();
+      expect(screen.getByText('The Great Gatsby')).toBeTruthy();
+      expect(screen.getByText('Read 45 pages (120 → 165)')).toBeTruthy();
+      expect(screen.getByTestId('icon-chart.line.uptrend.xyaxis')).toBeTruthy();
     });
 
     it('should render audiobook progress with time formatting', () => {
@@ -115,10 +113,8 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(screen.getByText('Progress Update')).toBeTruthy();
-      expect(
-        screen.getByText('The Great Gatsby - Read 1h (1h 30m → 2h 30m)')
-      ).toBeTruthy();
+      expect(screen.getByText('The Great Gatsby')).toBeTruthy();
+      expect(screen.getByText('Read 1h (1h 30m → 2h 30m)')).toBeTruthy();
     });
 
     it('should render eBook progress correctly', () => {
@@ -130,9 +126,7 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(
-        screen.getByText('The Great Gatsby - Read 45 pages (120 → 165)')
-      ).toBeTruthy();
+      expect(screen.getByText('Read 45 pages (120 → 165)')).toBeTruthy();
     });
 
     it('should handle progress with missing metadata', () => {
@@ -140,10 +134,21 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(screen.getByText('Progress Update')).toBeTruthy();
-      expect(
-        screen.getByText('The Great Gatsby - Progress updated')
-      ).toBeTruthy();
+      expect(screen.getByText('The Great Gatsby')).toBeTruthy();
+      expect(screen.getByText('Progress updated')).toBeTruthy();
+    });
+
+    it('should handle progress with null previous_progress (first update)', () => {
+      const activity = createMockActivity('progress', {
+        current_progress: 256,
+        previous_progress: null,
+        format: 'physical',
+      });
+
+      render(<ActivityTimelineItem activity={activity} />);
+
+      expect(screen.getByText('The Great Gatsby')).toBeTruthy();
+      expect(screen.getByText('Read 256 pages (0 → 256)')).toBeTruthy();
     });
 
     it('should render note activity correctly', () => {
@@ -153,11 +158,11 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(screen.getByText('Note Added')).toBeTruthy();
+      expect(screen.getByText('The Great Gatsby')).toBeTruthy();
       // Note text is truncated at 50 chars
       expect(
         screen.getByText(
-          'The Great Gatsby - "This chapter really highlights the themes of the b..."'
+          '"This chapter really highlights the themes of the b..."'
         )
       ).toBeTruthy();
       expect(screen.getByTestId('icon-note.text')).toBeTruthy();
@@ -170,7 +175,7 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(screen.getByText('The Great Gatsby - "Great book!"')).toBeTruthy();
+      expect(screen.getByText('"Great book!"')).toBeTruthy();
     });
 
     it('should handle note with missing text', () => {
@@ -178,7 +183,7 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(screen.getByText('The Great Gatsby - Note added')).toBeTruthy();
+      expect(screen.getByText('Note added')).toBeTruthy();
     });
 
     it('should render status activity correctly', () => {
@@ -189,13 +194,9 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(screen.getByText('Status Change')).toBeTruthy();
-      expect(
-        screen.getByText('The Great Gatsby - Pending → Reading')
-      ).toBeTruthy();
-      expect(
-        screen.getByTestId('icon-arrow.triangle.2.circlepath')
-      ).toBeTruthy();
+      expect(screen.getByText('The Great Gatsby')).toBeTruthy();
+      expect(screen.getByText('Pending → Reading')).toBeTruthy();
+      expect(screen.getByTestId('icon-arrow.left.arrow.right')).toBeTruthy();
     });
 
     it('should handle status with underscores', () => {
@@ -206,9 +207,7 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(
-        screen.getByText('The Great Gatsby - Reading → To Review')
-      ).toBeTruthy();
+      expect(screen.getByText('Reading → To Review')).toBeTruthy();
     });
 
     it('should handle status without previous status', () => {
@@ -218,7 +217,7 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(screen.getByText('The Great Gatsby - Reading')).toBeTruthy();
+      expect(screen.getByText('Status changed to Reading')).toBeTruthy();
     });
 
     it('should handle status with missing metadata', () => {
@@ -226,9 +225,7 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(
-        screen.getByText('The Great Gatsby - Status changed')
-      ).toBeTruthy();
+      expect(screen.getByText('Status changed')).toBeTruthy();
     });
 
     it('should render review activity correctly', () => {
@@ -239,10 +236,8 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(screen.getByText('Review Posted')).toBeTruthy();
-      expect(
-        screen.getByText('The Great Gatsby - Posted to Goodreads')
-      ).toBeTruthy();
+      expect(screen.getByText('The Great Gatsby')).toBeTruthy();
+      expect(screen.getByText('Posted to Goodreads')).toBeTruthy();
       expect(screen.getByTestId('icon-star')).toBeTruthy();
     });
 
@@ -251,7 +246,7 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(screen.getByText('The Great Gatsby - Review posted')).toBeTruthy();
+      expect(screen.getByText('Review posted')).toBeTruthy();
     });
 
     it('should render deadline_created activity correctly', () => {
@@ -261,10 +256,8 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(screen.getByText('Deadline Created')).toBeTruthy();
-      expect(
-        screen.getByText('The Great Gatsby (eBook) - Deadline created')
-      ).toBeTruthy();
+      expect(screen.getByText('The Great Gatsby')).toBeTruthy();
+      expect(screen.getByText('Due date created (eBook)')).toBeTruthy();
       expect(screen.getByTestId('icon-plus')).toBeTruthy();
     });
 
@@ -275,9 +268,7 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(
-        screen.getByText('The Great Gatsby (Physical) - Deadline created')
-      ).toBeTruthy();
+      expect(screen.getByText('Due date created (Physical)')).toBeTruthy();
     });
 
     it('should handle deadline_created with audio format', () => {
@@ -287,9 +278,7 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(
-        screen.getByText('The Great Gatsby (Audio) - Deadline created')
-      ).toBeTruthy();
+      expect(screen.getByText('Due date created (Audio)')).toBeTruthy();
     });
 
     it('should handle deadline_created without format', () => {
@@ -297,9 +286,7 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(
-        screen.getByText('The Great Gatsby - Deadline created')
-      ).toBeTruthy();
+      expect(screen.getByText('Due date created')).toBeTruthy();
     });
   });
 
@@ -348,8 +335,8 @@ describe('ActivityTimelineItem', () => {
 
       render(<ActivityTimelineItem activity={activity} />);
 
-      expect(screen.getByText('Note Added')).toBeTruthy();
-      expect(screen.getByText('The Great Gatsby - Note added')).toBeTruthy();
+      expect(screen.getByText('The Great Gatsby')).toBeTruthy();
+      expect(screen.getByText('Note added')).toBeTruthy();
     });
 
     it('should handle invalid timestamp gracefully', () => {
@@ -359,7 +346,7 @@ describe('ActivityTimelineItem', () => {
       render(<ActivityTimelineItem activity={activity} />);
 
       // Should still render, just without a valid time
-      expect(screen.getByText('Note Added')).toBeTruthy();
+      expect(screen.getByText('The Great Gatsby')).toBeTruthy();
     });
   });
 
@@ -397,7 +384,7 @@ describe('ActivityTimelineItem', () => {
         <ActivityTimelineItem activity={progressActivity} />
       );
 
-      expect(getByTestId('icon-arrow.up.right')).toBeTruthy();
+      expect(getByTestId('icon-chart.line.uptrend.xyaxis')).toBeTruthy();
 
       const noteActivity = createMockActivity('note');
       rerender(<ActivityTimelineItem activity={noteActivity} />);
@@ -405,25 +392,22 @@ describe('ActivityTimelineItem', () => {
       expect(getByTestId('icon-note.text')).toBeTruthy();
     });
 
-    it('should display correct labels for each activity type', () => {
-      const types: {
-        type: EnrichedActivity['activity_type'];
-        label: string;
-      }[] = [
-        { type: 'progress', label: 'Progress Update' },
-        { type: 'note', label: 'Note Added' },
-        { type: 'status', label: 'Status Change' },
-        { type: 'review', label: 'Review Posted' },
-        { type: 'deadline_created', label: 'Deadline Created' },
+    it('should display book title as label for all activity types', () => {
+      const types: EnrichedActivity['activity_type'][] = [
+        'progress',
+        'note',
+        'status',
+        'review',
+        'deadline_created',
       ];
 
-      types.forEach(({ type, label }) => {
+      types.forEach(type => {
         const activity = createMockActivity(type);
         const { getByText, unmount } = render(
           <ActivityTimelineItem activity={activity} />
         );
 
-        expect(getByText(label)).toBeTruthy();
+        expect(getByText('The Great Gatsby')).toBeTruthy();
         unmount();
       });
     });

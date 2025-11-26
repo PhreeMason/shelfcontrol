@@ -105,6 +105,10 @@ export interface EventPropertiesMap {
 
   deadline_resumed: Record<string, never>;
 
+  deadline_rejected: Record<string, never>;
+
+  deadline_withdrew: Record<string, never>;
+
   deadline_card_clicked: {
     deadline_status: DeadlineStatus;
     deadline_format: ReadingFormat;
@@ -303,6 +307,109 @@ export interface EventPropertiesMap {
   };
 
   export_rate_limited: Record<string, never>;
+
+  // Deadline failure events
+  deadline_creation_failed: {
+    error_message: string;
+    book_source: BookSource;
+  };
+
+  deadline_update_failed: {
+    error_message: string;
+    deadline_id: string;
+  };
+
+  deadline_deletion_failed: {
+    error_message: string;
+    deadline_id: string;
+  };
+
+  deadline_status_update_failed: {
+    error_message: string;
+    deadline_id: string;
+    current_status: DeadlineStatus;
+    attempted_status: DeadlineStatus;
+    invalid_transition: boolean;
+  };
+
+  deadline_progress_update_failed: {
+    error_message: string;
+    deadline_id: string;
+    progress_type: 'pages' | 'percentage' | 'time';
+  };
+
+  deadline_date_update_failed: {
+    error_message: string;
+    deadline_id: string;
+  };
+
+  deadline_completion_failed: {
+    error_message: string;
+    deadline_id: string;
+  };
+
+  deadline_start_failed: {
+    error_message: string;
+    deadline_id: string;
+  };
+
+  deadline_pause_failed: {
+    error_message: string;
+    deadline_id: string;
+  };
+
+  deadline_resume_failed: {
+    error_message: string;
+    deadline_id: string;
+  };
+
+  deadline_dnf_failed: {
+    error_message: string;
+    deadline_id: string;
+  };
+
+  cover_image_upload_failed: {
+    error_message: string;
+    deadline_id: string;
+    failure_stage: 'fetch' | 'upload';
+  };
+
+  cover_image_deletion_failed: {
+    error_message: string;
+    deadline_id: string;
+  };
+
+  daily_activities_fetch_failed: {
+    error_message: string;
+  };
+
+  // Review tracking failure events
+  review_tracking_creation_failed: {
+    error_message: string;
+    deadline_id: string;
+    platform_count: number;
+  };
+
+  review_platforms_update_failed: {
+    error_message: string;
+    deadline_id: string;
+    platform_name: string;
+  };
+
+  review_tracking_fetch_failed: {
+    error_message: string;
+    deadline_id: string;
+  };
+
+  user_platforms_fetch_failed: {
+    error_message: string;
+  };
+
+  review_url_update_failed: {
+    error_message: string;
+    deadline_id: string;
+    platform_name: string;
+  };
 }
 
 export type EventName = keyof EventPropertiesMap;

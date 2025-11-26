@@ -50,6 +50,7 @@ describe('CompletionFormStep2', () => {
     acquisition_source: null,
     type: 'Personal',
     publishers: null,
+    cover_image_url: null,
     progress: [],
   };
 

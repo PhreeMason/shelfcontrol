@@ -134,6 +134,7 @@ describe('CompletionFormContainer', () => {
     acquisition_source: null,
     type: 'Personal',
     publishers: null,
+    cover_image_url: null,
     progress: [
       {
         id: 'progress-1',

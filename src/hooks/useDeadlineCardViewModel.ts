@@ -5,6 +5,7 @@ import { analytics } from '@/lib/analytics/client';
 import { dayjs } from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { getCoverImageUrl } from '@/utils/coverImageUtils';
 import { calculateLocalDaysLeft } from '@/utils/dateNormalization';
 import {
   formatCapacityMessage,
@@ -12,7 +13,7 @@ import {
 } from '@/utils/deadlineDisplayUtils';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { GestureResponderEvent, Platform, ViewStyle } from 'react-native';
+import { GestureResponderEvent, ViewStyle } from 'react-native';
 
 interface DeadlineCardViewModel {
   display: {
@@ -28,7 +29,6 @@ interface DeadlineCardViewModel {
   styling: {
     borderColor: string;
     countdownColor: string;
-    shadowStyle: ViewStyle;
     cardContainerStyle: ViewStyle;
   };
   componentProps: {
@@ -104,22 +104,6 @@ export function useDeadlineCardViewModel({
   const { reviewDueDate, unpostedCount, totalPlatformCount } =
     useReviewTracking(deadline.id, isToReview);
 
-  const shadowStyle = useMemo(
-    () =>
-      Platform.select({
-        ios: {
-          shadowColor: 'rgba(184, 169, 217, 0.1)',
-          shadowOffset: { width: 2, height: 8 },
-          shadowOpacity: 0.25,
-          shadowRadius: 8,
-        },
-        android: {
-          elevation: 1,
-        },
-      }) as ViewStyle,
-    []
-  );
-
   const handleCardPress = () => {
     if (!disableNavigation) {
       analytics.track('deadline_card_clicked', {
@@ -154,22 +138,20 @@ export function useDeadlineCardViewModel({
   );
 
   const primaryText = useMemo(() => {
-    if (urgencyLevel === 'overdue') {
-      return formatRemainingDisplay(remaining, deadline.format);
-    }
-
+    // Check status first - to_review takes priority over urgency
     if (latestStatus === 'to_review') {
       if (totalPlatformCount === 0) {
-        return 'No reviews to post';
+        return 'No reviews to track';
       }
       if (unpostedCount === 0) {
-        return 'All reviews posted';
+        return 'All posted';
       }
       const postedCount = totalPlatformCount - unpostedCount;
-      if (unpostedCount === 1) {
-        return `${postedCount} of ${totalPlatformCount} reviews posted`;
-      }
-      return `${postedCount} of ${totalPlatformCount} reviews posted`;
+      return `${postedCount} of ${totalPlatformCount} posted`;
+    }
+
+    if (urgencyLevel === 'overdue') {
+      return formatRemainingDisplay(remaining, deadline.format);
     }
 
     return capacityMessage;
@@ -213,9 +195,13 @@ export function useDeadlineCardViewModel({
   const cardContainerStyle = useMemo(
     () => ({
       borderColor,
-      ...(isArchived && shadowStyle),
     }),
-    [borderColor, isArchived, shadowStyle]
+    [borderColor]
+  );
+
+  // Prioritize deadline's custom cover over book's cover
+  const coverImageUrl = getCoverImageUrl(
+    deadline.cover_image_url || bookData?.cover_image_url
   );
 
   return {
@@ -223,7 +209,7 @@ export function useDeadlineCardViewModel({
       title: deadline.book_title,
       primaryText,
       secondaryText,
-      coverImageUrl: bookData?.cover_image_url,
+      coverImageUrl,
     },
     progress: {
       progressPercentage,
@@ -232,12 +218,11 @@ export function useDeadlineCardViewModel({
     styling: {
       borderColor,
       countdownColor,
-      shadowStyle,
       cardContainerStyle,
     },
     componentProps: {
       bookCover: {
-        coverImageUrl: bookData?.cover_image_url,
+        coverImageUrl,
         deadline,
         daysLeft,
       },

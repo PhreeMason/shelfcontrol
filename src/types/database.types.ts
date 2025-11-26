@@ -396,6 +396,7 @@ export type Database = {
           author: string | null;
           book_id: string | null;
           book_title: string;
+          cover_image_url: string | null;
           created_at: string;
           deadline_date: string;
           deadline_type: string | null;
@@ -416,6 +417,7 @@ export type Database = {
           author?: string | null;
           book_id?: string | null;
           book_title: string;
+          cover_image_url?: string | null;
           created_at?: string;
           deadline_date: string;
           deadline_type?: string | null;
@@ -436,6 +438,7 @@ export type Database = {
           author?: string | null;
           book_id?: string | null;
           book_title?: string;
+          cover_image_url?: string | null;
           created_at?: string;
           deadline_date?: string;
           deadline_type?: string | null;

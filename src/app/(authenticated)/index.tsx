@@ -201,6 +201,8 @@ export default function HomeScreen() {
         sortOrder={sortOrder}
         onSortOrderChange={setSortOrder}
         availableTypes={availableTypes}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
         animatedStyle={stickyFilterStyle}
       />
 
@@ -239,6 +241,8 @@ export default function HomeScreen() {
             sortOrder={sortOrder}
             onSortOrderChange={setSortOrder}
             availableTypes={availableTypes}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
             animatedStyle={scrollableFilterStyle}
             onLayout={handleFilterLayout}
           />
@@ -253,7 +257,6 @@ export default function HomeScreen() {
             excludedStatuses={excludedStatuses}
             sortOrder={sortOrder}
             searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
           />
         </Animated.ScrollView>
       </KeyboardAvoidingView>

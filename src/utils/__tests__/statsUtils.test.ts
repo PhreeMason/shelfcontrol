@@ -1174,12 +1174,18 @@ describe('statsUtils', () => {
       // Week before that: Dec 31 - Jan 6 (Sunday-Saturday)
 
       // Expected start: Dec 31 00:00
-      const expectedStart = dayjs('2024-01-14').subtract(14, 'day').startOf('day');
+      const expectedStart = dayjs('2024-01-14')
+        .subtract(14, 'day')
+        .startOf('day');
       // Expected end: Jan 13 23:59:59.999
       const expectedEnd = dayjs('2024-01-14').subtract(1, 'day').endOf('day');
 
-      expect(result.start.format('YYYY-MM-DD')).toBe(expectedStart.format('YYYY-MM-DD'));
-      expect(result.end.format('YYYY-MM-DD')).toBe(expectedEnd.format('YYYY-MM-DD'));
+      expect(result.start.format('YYYY-MM-DD')).toBe(
+        expectedStart.format('YYYY-MM-DD')
+      );
+      expect(result.end.format('YYYY-MM-DD')).toBe(
+        expectedEnd.format('YYYY-MM-DD')
+      );
       expect(result.description).toBe('last 2 weeks');
     });
 
@@ -1287,8 +1293,12 @@ describe('statsUtils', () => {
       expect(result.topDays[2].totalUnits).toBeGreaterThan(0);
 
       // Should be sorted by totalUnits descending
-      expect(result.topDays[0].totalUnits).toBeGreaterThanOrEqual(result.topDays[1].totalUnits);
-      expect(result.topDays[1].totalUnits).toBeGreaterThanOrEqual(result.topDays[2].totalUnits);
+      expect(result.topDays[0].totalUnits).toBeGreaterThanOrEqual(
+        result.topDays[1].totalUnits
+      );
+      expect(result.topDays[1].totalUnits).toBeGreaterThanOrEqual(
+        result.topDays[2].totalUnits
+      );
     });
 
     it('should only include physical and eBook formats', () => {
@@ -1397,7 +1407,9 @@ describe('statsUtils', () => {
       expect(result.topDays[1].totalUnits).toBeGreaterThan(0);
 
       // Verify no 0-activity days are included
-      const hasZeroActivityDay = result.topDays.some(day => day.totalUnits === 0);
+      const hasZeroActivityDay = result.topDays.some(
+        day => day.totalUnits === 0
+      );
       expect(hasZeroActivityDay).toBe(false);
     });
   });
@@ -1543,7 +1555,9 @@ describe('statsUtils', () => {
       expect(result.topDays[0].dayName).toBe('Friday');
 
       // Verify no 0-activity days are included
-      const hasZeroActivityDay = result.topDays.some(day => day.totalUnits === 0);
+      const hasZeroActivityDay = result.topDays.some(
+        day => day.totalUnits === 0
+      );
       expect(hasZeroActivityDay).toBe(false);
     });
   });

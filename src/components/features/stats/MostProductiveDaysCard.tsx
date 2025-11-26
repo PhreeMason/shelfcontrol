@@ -95,7 +95,7 @@ export function MostProductiveDaysCard({
 
         {/* Top Days Section */}
         <View style={styles.daysContainer}>
-          {stats.topDays.map((day) => (
+          {stats.topDays.map(day => (
             <View key={day.dayIndex} style={styles.dayRow}>
               <View style={styles.dayHeader}>
                 <ThemedText style={styles.dayLabel}>{day.dayAbbrev}</ThemedText>
@@ -114,10 +114,7 @@ export function MostProductiveDaysCard({
 
         {/* Data Attribution Footer */}
         <View
-          style={[
-            styles.attributionSection,
-            dynamicStyles.attributionSection,
-          ]}
+          style={[styles.attributionSection, dynamicStyles.attributionSection]}
         >
           <ThemedText variant="secondary" style={styles.attributionText}>
             Stats are based on {stats.dateRangeText} of data not including this
