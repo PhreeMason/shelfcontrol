@@ -643,7 +643,7 @@ describe('reviewFormUtils', () => {
         const toast = createReviewTrackingSuccessToast();
         expect(toast).toEqual({
           type: 'success',
-          text1: 'Review tracking set up!',
+          text1: 'All set!',
         });
       });
     });
@@ -653,8 +653,8 @@ describe('reviewFormUtils', () => {
         const toast = createReviewTrackingErrorToast();
         expect(toast).toEqual({
           type: 'error',
-          text1: 'Error',
-          text2: 'Failed to set up review tracking. Please try again.',
+          text1: 'Something went wrong',
+          text2: 'Please try again.',
         });
       });
 
@@ -663,7 +663,7 @@ describe('reviewFormUtils', () => {
         const toast = createReviewTrackingErrorToast(error);
         expect(toast).toEqual({
           type: 'error',
-          text1: 'Error',
+          text1: 'Something went wrong',
           text2: 'Network error',
         });
       });
@@ -674,8 +674,8 @@ describe('reviewFormUtils', () => {
         const toast = createPlatformRequiredToast();
         expect(toast).toEqual({
           type: 'error',
-          text1: 'Platform Required',
-          text2: 'Please select at least one platform',
+          text1: 'Pick a platform',
+          text2: 'Select where you want to post your review',
         });
       });
     });

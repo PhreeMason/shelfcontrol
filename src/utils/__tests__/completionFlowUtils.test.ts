@@ -85,8 +85,8 @@ describe('completionFlowUtils', () => {
       const toast = createCompletionErrorToast();
       expect(toast).toEqual({
         type: 'error',
-        text1: 'Error',
-        text2: 'Failed to update book. Please try again.',
+        text1: 'Something went wrong',
+        text2: 'Please try again.',
       });
     });
 
@@ -95,7 +95,7 @@ describe('completionFlowUtils', () => {
       const toast = createCompletionErrorToast(error);
       expect(toast).toEqual({
         type: 'error',
-        text1: 'Error',
+        text1: 'Something went wrong',
         text2: 'Network error',
       });
     });
@@ -103,7 +103,7 @@ describe('completionFlowUtils', () => {
     it('should use default message when error message is empty', () => {
       const error = new Error('');
       const toast = createCompletionErrorToast(error);
-      expect(toast.text2).toBe('Failed to update book. Please try again.');
+      expect(toast.text2).toBe('Please try again.');
     });
   });
 
@@ -213,7 +213,7 @@ describe('completionFlowUtils', () => {
       );
       expect(showToast).toHaveBeenCalledWith({
         type: 'error',
-        text1: 'Error',
+        text1: 'Something went wrong',
         text2: 'Test error',
       });
       expect(navigateToHome).not.toHaveBeenCalled();

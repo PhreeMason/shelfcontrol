@@ -203,22 +203,21 @@ export interface ReviewFormToastConfig {
 
 export const createReviewTrackingSuccessToast = (): ReviewFormToastConfig => ({
   type: 'success',
-  text1: 'Review tracking set up!',
+  text1: 'All set!',
 });
 
 export const createReviewTrackingErrorToast = (
   error?: Error
 ): ReviewFormToastConfig => ({
   type: 'error',
-  text1: 'Error',
-  text2:
-    error?.message || 'Failed to set up review tracking. Please try again.',
+  text1: 'Something went wrong',
+  text2: error?.message || 'Please try again.',
 });
 
 export const createPlatformRequiredToast = (): ReviewFormToastConfig => ({
   type: 'error',
-  text1: 'Platform Required',
-  text2: 'Please select at least one platform',
+  text1: 'Pick a platform',
+  text2: 'Select where you want to post your review',
 });
 
 export const createSkipSuccessToast = (): ReviewFormToastConfig => ({

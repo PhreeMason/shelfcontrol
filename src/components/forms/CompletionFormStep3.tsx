@@ -27,6 +27,13 @@ import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import {
+  createPlatformRequiredToast,
+  createReviewTrackingErrorToast,
+  createSkipErrorToast,
+  createSkipSuccessToast,
+  validatePlatformSelection,
+} from '@/utils/reviewFormUtils';
 import { ReviewFormData, reviewFormSchema } from '@/utils/reviewFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
@@ -136,12 +143,9 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
 
     const allPlatforms = getAllSelectedPlatforms();
 
-    if (allPlatforms.length === 0) {
-      Toast.show({
-        type: 'error',
-        text1: 'Platform Required',
-        text2: 'Please select at least one platform',
-      });
+    const validation = validatePlatformSelection(allPlatforms);
+    if (!validation.isValid) {
+      Toast.show(createPlatformRequiredToast());
       return;
     }
 
@@ -188,7 +192,9 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
           Toast.show({
             type: 'error',
             text1: 'Error',
-            text2: 'Failed to update review tracking. Please try again.',
+            text2:
+              error.message ||
+              'Failed to update review tracking. Please try again.',
           });
           setIsSubmitting(false);
         },
@@ -219,7 +225,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
             onSuccess: () => {
               Toast.show({
                 type: 'success',
-                text1: 'Review tracking set up!',
+                text1: 'All set!',
               });
               setIsSubmitting(false);
               router.replace(`/deadline/${deadline.id}`);
@@ -231,7 +237,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
               );
               Toast.show({
                 type: 'success',
-                text1: 'Review tracking set up!',
+                text1: 'All set!',
               });
               setIsSubmitting(false);
               router.replace(`/deadline/${deadline.id}`);
@@ -240,11 +246,19 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
         },
         onError: error => {
           console.error('Error setting up review tracking:', error);
-          Toast.show({
-            type: 'error',
-            text1: 'Error',
-            text2: 'Failed to set up review tracking. Please try again.',
-          });
+
+          // Handle duplicate - go back to deadline page
+          if (error.message?.includes('already exists')) {
+            Toast.show({
+              type: 'info',
+              text1: 'Already set up',
+              text2: 'You can edit your review from the book page',
+            });
+            router.replace(`/deadline/${deadline.id}`);
+            return;
+          }
+
+          Toast.show(createReviewTrackingErrorToast(error));
           setIsSubmitting(false);
         },
       });
@@ -260,20 +274,13 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
 
     const mutationCallbacks = {
       onSuccess: () => {
-        Toast.show({
-          type: 'success',
-          text1: 'All done!',
-        });
+        Toast.show(createSkipSuccessToast());
         setIsSubmitting(false);
         router.replace(ROUTES.HOME);
       },
-      onError: (error: any) => {
+      onError: (error: Error) => {
         console.error('Error updating book status:', error);
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Failed to update book. Please try again.',
-        });
+        Toast.show(createSkipErrorToast(error));
         setIsSubmitting(false);
       },
     };

@@ -20,7 +20,7 @@ const EditReviewTracking = () => {
   if (!deadline) {
     return (
       <SafeAreaView
-        edges={['right', 'bottom', 'left']}
+        edges={['top', 'right', 'bottom', 'left']}
         style={{ flex: 1, backgroundColor: colors.background }}
       >
         <ThemedView style={[styles.container, { padding: 20 }]}>
@@ -41,7 +41,7 @@ const EditReviewTracking = () => {
   if (!reviewTracking) {
     return (
       <SafeAreaView
-        edges={['right', 'bottom', 'left']}
+        edges={['top', 'right', 'bottom', 'left']}
         style={{ flex: 1, backgroundColor: colors.background }}
       >
         <ThemedView style={[styles.container, { padding: 20 }]}>

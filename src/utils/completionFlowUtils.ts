@@ -35,8 +35,8 @@ export const createCompletionErrorToast = (
   error?: Error
 ): CompletionToastConfig => ({
   type: 'error',
-  text1: 'Error',
-  text2: error?.message || 'Failed to update book. Please try again.',
+  text1: 'Something went wrong',
+  text2: error?.message || 'Please try again.',
 });
 
 export interface StepComponentType {

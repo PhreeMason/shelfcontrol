@@ -361,8 +361,8 @@ describe('CompletionFormStep3', () => {
       await waitFor(() => {
         expect(Toast.show).toHaveBeenCalledWith({
           type: 'error',
-          text1: 'Platform Required',
-          text2: 'Please select at least one platform',
+          text1: 'Pick a platform',
+          text2: 'Select where you want to post your review',
         });
       });
 
@@ -431,7 +431,7 @@ describe('CompletionFormStep3', () => {
       await waitFor(() => {
         expect(Toast.show).toHaveBeenCalledWith({
           type: 'success',
-          text1: 'Review tracking set up!',
+          text1: 'All set!',
         });
         expect(router.replace).toHaveBeenCalledWith(
           '/deadline/test-deadline-id'
@@ -455,7 +455,7 @@ describe('CompletionFormStep3', () => {
       await waitFor(() => {
         expect(Toast.show).toHaveBeenCalledWith({
           type: 'success',
-          text1: 'Review tracking set up!',
+          text1: 'All set!',
         });
         expect(router.replace).toHaveBeenCalledWith(
           '/deadline/test-deadline-id'
@@ -476,8 +476,8 @@ describe('CompletionFormStep3', () => {
       await waitFor(() => {
         expect(Toast.show).toHaveBeenCalledWith({
           type: 'error',
-          text1: 'Error',
-          text2: 'Failed to set up review tracking. Please try again.',
+          text1: 'Something went wrong',
+          text2: 'Network error', // Now shows actual error message
         });
       });
 
@@ -596,7 +596,7 @@ describe('CompletionFormStep3', () => {
         expect(Toast.show).toHaveBeenCalledWith({
           type: 'error',
           text1: 'Error',
-          text2: 'Failed to update book. Please try again.',
+          text2: 'Update failed', // Now shows actual error message
         });
       });
 
