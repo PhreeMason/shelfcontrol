@@ -639,7 +639,7 @@ describe('useDeadlineCardViewModel', () => {
         useDeadlineCardViewModel({ deadline: mockDeadline })
       );
 
-      expect(result.current.display.primaryText).toBe('2 of 4 reviews posted');
+      expect(result.current.display.primaryText).toBe('2 of 4 posted');
     });
 
     it('should show all reviews posted when unpostedCount is 0', () => {
@@ -660,7 +660,7 @@ describe('useDeadlineCardViewModel', () => {
         useDeadlineCardViewModel({ deadline: mockDeadline })
       );
 
-      expect(result.current.display.primaryText).toBe('All reviews posted');
+      expect(result.current.display.primaryText).toBe('All posted');
     });
 
     it('should show no reviews to post when totalPlatformCount is 0', () => {
@@ -681,7 +681,7 @@ describe('useDeadlineCardViewModel', () => {
         useDeadlineCardViewModel({ deadline: mockDeadline })
       );
 
-      expect(result.current.display.primaryText).toBe('No reviews to post');
+      expect(result.current.display.primaryText).toBe('No reviews to track');
     });
 
     it('should prioritize to_review status over overdue urgency', () => {
@@ -710,7 +710,7 @@ describe('useDeadlineCardViewModel', () => {
       );
 
       // Should show review count, NOT "Complete!" or remaining pages
-      expect(result.current.display.primaryText).toBe('2 of 4 reviews posted');
+      expect(result.current.display.primaryText).toBe('2 of 4 posted');
       expect(formatRemainingDisplay).not.toHaveBeenCalled();
     });
 

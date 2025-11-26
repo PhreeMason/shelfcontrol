@@ -1,4 +1,5 @@
 import { DB_TABLES } from '@/constants/database';
+import { analytics } from '@/lib/analytics/client';
 import { generateId, supabase } from '@/lib/supabase';
 import { notesService } from './notes.service';
 
@@ -338,6 +339,9 @@ class ReviewTrackingService {
 
     if (error) {
       console.warn('Error fetching user platforms:', error);
+      analytics.track('user_platforms_fetch_failed', {
+        error_message: error.message,
+      });
       return [];
     }
 
