@@ -31,7 +31,7 @@ Transform the deadline update experience by creating an expandable card componen
 - [x] Remove QuickActionButtons import and usage
 - [x] Remove `handleQuickUpdate` function
 - [x] Remove quick action UI elements (buttons, labels, divider)
-- [x] Add progress scrubber (React Native Slider)
+- [x] Add progress scrubber
 - [x] Connect scrubber to react-hook-form
 - [x] Display format-specific values (pages vs time)
 - [x] Show percentage complete
@@ -45,7 +45,6 @@ Transform the deadline update experience by creating an expandable card componen
 - [x] Delete QuickActionButtons.tsx
 - [x] Delete QuickActionButtons.test.tsx
 - [x] Clean up `calculateNewProgress` utility (removed - was unused)
-- [x] Installed @react-native-community/slider package
 
 #### Verification Checklist
 - [x] Detail page (`/deadline/[id]`) shows scrubber instead of quick buttons
@@ -63,7 +62,6 @@ Transform the deadline update experience by creating an expandable card componen
 - ✅ Removed `calculateNewProgress` utility function (no longer needed)
 - ✅ Removed 240+ lines of tests for calculateNewProgress
 - ✅ All remaining utils tests passing (33 tests)
-- ✅ Added @react-native-community/slider package
 - ✅ Implemented progress scrubber with:
   - Real-time value updates (using local state + setValue)
   - Format-specific display (formatProgressDisplay for pages vs time)

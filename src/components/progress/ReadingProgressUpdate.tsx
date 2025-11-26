@@ -1,7 +1,7 @@
 import DateRangeDisplay from '@/components/progress/DateRangeDisplay';
-import MetricCard from '@/components/progress/MetricCard';
+import ProgressInput from '@/components/progress/ProgressInput';
+import QuickActionButtons from '@/components/progress/QuickActionButtons';
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
-import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { BorderRadius, Spacing } from '@/constants/Colors';
 import { Shadows } from '@/constants/Theme';
 import {
@@ -62,11 +62,11 @@ const ReadingProgressUpdate = ({
   const { colors } = useTheme();
   const { getDeadlineCalculations } = useDeadlines();
   const calculations = getDeadlineCalculations(deadline);
-  const { urgencyLevel, currentProgress, totalQuantity } = calculations;
+  const { currentProgress, totalQuantity } = calculations;
 
-  // Preferences for metric view mode (persisted per format)
-  const { getMetricViewMode, setMetricViewMode } = usePreferences();
-  const metricViewMode = getMetricViewMode(deadline.format);
+  // Preferences for progress input mode (persisted per format)
+  const { getProgressInputMode } = usePreferences();
+  const inputMode = getProgressInputMode(deadline.format);
 
   // Local state for scrubber (real-time preview before saving)
   const [scrubberValue, setScrubberValue] = useState(currentProgress);
@@ -86,13 +86,16 @@ const ReadingProgressUpdate = ({
   const updateProgressMutation = useUpdateDeadlineProgress();
   const deleteFutureProgressMutation = useDeleteFutureProgress();
 
-  const { handleSubmit, setValue } = useForm({
+  const { handleSubmit, setValue, control, watch } = useForm({
     resolver: zodResolver(progressSchema),
     defaultValues: {
       currentProgress: currentProgress,
     },
     mode: 'onSubmit',
   });
+
+  // Watch form value to sync with scrubber (when ProgressInput changes the form)
+  const formProgress = watch('currentProgress') as number;
 
   const showCompletionDialog = useCallback(
     (newProgress: number, bookTitle: string) => {
@@ -286,21 +289,16 @@ const ReadingProgressUpdate = ({
     [setValue]
   );
 
-  // Decrement progress by 1
-  const handleDecrement = useCallback(() => {
-    const newValue = Math.max(0, scrubberValue - 1);
-    setScrubberValue(newValue);
-    setValue('currentProgress', newValue, { shouldValidate: false });
-    offset.value = newValue;
-  }, [scrubberValue, setValue, offset]);
-
-  // Increment progress by 1
-  const handleIncrement = useCallback(() => {
-    const newValue = Math.min(totalQuantity, scrubberValue + 1);
-    setScrubberValue(newValue);
-    setValue('currentProgress', newValue, { shouldValidate: false });
-    offset.value = newValue;
-  }, [scrubberValue, totalQuantity, setValue, offset]);
+  // Handle quick update from QuickActionButtons (+/- increments)
+  const handleQuickUpdate = useCallback(
+    (increment: number) => {
+      const newValue = clamp(scrubberValue + increment, 0, totalQuantity);
+      setScrubberValue(newValue);
+      setValue('currentProgress', newValue, { shouldValidate: false });
+      offset.value = newValue;
+    },
+    [scrubberValue, totalQuantity, setValue, offset]
+  );
 
   // Pan gesture for direct 1:1 scrubbing
   const panGesture = Gesture.Pan()
@@ -328,16 +326,22 @@ const ReadingProgressUpdate = ({
     })
     .enabled(!isPaused);
 
-  const handleMetricToggle = () => {
-    const newMode = metricViewMode === 'remaining' ? 'current' : 'remaining';
-    setMetricViewMode(deadline.format, newMode);
-  };
-
   // Sync scrubber value and offset with current progress when it changes externally
   useEffect(() => {
     setScrubberValue(currentProgress);
     offset.value = currentProgress;
   }, [currentProgress, offset]);
+
+  // Sync scrubber when form value changes (from ProgressInput)
+  useEffect(() => {
+    setScrubberValue(prev => {
+      if (prev !== formProgress) {
+        offset.value = formProgress;
+        return formProgress;
+      }
+      return prev;
+    });
+  }, [formProgress, offset]);
 
   const DISABLED_OPACITY = 0.6;
 
@@ -351,17 +355,15 @@ const ReadingProgressUpdate = ({
       )}
       <ThemedView style={[isPaused && { opacity: DISABLED_OPACITY }]}>
         <ThemedView style={styles.contentContainer}>
-          {/* Large Toggleable Metric Card */}
-          <MetricCard
+          {/* Progress input with mode toggle */}
+          <ProgressInput
             format={deadline.format}
-            currentProgress={scrubberValue}
+            control={control}
             totalQuantity={totalQuantity}
-            viewMode={metricViewMode}
-            onToggle={handleMetricToggle}
-            urgencyLevel={urgencyLevel}
+            disabled={isPaused}
           />
 
-          {/* Progress Scrubber */}
+          {/* Progress Scrubber (simplified - no +/- buttons) */}
           <ThemedView>
             <View style={styles.scrubberLabels}>
               <ThemedText typography="bodyMedium" color="textSecondary">
@@ -369,77 +371,48 @@ const ReadingProgressUpdate = ({
               </ThemedText>
               <ThemedText typography="bodyMedium" color="textSecondary">
                 {deadline.format === 'audio'
-                  ? metricViewMode === 'current'
-                    ? `${formatProgressDisplay(deadline.format, totalQuantity - scrubberValue)} left`
-                    : formatProgressDisplay(deadline.format, totalQuantity)
-                  : `${totalQuantity} pages`}
+                  ? `${formatProgressDisplay(deadline.format, totalQuantity - scrubberValue)} left`
+                  : `${totalQuantity - scrubberValue} left`}
               </ThemedText>
             </View>
 
-            {/* Custom Slider with Gesture Handler and +/- Buttons */}
-            <View style={styles.sliderRow}>
-              {/* Decrement Button */}
-              <ThemedIconButton
-                icon="minus"
-                variant="ghost"
-                size="sm"
-                onPress={handleDecrement}
-                disabled={isPaused || scrubberValue <= 0}
-                hapticsOnPress
-                accessibilityLabel="Decrease progress by 1"
-                style={styles.controlButton}
+            {/* Slider Container - NO +/- buttons */}
+            <View
+              style={styles.sliderContainer}
+              onLayout={event => {
+                setSliderWidth(event.nativeEvent.layout.width);
+              }}
+              ref={sliderContainerRef}
+            >
+              {/* Background Track */}
+              <View
+                style={[styles.track, { backgroundColor: colors.border }]}
               />
 
-              {/* Slider Container */}
+              {/* Filled Track (Progress) */}
               <View
-                style={styles.sliderContainer}
-                onLayout={event => {
-                  setSliderWidth(event.nativeEvent.layout.width);
-                }}
-                ref={sliderContainerRef}
-              >
-                {/* Background Track */}
-                <View
-                  style={[styles.track, { backgroundColor: colors.border }]}
-                />
+                style={[
+                  styles.filledTrack,
+                  {
+                    backgroundColor: colors.primary,
+                    width: `${(scrubberValue / totalQuantity) * 100}%`,
+                  },
+                ]}
+              />
 
-                {/* Filled Track (Progress) */}
-                <View
+              {/* Draggable Thumb with Gesture */}
+              <GestureDetector gesture={panGesture}>
+                <Animated.View
                   style={[
-                    styles.filledTrack,
+                    styles.thumb,
                     {
                       backgroundColor: colors.primary,
-                      width: `${(scrubberValue / totalQuantity) * 100}%`,
+                      left: `${(scrubberValue / totalQuantity) * 100}%`,
+                      opacity: isPaused ? 0.5 : 1,
                     },
                   ]}
                 />
-
-                {/* Draggable Thumb with Gesture */}
-                <GestureDetector gesture={panGesture}>
-                  <Animated.View
-                    style={[
-                      styles.thumb,
-                      {
-                        backgroundColor: colors.primary,
-                        left: `${(scrubberValue / totalQuantity) * 100}%`,
-                        opacity: isPaused ? 0.5 : 1,
-                      },
-                    ]}
-                  />
-                </GestureDetector>
-              </View>
-
-              {/* Increment Button */}
-              <ThemedIconButton
-                icon="plus"
-                variant="ghost"
-                size="sm"
-                onPress={handleIncrement}
-                disabled={isPaused || scrubberValue >= totalQuantity}
-                hapticsOnPress
-                accessibilityLabel="Increase progress by 1"
-                style={styles.controlButton}
-              />
+              </GestureDetector>
             </View>
 
             {/* Date Range Display */}
@@ -449,6 +422,20 @@ const ReadingProgressUpdate = ({
               dueDate={deadline.deadline_date}
             />
           </ThemedView>
+
+          {/* Quick Action Buttons - BELOW scrubber, ABOVE Update button */}
+          <View style={styles.quickButtonsSection}>
+            <ThemedText variant="muted" style={styles.quickActionLabel}>
+              {deadline.format === 'audio'
+                ? 'Quick update (minutes):'
+                : 'Quick update pages:'}
+            </ThemedText>
+            <QuickActionButtons
+              onQuickUpdate={handleQuickUpdate}
+              disabled={isPaused}
+              inputMode={inputMode}
+            />
+          </View>
 
           {/* Save Button */}
           <ThemedButton
@@ -486,17 +473,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.xs,
   },
-  sliderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  controlButton: {
-    minWidth: 30,
-    minHeight: 30,
-  },
   sliderContainer: {
-    flex: 1,
     height: SLIDER_HEIGHT,
     justifyContent: 'center',
     position: 'relative',
@@ -519,6 +496,13 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
     marginLeft: -(THUMB_SIZE / 2), // Center the thumb on the track
     ...Shadows.medium,
+  },
+  quickButtonsSection: {
+    gap: Spacing.sm,
+  },
+  quickActionLabel: {
+    fontWeight: '700',
+    textAlign: 'center',
   },
   saveButton: {
     marginTop: Spacing.sm,
