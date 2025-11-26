@@ -1,3 +1,4 @@
+import { ActivityType } from '@/constants/activityTypes';
 import {
   BookFormat,
   FilterType,
@@ -54,38 +55,38 @@ interface PreferencesContextType {
   setMetricViewMode: (format: BookFormat, mode: MetricViewMode) => void;
   deadlineViewMode: DeadlineViewMode;
   setDeadlineViewMode: (mode: DeadlineViewMode) => void;
-  showAllCalendarActivities: boolean;
-  setShowAllCalendarActivities: (show: boolean) => void;
+  excludedCalendarActivities: ActivityType[];
+  setExcludedCalendarActivities: (activities: ActivityType[]) => void;
   isLoading: boolean;
 }
 
 const PreferencesContext = createContext<PreferencesContextType>({
   selectedFilter: 'active',
-  setSelectedFilter: () => {},
+  setSelectedFilter: () => { },
   timeRangeFilter: 'all',
-  setTimeRangeFilter: () => {},
+  setTimeRangeFilter: () => { },
   selectedFormats: [],
-  setSelectedFormats: () => {},
+  setSelectedFormats: () => { },
   selectedPageRanges: [],
-  setSelectedPageRanges: () => {},
+  setSelectedPageRanges: () => { },
   selectedTypes: [],
-  setSelectedTypes: () => {},
+  setSelectedTypes: () => { },
   selectedTags: [],
-  setSelectedTags: () => {},
+  setSelectedTags: () => { },
   excludedStatuses: [],
-  setExcludedStatuses: () => {},
+  setExcludedStatuses: () => { },
   sortOrder: 'default',
-  setSortOrder: () => {},
+  setSortOrder: () => { },
   progressInputModes: DEFAULT_PROGRESS_INPUT_MODES,
   getProgressInputMode: () => 'direct',
-  setProgressInputMode: () => {},
+  setProgressInputMode: () => { },
   metricViewModes: DEFAULT_METRIC_VIEW_MODES,
   getMetricViewMode: () => 'current',
-  setMetricViewMode: () => {},
+  setMetricViewMode: () => { },
   deadlineViewMode: 'list',
-  setDeadlineViewMode: () => {},
-  showAllCalendarActivities: false,
-  setShowAllCalendarActivities: () => {},
+  setDeadlineViewMode: () => { },
+  excludedCalendarActivities: [],
+  setExcludedCalendarActivities: () => { },
   isLoading: true,
 });
 
@@ -101,7 +102,7 @@ const STORAGE_KEYS = {
   PROGRESS_INPUT_MODES: '@preferences/progressInputModes',
   METRIC_VIEW_MODES: '@preferences/metricViewModes',
   DEADLINE_VIEW_MODE: '@preferences/deadlineViewMode',
-  SHOW_ALL_CALENDAR_ACTIVITIES: '@preferences/showAllCalendarActivities',
+  EXCLUDED_CALENDAR_ACTIVITIES: '@preferences/excludedCalendarActivities',
 };
 
 export default function PreferencesProvider({ children }: PropsWithChildren) {
@@ -125,8 +126,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     useState<MetricViewModePreferences>(DEFAULT_METRIC_VIEW_MODES);
   const [deadlineViewMode, setDeadlineViewModeState] =
     useState<DeadlineViewMode>('list');
-  const [showAllCalendarActivities, setShowAllCalendarActivitiesState] =
-    useState<boolean>(false);
+  const [excludedCalendarActivities, setExcludedCalendarActivitiesState] =
+    useState<ActivityType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -144,7 +145,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           savedProgressInputModes,
           savedMetricViewModes,
           savedDeadlineViewMode,
-          savedShowAllCalendarActivities,
+          savedExcludedCalendarActivities,
         ] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FILTER),
           AsyncStorage.getItem(STORAGE_KEYS.TIME_RANGE_FILTER),
@@ -157,7 +158,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           AsyncStorage.getItem(STORAGE_KEYS.PROGRESS_INPUT_MODES),
           AsyncStorage.getItem(STORAGE_KEYS.METRIC_VIEW_MODES),
           AsyncStorage.getItem(STORAGE_KEYS.DEADLINE_VIEW_MODE),
-          AsyncStorage.getItem(STORAGE_KEYS.SHOW_ALL_CALENDAR_ACTIVITIES),
+          AsyncStorage.getItem(STORAGE_KEYS.EXCLUDED_CALENDAR_ACTIVITIES),
         ]);
 
         if (savedFilter) {
@@ -201,9 +202,9 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
         if (savedDeadlineViewMode) {
           setDeadlineViewModeState(savedDeadlineViewMode as DeadlineViewMode);
         }
-        if (savedShowAllCalendarActivities !== null) {
-          setShowAllCalendarActivitiesState(
-            savedShowAllCalendarActivities === 'true'
+        if (savedExcludedCalendarActivities) {
+          setExcludedCalendarActivitiesState(
+            JSON.parse(savedExcludedCalendarActivities) as ActivityType[]
           );
         }
       } catch (error) {
@@ -352,12 +353,12 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     }
   };
 
-  const setShowAllCalendarActivities = async (show: boolean) => {
+  const setExcludedCalendarActivities = async (activities: ActivityType[]) => {
     try {
-      setShowAllCalendarActivitiesState(show);
+      setExcludedCalendarActivitiesState(activities);
       await AsyncStorage.setItem(
-        STORAGE_KEYS.SHOW_ALL_CALENDAR_ACTIVITIES,
-        String(show)
+        STORAGE_KEYS.EXCLUDED_CALENDAR_ACTIVITIES,
+        JSON.stringify(activities)
       );
     } catch (error) {
       console.error('Error saving calendar filter preference:', error);
@@ -389,8 +390,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     setMetricViewMode,
     deadlineViewMode,
     setDeadlineViewMode,
-    showAllCalendarActivities,
-    setShowAllCalendarActivities,
+    excludedCalendarActivities,
+    setExcludedCalendarActivities,
     isLoading,
   };
 

@@ -84,8 +84,11 @@ function getActivityDetails(activity: ActivityTimelineItemProps['activity']): {
     activity_timestamp,
   } = activity;
 
-  // Format time from timestamp
-  const time = formatActivityTime(activity_timestamp);
+  // Format time from timestamp (special case for review_due)
+  let time = formatActivityTime(activity_timestamp);
+  if (activity_type === 'review_due') {
+    time = 'Due Today';
+  }
 
   // Label is always the book title
   const label = book_title;
@@ -152,6 +155,11 @@ function getActivityDetails(activity: ActivityTimelineItemProps['activity']): {
       } else {
         text = 'Review posted';
       }
+      break;
+    }
+
+    case 'review_due': {
+      text = 'Review Due';
       break;
     }
 

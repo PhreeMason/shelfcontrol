@@ -10,7 +10,8 @@ export type ActivityType =
   | 'progress'
   | 'status'
   | 'note'
-  | 'review';
+  | 'review'
+  | 'review_due';
 
 /**
  * Configuration for each activity type including icon, color, and label
@@ -55,6 +56,11 @@ export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
     icon: 'calendar.badge.clock',
     color: 'dynamic', // Uses urgency color from getDeadlineCalculations
     label: 'Deadline Due',
+  },
+  review_due: {
+    icon: 'square.and.pencil',
+    color: Colors.light.orange, // Orange - matches review
+    label: 'Review Due',
   },
 } as const;
 

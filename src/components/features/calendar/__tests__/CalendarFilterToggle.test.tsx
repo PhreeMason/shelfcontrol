@@ -19,83 +19,54 @@ const mockUsePreferences = usePreferences as jest.MockedFunction<
 >;
 
 describe('CalendarFilterToggle', () => {
-  const mockSetShowAllCalendarActivities = jest.fn();
+  const mockSetExcludedCalendarActivities = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should render the toggle button', () => {
+  it('should render the toggle button with no filters', () => {
     mockUsePreferences.mockReturnValue({
-      showAllCalendarActivities: false,
-      setShowAllCalendarActivities: mockSetShowAllCalendarActivities,
+      excludedCalendarActivities: [],
+      setExcludedCalendarActivities: mockSetExcludedCalendarActivities,
     } as any);
 
     render(<CalendarFilterToggle />);
 
     const button = screen.getByLabelText(
-      'Showing only deadlines. Tap to show all activities.'
+      'No filters active. Tap to filter activities.'
     );
     expect(button).toBeTruthy();
   });
 
-  it('should show filtered state accessibility label when filter is active', () => {
+  it('should show active filter accessibility label when filters are active', () => {
     mockUsePreferences.mockReturnValue({
-      showAllCalendarActivities: false,
-      setShowAllCalendarActivities: mockSetShowAllCalendarActivities,
+      excludedCalendarActivities: ['note', 'progress'],
+      setExcludedCalendarActivities: mockSetExcludedCalendarActivities,
     } as any);
 
     render(<CalendarFilterToggle />);
 
     const button = screen.getByLabelText(
-      'Showing only deadlines. Tap to show all activities.'
+      'Filters active. Tap to change filters.'
     );
     expect(button).toBeTruthy();
   });
 
-  it('should show all activities state accessibility label when filter is off', () => {
+  it('should open filter sheet when pressed', () => {
     mockUsePreferences.mockReturnValue({
-      showAllCalendarActivities: true,
-      setShowAllCalendarActivities: mockSetShowAllCalendarActivities,
-    } as any);
-
-    render(<CalendarFilterToggle />);
-
-    const button = screen.getByLabelText(
-      'Showing all activities. Tap to show only deadlines.'
-    );
-    expect(button).toBeTruthy();
-  });
-
-  it('should call toggle function when pressed', () => {
-    mockUsePreferences.mockReturnValue({
-      showAllCalendarActivities: false,
-      setShowAllCalendarActivities: mockSetShowAllCalendarActivities,
+      excludedCalendarActivities: [],
+      setExcludedCalendarActivities: mockSetExcludedCalendarActivities,
     } as any);
 
     const { getByLabelText } = render(<CalendarFilterToggle />);
 
     const button = getByLabelText(
-      'Showing only deadlines. Tap to show all activities.'
+      'No filters active. Tap to filter activities.'
     );
     fireEvent.press(button);
 
-    expect(mockSetShowAllCalendarActivities).toHaveBeenCalledWith(true);
-  });
-
-  it('should toggle from all activities to filtered when pressed', () => {
-    mockUsePreferences.mockReturnValue({
-      showAllCalendarActivities: true,
-      setShowAllCalendarActivities: mockSetShowAllCalendarActivities,
-    } as any);
-
-    const { getByLabelText } = render(<CalendarFilterToggle />);
-
-    const button = getByLabelText(
-      'Showing all activities. Tap to show only deadlines.'
-    );
-    fireEvent.press(button);
-
-    expect(mockSetShowAllCalendarActivities).toHaveBeenCalledWith(false);
+    // Filter sheet should be visible
+    expect(screen.getByText('Filter Activities')).toBeTruthy();
   });
 });
