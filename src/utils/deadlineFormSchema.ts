@@ -29,7 +29,7 @@ export const deadlineFormSchema = z
         invalid_type_error: 'Please enter a valid number',
       })
       .int('Please enter a whole number')
-      .positive('Total must be greater than 0'),
+      .nonnegative('Total cannot be negative'),
     totalMinutes: z.coerce
       .number({
         invalid_type_error: 'Please enter a valid number',
@@ -96,6 +96,22 @@ export const deadlineFormSchema = z
     {
       message: 'Invalid cover image for selected mode',
       path: ['cover_image_url'],
+    }
+  )
+  .refine(
+    data => {
+      // For audio: allow 0 hours if minutes > 0
+      if (data.format === 'audio') {
+        const hours = data.totalQuantity ?? 0;
+        const minutes = data.totalMinutes ?? 0;
+        return hours > 0 || minutes > 0;
+      }
+      // For physical/eBook: pages must be > 0
+      return data.totalQuantity > 0;
+    },
+    {
+      message: 'Total must be greater than 0',
+      path: ['totalQuantity'],
     }
   );
 

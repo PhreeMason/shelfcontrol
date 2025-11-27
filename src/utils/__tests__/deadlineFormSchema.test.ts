@@ -609,7 +609,7 @@ describe('deadlineFormSchema', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.issues[0].message).toBe(
-          'Total must be greater than 0'
+          'Total cannot be negative'
         );
       }
     });
@@ -762,6 +762,116 @@ describe('deadlineFormSchema', () => {
 
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(true);
+    });
+  });
+
+  describe('audiobook time validation (hours + minutes)', () => {
+    it('should accept audio with 0 hours and valid minutes', () => {
+      const data = {
+        bookTitle: 'Short Audiobook',
+        format: 'audio',
+        type: 'Audible',
+        deadline: new Date(),
+        totalQuantity: 0,
+        totalMinutes: 45,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept audio with valid hours and 0 minutes', () => {
+      const data = {
+        bookTitle: 'Long Audiobook',
+        format: 'audio',
+        type: 'Audible',
+        deadline: new Date(),
+        totalQuantity: 5,
+        totalMinutes: 0,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+    });
+
+    it('should reject audio with 0 hours and 0 minutes', () => {
+      const data = {
+        bookTitle: 'Invalid Audiobook',
+        format: 'audio',
+        type: 'Audible',
+        deadline: new Date(),
+        totalQuantity: 0,
+        totalMinutes: 0,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe(
+          'Total must be greater than 0'
+        );
+      }
+    });
+
+    it('should reject audio with 0 hours and no minutes field', () => {
+      const data = {
+        bookTitle: 'Invalid Audiobook',
+        format: 'audio',
+        type: 'Audible',
+        deadline: new Date(),
+        totalQuantity: 0,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(false);
+    });
+
+    it('should still require totalQuantity > 0 for physical books', () => {
+      const data = {
+        bookTitle: 'Physical Book',
+        format: 'physical',
+        type: 'Library',
+        deadline: new Date(),
+        totalQuantity: 0,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe(
+          'Total must be greater than 0'
+        );
+      }
+    });
+
+    it('should still require totalQuantity > 0 for eBooks', () => {
+      const data = {
+        bookTitle: 'eBook',
+        format: 'eBook',
+        type: 'Kindle',
+        deadline: new Date(),
+        totalQuantity: 0,
+        flexibility: 'flexible',
+        status: 'active',
+      };
+
+      const result = deadlineFormSchema.safeParse(data);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe(
+          'Total must be greater than 0'
+        );
+      }
     });
   });
 
