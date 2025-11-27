@@ -21,6 +21,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { z } from 'zod';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 
 const updatePasswordSchema = z
   .object({
@@ -261,37 +262,37 @@ const styles = StyleSheet.create({
   innerContainer: {
     flex: 1,
     justifyContent: 'center',
-    padding: 20,
+    padding: Spacing.lg,
   },
   title: {
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: Spacing.md,
     lineHeight: 38,
   },
   subtitle: {
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: Spacing.xxl,
     fontSize: 16,
     opacity: 0.7,
     lineHeight: 22,
   },
   form: {
-    gap: 16,
-    marginBottom: 32,
+    gap: Spacing.md,
+    marginBottom: Spacing.xl,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 16,
+    borderRadius: BorderRadius.sm,
+    padding: Spacing.md,
     fontSize: 16,
     backgroundColor: '#fff',
   },
   button: {
     backgroundColor: '#007AFF',
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 8,
+    borderRadius: BorderRadius.sm,
+    padding: Spacing.md,
+    marginTop: Spacing.sm,
     alignItems: 'center',
   },
   buttonDisabled: {
@@ -306,13 +307,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ff0000',
     fontSize: 14,
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
   errorMessage: {
     textAlign: 'center',
     color: '#ff0000',
     fontSize: 16,
-    marginBottom: 32,
+    marginBottom: Spacing.xl,
     lineHeight: 22,
   },
 });

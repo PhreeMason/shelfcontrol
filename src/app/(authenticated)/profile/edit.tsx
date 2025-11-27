@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 
 const profileSchema = z.object({
   username: z
@@ -248,9 +249,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   saveButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   saveButtonDisabled: {
@@ -269,28 +270,28 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     flex: 1,
-    padding: 20,
+    padding: Spacing.lg,
   },
   avatarSection: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: Spacing.xl,
   },
   avatarHint: {
     fontSize: 14,
     color: '#666',
-    marginTop: 12,
+    marginTop: Spacing.md,
     textAlign: 'center',
   },
   form: {
-    gap: 8,
-    marginBottom: 32,
+    gap: Spacing.sm,
+    marginBottom: Spacing.xl,
   },
   inputGroup: {
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
 });

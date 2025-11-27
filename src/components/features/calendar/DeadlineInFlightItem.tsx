@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useTheme';
 import { dayjs } from '@/lib/dayjs';
@@ -127,9 +128,9 @@ export const DeadlineInFlightItem: React.FC<DeadlineInFlightItemProps> = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing.sm,
   },
   pressed: {
     opacity: 0.7,
@@ -137,8 +138,8 @@ const styles = StyleSheet.create({
   cover: {
     width: 40,
     height: 60,
-    borderRadius: 4,
-    marginRight: 12,
+    borderRadius: BorderRadius.sm,
+    marginRight: Spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -147,6 +148,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
 });

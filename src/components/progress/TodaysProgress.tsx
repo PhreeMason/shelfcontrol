@@ -1,5 +1,5 @@
 import LinearProgressBar from '@/components/shared/LinearProgressBar';
-import { Typography } from '@/constants/Colors';
+import { BorderRadius, Spacing, Typography } from '@/constants/Colors';
 import { PROGRESS_TYPE } from '@/constants/status';
 import { useTheme } from '@/hooks/useThemeColor';
 import {
@@ -58,7 +58,7 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
         backgroundColor={backgroundColor}
       />
 
-      <View style={[styles.statFooter, { marginTop: 8 }]}>
+      <View style={[styles.statFooter, { marginTop: Spacing.sm }]}>
         <ThemedText style={styles.encouragementText}>
           {encouragementMessage}
         </ThemedText>
@@ -71,8 +71,8 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
 const styles = StyleSheet.create({
   statCard: {
     backgroundColor: 'rgba(250, 248, 245, 1)', // Linear gradient approximation
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
     borderWidth: 1,
     borderColor: 'rgba(232, 194, 185, 0.2)',
     position: 'relative',
@@ -82,12 +82,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: Spacing.md,
   },
   statLabel: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   statIcon: {
     fontSize: 18,

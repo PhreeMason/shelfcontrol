@@ -1,3 +1,4 @@
+import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import React from 'react';
 import { StyleSheet } from 'react-native';
@@ -23,8 +24,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
-    gap: 8,
+    marginBottom: Spacing.md,
+    gap: Spacing.sm,
   },
 });
 

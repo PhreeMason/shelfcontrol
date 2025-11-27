@@ -184,9 +184,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: Spacing.xs,
     justifyContent: 'space-around',
-    gap: 10,
+    gap: Spacing.sm,
   },
   pressed: {
     opacity: 0.7,
@@ -216,6 +216,6 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
   },
   label: {
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
 });

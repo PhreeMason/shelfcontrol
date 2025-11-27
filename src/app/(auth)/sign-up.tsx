@@ -4,6 +4,7 @@ import {
 } from '@/components/AnimatedCustomInput';
 import { AppleSSO } from '@/components/auth/AppleSSO';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
 import { analytics } from '@/lib/analytics/client';
 import { posthog } from '@/lib/posthog';
@@ -257,11 +258,11 @@ const styles = StyleSheet.create({
   innerContainer: {
     flex: 1,
     justifyContent: 'center',
-    padding: 20,
+    padding: Spacing.lg,
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: Spacing.xl,
   },
   logo: {
     width: 120,
@@ -278,29 +279,29 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: Spacing.xxl,
     lineHeight: 38,
   },
   form: {
-    marginBottom: 32,
+    marginBottom: Spacing.xl,
   },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: Spacing.md,
   },
   input: {
     color: '#000',
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 16,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
     fontSize: 16,
     backgroundColor: '#fff',
   },
   button: {
     backgroundColor: '#B8A9D9',
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 8,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    marginTop: Spacing.sm,
     alignItems: 'center',
     shadowColor: '#B8A9D9',
     shadowOffset: {
@@ -322,19 +323,19 @@ const styles = StyleSheet.create({
   header: {
     position: 'absolute',
     top: 60,
-    right: 20,
+    right: Spacing.lg,
     zIndex: 1,
   },
   errorText: {
     textAlign: 'center',
     color: '#ff0000',
     fontSize: 14,
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 24,
+    marginVertical: Spacing.lg,
   },
   dividerText: {
     textAlign: 'center',
@@ -343,7 +344,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   socialButtons: {
-    gap: 12,
-    marginBottom: 32,
+    gap: Spacing.md,
+    marginBottom: Spacing.xl,
   },
 });

@@ -1,9 +1,10 @@
+import { Spacing } from '@/constants/Colors';
+import { usePreferences } from '@/providers/PreferencesProvider';
 import React, { useMemo } from 'react';
 import { Control, Controller } from 'react-hook-form';
-import { View, StyleSheet } from 'react-native';
-import ProgressInputBase from './ProgressInputBase';
+import { StyleSheet, View } from 'react-native';
 import InputModeToggle from './InputModeToggle';
-import { usePreferences } from '@/providers/PreferencesProvider';
+import ProgressInputBase from './ProgressInputBase';
 import {
   getAvailableModesForFormat,
   getModeLabelForFormat,
@@ -94,8 +95,8 @@ const styles = StyleSheet.create({
   },
   toggleContainer: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: Spacing.sm,
+    right: Spacing.sm,
     zIndex: 10,
   },
 });

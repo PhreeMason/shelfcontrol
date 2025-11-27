@@ -5,7 +5,7 @@ import { ThemedText, ThemedView } from '@/components/themed';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { ActionSheet } from '@/components/ui/ActionSheet';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { BorderRadius } from '@/constants/Colors';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useGetDeadlineById } from '@/hooks/useDeadlines';
 import { useGetAllHashtags, useGetAllNoteHashtags } from '@/hooks/useHashtags';
@@ -516,16 +516,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
-    gap: 4,
+    gap: Spacing.xs,
   },
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: Spacing.md,
     flex: 1,
   },
   headerCover: {
@@ -542,18 +542,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    padding: 4,
+    padding: Spacing.xs,
     flexGrow: 1,
   },
   noteItem: {
-    paddingTop: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingTop: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
   },
   noteText: {
     fontSize: 16,
     lineHeight: 24,
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   noteFooter: {
     flexDirection: 'row',
@@ -565,13 +565,13 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   iconButton: {
-    padding: 4,
+    padding: Spacing.xs,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: Spacing.xxl,
   },
   emptyText: {
     fontSize: 16,
@@ -580,8 +580,8 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    padding: 8,
-    gap: 8,
+    padding: Spacing.sm,
+    gap: Spacing.sm,
   },
   inputWrapper: {
     flex: 1,
@@ -590,20 +590,20 @@ const styles = StyleSheet.create({
     minHeight: 40,
     maxHeight: 100,
     borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
     fontSize: 16,
   },
   hashtagLimitError: {
     color: '#ef4444',
     fontSize: 12,
-    marginTop: 4,
-    marginLeft: 16,
+    marginTop: Spacing.xs,
+    marginLeft: Spacing.md,
     fontWeight: '500',
   },
   sendButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.md,
     alignSelf: 'flex-end',
     height: 40,
@@ -625,15 +625,15 @@ const styles = StyleSheet.create({
   typeaheadContainer: {
     maxHeight: 200,
     borderWidth: 1,
-    borderRadius: 8,
-    marginHorizontal: 12,
-    marginBottom: 8,
+    borderRadius: BorderRadius.sm,
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.sm,
   },
   typeaheadScroll: {
     maxHeight: 200,
   },
   typeaheadItem: {
-    padding: 12,
+    padding: Spacing.md,
     borderBottomWidth: 1,
   },
   typeaheadText: {

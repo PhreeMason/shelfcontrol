@@ -1,7 +1,7 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ActivityType } from '@/constants/activityTypes';
-import { Spacing } from '@/constants/Colors';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
 import React, { useEffect } from 'react';
@@ -172,8 +172,8 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     sheet: {
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
+        borderTopLeftRadius: BorderRadius.lg,
+        borderTopRightRadius: BorderRadius.lg,
         maxHeight: '85%',
         ...Shadows.elevated,
     },
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: Spacing.md,
         paddingHorizontal: Spacing.lg,
-        marginBottom: 5,
+        marginBottom: Spacing.xs,
     },
     headerActions: {
         flexDirection: 'row',

@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { Spacing } from '@/constants/Colors';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { StyleSheet, View } from 'react-native';
@@ -38,6 +39,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
 });
