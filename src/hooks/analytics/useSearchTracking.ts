@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { analytics } from '@/lib/analytics/client';
+import { posthog } from '@/lib/posthog';
 
 interface SearchResults {
   bookList?: unknown[];
@@ -43,10 +44,9 @@ export function useSearchTracking({
 
   useEffect(() => {
     if (searchError && debouncedQuery.trim().length > 0) {
-      analytics.track('book_search_failed', {
-        error_message: searchError.message || 'Unknown error',
-        search_term: debouncedQuery,
-      });
+      posthog.captureException(
+        new Error(searchError.message || 'Book search failed')
+      );
     }
   }, [searchError, debouncedQuery]);
 }

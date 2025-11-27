@@ -149,6 +149,7 @@ jest.mock('react-native-safe-area-context', () => ({
 jest.mock('posthog-react-native', () => {
   const mockPostHogInstance = {
     capture: jest.fn(),
+    captureException: jest.fn(),
     identify: jest.fn(),
     screen: jest.fn(),
     group: jest.fn(),
@@ -175,6 +176,7 @@ jest.mock('posthog-react-native', () => {
 jest.mock('@/lib/posthog', () => ({
   posthog: {
     capture: jest.fn(),
+    captureException: jest.fn(),
     identify: jest.fn(),
     screen: jest.fn(),
     group: jest.fn(),

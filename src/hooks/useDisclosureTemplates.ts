@@ -1,4 +1,5 @@
 import { MUTATION_KEYS, QUERY_KEYS } from '@/constants/queryKeys';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { disclosureTemplatesService } from '@/services/disclosureTemplates.service';
 import {
@@ -67,8 +68,9 @@ export const useCreateTemplate = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error creating disclosure template:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -109,8 +111,9 @@ export const useUpdateTemplate = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error updating disclosure template:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -138,8 +141,9 @@ export const useDeleteTemplate = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error deleting disclosure template:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -181,8 +185,9 @@ export const useUpdateDeadlineDisclosure = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error updating deadline disclosure:', error);
+      posthog.captureException(error);
     },
   });
 };

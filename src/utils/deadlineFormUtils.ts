@@ -10,6 +10,7 @@ import {
   calculateTotalQuantityFromForm,
 } from './deadlineCalculations';
 import { DeadlineFormData } from './deadlineFormSchema';
+import { posthog } from '@/lib/posthog';
 
 export type FormMode = 'new' | 'edit';
 
@@ -379,6 +380,7 @@ export const populateFormFromDeadline = (
     return { selectedFormat, selectedPriority, selectedStatus };
   } catch (error) {
     console.error('Error populating form from deadline:', error);
+    posthog.captureException(error instanceof Error ? error : new Error(String(error)));
     return {
       selectedFormat: 'physical' as const,
       selectedPriority: 'flexible' as const,

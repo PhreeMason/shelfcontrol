@@ -9,6 +9,7 @@ import {
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { DeadlineCalculationResult } from '@/utils/deadlineProviderUtils';
 import { parseServerDateTime } from '@/utils/dateNormalization';
+import { posthog } from '@/lib/posthog';
 
 /**
  * Calculate the start and end dates for a given month
@@ -273,6 +274,7 @@ export function formatActivityTime(timestamp: string): string {
     return localTime.format('h:mm A');
   } catch (error) {
     console.error('Failed to format activity time:', timestamp, error);
+    posthog.captureException(error instanceof Error ? error : new Error(String(error)));
     return 'N/A';
   }
 }

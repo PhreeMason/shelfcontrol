@@ -1,5 +1,5 @@
 import { QUERY_KEYS } from '@/constants/queryKeys';
-import { analytics } from '@/lib/analytics/client';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   ReviewTrackingResponse,
@@ -74,7 +74,7 @@ export const useReviewTrackingMutation = (deadlineId: string) => {
 
       return { previousData };
     },
-    onError: (error: Error, variables, context) => {
+    onError: (error: Error, _variables, context) => {
       if (context?.previousData && userId) {
         queryClient.setQueryData(
           QUERY_KEYS.REVIEW_TRACKING.BY_DEADLINE(userId, deadlineId),
@@ -82,16 +82,7 @@ export const useReviewTrackingMutation = (deadlineId: string) => {
         );
       }
 
-      // Track each failed platform update
-      if (variables?.params?.platforms) {
-        variables.params.platforms.forEach(platform => {
-          analytics.track('review_platforms_update_failed', {
-            error_message: error.message,
-            deadline_id: deadlineId,
-            platform_name: platform.id, // Using id since name isn't available
-          });
-        });
-      }
+      posthog.captureException(error);
 
       Toast.show({
         type: 'error',

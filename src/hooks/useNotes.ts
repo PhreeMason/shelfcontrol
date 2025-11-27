@@ -1,4 +1,5 @@
 import { MUTATION_KEYS, QUERY_KEYS } from '@/constants/queryKeys';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { notesService } from '@/services';
 import { DeadlineNote } from '@/types/notes.types';
@@ -63,8 +64,9 @@ export const useAddNote = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error adding note:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -105,8 +107,9 @@ export const useUpdateNote = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error updating note:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -131,8 +134,9 @@ export const useDeleteNote = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error deleting note:', error);
+      posthog.captureException(error);
     },
   });
 };

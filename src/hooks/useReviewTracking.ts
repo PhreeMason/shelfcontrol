@@ -1,5 +1,5 @@
 import { QUERY_KEYS } from '@/constants/queryKeys';
-import { analytics } from '@/lib/analytics/client';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   reviewTrackingService,
@@ -79,13 +79,9 @@ export const useCreateReviewTracking = () => {
         });
       }
     },
-    onError: (error: Error, variables) => {
+    onError: (error: Error) => {
       console.error('Error creating review tracking:', error);
-      analytics.track('review_tracking_creation_failed', {
-        error_message: error.message,
-        deadline_id: variables.deadline_id,
-        platform_count: variables.platforms?.length ?? 0,
-      });
+      posthog.captureException(error);
     },
   });
 };
@@ -113,8 +109,9 @@ export const useUpdateReviewTracking = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error updating review tracking:', error);
+      posthog.captureException(error);
     },
   });
 };

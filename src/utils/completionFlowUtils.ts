@@ -1,4 +1,5 @@
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { posthog } from '@/lib/posthog';
 
 export const getCompletionFormSteps = (isDNF: boolean): string[] => {
   return isDNF
@@ -82,6 +83,7 @@ export const createCompletionCallbacks = (
     },
     onError: (error: Error) => {
       console.error('Error updating book status:', error);
+      posthog.captureException(error);
       showToast(createCompletionErrorToast(error));
     },
   };

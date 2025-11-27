@@ -1,6 +1,6 @@
 import { MUTATION_KEYS, QUERY_KEYS } from '@/constants/queryKeys';
 import { BOOK_FORMAT, DEADLINE_STATUS } from '@/constants/status';
-import { analytics } from '@/lib/analytics/client';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import {
   AddDeadlineParams,
@@ -35,12 +35,9 @@ export const useAddDeadline = () => {
         });
       }
     },
-    onError: (error: Error, variables) => {
+    onError: (error: Error) => {
       console.error('Error adding deadline:', error);
-      analytics.track('deadline_creation_failed', {
-        error_message: error.message,
-        book_source: variables.bookData?.api_id ? 'search' : 'manual',
-      });
+      posthog.captureException(error);
     },
   });
 };
@@ -68,12 +65,9 @@ export const useUpdateDeadline = () => {
         });
       }
     },
-    onError: (error: Error, variables) => {
+    onError: (error: Error) => {
       console.error('Error updating deadline:', error);
-      analytics.track('deadline_update_failed', {
-        error_message: error.message,
-        deadline_id: variables.deadlineDetails.id ?? '',
-      });
+      posthog.captureException(error);
     },
   });
 };
@@ -107,12 +101,9 @@ export const useUpdateDeadlineDate = () => {
         });
       }
     },
-    onError: (error: Error, variables) => {
+    onError: (error: Error) => {
       console.error('Error updating deadline date:', error);
-      analytics.track('deadline_date_update_failed', {
-        error_message: error.message,
-        deadline_id: variables.deadlineId,
-      });
+      posthog.captureException(error);
     },
   });
 };
@@ -146,11 +137,7 @@ export const useUploadDeadlineCover = () => {
     },
     onError: (error: Error) => {
       console.error('Error uploading cover image:', error);
-      analytics.track('cover_image_upload_failed', {
-        error_message: error.message,
-        deadline_id: '', // Not available at hook level - tracked at service level if needed
-        failure_stage: error.message.includes('fetch') ? 'fetch' : 'upload',
-      });
+      posthog.captureException(error);
     },
   });
 };
@@ -163,10 +150,7 @@ export const useDeleteDeadlineCover = () => {
     },
     onError: (error: Error) => {
       console.error('Error deleting cover image:', error);
-      analytics.track('cover_image_deletion_failed', {
-        error_message: error.message,
-        deadline_id: '', // Cover path doesn't contain deadline_id
-      });
+      posthog.captureException(error);
     },
   });
 };
@@ -194,12 +178,9 @@ export const useDeleteDeadline = () => {
         });
       }
     },
-    onError: (error: Error, deadlineId) => {
+    onError: (error: Error) => {
       console.error('Error deleting deadline:', error);
-      analytics.track('deadline_deletion_failed', {
-        error_message: error.message,
-        deadline_id: deadlineId,
-      });
+      posthog.captureException(error);
     },
   });
 };
@@ -263,13 +244,9 @@ export const useUpdateDeadlineProgress = () => {
 
       return { previousDeadlines };
     },
-    onError: (error: Error, variables, context) => {
+    onError: (error: Error, _variables, context) => {
       console.error('Error updating deadline progress:', error);
-      analytics.track('deadline_progress_update_failed', {
-        error_message: error.message,
-        deadline_id: variables.deadlineId,
-        progress_type: variables.timeSpentReading ? 'time' : 'pages',
-      });
+      posthog.captureException(error);
 
       if (context?.previousDeadlines && userId) {
         queryClient.setQueryData(
@@ -374,26 +351,9 @@ const useUpdateDeadlineStatus = (
         });
       }
     },
-    onError: (error: Error, deadlineId) => {
+    onError: (error: Error) => {
       console.error(`Error ${actionName} deadline:`, error);
-
-      // Track specific status update failures
-      if (status === DEADLINE_STATUS.READING) {
-        analytics.track('deadline_start_failed', {
-          error_message: error.message,
-          deadline_id: deadlineId,
-        });
-      } else if (status === DEADLINE_STATUS.PAUSED) {
-        analytics.track('deadline_pause_failed', {
-          error_message: error.message,
-          deadline_id: deadlineId,
-        });
-      } else if (status === DEADLINE_STATUS.DID_NOT_FINISH) {
-        analytics.track('deadline_dnf_failed', {
-          error_message: error.message,
-          deadline_id: deadlineId,
-        });
-      }
+      posthog.captureException(error);
     },
   });
 };
@@ -434,12 +394,9 @@ export const useCompleteDeadline = () => {
         });
       }
     },
-    onError: (error: Error, variables) => {
+    onError: (error: Error) => {
       console.error('Error completing deadline:', error);
-      analytics.track('deadline_completion_failed', {
-        error_message: error.message,
-        deadline_id: variables.deadlineId,
-      });
+      posthog.captureException(error);
     },
   });
 };

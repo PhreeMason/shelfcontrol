@@ -34,6 +34,7 @@ jest.mock('expo-router', () => ({
 jest.mock('@/lib/posthog', () => ({
   posthog: {
     capture: jest.fn(),
+    captureException: jest.fn(),
   },
 }));
 jest.mock('@/lib/dayjs', () => {

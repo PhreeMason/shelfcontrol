@@ -8,6 +8,7 @@ import { ROUTES } from '@/constants/routes';
 import { useExportReadingProgress } from '@/hooks/useExport';
 import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { useRouter } from 'expo-router';
@@ -60,9 +61,7 @@ export default function Profile() {
       if (isRateLimit) {
         analytics.track('export_rate_limited');
       } else {
-        analytics.track('export_failed', {
-          error_message: errorMessage,
-        });
+        posthog.captureException(error);
       }
 
       Toast.show({

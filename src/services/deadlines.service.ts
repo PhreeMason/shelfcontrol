@@ -4,7 +4,7 @@ import {
   STORAGE_BUCKETS,
 } from '@/constants/database';
 import { DEADLINE_STATUS, VALID_STATUS_TRANSITIONS } from '@/constants/status';
-import { analytics } from '@/lib/analytics/client';
+import { posthog } from '@/lib/posthog';
 import { dayjs } from '@/lib/dayjs';
 import { generateId, supabase } from '@/lib/supabase';
 import { Database } from '@/types/database.types';
@@ -888,9 +888,7 @@ class DeadlinesService {
       return data || [];
     } catch (error) {
       console.error('Failed to get daily activities:', error);
-      analytics.track('daily_activities_fetch_failed', {
-        error_message: error instanceof Error ? error.message : 'Unknown error',
-      });
+      posthog.captureException(error);
       return [];
     }
   }

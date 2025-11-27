@@ -1,5 +1,6 @@
 import { AuthError, AuthResponse, Session } from '@supabase/supabase-js';
 import { Database } from '@/types/database.types';
+import { posthog } from '@/lib/posthog';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -24,6 +25,7 @@ export const createAuthHandlers = (
 
   const handleAuthError = (operation: string, error: unknown) => {
     console.error(`${operation} error:`, error);
+    posthog.captureException(error instanceof Error ? error : new Error(String(error)));
     return error;
   };
 
@@ -109,6 +111,7 @@ export const createAsyncAuthOperations = () => {
       return await operation();
     } catch (error) {
       console.error(`${operationName} failed:`, error);
+      posthog.captureException(error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   };
@@ -121,10 +124,12 @@ export const createAsyncAuthOperations = () => {
       const result = await serviceCall();
       if (result.error) {
         console.error(`${operationName} failed:`, result.error);
+        posthog.captureException(result.error);
       }
       return result;
     } catch (error) {
       console.error(`${operationName} error:`, error);
+      posthog.captureException(error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   };
@@ -182,6 +187,7 @@ export const createProfileOperations = (
       return createAuthResponse(data, null);
     } catch (err) {
       console.error('User operation error:', err);
+      posthog.captureException(err instanceof Error ? err : new Error(String(err)));
       return createAuthResponse(null, err as Error);
     }
   };
@@ -207,6 +213,7 @@ export const createSessionManager = () => {
     setSession: (session: Session | null) => void
   ) => {
     console.error('Error signing out:', error);
+    posthog.captureException(error instanceof Error ? error : new Error(String(error)));
     cleanupUserState(setProfile, setSession);
   };
 

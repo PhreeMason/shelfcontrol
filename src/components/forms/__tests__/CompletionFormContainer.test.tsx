@@ -1,18 +1,18 @@
-import React from 'react';
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-} from '@testing-library/react-native';
-import CompletionFormContainer from '../CompletionFormContainer';
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
   useCompleteDeadline,
   useDidNotFinishDeadline,
 } from '@/hooks/useDeadlines';
-import Toast from 'react-native-toast-message';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import { router } from 'expo-router';
+import React from 'react';
+import Toast from 'react-native-toast-message';
+import CompletionFormContainer from '../CompletionFormContainer';
 
 jest.mock('expo-router', () => ({
   router: {
@@ -416,7 +416,7 @@ describe('CompletionFormContainer', () => {
       await waitFor(() => {
         expect(Toast.show).toHaveBeenCalledWith({
           type: 'error',
-          text1: 'Error',
+          text1: 'Something went wrong',
           text2: 'Network error',
         });
       });

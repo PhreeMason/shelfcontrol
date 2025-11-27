@@ -1,4 +1,5 @@
 import { MUTATION_KEYS, QUERY_KEYS } from '@/constants/queryKeys';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { hashtagsService } from '@/services/hashtags.service';
 import { Hashtag, HashtagInsert, NoteHashtag } from '@/types/hashtags.types';
@@ -74,8 +75,9 @@ export const useCreateHashtag = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error creating hashtag:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -106,8 +108,9 @@ export const useAddHashtagToNote = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error adding hashtag to note:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -138,8 +141,9 @@ export const useRemoveHashtagFromNote = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error removing hashtag from note:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -181,8 +185,9 @@ export const useSyncNoteHashtags = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error syncing note hashtags:', error);
+      posthog.captureException(error);
     },
   });
 };

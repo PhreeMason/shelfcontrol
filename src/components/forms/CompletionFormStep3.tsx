@@ -25,6 +25,7 @@ import {
 import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
@@ -246,6 +247,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
         },
         onError: error => {
           console.error('Error setting up review tracking:', error);
+          posthog.captureException(error);
 
           // Handle duplicate - go back to deadline page
           if (error.message?.includes('already exists')) {

@@ -5,6 +5,7 @@ import {
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
 import { analytics } from '@/lib/analytics/client';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Linking from 'expo-linking';
@@ -57,10 +58,7 @@ export default function ResetPasswordRequestScreen() {
       );
 
       if (error) {
-        analytics.track('password_reset_request_failed', {
-          error_type: 'other',
-          error_message: error.message,
-        });
+        posthog.captureException(error);
         setError('root', {
           message: error.message || 'Failed to send reset email',
         });
@@ -71,10 +69,7 @@ export default function ResetPasswordRequestScreen() {
       }
     } catch (err) {
       console.error('Reset password request error:', err);
-      analytics.track('password_reset_request_failed', {
-        error_type: 'other',
-        error_message: 'An unexpected error occurred',
-      });
+      posthog.captureException(err);
       setError('root', { message: 'An unexpected error occurred' });
     }
   };

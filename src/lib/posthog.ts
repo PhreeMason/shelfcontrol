@@ -6,6 +6,7 @@ const postHogApiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
 type PostHogInterface = Pick<
   PostHog,
   | 'capture'
+  | 'captureException'
   | 'identify'
   | 'reset'
   | 'group'
@@ -23,6 +24,7 @@ type PostHogInterface = Pick<
 // Create no-op mock for when API key is missing
 const createMockPostHog = (): PostHogInterface => ({
   capture: async () => {},
+  captureException: async () => {},
   identify: async () => {},
   reset: async () => {},
   group: () => {},

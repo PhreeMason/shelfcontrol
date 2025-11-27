@@ -1,4 +1,5 @@
 import { MUTATION_KEYS, QUERY_KEYS } from '@/constants/queryKeys';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { tagsService } from '@/services/tags.service';
 import { DeadlineTag, TagInsert, TagWithDetails } from '@/types/tags.types';
@@ -71,8 +72,9 @@ export const useCreateTag = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error creating tag:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -106,8 +108,9 @@ export const useAddTagToDeadline = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error adding tag to deadline:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -141,8 +144,9 @@ export const useRemoveTagFromDeadline = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error removing tag from deadline:', error);
+      posthog.captureException(error);
     },
   });
 };

@@ -1,4 +1,5 @@
 import { MUTATION_KEYS, QUERY_KEYS } from '@/constants/queryKeys';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { contactsService } from '@/services/contacts.service';
 import { DeadlineContact, DeadlineContactUpdate } from '@/types/contacts.types';
@@ -54,8 +55,9 @@ export const useAddContact = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error adding contact:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -90,8 +92,9 @@ export const useUpdateContact = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error updating contact:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -124,8 +127,9 @@ export const useDeleteContact = () => {
         });
       }
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error deleting contact:', error);
+      posthog.captureException(error);
     },
   });
 };

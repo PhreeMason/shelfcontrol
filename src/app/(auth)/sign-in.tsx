@@ -6,6 +6,7 @@ import { AppleSSO } from '@/components/auth/AppleSSO';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
 import { analytics } from '@/lib/analytics/client';
+import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useRouter } from 'expo-router';
@@ -63,14 +64,7 @@ export default function SignInScreen() {
     try {
       const { error } = await signIn(data.email, data.password);
       if (error) {
-        analytics.track('sign_in_failed', {
-          error_type: error.message.includes('Invalid login credentials')
-            ? 'invalid_credentials'
-            : error.message.includes('Email not confirmed')
-              ? 'email_not_confirmed'
-              : 'other',
-          error_message: error.message,
-        });
+        posthog.captureException(error);
 
         if (error.message.includes('Invalid login credentials')) {
           setError('root', { message: 'Invalid email or password' });
@@ -87,10 +81,7 @@ export default function SignInScreen() {
       }
     } catch (err) {
       console.error('Sign in error:', err);
-      analytics.track('sign_in_failed', {
-        error_type: 'unexpected',
-        error_message: 'An unexpected error occurred',
-      });
+      posthog.captureException(err);
       setError('root', { message: 'An unexpected error occurred' });
     }
   };

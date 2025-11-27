@@ -1,4 +1,5 @@
 import { MUTATION_KEYS, QUERY_KEYS } from '@/constants/queryKeys';
+import { posthog } from '@/lib/posthog';
 import { profileService, UpdateProfileParams } from '@/services';
 import { AppleProfileData } from '@/services/profile.service';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -65,8 +66,9 @@ export const useUpdateProfile = () => {
       });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.AVATAR.BASE() });
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error updating profile:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -90,8 +92,9 @@ export const useUpdateProfileFromApple = () => {
         queryKey: QUERY_KEYS.PROFILE.DETAIL(userId),
       });
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error updating profile from Apple:', error);
+      posthog.captureException(error);
     },
   });
 };
@@ -115,8 +118,9 @@ export const useUploadAvatar = () => {
         queryKey: QUERY_KEYS.PROFILE.DETAIL(userId),
       });
     },
-    onError: error => {
+    onError: (error: Error) => {
       console.error('Error uploading avatar:', error);
+      posthog.captureException(error);
     },
   });
 };

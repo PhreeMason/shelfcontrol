@@ -177,6 +177,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
       }
     } catch (err) {
       console.error('Error refreshing profile:', err);
+      posthog.captureException(err);
     }
   };
 
