@@ -44,7 +44,7 @@ import {
 import { getInitialStepFromSearchParams } from '@/utils/deadlineUtils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -111,6 +111,12 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
   const bookSelectedRef = useRef(false);
 
   const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
+  const fieldPositions = useRef<Map<string, number>>(new Map());
+
+  // Callback to register field positions for scroll-to-error functionality
+  const registerFieldPosition = useCallback((fieldName: string, y: number) => {
+    fieldPositions.current.set(fieldName, y);
+  }, []);
 
   const {
     control,
@@ -354,14 +360,22 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     const earliestErrorStep = findEarliestErrorStep(errors, mode);
     const firstErrorField = getFirstErrorField(errors, mode);
 
-    // Focus on the first error field to show validation errors and scroll to it
-    if (firstErrorField) {
-      setFocus(firstErrorField as keyof DeadlineFormData);
-    }
-
     // Navigate to the step with the error if it's not the current step
     if (earliestErrorStep !== null && earliestErrorStep !== currentStep) {
       setCurrentStep(earliestErrorStep);
+    }
+
+    // Focus on the first error field and scroll to it
+    if (firstErrorField) {
+      setFocus(firstErrorField as keyof DeadlineFormData);
+
+      // Scroll to the error field position
+      const fieldY = fieldPositions.current.get(firstErrorField);
+      if (fieldY !== undefined && scrollViewRef.current) {
+        // Add offset to show field label above the input
+        const scrollOffset = Math.max(0, fieldY - 100);
+        scrollViewRef.current.scrollToPosition(0, scrollOffset, true);
+      }
     }
   };
 
@@ -536,6 +550,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
                 mode === 'new' ? deadlineFromPublicationDate : false
               }
               hasExistingProgressRecords={hasExistingProgressRecords}
+              onFieldLayout={registerFieldPosition}
             />
           )}
         </ThemedView>

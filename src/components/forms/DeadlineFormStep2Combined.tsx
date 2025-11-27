@@ -11,7 +11,13 @@ import { toTitleCase } from '@/utils/stringUtils';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React from 'react';
 import { Control, Controller, useWatch } from 'react-hook-form';
-import { StyleSheet, Switch, TouchableOpacity, View } from 'react-native';
+import {
+  LayoutChangeEvent,
+  StyleSheet,
+  Switch,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { FormatSelector } from './FormatSelector';
 import { PaceEstimateBox } from './PaceEstimateBox';
 import { PrioritySelector } from './PrioritySelector';
@@ -34,6 +40,7 @@ interface DeadlineFormStep2CombinedProps {
   mode: 'new' | 'edit';
   deadlineFromPublicationDate?: boolean;
   hasExistingProgressRecords?: boolean;
+  onFieldLayout?: (fieldName: string, y: number) => void;
 }
 
 export const DeadlineFormStep2Combined = ({
@@ -53,8 +60,17 @@ export const DeadlineFormStep2Combined = ({
   mode,
   deadlineFromPublicationDate = false,
   hasExistingProgressRecords = false,
+  onFieldLayout,
 }: DeadlineFormStep2CombinedProps) => {
   const { colors } = useTheme();
+
+  // Helper to track field positions for scroll-to-error
+  const handleFieldLayout =
+    (fieldName: string) => (event: LayoutChangeEvent) => {
+      if (onFieldLayout) {
+        onFieldLayout(fieldName, event.nativeEvent.layout.y);
+      }
+    };
 
   // Watch values
   const watchedBookId = useWatch({ control, name: 'book_id' });
@@ -187,7 +203,7 @@ export const DeadlineFormStep2Combined = ({
         />
       </View>
 
-      <View>
+      <View onLayout={handleFieldLayout('bookTitle')}>
         <ThemedText
           variant="defaultSemiBold"
           style={{ marginBottom: Spacing.sm }}
@@ -269,7 +285,7 @@ export const DeadlineFormStep2Combined = ({
         ) : null}
       </View>
 
-      <View>
+      <View onLayout={handleFieldLayout('totalQuantity')}>
         <ThemedText
           variant="defaultSemiBold"
           style={{ marginBottom: Spacing.sm }}
@@ -319,7 +335,7 @@ export const DeadlineFormStep2Combined = ({
         ADDITIONAL INFORMATION
       </ThemedText>
 
-      <View style={{ zIndex: 3 }}>
+      <View style={{ zIndex: 3 }} onLayout={handleFieldLayout('type')}>
         <ThemedText
           variant="defaultSemiBold"
           style={{ marginBottom: Spacing.sm }}
@@ -448,7 +464,7 @@ export const DeadlineFormStep2Combined = ({
         READING SCHEDULE
       </ThemedText>
 
-      <View>
+      <View onLayout={handleFieldLayout('deadline')}>
         <ThemedText variant="default" style={{ marginBottom: Spacing.sm }}>
           Due Date <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
         </ThemedText>
