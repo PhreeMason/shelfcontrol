@@ -1,3 +1,4 @@
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -41,12 +42,12 @@ const styles = StyleSheet.create({
   stepsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 8,
-    padding: 16,
+    gap: Spacing.sm,
+    padding: Spacing.md,
   },
   step: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: Spacing.sm,
+    height: Spacing.sm,
+    borderRadius: BorderRadius.sm,
   },
 });

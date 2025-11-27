@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -55,14 +56,14 @@ export const StatusSelector = ({
 const styles = StyleSheet.create({
   statusOptions: {
     flexDirection: 'row',
-    gap: 12,
+    gap: Spacing.md,
   },
   statusOption: {
     flex: 1,
     borderWidth: 2,
-    borderRadius: 12,
-    padding: 16,
-    paddingVertical: 20,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    paddingVertical: Spacing.lg,
     alignItems: 'center',
   },
 });

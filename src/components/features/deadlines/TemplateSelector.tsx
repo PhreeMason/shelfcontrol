@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { DisclosureTemplate } from '@/types/disclosure.types';
 import React, { useState } from 'react';
@@ -171,7 +172,7 @@ export const TemplateSelector = ({
 
 const styles = StyleSheet.create({
   container: {
-    gap: 8,
+    gap: Spacing.sm,
   },
   label: {
     fontWeight: '600',
@@ -180,13 +181,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    padding: Spacing.md,
     borderWidth: 2,
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
   },
   selectContent: {
     flex: 1,
-    gap: 4,
+    gap: Spacing.xs,
   },
   selectText: {
     fontSize: 16,
@@ -197,28 +198,28 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   chevron: {
-    marginLeft: 8,
+    marginLeft: Spacing.sm,
   },
   chevronRotated: {
     transform: [{ rotate: '180deg' }],
   },
   dropdown: {
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
     overflow: 'hidden',
-    marginTop: 4,
+    marginTop: Spacing.xs,
     maxHeight: 400,
   },
   dropdownItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    padding: Spacing.md,
     borderBottomWidth: 1,
   },
   dropdownItemContent: {
     flex: 1,
-    gap: 4,
+    gap: Spacing.xs,
   },
   dropdownItemText: {
     fontSize: 16,

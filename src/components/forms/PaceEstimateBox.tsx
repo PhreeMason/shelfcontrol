@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -32,20 +33,13 @@ export const PaceEstimateBox: React.FC<PaceEstimateBoxProps> = ({
       ]}
     >
       <ThemedText
-        style={
-          isOverdue ? styles.overdueEstimateStyle : styles.paceEstimateStyle
-        }
-        variant="defaultSemiBold"
+        typography={isOverdue ? 'titleSubLarge' : 'headlineMedium'}
         color="textOnPrimary"
       >
         {paceEstimate}
       </ThemedText>
       {!isOverdue && (
-        <ThemedText
-          variant="defaultSemiBold"
-          color="textOnPrimary"
-          style={{ fontSize: 14 }}
-        >
+        <ThemedText typography="bodyMedium" color="textOnPrimary">
           to finish on time
         </ThemedText>
       )}
@@ -56,19 +50,9 @@ export const PaceEstimateBox: React.FC<PaceEstimateBoxProps> = ({
 const styles = StyleSheet.create({
   estimateContainer: {
     borderWidth: 2,
-    borderRadius: 8,
-    paddingVertical: 34,
-    marginTop: 10,
+    borderRadius: BorderRadius.md,
+    paddingVertical: Spacing.xl,
+    marginTop: Spacing.sm,
     alignItems: 'center',
-  },
-  paceEstimateStyle: {
-    fontSize: 26,
-    lineHeight: 30,
-    fontWeight: 'bold',
-  },
-  overdueEstimateStyle: {
-    fontSize: 20,
-    lineHeight: 26,
-    fontWeight: 'bold',
   },
 });

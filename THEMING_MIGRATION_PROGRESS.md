@@ -1,8 +1,8 @@
 # ShelfControl Theming Migration Progress
 
-**Last Updated**: November 17, 2024
+**Last Updated**: November 27, 2024
 **Typography Progress**: 57/57 component files (100% ✅)
-**Spacing Progress**: 79/627 instances (13% 🔄)
+**Spacing Progress**: 286/627 instances (46% 🔄)
 
 ## Migration Overview
 
@@ -484,23 +484,83 @@ Migrating ShelfControl to use a centralized Material Design 3 themed system with
 - Overall progress: 79 → 166 instances (13% → 26%)
 - All TypeScript checks passing ✅ (0 errors in migrated files)
 
-#### ⏳ Phase 4.4: Batch 4 - Remaining Form Components (Pending - ~25 instances)
-- ⏳ FormatSelector.tsx (6 instances)
-- ⏳ PrioritySelector.tsx (6 instances)
-- ⏳ StatusSelector.tsx (5 instances)
-- ⏳ PaceEstimateBox.tsx (5 instances)
-- ⏳ StepIndicators.tsx (3 instances)
+#### ✅ Phase 4.4: Batch 4 - Remaining Form Components (Complete - 5 files, ~20 instances)
+**Completed**: November 27, 2024
 
-#### ⏳ Phase 4.5: Feature Components (Pending - ~200 instances)
-- ⏳ Deadline feature components (20+ files)
-- ⏳ Modal and sheet components (10+ files)
+1. ✅ `src/components/forms/FormatSelector.tsx` - 4 values migrated
+   - gap: 13 → `Spacing.md`, borderRadius: 15 → `BorderRadius.xl`
+   - paddingVertical: 16 → `Spacing.md`, paddingHorizontal: 20 → `Spacing.lg`
+
+2. ✅ `src/components/forms/PrioritySelector.tsx` - 5 values migrated
+   - gap: 12 → `Spacing.md`, borderRadius: 12 → `BorderRadius.lg`
+   - padding: 16 → `Spacing.md`, paddingVertical: 20 → `Spacing.lg`
+
+3. ✅ `src/components/forms/StatusSelector.tsx` - 4 values migrated
+   - Same pattern as PrioritySelector
+
+4. ✅ `src/components/forms/PaceEstimateBox.tsx` - 5 values migrated
+   - Also fixed typography anti-patterns (fontSize → typography prop)
+
+5. ✅ `src/components/forms/StepIndicators.tsx` - 2 values migrated
+   - gap: 8 → `Spacing.sm`, padding: 16 → `Spacing.md`
+   - width/height: 8 → `Spacing.sm`, borderRadius: 4 → `BorderRadius.sm`
+
+#### ✅ Phase 4.5: Batch 5 - Feature Components (Complete - 12 files, ~120 instances)
+**Completed**: November 27, 2024
+
+**Deadline Modals & Dialogs**:
+1. ✅ `src/components/features/deadlines/modals/DeleteDeadlineModal.tsx` - 15 values migrated
+   - Sheet borderRadius, padding, gaps, button spacing
+   - Used `BorderRadius.full` for circular icon container
+
+2. ✅ `src/components/features/deadlines/SaveTemplateDialog.tsx` - 12 values migrated
+   - Dialog padding, gap, borderRadius tokens
+
+3. ✅ `src/components/features/deadlines/DeadlineActionSheet.tsx` - 20 values migrated
+   - Sheet styling, grid buttons, status badges, section gaps
+
+**Deadline Feature Components**:
+4. ✅ `src/components/features/deadlines/TemplateSelector.tsx` - 9 values migrated
+   - Dropdown styling, gaps, padding, borderRadius
+
+5. ✅ `src/components/features/deadlines/DeadlineTagsSection.tsx` - 18 values migrated
+   - Header, tags container, empty state card, ghost tags
+
+6. ✅ `src/components/features/deadlines/ContactCard.tsx` - 11 values migrated
+   - Card padding, info row gaps, copy badge positioning
+   - Used `Spacing.negative.sm` for badge overlay
+
+7. ✅ `src/components/features/deadlines/DeadlineContactsSection.tsx` - 15 values migrated
+   - Section styling, ghost contact, empty state
+
+8. ✅ `src/components/features/deadlines/SourceSelector.tsx` - 8 values migrated
+   - Dropdown and select button styling
+
+9. ✅ `src/components/features/deadlines/FilterSheet.tsx` - 18 values migrated
+   - Sheet, scroll content, sections, filter pills, footer
+
+10. ✅ `src/components/features/deadlines/DeadlinesList.tsx` - 6 values migrated
+    - Container gaps, grid container padding
+
+11. ✅ `src/components/features/deadlines/BookDetailsSection.tsx` - 6 values migrated
+    - Section title, details grid, detail rows
+
+12. ✅ `src/components/features/deadlines/DeadlineCountdownDisplay.tsx` - 3 values migrated
+    - Container padding, countdown square borderRadius
+
+**Key Achievements**:
+- 120+ spacing instances migrated across 12 files
+- Negative spacing token used for overlay positioning
+- All BorderRadius values migrated to tokens
+- All TypeScript checks passing ✅
 
 #### ⏳ Phase 4.6: Remaining Components (Pending - ~150 instances)
 - ⏳ Stats components
 - ⏳ Progress components
-- ⏳ Misc components
+- ⏳ Notes components
+- ⏳ Calendar components
 
-#### ⏳ Phase 4.7: App Screens (Pending - 126 instances)
+#### ⏳ Phase 4.7: App Screens (Pending - ~126 instances)
 - ⏳ Screen-level files in src/app/
 
 #### Expected Impact
@@ -905,7 +965,9 @@ colors.urgent       // Urgent/overdue (#c8696e)
 | **Phase 4.1** | 100% Complete ✅ (5/5 files - Quick Wins) |
 | **Phase 4.2** | 100% Complete ✅ (7/7 files - Negative Margins) |
 | **Phase 4.3** | 100% Complete ✅ (5/5 files - High-Impact Forms) |
-| **Phase 4.4+** | Pending ⏳ (~461 spacing instances remaining) |
+| **Phase 4.4** | 100% Complete ✅ (5/5 files - Remaining Form Components) |
+| **Phase 4.5** | 100% Complete ✅ (12/12 files - Feature Components) |
+| **Phase 4.6+** | Pending ⏳ (~341 spacing instances remaining) |
 | **Batch 1 (Typography)** | 100% Complete ✅ (4/4 files) |
 | **Batch 2 (Typography)** | 100% Complete ✅ (4/4 files) |
 | **Batch 3 (Typography)** | 100% Complete ✅ (5/5 files) |
@@ -922,13 +984,13 @@ colors.urgent       // Urgent/overdue (#c8696e)
 | **Negative Spacing Tokens** | 4 (xs, sm, md, lg) ✅ NEW |
 | **ThemedText Tests** | 21 passing ✅ |
 | **Total Files Migrated (Typography)** | 57 (53 complete + 2 documented exceptions) ✅ |
-| **Total Files Migrated (Spacing)** | 17 (Phase 4.1 + 4.2 + 4.3) 🔄 |
+| **Total Files Migrated (Spacing)** | 34 (Phase 4.1-4.5) 🔄 |
 | **Total fontSize Overrides Removed** | ~90 (+14 from Batch 9) |
 | **Total Hardcoded Colors Replaced** | 46 (+2 from Batch 9, +6 from Phase 4.3 forms) |
 | **Total Missing lineHeights Fixed** | 46 (+3 from Batch 9 - iOS clipping prevention!) |
-| **Total Spacing Values Migrated** | 166 instances (40 Batch 1, 39 Batch 2, 87 Batch 3) 🔄 |
-| **Total Negative Margins Migrated** | 9/9 (100%) ✅ |
-| **Hardcoded Spacing Remaining** | 461 instances (pending migration) |
+| **Total Spacing Values Migrated** | 286 instances (40 B1 + 39 B2 + 87 B3 + 20 B4 + 120 B5) 🔄 |
+| **Total Negative Margins Migrated** | 10/10 (100%) ✅ |
+| **Hardcoded Spacing Remaining** | ~341 instances (pending migration) |
 
 ---
 

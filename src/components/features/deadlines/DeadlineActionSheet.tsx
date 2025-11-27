@@ -1,6 +1,7 @@
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ActionSheetOption } from '@/components/ui/ActionSheet';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { useReviewTrackingMutation } from '@/hooks/useReviewTrackingMutation';
 import { useTheme } from '@/hooks/useThemeColor';
@@ -467,14 +468,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheet: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    paddingTop: 24,
-    paddingHorizontal: 20,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
+    paddingTop: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
   },
   header: {
-    gap: 12,
-    marginBottom: 20,
+    gap: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   bookTitle: {
     fontSize: 20,
@@ -484,12 +485,12 @@ const styles = StyleSheet.create({
   headerInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: Spacing.md,
   },
   statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.lg,
   },
   statusText: {
     fontSize: 13,
@@ -503,21 +504,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    gap: 8,
-    marginBottom: 10,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
   },
   primaryActionText: {
     fontSize: 17,
     fontWeight: '600',
   },
   actionsContainer: {
-    gap: 10,
+    gap: Spacing.sm,
   },
   section: {
-    gap: 10,
+    gap: Spacing.sm,
   },
   sectionHeader: {
     fontSize: 12,
@@ -528,17 +529,17 @@ const styles = StyleSheet.create({
   gridRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: Spacing.sm,
   },
   gridButton: {
     flex: 1,
     borderWidth: 1.5,
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
+    gap: Spacing.sm,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
   },
   gridButtonLabel: {
     fontSize: 14,
@@ -550,9 +551,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderRadius: 12,
-    paddingVertical: 16,
-    gap: 10,
+    borderRadius: BorderRadius.lg,
+    paddingVertical: Spacing.md,
+    gap: Spacing.sm,
   },
   deleteButtonLabel: {
     fontSize: 16,
@@ -560,11 +561,11 @@ const styles = StyleSheet.create({
     paddingTop: 2,
   },
   cancelButton: {
-    paddingVertical: 16,
+    paddingVertical: Spacing.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderRadius: 8,
-    marginTop: 8,
+    borderRadius: BorderRadius.sm,
+    marginTop: Spacing.sm,
   },
   cancelText: {
     fontSize: 16,
