@@ -57,6 +57,7 @@ import React, {
   useCallback,
   useContext,
   useMemo,
+  useRef,
 } from 'react';
 
 interface DeadlineContextType {
@@ -213,9 +214,25 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     data: deadlines = [],
     error,
     isLoading,
-    refetch,
+    refetch: queryRefetch,
     isFetching,
   } = useGetDeadlines();
+
+  // Track whether user manually initiated a refresh (pull-to-refresh)
+  // This prevents showing refresh indicator during initial load or background refetches
+  const isManualRefresh = useRef(false);
+
+  const refetch = useCallback(async () => {
+    isManualRefresh.current = true;
+    try {
+      await queryRefetch();
+    } finally {
+      isManualRefresh.current = false;
+    }
+  }, [queryRefetch]);
+
+  // Only show refreshing state when user manually triggered it AND data is being fetched
+  const isRefreshing = isManualRefresh.current && isFetching;
   const { mutate: addDeadlineMutation } = useAddDeadline();
   const { mutate: updateDeadlineMutation } = useUpdateDeadline();
   const { mutate: updateDeadlineDateMutation } = useUpdateDeadlineDate();
@@ -625,7 +642,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     isLoading,
     error,
     refetch,
-    isRefreshing: isFetching,
+    isRefreshing,
 
     userPaceData,
     userListeningPaceData,

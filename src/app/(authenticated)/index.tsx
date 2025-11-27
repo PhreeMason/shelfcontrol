@@ -18,8 +18,11 @@ import {
   StyleSheet,
 } from 'react-native';
 import Animated, {
+  runOnJS,
+  useAnimatedReaction,
   useAnimatedScrollHandler,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
@@ -72,8 +75,13 @@ export default function HomeScreen() {
   });
 
   // Animated style for sticky filter (outside ScrollView)
+  // Note: pointerEvents is handled separately via useDerivedValue since it's not animatable
+  const shouldStickValue = useDerivedValue(() => {
+    return scrollY.value >= filterTop.value;
+  });
+
   const stickyFilterStyle = useAnimatedStyle(() => {
-    const shouldStick = scrollY.value >= filterTop.value;
+    const shouldStick = shouldStickValue.value;
     return {
       position: 'absolute',
       top: gradientHeight,
@@ -82,9 +90,18 @@ export default function HomeScreen() {
       zIndex: 1000,
       opacity: withSpring(shouldStick ? 1 : 0),
       elevation: withSpring(shouldStick ? 4 : 0),
-      pointerEvents: shouldStick ? 'auto' : 'none',
     };
   });
+
+  // Track sticky state for pointerEvents (non-animatable property)
+  const [isStickyVisible, setIsStickyVisible] = React.useState(false);
+  useAnimatedReaction(
+    () => shouldStickValue.value,
+    (shouldStick) => {
+      runOnJS(setIsStickyVisible)(shouldStick);
+    },
+    []
+  );
 
   const handleFilterLayout = (event: any) => {
     filterHeight.value = event.nativeEvent.layout.height;
@@ -204,6 +221,7 @@ export default function HomeScreen() {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         animatedStyle={stickyFilterStyle}
+        pointerEvents={isStickyVisible ? 'auto' : 'none'}
       />
 
       <KeyboardAvoidingView

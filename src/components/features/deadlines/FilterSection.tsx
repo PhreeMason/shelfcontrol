@@ -46,6 +46,7 @@ interface FilterSectionProps {
   onSearchChange: (query: string) => void;
   animatedStyle?: any;
   onLayout?: (event: LayoutChangeEvent) => void;
+  pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only';
 }
 
 const filterOptions: FilterOption[] = [
@@ -81,6 +82,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   onSearchChange,
   animatedStyle,
   onLayout,
+  pointerEvents,
 }) => {
   const { colors } = useTheme();
   const [showFilterSheet, setShowFilterSheet] = useState(false);
@@ -145,6 +147,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     <Animated.View
       style={[animatedStyle, { backgroundColor: colors.background }]}
       onLayout={onLayout}
+      pointerEvents={pointerEvents}
     >
       <View style={styles.filterContainer}>
         <ScrollView
