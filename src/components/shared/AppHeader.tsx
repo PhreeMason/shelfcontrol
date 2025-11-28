@@ -32,7 +32,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
       end={{ x: 1, y: 1 }}
       style={[
         styles.header,
-        { paddingTop: Math.max(insets.top, 10) + 8, ...headerStyle },
+        { paddingTop: Math.max(insets.top, 10), ...headerStyle },
       ]}
     >
       <View style={styles.headerContent}>

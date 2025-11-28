@@ -33,9 +33,7 @@ export function CalendarFilterToggle() {
         }
         variant="ghost"
         size={isIOS ? 'md' : 'sm'}
-        iconColor={
-          isIOS ? 'surface' : hasActiveFilters ? 'surface' : 'text'
-        }
+        iconColor={isIOS ? 'surface' : hasActiveFilters ? 'surface' : 'text'}
         onPress={handleToggle}
         accessibilityLabel={
           hasActiveFilters

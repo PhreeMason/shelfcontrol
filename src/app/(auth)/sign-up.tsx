@@ -5,7 +5,9 @@ import {
 import { AppleSSO } from '@/components/auth/AppleSSO';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { BorderRadius, Spacing } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
+import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
 import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
@@ -41,6 +43,7 @@ type SignUpFields = z.infer<typeof signUpSchema>;
 export default function SignUpScreen() {
   const { signUp, isLoading } = useAuth();
   const router = useRouter();
+  const { colors } = useTheme();
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
@@ -147,12 +150,17 @@ export default function SignUpScreen() {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   autoComplete="email"
-                  inputStyle={styles.input}
+                  inputStyle={{
+                    ...styles.input,
+                    color: colors.text,
+                    borderColor: colors.border,
+                    backgroundColor: colors.background,
+                  }}
                 />
               )}
             />
             {errors.email && (
-              <ThemedText style={styles.errorText}>
+              <ThemedText color="error" style={styles.errorText}>
                 {errors.email.message}
               </ThemedText>
             )}
@@ -174,13 +182,18 @@ export default function SignUpScreen() {
                   onBlur={onBlur}
                   secureTextEntry
                   autoCapitalize="none"
-                  inputStyle={styles.input}
+                  inputStyle={{
+                    ...styles.input,
+                    color: colors.text,
+                    borderColor: colors.border,
+                    backgroundColor: colors.background,
+                  }}
                   testID="password-input"
                 />
               )}
             />
             {errors.password && (
-              <ThemedText style={styles.errorText}>
+              <ThemedText color="error" style={styles.errorText}>
                 {errors.password.message}
               </ThemedText>
             )}
@@ -202,20 +215,25 @@ export default function SignUpScreen() {
                   onBlur={onBlur}
                   secureTextEntry
                   autoCapitalize="none"
-                  inputStyle={styles.input}
+                  inputStyle={{
+                    ...styles.input,
+                    color: colors.text,
+                    borderColor: colors.border,
+                    backgroundColor: colors.background,
+                  }}
                   testID="confirm-password-input"
                 />
               )}
             />
             {errors.confirmPassword && (
-              <ThemedText style={styles.errorText}>
+              <ThemedText color="error" style={styles.errorText}>
                 {errors.confirmPassword.message}
               </ThemedText>
             )}
           </ThemedView>
 
           {errors.root && (
-            <ThemedText style={styles.errorText}>
+            <ThemedText color="error" style={styles.errorText}>
               {errors.root.message}
             </ThemedText>
           )}
@@ -223,12 +241,18 @@ export default function SignUpScreen() {
           <TouchableOpacity
             style={[
               styles.button,
-              (isLoading || isSubmitting) && styles.buttonDisabled,
+              {
+                backgroundColor: colors.primary,
+                ...Shadows.themed.primary,
+              },
+              (isLoading || isSubmitting) && {
+                backgroundColor: colors.surfaceVariant,
+              },
             ]}
             onPress={handleSubmit(onSignUpPress)}
             disabled={isLoading || isSubmitting}
           >
-            <ThemedText style={styles.buttonText}>
+            <ThemedText color="textInverse" style={styles.buttonText}>
               {isLoading || isSubmitting ? 'Creating account...' : 'Continue'}
             </ThemedText>
           </TouchableOpacity>
@@ -268,14 +292,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    shadowColor: '#B8A9D9',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    ...Shadows.themed.primary,
   },
   title: {
     textAlign: 'center',
@@ -289,34 +306,18 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   input: {
-    color: '#000',
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     fontSize: 16,
-    backgroundColor: '#fff',
   },
   button: {
-    backgroundColor: '#B8A9D9',
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     marginTop: Spacing.sm,
     alignItems: 'center',
-    shadowColor: '#B8A9D9',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  buttonDisabled: {
-    backgroundColor: '#E2E8F0',
   },
   buttonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -328,7 +329,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     textAlign: 'center',
-    color: '#ff0000',
     fontSize: 14,
     marginTop: Spacing.xs,
   },

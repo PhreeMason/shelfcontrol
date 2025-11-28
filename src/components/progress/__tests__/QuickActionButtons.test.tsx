@@ -3,13 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react-native';
 import QuickActionButtons from '../QuickActionButtons';
 
 jest.mock('@/components/themed', () => ({
-  ThemedButton: ({
-    title,
-    onPress,
-    disabled,
-    textStyle,
-    style,
-  }: any) => {
+  ThemedButton: ({ title, onPress, disabled, textStyle, style }: any) => {
     const React = require('react');
     const { TouchableOpacity, Text } = require('react-native');
     return React.createElement(

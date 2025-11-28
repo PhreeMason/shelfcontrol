@@ -274,7 +274,9 @@ export function formatActivityTime(timestamp: string): string {
     return localTime.format('h:mm A');
   } catch (error) {
     console.error('Failed to format activity time:', timestamp, error);
-    posthog.captureException(error instanceof Error ? error : new Error(String(error)));
+    posthog.captureException(
+      error instanceof Error ? error : new Error(String(error))
+    );
     return 'N/A';
   }
 }

@@ -31,7 +31,7 @@ export function DeadlineCountdownDisplay({
               ]}
             >
               🏆
-            </ThemedText> 
+            </ThemedText>
             <ThemedText
               style={[
                 styles.countdownLabel,

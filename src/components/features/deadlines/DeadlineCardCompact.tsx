@@ -96,8 +96,6 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
 
       {/* Book Info Below Cover */}
       <View style={styles.infoContainer}>
-
-
         {/* Pace Required - Only show for active deadlines */}
         {countdown.latestStatus !== 'complete' &&
           countdown.latestStatus !== 'did_not_finish' && (
@@ -106,7 +104,7 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
             </ThemedText>
           )}
 
-                {/* Due Date - Split long messages into two lines */}
+        {/* Due Date - Split long messages into two lines */}
         {dateDisplay.type === 'single' ? (
           <ThemedText typography="bodySmall" color="textSecondary">
             {dateDisplay.text}

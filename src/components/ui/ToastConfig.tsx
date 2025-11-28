@@ -1,4 +1,4 @@
-import { BorderRadius, Colors, Typography } from '@/constants/Colors';
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -233,8 +233,8 @@ export const toastConfig = {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    paddingHorizontal: 20,
-    marginTop: 20,
+    paddingHorizontal: Spacing.lg,
+    marginTop: Spacing.lg,
     shadowColor: '#000',
     shadowOffset: {
       width: 2,
@@ -247,8 +247,8 @@ const styles = StyleSheet.create({
   toastContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: BorderRadius.xxl, // 24px
+    padding: Spacing.md,
+    borderRadius: BorderRadius.xxl,
     borderWidth: 1,
     borderColor: 'rgba(184, 169, 217, 0.2)',
   },
@@ -256,12 +256,12 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: Spacing.md,
   },
   iconContainer: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: BorderRadius.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -287,19 +287,19 @@ const styles = StyleSheet.create({
     height: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
   },
   closeText: {
     fontSize: 18,
     fontWeight: '300',
   },
   actionButton: {
-    marginLeft: 8,
+    marginLeft: Spacing.sm,
   },
   actionButtonGradient: {
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-    borderRadius: 16,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.xl,
   },
   actionButtonText: {
     ...Typography.labelMedium,

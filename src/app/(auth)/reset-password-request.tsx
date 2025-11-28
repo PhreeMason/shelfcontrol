@@ -3,7 +3,10 @@ import {
   AnimatedCustomInputRef,
 } from '@/components/AnimatedCustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
+import { ROUTES } from '@/constants/routes';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
+import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
 import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
@@ -19,8 +22,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { z } from 'zod';
-import { BorderRadius, Spacing } from '@/constants/Colors';
-import { ROUTES } from '@/constants/routes';
 
 const resetPasswordRequestSchema = z.object({
   email: z.string({ message: 'Email is required' }).email('Invalid email'),
@@ -31,6 +32,7 @@ type ResetPasswordRequestFields = z.infer<typeof resetPasswordRequestSchema>;
 export default function ResetPasswordRequestScreen() {
   const { requestResetPasswordEmail, isLoading } = useAuth();
   const router = useRouter();
+  const { colors } = useTheme();
   const [emailInput, setEmailInput] = useState('');
   const emailInputRef = useRef<AnimatedCustomInputRef>(null);
 
@@ -113,18 +115,23 @@ export default function ResetPasswordRequestScreen() {
                 autoCapitalize="none"
                 keyboardType="email-address"
                 autoComplete="email"
-                inputStyle={styles.input}
+                inputStyle={{
+                  ...styles.input,
+                  color: colors.text,
+                  borderColor: colors.border,
+                  backgroundColor: colors.background,
+                }}
               />
             )}
           />
           {errors.email && (
-            <ThemedText style={styles.errorText}>
+            <ThemedText color="error" style={styles.errorText}>
               {errors.email.message}
             </ThemedText>
           )}
 
           {errors.root && (
-            <ThemedText style={styles.errorText}>
+            <ThemedText color="error" style={styles.errorText}>
               {errors.root.message}
             </ThemedText>
           )}
@@ -132,12 +139,15 @@ export default function ResetPasswordRequestScreen() {
           <TouchableOpacity
             style={[
               styles.button,
-              (isLoading || isSubmitting) && styles.buttonDisabled,
+              { backgroundColor: colors.primary },
+              (isLoading || isSubmitting) && {
+                backgroundColor: colors.surfaceVariant,
+              },
             ]}
             onPress={handleSubmit(onResetPasswordRequest)}
             disabled={isLoading || isSubmitting}
           >
-            <ThemedText style={styles.buttonText}>
+            <ThemedText color="textInverse" style={styles.buttonText}>
               {isLoading || isSubmitting ? 'Sending...' : 'Send Reset Email'}
             </ThemedText>
           </TouchableOpacity>
@@ -146,7 +156,9 @@ export default function ResetPasswordRequestScreen() {
         <ThemedView style={styles.footer}>
           <ThemedText>Remember your password? </ThemedText>
           <Link href={ROUTES.AUTH.SIGN_IN}>
-            <ThemedText style={styles.linkText}>Sign In</ThemedText>
+            <ThemedText color="primary" style={styles.linkText}>
+              Sign In
+            </ThemedText>
           </Link>
         </ThemedView>
       </ThemedView>
@@ -181,24 +193,17 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: BorderRadius.sm,
     padding: Spacing.md,
     fontSize: 16,
-    backgroundColor: '#fff',
   },
   button: {
-    backgroundColor: '#007AFF',
     borderRadius: BorderRadius.sm,
     padding: Spacing.md,
     marginTop: Spacing.sm,
     alignItems: 'center',
   },
-  buttonDisabled: {
-    backgroundColor: '#ccc',
-  },
   buttonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -210,7 +215,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     textAlign: 'center',
-    color: '#ff0000',
     fontSize: 14,
     marginTop: Spacing.xs,
   },
@@ -220,7 +224,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   linkText: {
-    color: '#007AFF',
     fontWeight: '600',
   },
 });

@@ -97,7 +97,7 @@ export default function HomeScreen() {
   const [isStickyVisible, setIsStickyVisible] = React.useState(false);
   useAnimatedReaction(
     () => shouldStickValue.value,
-    (shouldStick) => {
+    shouldStick => {
       runOnJS(setIsStickyVisible)(shouldStick);
     },
     []

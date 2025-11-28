@@ -1,4 +1,6 @@
 import { ThemedText } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useTheme';
 import React, { useState } from 'react';
 import { Control, Controller, FieldValues, Path } from 'react-hook-form';
@@ -265,9 +267,7 @@ const CustomDropdown = <T extends FieldValues>({
                           }
                         }}
                       >
-                        <ThemedText style={{ color: '#FFFFFF' }}>
-                          Save
-                        </ThemedText>
+                        <ThemedText color="textInverse">Save</ThemedText>
                       </TouchableOpacity>
                     </View>
                   </TouchableOpacity>
@@ -284,26 +284,26 @@ const CustomDropdown = <T extends FieldValues>({
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    gap: 4,
+    gap: Spacing.xs,
     zIndex: 1,
   },
   dropdownContainer: {
     borderWidth: 2,
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
     overflow: 'hidden',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingRight: 16,
+    paddingRight: Spacing.md,
   },
   textInput: {
     flex: 1,
     fontSize: 16,
-    padding: 16,
+    padding: Spacing.md,
   },
   chevronIcon: {
-    marginLeft: 8,
+    marginLeft: Spacing.sm,
   },
   suggestionsContainer: {
     position: 'absolute',
@@ -312,25 +312,18 @@ const styles = StyleSheet.create({
     right: 0,
     borderWidth: 1,
     borderTopWidth: 0,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    borderBottomLeftRadius: BorderRadius.lg,
+    borderBottomRightRadius: BorderRadius.lg,
     zIndex: 1000,
+    ...Shadows.medium,
   },
   suggestionsList: {
     flexGrow: 0,
     maxHeight: 300,
   },
   suggestionItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
     borderBottomWidth: 1,
   },
   suggestionText: {
@@ -338,7 +331,7 @@ const styles = StyleSheet.create({
   },
   error: {
     minHeight: 18,
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
   modalOverlay: {
     flex: 1,
@@ -348,36 +341,29 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '85%',
-    padding: 24,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.xl,
+    ...Shadows.elevated,
   },
   modalTitle: {
     fontSize: 18,
-    marginBottom: 16,
+    marginBottom: Spacing.md,
   },
   customInput: {
     borderWidth: 2,
-    padding: 16,
-    borderRadius: 12,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
     fontSize: 16,
-    marginBottom: 16,
+    marginBottom: Spacing.md,
   },
   modalButtons: {
     flexDirection: 'row',
-    gap: 12,
+    gap: Spacing.md,
   },
   modalButton: {
     flex: 1,
-    padding: 14,
-    borderRadius: 8,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.sm,
     alignItems: 'center',
   },
 });

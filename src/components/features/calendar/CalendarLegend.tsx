@@ -79,6 +79,7 @@ export const CalendarLegend: React.FC<CalendarLegendProps> = ({
       {/* Legend Content */}
       {isExpanded && (
         <View style={styles.content}>
+          <LegendItem color={colors.successGreen} label="Completed due date" />
           {showAllActivities && (
             <LegendItem color={colors.pending} label="Activity event" />
           )}

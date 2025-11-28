@@ -1,4 +1,6 @@
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useProgressInputViewModel } from '@/hooks/useProgressInputViewModel';
+import { useTheme } from '@/hooks/useThemeColor';
 import { ProgressInputMode } from '@/types/progressInput.types';
 import React from 'react';
 import { StyleSheet, TextInput } from 'react-native';
@@ -17,6 +19,7 @@ interface ProgressInputBaseProps {
 
 const ProgressInputBase: React.FC<ProgressInputBaseProps> = props => {
   const viewModel = useProgressInputViewModel(props);
+  const { colors } = useTheme();
 
   return (
     <ThemedView style={[styles.container, viewModel.styling.containerStyle]}>
@@ -31,7 +34,7 @@ const ProgressInputBase: React.FC<ProgressInputBaseProps> = props => {
           onFocus={viewModel.handlers.onFocus}
           onBlur={viewModel.handlers.onBlur}
           placeholder={viewModel.props.placeholder}
-          placeholderTextColor="#666666"
+          placeholderTextColor={colors.textMuted}
           keyboardType={viewModel.props.keyboardType}
           editable={!props.disabled}
           style={[
@@ -43,7 +46,8 @@ const ProgressInputBase: React.FC<ProgressInputBaseProps> = props => {
         {viewModel.display.displayTotal && (
           <ThemedText
             variant="default"
-            style={[styles.totalText, { color: '#33333379' }]}
+            style={styles.totalText}
+            color="textMuted"
           >
             {viewModel.display.displayTotal}
           </ThemedText>
@@ -52,10 +56,8 @@ const ProgressInputBase: React.FC<ProgressInputBaseProps> = props => {
       {viewModel.display.helpText && (
         <ThemedText
           variant="muted"
-          style={[
-            styles.helpText,
-            { color: !viewModel.state.isValid ? '#ff0000' : '#666666' },
-          ]}
+          style={styles.helpText}
+          color={!viewModel.state.isValid ? 'error' : 'textMuted'}
         >
           {viewModel.display.helpText}
         </ThemedText>
@@ -63,7 +65,8 @@ const ProgressInputBase: React.FC<ProgressInputBaseProps> = props => {
       {viewModel.display.calculatedText && (
         <ThemedText
           variant="muted"
-          style={[styles.calculatedText, { color: '#666666' }]}
+          style={styles.calculatedText}
+          color="textMuted"
         >
           {viewModel.display.calculatedText}
         </ThemedText>
@@ -75,10 +78,10 @@ const ProgressInputBase: React.FC<ProgressInputBaseProps> = props => {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
     justifyContent: 'center',
-    paddingVertical: 15,
-    borderRadius: 10,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
   },
   label: {
@@ -90,14 +93,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: Spacing.md,
   },
   input: {
     fontSize: 30,
     lineHeight: 34,
-    borderRadius: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
     borderWidth: 2,
     fontWeight: '900',
     textAlignVertical: 'center',
@@ -110,8 +113,8 @@ const styles = StyleSheet.create({
   helpText: {
     fontSize: 14,
     fontWeight: '600',
-    marginTop: 4,
-    paddingHorizontal: 8,
+    marginTop: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   calculatedText: {
     fontSize: 14,

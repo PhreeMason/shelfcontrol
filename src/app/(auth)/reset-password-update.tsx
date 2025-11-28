@@ -3,8 +3,10 @@ import {
   AnimatedCustomInputRef,
 } from '@/components/AnimatedCustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { ROUTES } from '@/constants/routes';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
+import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
 import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
@@ -21,7 +23,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { z } from 'zod';
-import { BorderRadius, Spacing } from '@/constants/Colors';
 
 const updatePasswordSchema = z
   .object({
@@ -40,6 +41,7 @@ type UpdatePasswordFields = z.infer<typeof updatePasswordSchema>;
 export default function ResetPasswordUpdateScreen() {
   const { setSessionFromUrl, updatePassword, isLoading } = useAuth();
   const router = useRouter();
+  const { colors } = useTheme();
   const [isSessionEstablished, setIsSessionEstablished] = useState(false);
   const [sessionError, setSessionError] = useState<string | null>(null);
   const [passwordInput, setPasswordInput] = useState('');
@@ -142,13 +144,15 @@ export default function ResetPasswordUpdateScreen() {
           <ThemedText variant="title" style={styles.title}>
             Invalid Link
           </ThemedText>
-          <ThemedText style={styles.errorMessage}>{sessionError}</ThemedText>
+          <ThemedText color="error" style={styles.errorMessage}>
+            {sessionError}
+          </ThemedText>
 
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, { backgroundColor: colors.primary }]}
             onPress={() => router.replace(ROUTES.AUTH.RESET_PASSWORD_REQUEST)}
           >
-            <ThemedText style={styles.buttonText}>
+            <ThemedText color="textInverse" style={styles.buttonText}>
               Request New Reset Link
             </ThemedText>
           </TouchableOpacity>
@@ -196,12 +200,17 @@ export default function ResetPasswordUpdateScreen() {
                 onBlur={onBlur}
                 secureTextEntry
                 autoCapitalize="none"
-                inputStyle={styles.input}
+                inputStyle={{
+                  ...styles.input,
+                  color: colors.text,
+                  borderColor: colors.border,
+                  backgroundColor: colors.background,
+                }}
               />
             )}
           />
           {errors.password && (
-            <ThemedText style={styles.errorText}>
+            <ThemedText color="error" style={styles.errorText}>
               {errors.password.message}
             </ThemedText>
           )}
@@ -221,18 +230,23 @@ export default function ResetPasswordUpdateScreen() {
                 onBlur={onBlur}
                 secureTextEntry
                 autoCapitalize="none"
-                inputStyle={styles.input}
+                inputStyle={{
+                  ...styles.input,
+                  color: colors.text,
+                  borderColor: colors.border,
+                  backgroundColor: colors.background,
+                }}
               />
             )}
           />
           {errors.confirmPassword && (
-            <ThemedText style={styles.errorText}>
+            <ThemedText color="error" style={styles.errorText}>
               {errors.confirmPassword.message}
             </ThemedText>
           )}
 
           {errors.root && (
-            <ThemedText style={styles.errorText}>
+            <ThemedText color="error" style={styles.errorText}>
               {errors.root.message}
             </ThemedText>
           )}
@@ -240,12 +254,15 @@ export default function ResetPasswordUpdateScreen() {
           <TouchableOpacity
             style={[
               styles.button,
-              (isLoading || isSubmitting) && styles.buttonDisabled,
+              { backgroundColor: colors.primary },
+              (isLoading || isSubmitting) && {
+                backgroundColor: colors.surfaceVariant,
+              },
             ]}
             onPress={handleSubmit(onUpdatePassword)}
             disabled={isLoading || isSubmitting}
           >
-            <ThemedText style={styles.buttonText}>
+            <ThemedText color="textInverse" style={styles.buttonText}>
               {isLoading || isSubmitting ? 'Updating...' : 'Update Password'}
             </ThemedText>
           </TouchableOpacity>
@@ -282,36 +299,27 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: BorderRadius.sm,
     padding: Spacing.md,
     fontSize: 16,
-    backgroundColor: '#fff',
   },
   button: {
-    backgroundColor: '#007AFF',
     borderRadius: BorderRadius.sm,
     padding: Spacing.md,
     marginTop: Spacing.sm,
     alignItems: 'center',
   },
-  buttonDisabled: {
-    backgroundColor: '#ccc',
-  },
   buttonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
   errorText: {
     textAlign: 'center',
-    color: '#ff0000',
     fontSize: 14,
     marginTop: Spacing.xs,
   },
   errorMessage: {
     textAlign: 'center',
-    color: '#ff0000',
     fontSize: 16,
     marginBottom: Spacing.xl,
     lineHeight: 22,

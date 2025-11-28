@@ -592,7 +592,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: Spacing.md,
   },
   titleColumn: {
     flex: 1,
@@ -600,16 +600,16 @@ const styles = StyleSheet.create({
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
     flexWrap: 'wrap',
   },
   benefitText: {
     marginTop: 2,
   },
   sourceBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
   },
   sourceBadgeText: {
     fontWeight: '600',
@@ -617,9 +617,9 @@ const styles = StyleSheet.create({
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingVertical: 8,
-    borderRadius: 8,
+    gap: Spacing.sm,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
   },
   addButtonPressed: {
     opacity: 0.7,
@@ -629,23 +629,23 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    gap: 8,
+    gap: Spacing.sm,
   },
   editContainer: {
-    gap: 16,
-    marginBottom: 12,
+    gap: Spacing.md,
+    marginBottom: Spacing.md,
   },
   textarea: {
     borderWidth: 1,
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
     ...Typography.bodyMedium,
     minHeight: 100,
     textAlignVertical: 'top',
   },
   buttonRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: Spacing.md,
   },
   saveButton: {
     flex: 1,
@@ -655,11 +655,11 @@ const styles = StyleSheet.create({
   },
   disclosureContainer: {
     position: 'relative',
-    marginBottom: 12,
+    marginBottom: Spacing.md,
   },
   disclosureBox: {
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
     borderWidth: 1,
   },
   disclosureText: {
@@ -667,31 +667,31 @@ const styles = StyleSheet.create({
   },
   copySuccessBadge: {
     position: 'absolute',
-    top: -8,
-    right: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
+    top: Spacing.negative.sm,
+    right: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.lg,
   },
   copySuccessText: {
     fontWeight: '600',
   },
   emptyStateCard: {
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
     borderWidth: 2,
     borderStyle: 'dashed',
     opacity: 0.7,
-    marginBottom: 12,
+    marginBottom: Spacing.md,
   },
   ghostBadgeContainer: {
-    marginBottom: 12,
+    marginBottom: Spacing.md,
   },
   ghostBadge: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
     opacity: 0.3,
   },
   ghostBadgeText: {
@@ -700,14 +700,14 @@ const styles = StyleSheet.create({
   ghostDisclosure: {
     opacity: 0.1,
     borderWidth: 1,
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-    gap: 8,
+    borderRadius: BorderRadius.sm,
+    padding: Spacing.md,
+    marginBottom: Spacing.md,
+    gap: Spacing.sm,
   },
   ghostDisclosureLine: {
-    height: 14,
-    borderRadius: 4,
+    height: Spacing.md,
+    borderRadius: BorderRadius.sm,
     opacity: 0.15,
   },
   emptyCta: {
@@ -720,12 +720,12 @@ const styles = StyleSheet.create({
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: Spacing.sm,
   },
   checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
+    width: Spacing.lg,
+    height: Spacing.lg,
+    borderRadius: BorderRadius.sm,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
