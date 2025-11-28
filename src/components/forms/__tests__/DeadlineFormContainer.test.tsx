@@ -354,6 +354,17 @@ describe('DeadlineFormContainer', () => {
     (useDeadlines as jest.Mock).mockReturnValue({
       addDeadline: mockAddDeadline,
       updateDeadline: mockUpdateDeadline,
+      activeDeadlines: [],
+      pendingDeadlines: [],
+      getDeadlineCalculations: jest.fn(() => ({
+        unitsPerDay: 20,
+        daysLeft: 10,
+        remaining: 200,
+        progressPercentage: 50,
+        currentProgress: 100,
+      })),
+      userPaceData: { averagePace: 25, readingDaysCount: 7, isReliable: true, calculationMethod: 'recent_data' },
+      userListeningPaceData: { averagePace: 60, listeningDaysCount: 5, isReliable: true, calculationMethod: 'recent_data' },
     });
     (useTheme as jest.Mock).mockReturnValue({
       colors: { background: '#ffffff' },
@@ -585,6 +596,17 @@ describe('DeadlineFormContainer', () => {
       (useDeadlines as jest.Mock).mockReturnValue({
         addDeadline: undefined,
         updateDeadline: undefined,
+        activeDeadlines: [],
+        pendingDeadlines: [],
+        getDeadlineCalculations: jest.fn(() => ({
+          unitsPerDay: 0,
+          daysLeft: 0,
+          remaining: 0,
+          progressPercentage: 0,
+          currentProgress: 0,
+        })),
+        userPaceData: { averagePace: 0, readingDaysCount: 0, isReliable: false, calculationMethod: 'default_fallback' },
+        userListeningPaceData: { averagePace: 0, listeningDaysCount: 0, isReliable: false, calculationMethod: 'default_fallback' },
       });
 
       render(<DeadlineFormContainer mode="new" />);

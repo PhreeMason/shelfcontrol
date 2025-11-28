@@ -120,11 +120,10 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
       <ThemedView style={styles.emptyContainer} testID="daily-chart-empty">
         <ThemedText
           style={styles.emptyText}
-          variant="muted"
+          variant="secondary"
           testID="empty-message"
         >
-          Not enough progress data to display chart. Start reading to see your
-          daily progress!
+          Not enough progress data to display chart. Start reading to see your progress!
         </ThemedText>
       </ThemedView>
     );
@@ -136,7 +135,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
   const yAxisMax =
     Math.ceil(
       (maxValue * CHART_CONFIG.Y_AXIS_BUFFER_MULTIPLIER) /
-        CHART_CONFIG.Y_AXIS_ROUNDING_FACTOR
+      CHART_CONFIG.Y_AXIS_ROUNDING_FACTOR
     ) * CHART_CONFIG.Y_AXIS_ROUNDING_FACTOR;
 
   // Use appropriate widths based on data type (intraday vs multi-day)
@@ -248,6 +247,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 200,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing.md,
+    ...Shadows.subtle,
   },
   emptyText: {
     fontSize: 16,

@@ -14,11 +14,16 @@ import {
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { SelectedBook } from '@/types/bookSearch';
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { ReadingDeadlineWithProgress, UrgencyLevel } from '@/types/deadline.types';
+import { calculateLocalDaysLeft } from '@/utils/dateNormalization';
 import {
   calculateRemainingFromForm,
+  calculateTotalQuantityFromForm,
+  calculateCurrentProgressFromForm,
   getPaceEstimate,
 } from '@/utils/deadlineCalculations';
+import { getPaceBasedStatus } from '@/utils/paceCalculations';
+import { mapPaceToUrgency } from '@/utils/deadlineProviderUtils';
 import {
   DeadlineFormData,
   deadlineFormSchema,
@@ -44,14 +49,38 @@ import {
 import { getInitialStepFromSearchParams } from '@/utils/deadlineUtils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DeadlineFormStep1 } from './DeadlineFormStep1';
 import { DeadlineFormStep2Combined } from './DeadlineFormStep2Combined';
+import { ImpactPreviewData } from './ImpactPreviewSection';
 import { StepIndicators } from './StepIndicators';
+
+/**
+ * Calculate urgency level from pace data.
+ * Shared helper used by both paceUrgencyLevel and impactPreviewData calculations.
+ */
+const calculateUrgencyFromPace = (
+  userPace: number,
+  requiredPace: number,
+  daysLeft: number,
+  progressPercentage: number
+): UrgencyLevel => {
+  if (daysLeft <= 0) return 'overdue';
+  if (userPace <= 0) return null; // No pace data = hide label
+
+  const status = getPaceBasedStatus(userPace, requiredPace, daysLeft, progressPercentage);
+  return mapPaceToUrgency(status, daysLeft);
+};
 
 interface DeadlineFormContainerProps {
   mode: FormMode;
@@ -64,7 +93,15 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
 }) => {
   const params = useLocalSearchParams();
   const { colors } = useTheme();
-  const { addDeadline, updateDeadline } = useDeadlines();
+  const {
+    addDeadline,
+    updateDeadline,
+    activeDeadlines,
+    pendingDeadlines,
+    getDeadlineCalculations,
+    userPaceData,
+    userListeningPaceData,
+  } = useDeadlines();
   const { mutateAsync: uploadCover } = useUploadDeadlineCover();
   const { mutateAsync: deleteCover } = useDeleteDeadlineCover();
 
@@ -218,6 +255,148 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     watchedValues.totalMinutes,
     watchedValues.currentProgress,
     watchedValues.currentMinutes,
+  ]);
+
+  // Calculate urgency level based on pace (aligned with DeadlineCard system)
+  const paceUrgencyLevel = useMemo((): UrgencyLevel => {
+    const deadline = watchedValues.deadline;
+    if (!deadline) return 'good';
+
+    // Guard against invalid Date objects
+    if (deadline instanceof Date && isNaN(deadline.getTime())) return 'good';
+
+    // Use dateNormalization utility for consistent timezone handling
+    const deadlineString =
+      deadline instanceof Date ? deadline.toISOString().split('T')[0] : deadline;
+    const daysLeft = calculateLocalDaysLeft(deadlineString);
+
+    const total = calculateTotalQuantityFromForm(
+      selectedFormat,
+      watchedValues.totalQuantity || 0,
+      watchedValues.totalMinutes
+    );
+    const current = calculateCurrentProgressFromForm(
+      selectedFormat,
+      watchedValues.currentProgress || 0,
+      watchedValues.currentMinutes
+    );
+    const remaining = total - current;
+
+    if (remaining <= 0) return 'good';
+
+    const progressPercentage = total > 0 ? (current / total) * 100 : 0;
+    const userPace =
+      selectedFormat === 'audio'
+        ? userListeningPaceData.averagePace
+        : userPaceData.averagePace;
+    const requiredPace = daysLeft > 0 ? remaining / daysLeft : 0;
+
+    return calculateUrgencyFromPace(userPace, requiredPace, daysLeft, progressPercentage);
+  }, [
+    watchedValues.deadline,
+    watchedValues.totalQuantity,
+    watchedValues.totalMinutes,
+    watchedValues.currentProgress,
+    watchedValues.currentMinutes,
+    selectedFormat,
+    userPaceData,
+    userListeningPaceData,
+  ]);
+
+  // Calculate impact preview data
+  const impactPreviewData = useMemo((): ImpactPreviewData | null => {
+    const deadline = watchedValues.deadline;
+    if (!deadline) return null;
+
+    // Guard against invalid Date objects
+    if (deadline instanceof Date && isNaN(deadline.getTime())) return null;
+
+    const total = calculateTotalQuantityFromForm(
+      selectedFormat,
+      watchedValues.totalQuantity || 0,
+      watchedValues.totalMinutes
+    );
+    const current = calculateCurrentProgressFromForm(
+      selectedFormat,
+      watchedValues.currentProgress || 0,
+      watchedValues.currentMinutes
+    );
+
+    if (total <= 0) return null;
+
+    // Use dateNormalization utility for consistent timezone handling
+    const deadlineString =
+      deadline instanceof Date ? deadline.toISOString().split('T')[0] : deadline;
+    const daysLeft = calculateLocalDaysLeft(deadlineString);
+
+    // Calculate this book's required pace
+    const thisBookPacePerDay =
+      daysLeft > 0 ? Math.ceil((total - current) / daysLeft) : total - current;
+
+    // Filter existing deadlines by format (audio vs reading)
+    const isAudioFormat = selectedFormat === 'audio';
+    const activeByFormat = activeDeadlines.filter(d =>
+      isAudioFormat ? d.format === 'audio' : d.format !== 'audio'
+    );
+    const pendingByFormat = pendingDeadlines.filter(d =>
+      isAudioFormat ? d.format === 'audio' : d.format !== 'audio'
+    );
+
+    // In edit mode, exclude the current deadline from active count
+    const activeExcludingCurrent =
+      mode === 'edit' && existingDeadline
+        ? activeByFormat.filter(d => d.id !== existingDeadline.id)
+        : activeByFormat;
+
+    // Calculate active deadlines total pace
+    const activeTotalPacePerDay = activeExcludingCurrent.reduce((sum, d) => {
+      const { unitsPerDay } = getDeadlineCalculations(d);
+      return sum + unitsPerDay;
+    }, 0);
+
+    // Combined with this book
+    const activeWithThisPacePerDay = activeTotalPacePerDay + thisBookPacePerDay;
+
+    // Calculate pending deadlines total pace
+    const pendingTotalPacePerDay =
+      pendingByFormat.reduce((sum, d) => {
+        const { unitsPerDay } = getDeadlineCalculations(d);
+        return sum + unitsPerDay;
+      }, 0) + activeWithThisPacePerDay;
+
+    // Get user's pace for urgency calculation
+    const userPace = isAudioFormat
+      ? userListeningPaceData.averagePace
+      : userPaceData.averagePace;
+
+    // For impact preview, use 0 progress since we're calculating combined totals
+    const impactProgressPercentage = 0;
+
+    return {
+      format: selectedFormat,
+      thisBookPacePerDay,
+      activeBookCount: activeExcludingCurrent.length,
+      activeTotalPacePerDay,
+      activeWithThisPacePerDay,
+      activeUrgency: calculateUrgencyFromPace(userPace, activeWithThisPacePerDay, daysLeft, impactProgressPercentage),
+      pendingBookCount: pendingByFormat.length,
+      pendingTotalPacePerDay,
+      pendingUrgency: calculateUrgencyFromPace(userPace, pendingTotalPacePerDay, daysLeft, impactProgressPercentage),
+    };
+  }, [
+    watchedValues.deadline,
+    watchedValues.totalQuantity,
+    watchedValues.totalMinutes,
+    watchedValues.currentProgress,
+    watchedValues.currentMinutes,
+    selectedFormat,
+    activeDeadlines,
+    pendingDeadlines,
+    getDeadlineCalculations,
+    userPaceData,
+    userListeningPaceData,
+    mode,
+    existingDeadline,
   ]);
 
   const onSubmit = async (data: DeadlineFormData) => {
@@ -545,6 +724,8 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
               onDateChange={onDateChange}
               deadline={watchedValues.deadline}
               paceEstimate={paceEstimate}
+              paceUrgencyLevel={paceUrgencyLevel}
+              impactPreviewData={impactPreviewData}
               mode={mode}
               deadlineFromPublicationDate={
                 mode === 'new' ? deadlineFromPublicationDate : false

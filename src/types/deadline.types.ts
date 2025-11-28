@@ -59,3 +59,23 @@ export type SortOrder =
   | 'latest'
   | 'lowestPace'
   | 'highestPace';
+
+/**
+ * Urgency levels for deadline pace visualization.
+ * Used by PaceEstimateBox and ImpactPreviewSection to determine
+ * color coding based on reading pace feasibility.
+ *
+ * - 'good': Required pace <= user's historical pace (Comfortable)
+ * - 'approaching': Required pace slightly above user's pace (Tight)
+ * - 'urgent': Near deadline, needs attention (Tight)
+ * - 'overdue': Deadline has passed (Past due)
+ * - 'impossible': Still time but pace is very challenging (Tough)
+ * - null: No pace data to judge against (hidden label)
+ */
+export type UrgencyLevel =
+  | 'overdue'
+  | 'urgent'
+  | 'good'
+  | 'approaching'
+  | 'impossible'
+  | null;

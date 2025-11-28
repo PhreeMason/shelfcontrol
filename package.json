@@ -1,7 +1,7 @@
 {
   "name": "shelfcontrol",
   "main": "expo-router/entry",
-  "version": "1.51.9",
+  "version": "1.52.0",
   "scripts": {
     "start": "expo start -c --clear",
     "reset-project": "node ./scripts/reset-project.js",
@@ -31,7 +31,8 @@
     "screenshot": "xcrun simctl io booted screenshot maestro/screenshots/screenshot-$(date +%Y%m%d_%H%M%S).png",
     "update:preview": "eas update --channel preview --message \"Preview Update - $(date +%Y%m%d_%H%M%S)\"",
     "update:production": "eas update --channel production --message \"Production Update - $(date +%Y%m%d_%H%M%S)\"",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "security-check": "./scripts/security-check.sh"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.5",

@@ -10,12 +10,16 @@ On November 24, 2024, PostHog was affected by the Shai-Hulud supply chain attack
 
 **Compromised versions:**
 - `posthog-react-native@4.11.1` ❌
+- `posthog-react-native@4.12.5` ❌
 - `posthog-react-native-session-replay@1.2.2` ❌
-- `posthog-js@1.297.3`
-- `posthog-node@4.18.1`, `5.13.3`, `5.11.3`
-- `@posthog/agent@1.24.1`
-- `@posthog/ai@7.1.2`
-- `@posthog/cli@0.5.15`
+- `posthog-js@1.297.3` ❌
+- `posthog-node@4.18.1`, `5.13.3`, `5.11.3` ❌
+- `posthog-docusaurus@2.0.6` ❌
+- `@posthog/agent@1.24.1` ❌
+- `@posthog/ai@7.1.2` ❌
+- `@posthog/cli@0.5.15` ❌
+- `@posthog/core@1.5.6` ❌
+- `@posthog/nuxt@1.2.9` ❌
 
 ### Our Project Status
 
@@ -209,12 +213,30 @@ git log -p --all -S "phc_" | grep "phc_"
 - Check for unexpected files in node_modules after installation
 - Verify package-lock.json changes match expected updates
 
+## Automated Security Check Script
+
+Run the automated security check script:
+
+```bash
+./scripts/security-check.sh
+```
+
+This script verifies:
+- PostHog version is not compromised
+- No malicious files present (setup_bun.js, bun_environment.js, truffleSecrets.json)
+- `npm audit` passes with no high severity issues
+
+Exit codes:
+- `0` - All checks passed
+- `1` - Security issue detected
+
 ## Resources
 
 - **PostHog Security Advisories**: https://github.com/PostHog/posthog-js/security
 - **NPM Security Advisories**: https://www.npmjs.com/advisories
 - **Shai-Hulud Attack Details**: https://github.com/PostHog/posthog-js/security (see incident timeline)
 - **Project PostHog Config**: `src/lib/posthog.ts`
+- **Security Check Script**: `scripts/security-check.sh`
 
 ## Contact
 
@@ -222,5 +244,31 @@ For security concerns, contact: mason@shelfcontrol.app
 
 ---
 
-**Last Updated**: November 25, 2024
-**Next Review**: December 25, 2024
+## Security Assessment Log
+
+### November 28, 2024 - Broader Supply Chain Attack Assessment
+
+**Context:** Reviewed comprehensive list of ~3,400 compromised npm packages from the Shai-Hulud supply chain attack campaign.
+
+**Assessment Results:**
+| Check | Result |
+|-------|--------|
+| PostHog version | `4.10.1` - ✅ SAFE |
+| @posthog/core | `1.3.0` - ✅ SAFE |
+| npm audit | 0 vulnerabilities |
+| Malicious files scan | None found |
+| Other compromised packages | None installed |
+
+**Packages verified NOT present:**
+- `posthog-react-native@4.11.1`, `@4.12.5` - NOT installed
+- `posthog-react-native-session-replay@1.2.2` - NOT installed
+- `@posthog/core@1.5.6` - NOT installed (have 1.3.0)
+- `debug@4.4.2` - NOT installed (have 4.4.3)
+- `chalk@5.6.1` - NOT installed (have 4.1.2)
+
+**Conclusion:** ShelfControl is not affected by any packages in the compromised list.
+
+---
+
+**Last Updated**: November 28, 2024
+**Next Review**: December 28, 2024
