@@ -64,6 +64,10 @@ const ReadingProgressUpdate = ({
   const calculations = getDeadlineCalculations(deadline);
   const { currentProgress, totalQuantity } = calculations;
 
+  // Compute scrubber percentage with guard against division by zero
+  const getScrubberPercentage = (value: number) =>
+    totalQuantity > 0 ? (value / totalQuantity) * 100 : 0;
+
   // Preferences for progress input mode (persisted per format)
   const { getProgressInputMode } = usePreferences();
   const inputMode = getProgressInputMode(deadline.format);
@@ -395,7 +399,7 @@ const ReadingProgressUpdate = ({
                   styles.filledTrack,
                   {
                     backgroundColor: colors.primary,
-                    width: `${(scrubberValue / totalQuantity) * 100}%`,
+                    width: `${getScrubberPercentage(scrubberValue)}%`,
                   },
                 ]}
               />
@@ -407,7 +411,7 @@ const ReadingProgressUpdate = ({
                     styles.thumb,
                     {
                       backgroundColor: colors.primary,
-                      left: `${(scrubberValue / totalQuantity) * 100}%`,
+                      left: `${getScrubberPercentage(scrubberValue)}%`,
                       opacity: isPaused ? 0.5 : 1,
                     },
                   ]}

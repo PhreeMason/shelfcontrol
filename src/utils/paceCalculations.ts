@@ -252,6 +252,15 @@ export const getPaceBasedStatus = (
   daysLeft: number,
   progressPercentage: number
 ): PaceBasedStatus => {
+  // Handle 100% progress case - book is done, no pace needed
+  if (progressPercentage >= 100) {
+    return {
+      color: 'green',
+      level: 'good',
+      message: 'Finished!',
+    };
+  }
+
   // Red conditions from README
   if (daysLeft <= 0) {
     return {
@@ -269,9 +278,19 @@ export const getPaceBasedStatus = (
     };
   }
 
+  // Guard against division by zero when user has no pace history
+  if (userPace <= 0) {
+    // No pace data - can't compare, show encouraging message
+    return {
+      color: 'orange',
+      level: 'approaching',
+      message: 'Start tracking progress',
+    };
+  }
+
   if (userPace < requiredPace) {
     const paceGap = requiredPace - userPace;
-    const increaseNeeded = (paceGap / userPace) * 100;
+    const increaseNeeded = (paceGap / userPace) * 100; // Now safe - userPace > 0
 
     if (increaseNeeded > 100) {
       return {
