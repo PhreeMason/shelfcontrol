@@ -23,7 +23,7 @@ const ProgressInputBase: React.FC<ProgressInputBaseProps> = props => {
 
   return (
     <ThemedView style={[styles.container, viewModel.styling.containerStyle]}>
-      <ThemedText variant="muted" style={styles.label}>
+      <ThemedText variant="secondary" style={styles.label}>
         {viewModel.display.label}
       </ThemedText>
       <ThemedView style={[styles.inputRow, { backgroundColor: 'transparent' }]}>
@@ -47,7 +47,7 @@ const ProgressInputBase: React.FC<ProgressInputBaseProps> = props => {
           <ThemedText
             variant="default"
             style={styles.totalText}
-            color="textMuted"
+            color="secondary"
           >
             {viewModel.display.displayTotal}
           </ThemedText>

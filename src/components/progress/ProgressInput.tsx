@@ -1,14 +1,13 @@
-import { Spacing } from '@/constants/Colors';
 import { usePreferences } from '@/providers/PreferencesProvider';
+import {
+  getAvailableModesForFormat,
+  getModeLabelForFormat,
+} from '@/types/progressInput.types';
 import React, { useMemo } from 'react';
 import { Control, Controller } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
 import InputModeToggle from './InputModeToggle';
 import ProgressInputBase from './ProgressInputBase';
-import {
-  getAvailableModesForFormat,
-  getModeLabelForFormat,
-} from '@/types/progressInput.types';
 
 interface ProgressInputProps {
   format: 'physical' | 'eBook' | 'audio';
@@ -95,8 +94,8 @@ const styles = StyleSheet.create({
   },
   toggleContainer: {
     position: 'absolute',
-    top: Spacing.sm,
-    right: Spacing.sm,
+    top: 8,
+    right: 8,
     zIndex: 10,
   },
 });

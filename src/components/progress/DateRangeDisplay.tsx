@@ -22,10 +22,10 @@ const DateRangeDisplay = ({
 
   return (
     <View style={styles.container}>
-      <ThemedText typography="bodySmall" color="textMuted">
+      <ThemedText typography="bodySmall" color="secondary">
         {startLabel} {formattedStartDate}
       </ThemedText>
-      <ThemedText typography="bodySmall" color="textMuted">
+      <ThemedText typography="bodySmall" color="secondary">
         Due: {formattedDueDate}
       </ThemedText>
     </View>
