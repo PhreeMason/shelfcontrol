@@ -501,7 +501,10 @@ export default function AppUpdatesScreen() {
         onRequestClose={() => setShowAllReleasesModal(false)}
       >
         <View
-          style={[styles.modalContainer, { backgroundColor: colors.background }]}
+          style={[
+            styles.modalContainer,
+            { backgroundColor: colors.background },
+          ]}
         >
           {/* Header */}
           <View
@@ -566,13 +569,19 @@ export default function AppUpdatesScreen() {
             {/* End of List */}
             <View style={styles.modalEndOfList}>
               <View
-                style={[styles.modalEndDivider, { backgroundColor: colors.border }]}
+                style={[
+                  styles.modalEndDivider,
+                  { backgroundColor: colors.border },
+                ]}
               />
               <ThemedText typography="bodySmall" color="textMuted">
                 More chapters coming soon
               </ThemedText>
               <View
-                style={[styles.modalEndDivider, { backgroundColor: colors.border }]}
+                style={[
+                  styles.modalEndDivider,
+                  { backgroundColor: colors.border },
+                ]}
               />
             </View>
           </ScrollView>

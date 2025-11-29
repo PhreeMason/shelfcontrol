@@ -57,4 +57,5 @@ export const getPreviousReleases = (): ReleaseNote[] => RELEASE_NOTES.slice(1);
 export const getRecentPreviousReleases = (limit: number = 2): ReleaseNote[] =>
   RELEASE_NOTES.slice(1, limit + 1);
 
-export const getAllPreviousReleases = (): ReleaseNote[] => RELEASE_NOTES.slice(1);
+export const getAllPreviousReleases = (): ReleaseNote[] =>
+  RELEASE_NOTES.slice(1);
