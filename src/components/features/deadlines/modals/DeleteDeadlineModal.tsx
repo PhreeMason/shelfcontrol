@@ -1,6 +1,8 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
+import { ROUTES } from '@/constants/routes';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -13,6 +15,7 @@ import {
   calculateProgress,
   calculateProgressPercentage,
 } from '@/utils/deadlineUtils';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -64,6 +67,7 @@ export const DeleteDeadlineModal: React.FC<DeleteDeadlineModalProps> = ({
       () => {
         setIsDeleting(false);
         onClose();
+        router.replace(ROUTES.HOME);
       },
       error => {
         setIsDeleting(false);
@@ -221,22 +225,22 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheet: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    paddingTop: 24,
-    paddingHorizontal: 20,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
+    paddingTop: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
   },
   content: {
-    gap: 16,
+    gap: Spacing.md,
   },
   iconContainer: {
     width: 64,
     height: 64,
-    borderRadius: 32,
+    borderRadius: BorderRadius.full,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
   title: {
     fontSize: 24,
@@ -248,10 +252,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     opacity: 0.8,
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
   progressSection: {
-    gap: 12,
+    gap: Spacing.md,
   },
   sectionTitle: {
     fontSize: 12,
@@ -260,16 +264,16 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   progressBarContainer: {
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
   progressBar: {
-    height: 8,
-    borderRadius: 4,
+    height: Spacing.sm,
+    borderRadius: BorderRadius.sm,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    borderRadius: 4,
+    borderRadius: BorderRadius.sm,
   },
   statsRow: {
     flexDirection: 'row',
@@ -285,9 +289,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   warningBox: {
-    borderRadius: 8,
-    padding: 16,
-    gap: 8,
+    borderRadius: BorderRadius.sm,
+    padding: Spacing.md,
+    gap: Spacing.sm,
   },
   warningText: {
     fontSize: 14,
@@ -295,11 +299,11 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 8,
+    gap: Spacing.md,
+    marginTop: Spacing.sm,
   },
   button: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
   },
 });

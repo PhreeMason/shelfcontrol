@@ -1,4 +1,5 @@
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import React, { useEffect } from 'react';
 import {
@@ -77,7 +78,7 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
             styles.sheet,
             {
               backgroundColor: colors.surface,
-              paddingBottom: insets.bottom + 16,
+              paddingBottom: insets.bottom + Spacing.md,
             },
             animatedStyle,
           ]}
@@ -145,7 +146,7 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
           <TouchableOpacity
             style={[
               styles.cancelButton,
-              { marginTop: 8, borderColor: colors.border },
+              { marginTop: Spacing.sm, borderColor: colors.border },
             ]}
             onPress={onClose}
           >
@@ -164,13 +165,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheet: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    paddingTop: 8,
-    paddingHorizontal: 16,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
+    paddingTop: Spacing.sm,
+    paddingHorizontal: Spacing.md,
   },
   titleContainer: {
-    paddingVertical: 12,
+    paddingVertical: Spacing.md,
     alignItems: 'center',
   },
   title: {
@@ -178,30 +179,30 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   option: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
   },
   optionIcon: {
-    marginRight: 12,
+    marginRight: Spacing.md,
   },
   optionText: {
     fontSize: 16,
     flex: 1,
   },
   checkmark: {
-    marginLeft: 8,
+    marginLeft: Spacing.sm,
   },
   chevron: {
-    marginLeft: 8,
+    marginLeft: Spacing.sm,
     opacity: 0.5,
   },
   cancelButton: {
-    paddingVertical: 16,
+    paddingVertical: Spacing.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: BorderRadius.sm,
   },
   cancelText: {
     fontSize: 16,

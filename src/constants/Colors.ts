@@ -108,6 +108,9 @@ export const Colors = {
     didNotFinish: '#9CA3AF',
     backupPurple: '#d8b4fe',
     backupPink: '#f9a8d4',
+
+    // Destructive action colors
+    scaryRed: '#FF0000',
   },
   dark: {
     // Text colors
@@ -213,6 +216,9 @@ export const Colors = {
     didNotFinish: '#9CA3AF',
     backupPurple: '#d8b4fe',
     backupPink: '#f9a8d4',
+
+    // Destructive action colors
+    scaryRed: '#FF0000',
   },
 };
 

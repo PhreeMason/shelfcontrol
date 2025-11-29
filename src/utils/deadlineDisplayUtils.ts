@@ -1,55 +1,5 @@
 import { formatProgressDisplay, getUnitForFormat } from './deadlineUtils';
 
-export const getBookCoverIcon = (
-  deadline: {
-    id: string | number;
-    book_title: string;
-    format: 'physical' | 'eBook' | 'audio';
-  },
-  daysLeft: number
-): string => {
-  const bookIcons = [
-    '📕',
-    '📗',
-    '📘',
-    '📙',
-    '📔',
-    '📓',
-    '📑',
-    '📜',
-    '💰',
-    '⚔️',
-    '🏃',
-    '🎭',
-    '🔬',
-    '🎨',
-    '🏛️',
-    '🌟',
-    '🔮',
-    '⭐',
-  ];
-
-  const idSeed =
-    typeof deadline.id === 'number'
-      ? deadline.id
-      : parseInt(deadline.id?.toString() || '0', 10) || 0;
-  const titleSeed = deadline.book_title
-    .split('')
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const daysSeed = daysLeft * 7;
-  const formatSeed =
-    deadline.format === 'audio'
-      ? 100
-      : deadline.format === 'physical'
-        ? 200
-        : 300;
-
-  const combinedSeed = idSeed + titleSeed + daysSeed + formatSeed;
-  const index = combinedSeed % bookIcons.length;
-
-  return bookIcons[index];
-};
-
 export const getGradientBackground = (
   deadline: {
     id: string | number;

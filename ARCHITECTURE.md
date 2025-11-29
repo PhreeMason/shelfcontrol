@@ -649,6 +649,30 @@ Nesting modals can cause critical touch responder issues where Pressable/Touchab
 - Synchronous navigation after modal dismissal is risky
 - Always test touch interactions when components render as initial screens vs. after state changes
 
+### Division-by-Zero Guards
+
+**Always guard division operations** to prevent crashes from edge cases like:
+- New users with no reading history (`userPace = 0`)
+- Books with 100% progress (`remaining = 0`)
+- Deadlines with zero total quantity
+
+**Pattern**:
+```typescript
+// ❌ BAD: Can produce Infinity or NaN
+const percentage = (current / total) * 100;
+
+// ✅ GOOD: Guard against zero denominator
+const percentage = total > 0 ? (current / total) * 100 : 0;
+```
+
+**Common locations requiring guards**:
+- Progress percentage calculations
+- Pace calculations (pages/day, minutes/day)
+- Slider/scrubber position calculations
+- Statistical averages
+
+See `docs/bugs/100-PERCENT-PROGRESS-CRASH.md` for a detailed case study.
+
 ## Summary
 
 ShelfControl's architecture is built on these key principles:

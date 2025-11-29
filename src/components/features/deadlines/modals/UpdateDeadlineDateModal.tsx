@@ -1,5 +1,6 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedText } from '@/components/themed/ThemedText';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
@@ -489,15 +490,15 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheet: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: BorderRadius.xxl,
+    borderTopRightRadius: BorderRadius.xxl,
     maxHeight: '90%',
     flexDirection: 'column',
   },
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.md,
     borderBottomWidth: 1,
     flexShrink: 0,
   },
@@ -511,22 +512,22 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   scrollContentContainer: {
-    paddingBottom: 8,
+    paddingBottom: Spacing.sm,
   },
   content: {
-    padding: 20,
-    gap: 20,
+    padding: Spacing.lg,
+    gap: Spacing.lg,
   },
   dateComparison: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: Spacing.md,
   },
   dateBox: {
     flex: 1,
-    padding: 12,
-    borderRadius: 12,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
     alignItems: 'center',
   },
   currentDateBox: {
@@ -540,7 +541,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
     opacity: 0.7,
   },
   dateValue: {
@@ -552,7 +553,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   section: {
-    gap: 12,
+    gap: Spacing.md,
   },
   sectionTitle: {
     fontSize: 14,
@@ -562,13 +563,13 @@ const styles = StyleSheet.create({
   quickSelectGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: Spacing.sm,
   },
   quickButton: {
     flex: 1,
     minWidth: '47%',
-    padding: 12,
-    borderRadius: 10,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
     alignItems: 'center',
   },
@@ -576,27 +577,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   calendarContainer: {
-    borderRadius: 12,
-    padding: 8,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.sm,
     overflow: 'hidden',
   },
   impactSection: {
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    padding: 16,
-    gap: 12,
+    padding: Spacing.md,
+    gap: Spacing.md,
   },
   impactHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   impactTitle: {
     fontSize: 14,
     fontWeight: '600',
   },
   impactContent: {
-    gap: 8,
+    gap: Spacing.sm,
   },
   impactRow: {
     flexDirection: 'row',
@@ -611,9 +612,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   feasibilityIndicator: {
-    marginTop: 4,
-    padding: 8,
-    borderRadius: 8,
+    marginTop: Spacing.xs,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.sm,
     alignItems: 'center',
   },
   feasibilityText: {
@@ -622,14 +623,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    gap: 12,
-    paddingHorizontal: 20,
-    paddingTop: 16,
+    gap: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
     borderTopWidth: 1,
     flexShrink: 0,
   },
   button: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
   },
 });

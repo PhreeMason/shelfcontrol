@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -69,13 +70,13 @@ export const FormatSelector = ({
 const styles = StyleSheet.create({
   formatSelector: {
     flexDirection: 'row',
-    gap: 13,
+    gap: Spacing.md,
     justifyContent: 'flex-start',
   },
   formatChip: {
-    borderRadius: 15,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    borderRadius: BorderRadius.xl,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',

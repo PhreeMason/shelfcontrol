@@ -24,7 +24,6 @@ const createMockCalculations = (
   urgencyLevel: 'good',
   urgencyColor,
   statusMessage: 'On track',
-  readingEstimate: '7 days',
   paceEstimate: '29 pages/day',
   unit: 'pages',
   userPace: 30,

@@ -19,6 +19,11 @@ import {
   View,
 } from 'react-native';
 import { FormatSelector } from './FormatSelector';
+import { UrgencyLevel } from '@/types/deadline.types';
+import {
+  ImpactPreviewData,
+  ImpactPreviewSection,
+} from './ImpactPreviewSection';
 import { PaceEstimateBox } from './PaceEstimateBox';
 import { PrioritySelector } from './PrioritySelector';
 import { StatusSelector } from './StatusSelector';
@@ -37,6 +42,8 @@ interface DeadlineFormStep2CombinedProps {
   onDateChange: (event: any, selectedDate?: Date) => void;
   deadline: Date;
   paceEstimate: string;
+  paceUrgencyLevel: UrgencyLevel;
+  impactPreviewData: ImpactPreviewData | null;
   mode: 'new' | 'edit';
   deadlineFromPublicationDate?: boolean;
   hasExistingProgressRecords?: boolean;
@@ -57,6 +64,8 @@ export const DeadlineFormStep2Combined = ({
   onDateChange,
   deadline,
   paceEstimate,
+  paceUrgencyLevel,
+  impactPreviewData,
   mode,
   deadlineFromPublicationDate = false,
   hasExistingProgressRecords = false,
@@ -613,7 +622,14 @@ export const DeadlineFormStep2Combined = ({
         </ThemedText>
       </View>
 
-      <PaceEstimateBox paceEstimate={paceEstimate} />
+      <PaceEstimateBox
+        paceEstimate={paceEstimate}
+        urgencyLevel={paceUrgencyLevel}
+      />
+
+      {impactPreviewData && (
+        <ImpactPreviewSection impactData={impactPreviewData} mode={mode} />
+      )}
 
       <View
         style={[

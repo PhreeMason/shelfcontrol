@@ -179,46 +179,6 @@ export const calculateRemainingFromForm = (
 };
 
 /**
- * Generates a human-readable estimate of the time required to finish the remaining content.
- * Provides different estimates based on the book format and remaining content.
- *
- * @param format - The book format ('physical', 'eBook', or 'audio')
- * @param remaining - The remaining content (minutes for audio, pages/chapters for others)
- * @returns A formatted string with time estimate and appropriate emoji, or empty string if no remaining content
- *
- * @example
- * // For physical/eBook
- * getReadingEstimate('physical', 80) // "📖 About 2 hours of reading time"
- *
- * @example
- * // For audio
- * getReadingEstimate('audio', 150) // "🎧 About 2 hours and 30 minutes of listening time"
- */
-export const getReadingEstimate = (
-  format: 'physical' | 'eBook' | 'audio',
-  remaining: number
-): string => {
-  if (remaining <= 0) return '';
-
-  switch (format) {
-    case 'physical':
-    case 'eBook':
-      const hours = Math.ceil(remaining / 40); // Assuming 40 pages per hour
-      return `📖 About ${hours} hours of reading time`;
-    case 'audio':
-      const hoursRemaining = Math.floor(remaining / 60);
-      const minutesRemaining = remaining % 60;
-      if (hoursRemaining > 0) {
-        return `🎧 About ${hoursRemaining} hour${hoursRemaining > 1 ? 's' : ''}${minutesRemaining > 0 ? ` and ${minutesRemaining} minutes` : ''} of listening time`;
-      } else {
-        return `🎧 About ${minutesRemaining} minutes of listening time`;
-      }
-    default:
-      return '';
-  }
-};
-
-/**
  * Calculates the daily pace required to finish the remaining content by a deadline.
  * Provides format-specific guidance on daily reading/listening goals.
  *

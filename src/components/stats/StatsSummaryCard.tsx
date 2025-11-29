@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   dateText: {
-    marginBottom: 2,
+    marginBottom: Spacing.xs,
   },
 });
 

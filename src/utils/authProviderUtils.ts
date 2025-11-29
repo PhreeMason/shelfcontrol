@@ -25,7 +25,9 @@ export const createAuthHandlers = (
 
   const handleAuthError = (operation: string, error: unknown) => {
     console.error(`${operation} error:`, error);
-    posthog.captureException(error instanceof Error ? error : new Error(String(error)));
+    posthog.captureException(
+      error instanceof Error ? error : new Error(String(error))
+    );
     return error;
   };
 
@@ -68,7 +70,7 @@ export const createNavigationLogic = () => {
 
   const getRedirectPath = (session: Session | null, inAuthGroup: boolean) => {
     if (shouldRedirectToAuth(session, inAuthGroup)) {
-      return '/(auth)/sign-in';
+      return '/(auth)/sign-up';
     }
     if (shouldRedirectToHome(session, inAuthGroup)) {
       return '/';
@@ -111,7 +113,9 @@ export const createAsyncAuthOperations = () => {
       return await operation();
     } catch (error) {
       console.error(`${operationName} failed:`, error);
-      posthog.captureException(error instanceof Error ? error : new Error(String(error)));
+      posthog.captureException(
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   };
@@ -129,7 +133,9 @@ export const createAsyncAuthOperations = () => {
       return result;
     } catch (error) {
       console.error(`${operationName} error:`, error);
-      posthog.captureException(error instanceof Error ? error : new Error(String(error)));
+      posthog.captureException(
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   };
@@ -187,7 +193,9 @@ export const createProfileOperations = (
       return createAuthResponse(data, null);
     } catch (err) {
       console.error('User operation error:', err);
-      posthog.captureException(err instanceof Error ? err : new Error(String(err)));
+      posthog.captureException(
+        err instanceof Error ? err : new Error(String(err))
+      );
       return createAuthResponse(null, err as Error);
     }
   };
@@ -213,7 +221,9 @@ export const createSessionManager = () => {
     setSession: (session: Session | null) => void
   ) => {
     console.error('Error signing out:', error);
-    posthog.captureException(error instanceof Error ? error : new Error(String(error)));
+    posthog.captureException(
+      error instanceof Error ? error : new Error(String(error))
+    );
     cleanupUserState(setProfile, setSession);
   };
 

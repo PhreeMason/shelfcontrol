@@ -75,6 +75,9 @@ export const QUERY_KEYS = {
         format,
       ] as const,
   },
+  USER_SETTINGS: {
+    DETAIL: (userId: string) => ['user_settings', userId] as const,
+  },
 } as const;
 
 export const MUTATION_KEYS = {
@@ -127,5 +130,12 @@ export const MUTATION_KEYS = {
   },
   AVATAR: {
     UPLOAD: 'uploadAvatar',
+  },
+  USER_SETTINGS: {
+    UPDATE: 'updateUserSettings',
+  },
+  ACCOUNT: {
+    DELETE_ALL_DATA: 'deleteAllUserData',
+    DELETE_ACCOUNT: 'deleteAccount',
   },
 } as const;

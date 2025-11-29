@@ -1,5 +1,5 @@
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { posthog } from '@/lib/posthog';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 
 export const getCompletionFormSteps = (isDNF: boolean): string[] => {
   return isDNF

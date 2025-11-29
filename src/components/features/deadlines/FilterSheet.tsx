@@ -1,5 +1,6 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedText } from '@/components/themed/ThemedText';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useGetAllDeadlineTags, useGetAllTags } from '@/hooks/useTags';
 import { useTheme } from '@/hooks/useThemeColor';
 import {
@@ -625,7 +626,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
               onPress={onClose}
             />
             <ThemedButton
-              title={`SHOW ${getFilteredCount()} DEADLINES`}
+              title={`SHOW ${getFilteredCount()} BOOKS`}
               variant="primary"
               style={styles.applyButton}
               onPress={onClose}
@@ -644,8 +645,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheet: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
     maxHeight: '85%',
   },
   scrollView: {
@@ -653,21 +654,21 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 20,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.lg,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 16,
-    marginBottom: 5,
+    paddingVertical: Spacing.md,
+    marginBottom: Spacing.xs,
   },
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: Spacing.md,
   },
   clearButton: {
     marginRight: 0,
@@ -679,38 +680,38 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   section: {
-    marginBottom: 24,
+    marginBottom: Spacing.lg,
   },
   sectionTitle: {
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: Spacing.md,
   },
   filterRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: Spacing.sm,
   },
   filterPill: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     minWidth: 'auto',
   },
   tagsScrollView: {
     maxHeight: 150,
   },
   footer: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
     borderTopWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
-    gap: 12,
+    gap: Spacing.md,
   },
   cancelButton: {
-    paddingVertical: 16,
+    paddingVertical: Spacing.md,
     flex: 0.35,
   },
   applyButton: {
-    paddingVertical: 16,
+    paddingVertical: Spacing.md,
     flex: 0.65,
   },
 });

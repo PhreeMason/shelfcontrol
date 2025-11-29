@@ -112,7 +112,7 @@ class ReviewTrackingService {
     const deadline = deadlineResults?.[0];
 
     if (deadlineError || !deadline) {
-      throw new Error('Deadline not found or access denied');
+      throw new Error('Book not found or access denied');
     }
 
     const { data: existingTrackingResults } = await supabase
@@ -366,7 +366,7 @@ class ReviewTrackingService {
    *
    * @returns ReviewTrackingResponse object or null if no tracking exists
    *
-   * @throws {Error} "Deadline not found or access denied" - Invalid deadline or wrong user
+   * @throws {Error} "Book not found or access denied" - Invalid deadline or wrong user
    *
    * @example
    * const tracking = await reviewTrackingService.getReviewTrackingByDeadline(
@@ -394,7 +394,7 @@ class ReviewTrackingService {
     const deadline = deadlineResults?.[0];
 
     if (deadlineError || !deadline) {
-      throw new Error('Deadline not found or access denied');
+      throw new Error('Book not found or access denied');
     }
 
     const { data: reviewTrackingResults, error: trackingError } = await supabase

@@ -1244,7 +1244,14 @@ describe('deadlineFormUtils', () => {
       });
     });
 
-    it('should navigate correctly for new mode', () => {
+    it('should navigate to new deadline detail page when ID is provided', () => {
+      const toastFn = createSuccessToast('new', 'rd_test123');
+      toastFn();
+
+      expect(router.replace).toHaveBeenCalledWith('/deadline/rd_test123');
+    });
+
+    it('should navigate to home for new mode when no ID is provided', () => {
       const toastFn = createSuccessToast('new');
       toastFn();
 

@@ -1,6 +1,6 @@
 import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Typography } from '@/constants/Colors';
+import { BorderRadius, Spacing, Typography } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import { DeadlineContact } from '@/types/contacts.types';
 import * as Clipboard from 'expo-clipboard';
@@ -135,19 +135,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 12,
-    borderRadius: 12,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    gap: 12,
+    gap: Spacing.md,
   },
   contentContainer: {
     flex: 1,
-    gap: 8,
+    gap: Spacing.sm,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   infoText: {
     flex: 1,
@@ -156,18 +156,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 10,
+    gap: Spacing.sm,
   },
   actionButton: {
     // paddingHorizontal: 1,
   },
   copySuccessBadge: {
     position: 'absolute',
-    top: -8,
-    right: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
+    top: Spacing.negative.sm,
+    right: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.lg,
   },
   copySuccessText: {
     ...Typography.labelMedium,

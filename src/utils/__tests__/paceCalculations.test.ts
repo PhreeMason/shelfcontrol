@@ -490,6 +490,57 @@ describe('paceCalculations', () => {
         message: "You're on track",
       });
     });
+
+    it('should return green for 100% progress (finished book)', () => {
+      const result = getPaceBasedStatus(20, 0, 5, 100);
+
+      expect(result).toEqual({
+        color: 'green',
+        level: 'good',
+        message: 'Finished!',
+      });
+    });
+
+    it('should return green for progress > 100%', () => {
+      const result = getPaceBasedStatus(20, 0, 5, 105);
+
+      expect(result).toEqual({
+        color: 'green',
+        level: 'good',
+        message: 'Finished!',
+      });
+    });
+
+    it('should return orange for zero user pace (no reading history)', () => {
+      const result = getPaceBasedStatus(0, 25, 5, 50);
+
+      expect(result).toEqual({
+        color: 'orange',
+        level: 'approaching',
+        message: 'Start tracking progress',
+      });
+    });
+
+    it('should not crash with zero user pace and zero required pace', () => {
+      const result = getPaceBasedStatus(0, 0, 5, 50);
+
+      expect(result).toEqual({
+        color: 'orange',
+        level: 'approaching',
+        message: 'Start tracking progress',
+      });
+    });
+
+    it('should handle 100% progress case before checking user pace', () => {
+      // Even with userPace = 0, 100% progress should return green
+      const result = getPaceBasedStatus(0, 0, 5, 100);
+
+      expect(result).toEqual({
+        color: 'green',
+        level: 'good',
+        message: 'Finished!',
+      });
+    });
   });
 
   describe('getPaceStatusMessage', () => {

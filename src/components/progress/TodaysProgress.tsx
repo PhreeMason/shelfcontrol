@@ -1,5 +1,6 @@
 import LinearProgressBar from '@/components/shared/LinearProgressBar';
-import { Typography } from '@/constants/Colors';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing, Typography } from '@/constants/Colors';
 import { PROGRESS_TYPE } from '@/constants/status';
 import { useTheme } from '@/hooks/useThemeColor';
 import {
@@ -23,9 +24,10 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
   current,
   type = 'reading',
 }) => {
-  const progressPercentage = Math.floor((current / total) * 100);
+  const progressPercentage =
+    total > 0 ? Math.floor((current / total) * 100) : 0;
   const isListening = type === PROGRESS_TYPE.LISTENING;
-  const icon = isListening ? '🎧' : '📖';
+  const iconName = isListening ? 'headphones' : 'book.fill';
   const label = isListening ? 'Listening' : 'Reading';
   const { colors } = useTheme();
 
@@ -43,7 +45,7 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
     <ThemedView style={styles.statCard}>
       <View style={styles.statHeader}>
         <View style={styles.statLabel}>
-          <ThemedText style={styles.statIcon}>{icon}</ThemedText>
+          <IconSymbol name={iconName} size={18} color="#2B3D4F" />
           <ThemedText style={styles.labelText}>{label}</ThemedText>
         </View>
         <ThemedText style={styles.statValue}>{displayValue}</ThemedText>
@@ -58,7 +60,7 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
         backgroundColor={backgroundColor}
       />
 
-      <View style={[styles.statFooter, { marginTop: 8 }]}>
+      <View style={[styles.statFooter, { marginTop: Spacing.sm }]}>
         <ThemedText style={styles.encouragementText}>
           {encouragementMessage}
         </ThemedText>
@@ -71,8 +73,8 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
 const styles = StyleSheet.create({
   statCard: {
     backgroundColor: 'rgba(250, 248, 245, 1)', // Linear gradient approximation
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
     borderWidth: 1,
     borderColor: 'rgba(232, 194, 185, 0.2)',
     position: 'relative',
@@ -82,16 +84,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: Spacing.md,
   },
   statLabel: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-  },
-  statIcon: {
-    fontSize: 18,
-    lineHeight: 24,
+    gap: Spacing.sm,
   },
   labelText: {
     color: '#2B3D4F',

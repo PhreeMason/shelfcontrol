@@ -45,6 +45,7 @@ export const MAPPING = {
   envelope: 'email',
   xmark: 'close',
   'square.and.arrow.up': 'share',
+  'square.and.arrow.down': 'download',
   'ellipsis.circle': 'more-horiz',
   'bookmark.slash': 'bookmark-remove',
   'arrow.clockwise': 'refresh',
@@ -85,6 +86,11 @@ export const MAPPING = {
   'hand.thumbsdown.fill': 'thumb-down',
   'arrow.uturn.backward.circle.fill': 'undo',
   'archivebox.fill': 'archive',
+  'paintpalette.fill': 'palette',
+  gear: 'settings',
+  'cylinder.fill': 'storage',
+  'questionmark.circle': 'help-outline',
+  'heart.fill': 'favorite',
 } as IconMapping;
 
 /**

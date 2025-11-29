@@ -221,12 +221,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   timeline: {
-    gap: 8,
+    gap: Spacing.sm,
   },
   timelineItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 8,
+    paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
   },
 });

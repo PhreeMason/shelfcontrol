@@ -77,7 +77,9 @@ describe('TodaysGoals', () => {
 
       expect(screen.getByText('No reading goals set for today')).toBeTruthy();
       expect(
-        screen.getByText('Add a book with a due date to start tracking your progress')
+        screen.getByText(
+          'Add a book with a due date to start tracking your progress'
+        )
       ).toBeTruthy();
     });
 

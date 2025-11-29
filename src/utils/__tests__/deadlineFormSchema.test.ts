@@ -608,9 +608,7 @@ describe('deadlineFormSchema', () => {
       const result = deadlineFormSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe(
-          'Total cannot be negative'
-        );
+        expect(result.error.issues[0].message).toBe('Total cannot be negative');
       }
     });
 

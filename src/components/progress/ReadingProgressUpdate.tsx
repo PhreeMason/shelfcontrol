@@ -4,6 +4,7 @@ import QuickActionButtons from '@/components/progress/QuickActionButtons';
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { BorderRadius, Spacing } from '@/constants/Colors';
 import { Shadows } from '@/constants/Theme';
+import { useDeadlineCardState } from '@/hooks/useDeadlineCardState';
 import {
   useDeleteFutureProgress,
   useUpdateDeadlineProgress,
@@ -62,7 +63,11 @@ const ReadingProgressUpdate = ({
   const { colors } = useTheme();
   const { getDeadlineCalculations } = useDeadlines();
   const calculations = getDeadlineCalculations(deadline);
-  const { currentProgress, totalQuantity } = calculations;
+  const { currentProgress, totalQuantity, urgencyLevel } = calculations;
+
+  // Compute scrubber percentage with guard against division by zero
+  const getScrubberPercentage = (value: number) =>
+    totalQuantity > 0 ? (value / totalQuantity) * 100 : 0;
 
   // Preferences for progress input mode (persisted per format)
   const { getProgressInputMode } = usePreferences();
@@ -279,6 +284,10 @@ const ReadingProgressUpdate = ({
   const { isPaused } = getDeadlineStatus(deadline);
   const pausedDate = isPaused ? getPausedDate(deadline) : null;
 
+  const {
+      countdownColor,
+    } = useDeadlineCardState(deadline, urgencyLevel);
+
   // Update scrubber value and form (called from gesture)
   const updateScrubberValue = useCallback(
     (value: number) => {
@@ -366,10 +375,10 @@ const ReadingProgressUpdate = ({
           {/* Progress Scrubber (simplified - no +/- buttons) */}
           <ThemedView>
             <View style={styles.scrubberLabels}>
-              <ThemedText typography="bodyMedium" color="textSecondary">
+              <ThemedText typography="titleMedium" style={{color: countdownColor}}>
                 {formatProgressDisplay(deadline.format, scrubberValue)}
               </ThemedText>
-              <ThemedText typography="bodyMedium" color="textSecondary">
+              <ThemedText typography="titleMedium" style={{color: countdownColor}}>
                 {deadline.format === 'audio'
                   ? `${formatProgressDisplay(deadline.format, totalQuantity - scrubberValue)} left`
                   : `${totalQuantity - scrubberValue} left`}
@@ -395,7 +404,7 @@ const ReadingProgressUpdate = ({
                   styles.filledTrack,
                   {
                     backgroundColor: colors.primary,
-                    width: `${(scrubberValue / totalQuantity) * 100}%`,
+                    width: `${getScrubberPercentage(scrubberValue)}%`,
                   },
                 ]}
               />
@@ -407,7 +416,7 @@ const ReadingProgressUpdate = ({
                     styles.thumb,
                     {
                       backgroundColor: colors.primary,
-                      left: `${(scrubberValue / totalQuantity) * 100}%`,
+                      left: `${getScrubberPercentage(scrubberValue)}%`,
                       opacity: isPaused ? 0.5 : 1,
                     },
                   ]}

@@ -380,7 +380,9 @@ export const populateFormFromDeadline = (
     return { selectedFormat, selectedPriority, selectedStatus };
   } catch (error) {
     console.error('Error populating form from deadline:', error);
-    posthog.captureException(error instanceof Error ? error : new Error(String(error)));
+    posthog.captureException(
+      error instanceof Error ? error : new Error(String(error))
+    );
     return {
       selectedFormat: 'physical' as const,
       selectedPriority: 'flexible' as const,
@@ -541,7 +543,7 @@ export const handleBookSelection = (
 /**
  * Creates success toast notification
  */
-export const createSuccessToast = (mode: FormMode) => {
+export const createSuccessToast = (mode: FormMode, newDeadlineId?: string) => {
   const message =
     mode === 'new'
       ? 'Deadline added successfully!'
@@ -559,7 +561,11 @@ export const createSuccessToast = (mode: FormMode) => {
     });
 
     // Navigate immediately after
-    if (mode === 'new') {
+    if (mode === 'new' && newDeadlineId) {
+      // Navigate to the newly created deadline
+      router.replace(`/deadline/${newDeadlineId}`);
+    } else if (mode === 'new') {
+      // Fallback to home if no ID available
       router.replace(ROUTES.HOME);
     } else {
       if (router.canGoBack()) {

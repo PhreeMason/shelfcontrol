@@ -14,6 +14,7 @@ export const DB_TABLES = {
   USER_ACTIVITIES: 'user_activities',
   REVIEW_TRACKING: 'review_tracking',
   REVIEW_PLATFORMS: 'review_platforms',
+  USER_SETTINGS: 'user_settings',
 } as const;
 
 export const STORAGE_BUCKETS = {

@@ -93,7 +93,7 @@ const DeadlineView = () => {
         style={{ flex: 1, backgroundColor: colors.background }}
       >
         <ThemedView style={[styles.container, { padding: 20 }]}>
-          <ThemedText variant="title">Deadline not found</ThemedText>
+          <ThemedText variant="title">Book not found</ThemedText>
           <ThemedButton
             title="Go Back"
             onPress={() => router.back()}

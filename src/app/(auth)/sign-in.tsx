@@ -4,24 +4,32 @@ import {
 } from '@/components/AnimatedCustomInput';
 import { AppleSSO } from '@/components/auth/AppleSSO';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import { useDebouncedInput } from '@/hooks/useDebouncedInput';
+import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
 import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useRouter } from 'expo-router';
+import * as Linking from 'expo-linking';
 import React, { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 
 import { z } from 'zod';
 import { ROUTES } from '@/constants/routes';
+
+const FORGOT_PASSWORD_URL =
+  'https://www.shelfcontrolapp.com/auth/forgot-password';
 
 const signInSchema = z.object({
   email: z.string({ message: 'Email is required' }).email('Invalid email'),
@@ -35,6 +43,7 @@ type SignInFields = z.infer<typeof signInSchema>;
 export default function SignInScreen() {
   const { signIn, isLoading } = useAuth();
   const router = useRouter();
+  const { colors } = useTheme();
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const emailInputRef = useRef<AnimatedCustomInputRef>(null);
@@ -126,13 +135,18 @@ export default function SignInScreen() {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   autoComplete="email"
-                  inputStyle={styles.input}
+                  inputStyle={{
+                    ...styles.input,
+                    color: colors.text,
+                    borderColor: colors.border,
+                    backgroundColor: colors.background,
+                  }}
                   testID="email-input"
                 />
               )}
             />
             {errors.email && (
-              <ThemedText style={styles.errorText}>
+              <ThemedText color="error" style={styles.errorText}>
                 {errors.email.message}
               </ThemedText>
             )}
@@ -154,20 +168,25 @@ export default function SignInScreen() {
                   onBlur={onBlur}
                   secureTextEntry
                   autoCapitalize="none"
-                  inputStyle={styles.input}
+                  inputStyle={{
+                    ...styles.input,
+                    color: colors.text,
+                    borderColor: colors.border,
+                    backgroundColor: colors.background,
+                  }}
                   testID="password-input"
                 />
               )}
             />
             {errors.password && (
-              <ThemedText style={styles.errorText}>
+              <ThemedText color="error" style={styles.errorText}>
                 {errors.password.message}
               </ThemedText>
             )}
           </ThemedView>
 
           {errors.root && (
-            <ThemedText style={styles.errorText}>
+            <ThemedText color="error" style={styles.errorText}>
               {errors.root.message}
             </ThemedText>
           )}
@@ -175,28 +194,32 @@ export default function SignInScreen() {
           <TouchableOpacity
             style={[
               styles.button,
-              (isLoading || isSubmitting) && styles.buttonDisabled,
+              {
+                backgroundColor: colors.primary,
+                ...Shadows.themed.primary,
+              },
+              (isLoading || isSubmitting) && {
+                backgroundColor: colors.surfaceVariant,
+              },
             ]}
             onPress={handleSubmit(onSignInPress)}
             disabled={isLoading || isSubmitting}
             testID="sign-in-button"
           >
-            <ThemedText style={styles.buttonText}>
+            <ThemedText color="textInverse" style={styles.buttonText}>
               {isLoading || isSubmitting ? 'Signing in...' : 'Continue'}
             </ThemedText>
           </TouchableOpacity>
 
-          {/* Add Forgot Password Link - iOS only */}
-          {Platform.OS === 'ios' && (
-            <Link
-              href={ROUTES.AUTH.RESET_PASSWORD_REQUEST}
-              style={styles.forgotPasswordLink}
-            >
-              <ThemedText style={styles.forgotPasswordText}>
-                Forgot Password?
-              </ThemedText>
-            </Link>
-          )}
+          {/* Forgot Password Link - opens external website */}
+          <Pressable
+            onPress={() => Linking.openURL(FORGOT_PASSWORD_URL)}
+            style={styles.forgotPasswordLink}
+          >
+            <ThemedText color="primary" style={styles.forgotPasswordText}>
+              Forgot Password?
+            </ThemedText>
+          </Pressable>
         </ThemedView>
 
         <ThemedView style={styles.divider} />
@@ -223,84 +246,60 @@ const styles = StyleSheet.create({
   innerContainer: {
     flex: 1,
     justifyContent: 'center',
-    padding: 20,
+    padding: Spacing.lg,
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: Spacing.xl,
   },
   logo: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    shadowColor: '#B8A9D9',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    ...Shadows.themed.primary,
   },
   title: {
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: Spacing.xxl,
     lineHeight: 38,
   },
   form: {
-    marginBottom: 32,
+    marginBottom: Spacing.xl,
   },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: Spacing.md,
   },
   input: {
-    color: '#000',
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 16,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
     fontSize: 16,
-    backgroundColor: '#fff',
   },
   button: {
-    backgroundColor: '#B8A9D9',
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 8,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    marginTop: Spacing.sm,
     alignItems: 'center',
-    shadowColor: '#B8A9D9',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  buttonDisabled: {
-    backgroundColor: '#E2E8F0',
   },
   buttonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
   header: {
     position: 'absolute',
     top: 60,
-    right: 20,
+    right: Spacing.lg,
     zIndex: 1,
   },
   errorText: {
     textAlign: 'center',
-    color: '#ff0000',
     fontSize: 14,
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 24,
+    marginVertical: Spacing.lg,
   },
   dividerText: {
     textAlign: 'center',
@@ -309,15 +308,14 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   socialButtons: {
-    gap: 12,
-    marginBottom: 32,
+    gap: Spacing.md,
+    marginBottom: Spacing.xl,
   },
   forgotPasswordLink: {
     alignSelf: 'center',
-    marginTop: 16,
+    marginTop: Spacing.md,
   },
   forgotPasswordText: {
-    color: '#B8A9D9',
     fontSize: 16,
     fontWeight: '600',
   },

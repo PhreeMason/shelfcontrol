@@ -59,10 +59,7 @@ jest.mock('@/components/progress/DateRangeDisplay', () => {
 jest.mock('@/components/progress/QuickActionButtons', () => {
   const React = require('react');
   const { TouchableOpacity, View } = require('react-native');
-  return function MockQuickActionButtons({
-    onQuickUpdate,
-    disabled,
-  }: any) {
+  return function MockQuickActionButtons({ onQuickUpdate, disabled }: any) {
     const increments = [-1, 1, 5, 10];
     return React.createElement(
       View,
@@ -1049,5 +1046,4 @@ describe('ReadingProgressUpdate - Simple Integration Tests', () => {
       });
     });
   });
-
 });

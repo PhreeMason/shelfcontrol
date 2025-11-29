@@ -1,18 +1,23 @@
 import Avatar from '@/components/shared/Avatar';
 import { ThemedText } from '@/components/themed';
+import { Spacing } from '@/constants/Colors';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 interface ProfileHeaderInfoProps {
   avatarUrl?: string | null | undefined;
   username: string;
-  displayName?: string | null | undefined;
+  email?: string | null | undefined;
+  joinedDate?: string | null | undefined;
+  rightElement?: React.ReactNode;
 }
 
 const ProfileHeaderInfo: React.FC<ProfileHeaderInfoProps> = ({
   avatarUrl,
   username,
-  displayName,
+  email,
+  joinedDate,
+  rightElement,
 }) => {
   return (
     <View testID="profile-header-info" style={styles.container}>
@@ -24,16 +29,28 @@ const ProfileHeaderInfo: React.FC<ProfileHeaderInfoProps> = ({
       />
       <View style={styles.textContainer}>
         <ThemedText typography="titleLarge" color="textInverse">
-          {displayName}
-        </ThemedText>
-        <ThemedText
-          variant="default"
-          color="textInverse"
-          style={styles.username}
-        >
           @{username}
         </ThemedText>
+        {email && (
+          <ThemedText
+            typography="bodyMedium"
+            color="textInverse"
+            style={styles.secondaryText}
+          >
+            {email}
+          </ThemedText>
+        )}
+        {joinedDate && (
+          <ThemedText
+            typography="bodySmall"
+            color="textInverse"
+            style={styles.tertiaryText}
+          >
+            Joined {joinedDate}
+          </ThemedText>
+        )}
       </View>
+      {rightElement}
     </View>
   );
 };
@@ -42,16 +59,19 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingBottom: 10,
-    gap: 16,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.sm,
+    gap: Spacing.md,
   },
   textContainer: {
     flex: 1,
     justifyContent: 'center',
   },
-  username: {
+  secondaryText: {
     opacity: 0.85,
+  },
+  tertiaryText: {
+    opacity: 0.7,
   },
 });
 

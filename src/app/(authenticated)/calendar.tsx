@@ -21,7 +21,7 @@ import { Calendar, DateData } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Empty function constant for callbacks that don't need to do anything
-const NOOP = () => { };
+const NOOP = () => {};
 
 /**
  * Generate a unique key for agenda items in the list
@@ -142,16 +142,16 @@ export default function CalendarScreen() {
   // Separate review_due activities (all-day cards like deadline_due)
   const reviewDueActivities = useMemo(
     () =>
-      selectedDateActivities.filter(
-        item => item.activityType === 'review_due'
-      ),
+      selectedDateActivities.filter(item => item.activityType === 'review_due'),
     [selectedDateActivities]
   );
 
   const otherActivities = useMemo(
     () =>
       selectedDateActivities.filter(
-        item => item.activityType !== 'deadline_due' && item.activityType !== 'review_due'
+        item =>
+          item.activityType !== 'deadline_due' &&
+          item.activityType !== 'review_due'
       ),
     [selectedDateActivities]
   );

@@ -119,7 +119,7 @@ export const getFeasibilityConfig = (
       };
     case 'tight':
       return {
-        text: '⚠️ Tight - extra reading time needed',
+        text: 'Tight - extra reading time needed',
         color: colors.approaching,
         backgroundColor: colors.approaching + '20',
       };

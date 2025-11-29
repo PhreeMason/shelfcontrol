@@ -1,3 +1,4 @@
+import { Spacing } from '@/constants/Colors';
 import { formatProgressDisplay } from '@/utils/deadlineUtils';
 import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '../themed';
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
   progressStats: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginVertical: 12,
+    marginVertical: Spacing.md,
   },
   statItem: {
     alignItems: 'center',
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     lineHeight: 33,
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
   statLabel: {
     letterSpacing: 1,

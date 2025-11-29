@@ -3,11 +3,17 @@ export const ROUTES = {
   PROFILE: {
     INDEX: '/profile',
     EDIT: '/profile/edit',
+    SETTINGS: {
+      APPEARANCE: '/profile/settings/appearance',
+      READING: '/profile/settings/reading',
+      UPDATES: '/profile/settings/updates',
+      DATA: '/profile/settings/data',
+      ABOUT: '/profile/settings/about',
+      WEBVIEW: '/profile/settings/webview',
+    },
   },
   AUTH: {
     SIGN_IN: '/sign-in',
     SIGN_UP: '/sign-up',
-    RESET_PASSWORD_REQUEST: '/reset-password-request',
-    RESET_PASSWORD_UPDATE: '/reset-password-update',
   },
 } as const;

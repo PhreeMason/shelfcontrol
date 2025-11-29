@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { Spacing } from '@/constants/Colors';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { StyleSheet, View } from 'react-native';
@@ -21,10 +22,10 @@ const DateRangeDisplay = ({
 
   return (
     <View style={styles.container}>
-      <ThemedText typography="bodySmall" color="textMuted">
+      <ThemedText typography="bodySmall" color="secondary">
         {startLabel} {formattedStartDate}
       </ThemedText>
-      <ThemedText typography="bodySmall" color="textMuted">
+      <ThemedText typography="bodySmall" color="secondary">
         Due: {formattedDueDate}
       </ThemedText>
     </View>
@@ -38,6 +39,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
 });

@@ -1,13 +1,13 @@
-import React, { useMemo } from 'react';
-import { Control, Controller } from 'react-hook-form';
-import { View, StyleSheet } from 'react-native';
-import ProgressInputBase from './ProgressInputBase';
-import InputModeToggle from './InputModeToggle';
 import { usePreferences } from '@/providers/PreferencesProvider';
 import {
   getAvailableModesForFormat,
   getModeLabelForFormat,
 } from '@/types/progressInput.types';
+import React, { useMemo } from 'react';
+import { Control, Controller } from 'react-hook-form';
+import { StyleSheet, View } from 'react-native';
+import InputModeToggle from './InputModeToggle';
+import ProgressInputBase from './ProgressInputBase';
 
 interface ProgressInputProps {
   format: 'physical' | 'eBook' | 'audio';

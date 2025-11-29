@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/themed';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
 import React, { useState } from 'react';
@@ -125,18 +126,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: Spacing.lg,
   },
   dialog: {
     width: '100%',
     maxWidth: 500,
-    borderRadius: 16,
-    padding: 24,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
     ...Shadows.premium,
   },
   header: {
-    gap: 8,
-    marginBottom: 20,
+    gap: Spacing.sm,
+    marginBottom: Spacing.lg,
   },
   title: {
     fontSize: 20,
@@ -148,16 +149,16 @@ const styles = StyleSheet.create({
     lineHeight: 17,
   },
   content: {
-    gap: 8,
-    marginBottom: 24,
+    gap: Spacing.sm,
+    marginBottom: Spacing.lg,
   },
   label: {
     fontWeight: '600',
   },
   input: {
     borderWidth: 2,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
     fontSize: 16,
   },
   hint: {
@@ -165,12 +166,12 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    gap: 12,
+    gap: Spacing.md,
   },
   button: {
     flex: 1,
-    padding: 16,
-    borderRadius: 12,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
     alignItems: 'center',
   },
   cancelButton: {},

@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
@@ -146,13 +147,13 @@ export const DeadlinesInFlightGroup: React.FC<DeadlinesInFlightGroupProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 8,
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
-    marginBottom: 16,
+    marginBottom: Spacing.md,
     overflow: 'hidden',
   },
   header: {
-    padding: 16,
+    padding: Spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -163,7 +164,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    marginRight: 12,
+    marginRight: Spacing.md,
   },
   headerTextContent: {
     flex: 1,
@@ -171,10 +172,10 @@ const styles = StyleSheet.create({
   },
   expandedContent: {
     borderTopWidth: 1,
-    padding: 12,
+    padding: Spacing.md,
   },
   divider: {
     height: 1,
-    marginHorizontal: 8,
+    marginHorizontal: Spacing.sm,
   },
 });

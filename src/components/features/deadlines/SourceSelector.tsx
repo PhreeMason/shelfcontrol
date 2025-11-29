@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { SourceOption } from '@/types/disclosure.types';
 import React, { useState } from 'react';
@@ -135,7 +136,7 @@ export const SourceSelector = ({
 
 const styles = StyleSheet.create({
   container: {
-    gap: 8,
+    gap: Spacing.sm,
   },
   label: {
     fontWeight: '600',
@@ -144,30 +145,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    padding: Spacing.md,
     borderWidth: 2,
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
   },
   selectText: {
     flex: 1,
   },
   chevron: {
-    marginLeft: 8,
+    marginLeft: Spacing.sm,
   },
   chevronRotated: {
     transform: [{ rotate: '180deg' }],
   },
   dropdown: {
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
     overflow: 'hidden',
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
   dropdownItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    padding: Spacing.md,
     borderBottomWidth: 1,
   },
   dropdownItemText: {
@@ -175,6 +176,6 @@ const styles = StyleSheet.create({
   },
   noOptions: {
     fontStyle: 'italic',
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
 });

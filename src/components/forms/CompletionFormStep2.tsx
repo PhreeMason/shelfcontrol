@@ -1,4 +1,5 @@
 import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useTheme';
@@ -65,7 +66,7 @@ const CompletionFormStep2: React.FC<CompletionFormStep2Props> = ({
             <ThemedView
               style={[styles.coverThumbnail, dynamicStyles.coverThumbnail]}
             >
-              <ThemedText style={styles.coverEmoji}>📖</ThemedText>
+              <IconSymbol name="book.fill" size={32} color="#FFFFFF" />
             </ThemedView>
           )}
         </View>
@@ -180,10 +181,6 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  coverEmoji: {
-    fontSize: 40,
-    lineHeight: 44,
   },
   buttonContainer: {
     gap: Spacing.md,

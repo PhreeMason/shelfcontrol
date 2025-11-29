@@ -1,5 +1,6 @@
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedText } from '@/components/themed/ThemedText';
+import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { Hashtag } from '@/types/hashtags.types';
 import React, { useEffect } from 'react';
@@ -195,29 +196,29 @@ const styles = StyleSheet.create({
     maxHeight: '100%',
   },
   scrollContent: {
-    padding: 20,
+    padding: Spacing.lg,
     paddingBottom: 100,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: Spacing.lg,
   },
   headerActions: {
     flexDirection: 'row',
-    gap: 16,
+    gap: Spacing.md,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: Spacing.lg,
   },
   pillContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: Spacing.sm,
   },
   pill: {
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
   footer: {
     position: 'absolute',
@@ -225,12 +226,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    padding: 5,
-    gap: 12,
+    padding: Spacing.xs,
+    gap: Spacing.md,
     borderTopWidth: 1,
   },
   footerButton: {
     flex: 1,
-    margin: 5,
+    margin: Spacing.xs,
   },
 });

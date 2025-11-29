@@ -1,8 +1,9 @@
-import { BorderRadius, Colors, Typography } from '@/constants/Colors';
+import { BorderRadius, Colors, Spacing, Typography } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { IconSymbol } from './IconSymbol';
 
 interface CustomToastProps {
   text1?: string;
@@ -19,7 +20,7 @@ const CustomToast = ({
 }: CustomToastProps & {
   gradientColors: readonly [string, string];
   iconGradientColors: readonly [string, string];
-  icon: string;
+  icon: ReactNode;
 }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -39,7 +40,7 @@ const CustomToast = ({
             end={[1, 1]}
             style={styles.iconContainer}
           >
-            <Text style={styles.icon}>{icon}</Text>
+            {icon}
           </LinearGradient>
 
           <View style={styles.messageContainer}>
@@ -71,7 +72,7 @@ const CustomToastWithAction = ({
 }: CustomToastProps & {
   gradientColors: readonly [string, string];
   iconGradientColors: readonly [string, string];
-  icon: string;
+  icon: ReactNode;
   actionText?: string;
   onActionPress?: () => void;
 }) => {
@@ -93,7 +94,7 @@ const CustomToastWithAction = ({
             end={[1, 1]}
             style={styles.iconContainer}
           >
-            <Text style={styles.icon}>{icon}</Text>
+            {icon}
           </LinearGradient>
 
           <View style={styles.messageContainer}>
@@ -142,7 +143,7 @@ const SuccessToast = (props: CustomToastProps) => {
       {...props}
       gradientColors={[colors.success, '#FAF8F5'] as const}
       iconGradientColors={[colors.success, colors.peach] as const}
-      icon="✓"
+      icon={<IconSymbol name="checkmark" size={20} color="#FFFFFF" />}
     />
   );
 };
@@ -156,7 +157,7 @@ const ErrorToast = (props: CustomToastProps) => {
       {...props}
       gradientColors={[colors.error, '#FAF8F5'] as const}
       iconGradientColors={[colors.error, colors.darkPink] as const}
-      icon="!"
+      icon={<Text style={styles.icon}>!</Text>}
     />
   );
 };
@@ -170,7 +171,7 @@ const InfoToast = (props: CustomToastProps) => {
       {...props}
       gradientColors={[colors.info, '#FAF8F5'] as const}
       iconGradientColors={[colors.info, colors.warning] as const}
-      icon="i"
+      icon={<Text style={styles.icon}>i</Text>}
     />
   );
 };
@@ -184,7 +185,9 @@ const WarningToast = (props: CustomToastProps) => {
       {...props}
       gradientColors={[colors.orange, '#FAF8F5'] as const}
       iconGradientColors={[colors.orange, colors.warning] as const}
-      icon="⚠"
+      icon={
+        <IconSymbol name="exclamationmark.triangle" size={20} color="#FFFFFF" />
+      }
     />
   );
 };
@@ -200,7 +203,7 @@ const SuccessWithActionToast = (
       {...props}
       gradientColors={[colors.success, '#FAF8F5'] as const}
       iconGradientColors={[colors.success, colors.peach] as const}
-      icon="✓"
+      icon={<IconSymbol name="checkmark" size={20} color="#FFFFFF" />}
     />
   );
 };
@@ -216,7 +219,7 @@ const InfoWithActionToast = (
       {...props}
       gradientColors={[colors.info, '#FAF8F5'] as const}
       iconGradientColors={[colors.info, colors.warning] as const}
-      icon="↻"
+      icon={<IconSymbol name="arrow.clockwise" size={20} color="#FFFFFF" />}
     />
   );
 };
@@ -233,8 +236,8 @@ export const toastConfig = {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    paddingHorizontal: 20,
-    marginTop: 20,
+    paddingHorizontal: Spacing.lg,
+    marginTop: Spacing.lg,
     shadowColor: '#000',
     shadowOffset: {
       width: 2,
@@ -247,8 +250,8 @@ const styles = StyleSheet.create({
   toastContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: BorderRadius.xxl, // 24px
+    padding: Spacing.md,
+    borderRadius: BorderRadius.xxl,
     borderWidth: 1,
     borderColor: 'rgba(184, 169, 217, 0.2)',
   },
@@ -256,12 +259,12 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: Spacing.md,
   },
   iconContainer: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: BorderRadius.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -287,19 +290,19 @@ const styles = StyleSheet.create({
     height: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
   },
   closeText: {
     fontSize: 18,
     fontWeight: '300',
   },
   actionButton: {
-    marginLeft: 8,
+    marginLeft: Spacing.sm,
   },
   actionButtonGradient: {
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-    borderRadius: 16,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.xl,
   },
   actionButtonText: {
     ...Typography.labelMedium,

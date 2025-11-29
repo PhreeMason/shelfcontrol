@@ -343,7 +343,7 @@ describe('deadlineModalUtils', () => {
     it('should return tight config for tight level', () => {
       const result = getFeasibilityConfig('tight', mockColors);
 
-      expect(result.text).toBe('⚠️ Tight - extra reading time needed');
+      expect(result.text).toBe('Tight - extra reading time needed');
       expect(result.color).toBe('#FFA500');
       expect(result.backgroundColor).toBe('#FFA50020');
     });

@@ -152,19 +152,19 @@ const styles = StyleSheet.create({
   sectionTitle: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
-    gap: 8,
+    marginBottom: Spacing.md,
+    gap: Spacing.sm,
   },
   detailsGrid: {
-    gap: 12,
+    gap: Spacing.md,
   },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
   },
   detailsValue: {

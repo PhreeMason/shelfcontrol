@@ -991,7 +991,7 @@ describe('DeadlinesService', () => {
       expect(result).toEqual(mockDeadline);
     });
 
-    it('should return null when deadline not found (PGRST116 error)', async () => {
+    it('should return null when Book not found (PGRST116 error)', async () => {
       const mockError = { code: 'PGRST116', message: 'Not found' };
 
       const mockSelect = jest.fn().mockReturnThis();
@@ -1674,7 +1674,7 @@ describe('DeadlinesService', () => {
 
       await expect(
         deadlinesService.completeDeadline(userId, deadlineId)
-      ).rejects.toThrow('Deadline not found or access denied');
+      ).rejects.toThrow('Book not found or access denied');
     });
 
     it('should throw error when progress update fails', async () => {

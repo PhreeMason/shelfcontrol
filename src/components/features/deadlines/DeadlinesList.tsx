@@ -1,5 +1,6 @@
 import { DeadlineCard } from '@/components/features/deadlines/DeadlineCard';
 import { ThemedText, ThemedView } from '@/components/themed';
+import { Spacing } from '@/constants/Colors';
 import { usePreferences } from '@/providers/PreferencesProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import React from 'react';
@@ -76,19 +77,19 @@ const DeadlinesList: React.FC<DeadlinesListProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
-    paddingHorizontal: 12,
-    paddingTop: 5,
+    gap: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.xs,
   },
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: 8,
-    paddingTop: 15,
-    gap: 15,
+    paddingHorizontal: Spacing.sm,
+    paddingTop: Spacing.md,
+    gap: Spacing.md,
   },
   centerContainer: {
-    padding: 40,
+    padding: Spacing.xxl,
     alignItems: 'center',
     justifyContent: 'center',
   },

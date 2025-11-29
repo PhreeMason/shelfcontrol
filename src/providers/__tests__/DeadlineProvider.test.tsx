@@ -103,7 +103,6 @@ jest.mock('@/utils/deadlineProviderUtils', () => ({
     urgencyLevel: 'good',
     urgencyColor: '#10b981',
     statusMessage: 'On track',
-    readingEstimate: '3 hours remaining',
     paceEstimate: '~2 hours',
     unit: 'pages',
     userPace: 25,

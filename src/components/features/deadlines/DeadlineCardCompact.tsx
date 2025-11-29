@@ -3,10 +3,7 @@ import { Spacing } from '@/constants/Colors';
 import { Shadows } from '@/constants/Theme';
 import { useDeadlineCardViewModel } from '@/hooks/useDeadlineCardViewModel';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import {
-  getBookCoverIcon,
-  getGradientBackground,
-} from '@/utils/deadlineDisplayUtils';
+import { getGradientBackground } from '@/utils/deadlineDisplayUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useMemo } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
@@ -58,14 +55,10 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
         ) : (
           <LinearGradient
             colors={getGradientBackground(deadline, countdown.daysLeft)}
-            style={[styles.bookCover, styles.bookCoverPlaceholder]}
+            style={styles.bookCover}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-          >
-            <ThemedText typography="headlineLarge">
-              {getBookCoverIcon(deadline, countdown.daysLeft)}
-            </ThemedText>
-          </LinearGradient>
+          />
         )}
       </View>
       {/* Countdown Badge */}
@@ -96,8 +89,6 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
 
       {/* Book Info Below Cover */}
       <View style={styles.infoContainer}>
-
-
         {/* Pace Required - Only show for active deadlines */}
         {countdown.latestStatus !== 'complete' &&
           countdown.latestStatus !== 'did_not_finish' && (
@@ -106,7 +97,7 @@ export function DeadlineCardCompact({ deadline }: DeadlineCardCompactProps) {
             </ThemedText>
           )}
 
-                {/* Due Date - Split long messages into two lines */}
+        {/* Due Date - Split long messages into two lines */}
         {dateDisplay.type === 'single' ? (
           <ThemedText typography="bodySmall" color="textSecondary">
             {dateDisplay.text}
@@ -159,10 +150,6 @@ const styles = StyleSheet.create({
   progressFill: {
     height: '100%',
     borderRadius: 2,
-  },
-  bookCoverPlaceholder: {
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   infoContainer: {
     marginTop: 2,

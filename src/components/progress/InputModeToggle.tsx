@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { ProgressInputMode } from '@/types/progressInput.types';
 import React from 'react';
@@ -55,11 +56,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 6,
+    borderRadius: BorderRadius.sm,
     borderWidth: 2,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    gap: 4,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    gap: Spacing.xs,
   },
   label: {
     fontSize: 12,

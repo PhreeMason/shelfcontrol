@@ -8,6 +8,7 @@ import {
   ThemedText,
   ThemedView,
 } from '@/components/themed';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
 import { ROUTES } from '@/constants/routes';
 import { useFetchBookById } from '@/hooks/useBooks';
@@ -361,7 +362,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
                   dynamicStyles.bookCoverPlaceholder,
                 ]}
               >
-                <ThemedText typography="headlineSmall">📖</ThemedText>
+                <IconSymbol name="book.fill" size={24} color="#FFFFFF" />
               </View>
             )}
             <View style={styles.bookInfoText}>

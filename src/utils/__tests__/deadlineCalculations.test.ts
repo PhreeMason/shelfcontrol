@@ -6,7 +6,6 @@ import {
   calculateTotalQuantity,
   calculateTotalQuantityFromForm,
   getPaceEstimate,
-  getReadingEstimate,
 } from '../deadlineCalculations';
 
 describe('deadlineCalculations', () => {
@@ -146,56 +145,6 @@ describe('deadlineCalculations', () => {
     });
   });
 
-  describe('getReadingEstimate', () => {
-    it('should return reading estimate for physical books', () => {
-      expect(getReadingEstimate('physical', 80)).toBe(
-        '📖 About 2 hours of reading time'
-      ); // 80 pages / 40 pages per hour = 2 hours
-      expect(getReadingEstimate('physical', 120)).toBe(
-        '📖 About 3 hours of reading time'
-      ); // 120 pages / 40 pages per hour = 3 hours
-    });
-
-    it('should return reading estimate for eBooks', () => {
-      expect(getReadingEstimate('eBook', 40)).toBe(
-        '📖 About 1 hours of reading time'
-      ); // 40 pages / 40 pages per hour = 1 hour
-      expect(getReadingEstimate('eBook', 160)).toBe(
-        '📖 About 4 hours of reading time'
-      ); // 160 pages / 40 pages per hour = 4 hours
-    });
-
-    it('should return listening estimate for audio books', () => {
-      expect(getReadingEstimate('audio', 90)).toBe(
-        '🎧 About 1 hour and 30 minutes of listening time'
-      ); // 90 minutes = 1 hour 30 minutes
-      expect(getReadingEstimate('audio', 120)).toBe(
-        '🎧 About 2 hours of listening time'
-      ); // 120 minutes = 2 hours
-      expect(getReadingEstimate('audio', 45)).toBe(
-        '🎧 About 45 minutes of listening time'
-      ); // 45 minutes
-      expect(getReadingEstimate('audio', 150)).toBe(
-        '🎧 About 2 hours and 30 minutes of listening time'
-      ); // 150 minutes = 2 hours 30 minutes
-    });
-
-    it('should return empty string for zero or negative remaining content', () => {
-      expect(getReadingEstimate('physical', 0)).toBe('');
-      expect(getReadingEstimate('audio', -10)).toBe('');
-      expect(getReadingEstimate('eBook', 0)).toBe('');
-    });
-
-    it('should handle singular vs plural hours correctly', () => {
-      expect(getReadingEstimate('audio', 60)).toBe(
-        '🎧 About 1 hour of listening time'
-      ); // 1 hour (singular)
-      expect(getReadingEstimate('audio', 180)).toBe(
-        '🎧 About 3 hours of listening time'
-      ); // 3 hours (plural)
-    });
-  });
-
   describe('getPaceEstimate', () => {
     const mockDate = new Date('2024-01-15T12:00:00Z');
 
@@ -238,7 +187,7 @@ describe('deadlineCalculations', () => {
       expect(getPaceEstimate('audio', deadline, 600)).toBe('2 hours/day'); // 600 minutes / 5 days = 120 minutes/day = 2 hours/day
     });
 
-    it('should warn when deadline has passed', () => {
+    it('should warn when Due date has passed', () => {
       const pastDeadline = new Date('2024-01-10T12:00:00Z'); // 5 days before mock date
       expect(getPaceEstimate('physical', pastDeadline, 100)).toBe(
         'This due date has already passed'

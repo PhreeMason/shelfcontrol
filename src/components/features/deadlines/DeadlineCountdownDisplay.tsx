@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { BorderRadius, Spacing } from '@/constants/Colors';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
@@ -30,7 +31,7 @@ export function DeadlineCountdownDisplay({
               ]}
             >
               🏆
-            </ThemedText> 
+            </ThemedText>
             <ThemedText
               style={[
                 styles.countdownLabel,
@@ -122,14 +123,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
+    padding: Spacing.md,
     minWidth: 100,
   },
   countdownSquare: {
     width: 72,
     height: 72,
     borderWidth: 3,
-    borderRadius: 20,
+    borderRadius: BorderRadius.xxl,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     textAlign: 'center',
     includeFontPadding: false,
-    paddingTop: Platform.select({ ios: 8, android: 3 }),
+    paddingTop: Platform.select({ ios: Spacing.sm, android: 3 }),
   },
   countdownLabel: {
     fontSize: 13,

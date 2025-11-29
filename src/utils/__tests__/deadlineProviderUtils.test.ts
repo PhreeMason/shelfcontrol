@@ -27,7 +27,6 @@ jest.mock('@/utils/deadlineCalculations', () => ({
   ),
   calculateTotalQuantity: jest.fn((_format: string, total: number) => total),
   getPaceEstimate: jest.fn(() => '~2 hours'),
-  getReadingEstimate: jest.fn(() => '3 hours remaining'),
 }));
 
 jest.mock('@/utils/deadlineUtils', () => ({

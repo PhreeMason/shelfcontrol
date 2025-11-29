@@ -1,5 +1,6 @@
 import LinearProgressBar from '@/components/shared/LinearProgressBar';
 import { ThemedText } from '@/components/themed/ThemedText';
+import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import { dayjs } from '@/lib/dayjs';
 import { formatDeadlineDate } from '@/utils/dateUtils';
@@ -53,14 +54,14 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
 
 const styles = StyleSheet.create({
   progressText: {
-    gap: 4,
+    gap: Spacing.xs,
     justifyContent: 'space-between',
     flexDirection: 'row',
-    marginTop: 8,
+    marginTop: Spacing.sm,
   },
   deadlineContainer: {
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: Spacing.sm,
   },
   deadlineText: {
     fontSize: 14,

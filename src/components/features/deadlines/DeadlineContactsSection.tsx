@@ -268,37 +268,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: Spacing.md,
   },
   titleColumn: {
     flex: 1,
   },
   benefitMargin: {
-    marginTop: 2,
+    marginTop: Spacing.xs,
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingVertical: 8,
-    borderRadius: 8,
+    gap: Spacing.sm,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
   },
   addButtonPressed: {
     opacity: 0.7,
   },
   addIcon: {
-    marginRight: 2,
+    marginRight: Spacing.xs,
   },
   contactsList: {
-    gap: 12,
-    marginBottom: 12,
+    gap: Spacing.md,
+    marginBottom: Spacing.md,
   },
   addForm: {
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
   emptyStateCard: {
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
     borderWidth: 2,
     borderStyle: 'dashed',
     opacity: 0.7,
@@ -306,13 +306,13 @@ const styles = StyleSheet.create({
   ghostContact: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
+    gap: Spacing.md,
+    marginBottom: Spacing.md,
   },
   ghostIcon: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: BorderRadius.xxl,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -321,11 +321,11 @@ const styles = StyleSheet.create({
   },
   ghostContactInfo: {
     flex: 1,
-    gap: 6,
+    gap: Spacing.sm,
   },
   ghostText: {
     height: 16,
-    borderRadius: 4,
+    borderRadius: BorderRadius.sm,
     opacity: 0.15,
   },
   ghostTextShort: {

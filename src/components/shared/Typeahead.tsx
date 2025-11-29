@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed';
-import { Typography } from '@/constants/Colors';
+import { BorderRadius, Spacing, Typography } from '@/constants/Colors';
+import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useTheme';
 import {
   filterSuggestions,
@@ -238,11 +239,11 @@ const Typeahead = ({
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    gap: 4,
+    gap: Spacing.xs,
   },
   inputWrapper: {
     borderWidth: 2,
-    borderRadius: 12,
+    borderRadius: BorderRadius.lg,
     overflow: 'hidden',
   },
   inputContainer: {
@@ -252,10 +253,10 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     ...Typography.bodyLarge,
-    padding: 16,
+    padding: Spacing.md,
   },
   loadingIndicator: {
-    marginRight: 16,
+    marginRight: Spacing.md,
   },
   suggestionsContainer: {
     position: 'absolute',
@@ -264,29 +265,22 @@ const styles = StyleSheet.create({
     right: 0,
     borderWidth: 1,
     borderTopWidth: 0,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    borderBottomLeftRadius: BorderRadius.lg,
+    borderBottomRightRadius: BorderRadius.lg,
     zIndex: 1000,
+    ...Shadows.medium,
   },
   suggestionItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
     borderBottomWidth: 1,
   },
   noResultsContainer: {
-    padding: 16,
+    padding: Spacing.md,
   },
   error: {
     minHeight: 18,
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
 });
 

@@ -120,11 +120,11 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
       <ThemedView style={styles.emptyContainer} testID="daily-chart-empty">
         <ThemedText
           style={styles.emptyText}
-          variant="muted"
+          variant="secondary"
           testID="empty-message"
         >
           Not enough progress data to display chart. Start reading to see your
-          daily progress!
+          progress!
         </ThemedText>
       </ThemedView>
     );
@@ -248,6 +248,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 200,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing.md,
+    ...Shadows.subtle,
   },
   emptyText: {
     fontSize: 16,

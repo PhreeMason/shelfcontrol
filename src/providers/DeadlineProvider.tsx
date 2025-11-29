@@ -151,7 +151,6 @@ interface DeadlineContextType {
     urgencyLevel: 'overdue' | 'urgent' | 'good' | 'approaching' | 'impossible';
     urgencyColor: string;
     statusMessage: string;
-    readingEstimate: string;
     paceEstimate: string;
     unit: string;
     userPace: number;
@@ -376,11 +375,11 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
           total_steps: number;
         };
       },
-      onSuccess?: () => void,
+      onSuccess?: (newDeadlineId?: string) => void,
       onError?: (error: Error) => void
     ) => {
       addDeadlineMutation(params, {
-        onSuccess: () => {
+        onSuccess: data => {
           analytics.track('deadline_created', {
             format: params.deadlineDetails.format,
             status: params.status as AnalyticsDeadlineStatus,
@@ -391,7 +390,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
               params.analyticsContext?.creation_duration_seconds || 0,
             total_steps: params.analyticsContext?.total_steps || 0,
           });
-          onSuccess?.();
+          onSuccess?.(data?.id);
         },
         onError: (error: Error) => {
           console.error('Error adding deadline:', error);
