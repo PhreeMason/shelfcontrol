@@ -410,6 +410,19 @@ export interface EventPropertiesMap {
     deadline_id: string;
     platform_name: string;
   };
+
+  // Privacy settings events
+  analytics_opted_out: Record<string, never>;
+  analytics_opted_in: Record<string, never>;
+  crash_reporting_opted_out: Record<string, never>;
+  crash_reporting_opted_in: Record<string, never>;
+
+  // Data deletion events
+  delete_all_data_initiated: Record<string, never>;
+  delete_all_data_completed: Record<string, never>;
+  delete_all_data_failed: Record<string, never>;
+  delete_account_initiated: Record<string, never>;
+  delete_account_failed: Record<string, never>;
 }
 
 export type EventName = keyof EventPropertiesMap;

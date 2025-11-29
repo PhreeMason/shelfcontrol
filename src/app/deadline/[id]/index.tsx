@@ -11,10 +11,10 @@ import ReviewProgressSection from '@/components/features/review/ReviewProgressSe
 import ReadingProgressUpdate from '@/components/progress/ReadingProgressUpdate';
 import ReadingStats from '@/components/stats/ReadingStats';
 import {
-  ThemedButton,
-  ThemedKeyboardAwareScrollView,
-  ThemedText,
-  ThemedView,
+    ThemedButton,
+    ThemedKeyboardAwareScrollView,
+    ThemedText,
+    ThemedView,
 } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Shadows } from '@/constants/Theme';
@@ -93,7 +93,7 @@ const DeadlineView = () => {
         style={{ flex: 1, backgroundColor: colors.background }}
       >
         <ThemedView style={[styles.container, { padding: 20 }]}>
-          <ThemedText variant="title">Deadline not found</ThemedText>
+          <ThemedText variant="title">Book not found</ThemedText>
           <ThemedButton
             title="Go Back"
             onPress={() => router.back()}

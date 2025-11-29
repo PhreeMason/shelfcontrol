@@ -1,28 +1,24 @@
 import ProfileHeaderInfo from '@/components/features/profile/ProfileHeaderInfo';
+import SettingsSectionList, {
+  SettingsSection,
+} from '@/components/features/profile/SettingsSectionList';
 import AppHeader from '@/components/shared/AppHeader';
-import { ThemedText, ThemedView } from '@/components/themed';
+import { ThemedView } from '@/components/themed';
 import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Spacing } from '@/constants/Colors';
 import { ROUTES } from '@/constants/routes';
-import { useExportReadingProgress } from '@/hooks/useExport';
 import { useTheme } from '@/hooks/useThemeColor';
-import { analytics } from '@/lib/analytics/client';
-import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
-import { useDeadlines } from '@/providers/DeadlineProvider';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Toast from 'react-native-toast-message';
 
 export default function Profile() {
   const { profile, signOut, refreshProfile } = useAuth();
   const router = useRouter();
   const { colors } = useTheme();
-  const { deadlines } = useDeadlines();
-  const exportMutation = useExportReadingProgress();
 
   React.useEffect(() => {
     refreshProfile();
@@ -40,46 +36,59 @@ export default function Profile() {
     router.push(ROUTES.PROFILE.EDIT);
   };
 
-  const handleExportData = async () => {
-    analytics.track('export_data_initiated');
-
-    try {
-      await exportMutation.mutateAsync();
-      analytics.track('export_completed', {
-        record_count: deadlines.length,
-      });
-      Toast.show({
-        type: 'success',
-        text1: 'Export Successful',
-        text2: 'CSV has been sent to your email',
-      });
-    } catch (error: any) {
-      const errorMessage = error?.message || 'Failed to export data';
-      const isRateLimit =
-        errorMessage.includes('Rate limit') || errorMessage.includes('429');
-
-      if (isRateLimit) {
-        analytics.track('export_rate_limited');
-      } else {
-        posthog.captureException(error);
-      }
-
-      Toast.show({
-        type: 'error',
-        text1: isRateLimit ? 'Rate Limit Exceeded' : 'Export Failed',
-        text2: isRateLimit
-          ? 'You can only export once per 24 hours'
-          : errorMessage,
+  const getJoinedDate = () => {
+    if (profile?.created_at) {
+      return new Date(profile.created_at).toLocaleDateString('en-US', {
+        month: 'numeric',
+        day: 'numeric',
+        year: 'numeric',
       });
     }
+    return undefined;
   };
 
-  const getDisplayName = () => {
-    if (profile?.first_name || profile?.last_name) {
-      return `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
-    }
-    return null;
-  };
+  const settingsSections: SettingsSection[] = [
+    // {
+    //   id: 'appearance',
+    //   title: 'Display & Appearance',
+    //   description: 'Theme, fonts, calendar',
+    //   icon: 'paintpalette.fill',
+    //   iconBackgroundColor: colors.primary,
+    //   onPress: () => router.push(ROUTES.PROFILE.SETTINGS.APPEARANCE),
+    // },
+    // {
+    //   id: 'reading',
+    //   title: 'Reading Preferences',
+    //   description: 'Pace, thresholds, progress',
+    //   icon: 'book.fill',
+    //   iconBackgroundColor: colors.accent,
+    //   onPress: () => router.push(ROUTES.PROFILE.SETTINGS.READING),
+    // },
+    {
+      id: 'updates',
+      title: 'App Updates',
+      description: 'Check for new versions',
+      icon: 'arrow.triangle.2.circlepath',
+      iconBackgroundColor: colors.primary,
+      onPress: () => router.push(ROUTES.PROFILE.SETTINGS.UPDATES),
+    },
+    {
+      id: 'data',
+      title: 'Data & Privacy',
+      description: 'Export, delete, policies',
+      icon: 'cylinder.fill',
+      iconBackgroundColor: colors.accent,
+      onPress: () => router.push(ROUTES.PROFILE.SETTINGS.DATA),
+    },
+    // {
+    //   id: 'about',
+    //   title: 'About & Support',
+    //   description: 'Help, contact, version',
+    //   icon: 'info.circle',
+    //   iconBackgroundColor: colors.primary,
+    //   onPress: () => router.push(ROUTES.PROFILE.SETTINGS.ABOUT),
+    // },
+  ];
 
   const editButton = (
     <ThemedIconButton
@@ -96,16 +105,13 @@ export default function Profile() {
       style={[styles.container, { backgroundColor: colors.background }]}
       edges={['right', 'left']}
     >
-      <AppHeader
-        title=""
-        onBack={() => {}}
-        showBackButton={false}
-        rightElement={editButton}
-      >
+      <AppHeader title="" onBack={() => {}} showBackButton={false}>
         <ProfileHeaderInfo
           avatarUrl={profile?.avatar_url}
           username={profile?.username || 'Unknown'}
-          displayName={getDisplayName() || undefined}
+          email={profile?.email}
+          joinedDate={getJoinedDate()}
+          rightElement={editButton}
         />
       </AppHeader>
       <ScrollView
@@ -118,33 +124,7 @@ export default function Profile() {
             Platform.OS === 'ios' && styles.iosContainer,
           ]}
         >
-          <ThemedView style={[styles.section, styles.infoSection]}>
-            <View style={styles.infoItem}>
-              <IconSymbol name="envelope" size={20} color={colors.icon} />
-              <ThemedText style={styles.infoText}>
-                {profile?.email || 'No email provided'}
-              </ThemedText>
-            </View>
-
-            <View style={styles.infoItem}>
-              <IconSymbol name="calendar" size={20} color={colors.icon} />
-              <ThemedText style={styles.infoText}>
-                Joined{' '}
-                {profile?.created_at
-                  ? new Date(profile.created_at).toLocaleDateString()
-                  : 'Unknown'}
-              </ThemedText>
-            </View>
-          </ThemedView>
-
-          <ThemedButton
-            title={exportMutation.isPending ? 'Exporting...' : 'Export Data'}
-            variant="outline"
-            onPress={handleExportData}
-            loading={exportMutation.isPending}
-            testID="export-data-button"
-            style={styles.exportButton}
-          />
+          <SettingsSectionList sections={settingsSections} />
 
           <ThemedButton
             title="Sign Out"
@@ -167,32 +147,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   innerContainer: {
-    padding: 20,
+    padding: Spacing.md,
   },
   iosContainer: {
     marginBottom: 80,
   },
-  section: {
-    borderRadius: 16,
-    paddingVertical: 20,
-    marginBottom: 24,
-  },
-  infoSection: {
-    gap: 16,
-  },
-  infoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  infoText: {
-    fontSize: 16,
-    lineHeight: 18,
-  },
-  exportButton: {
-    marginBottom: 12,
-  },
   signOutButton: {
-    marginBottom: 12,
+    marginTop: Spacing.md,
   },
 });

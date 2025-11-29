@@ -129,6 +129,20 @@ class AuthService {
   }
 
   /**
+   * Helper to delete from a table with error checking.
+   * Throws if deletion fails to prevent leaving data in inconsistent state.
+   */
+  private async deleteFromTable(
+    table: (typeof DB_TABLES)[keyof typeof DB_TABLES],
+    userId: string
+  ): Promise<void> {
+    const { error } = await supabase.from(table).delete().eq('user_id', userId);
+    if (error) {
+      throw new Error(`Failed to delete from ${table}: ${error.message}`);
+    }
+  }
+
+  /**
    * Delete all user data while preserving the account.
    * Deletes: deadlines, progress, status, notes, tags, contacts, review tracking, etc.
    * Preserves: profile, auth account, user_preferences
@@ -138,70 +152,43 @@ class AuthService {
     // Child tables first, then parent tables
 
     // 1. Delete review platforms (child of review_tracking)
-    await supabase
-      .from(DB_TABLES.REVIEW_PLATFORMS)
-      .delete()
-      .eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.REVIEW_PLATFORMS, userId);
 
     // 2. Delete review tracking
-    await supabase
-      .from(DB_TABLES.REVIEW_TRACKING)
-      .delete()
-      .eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.REVIEW_TRACKING, userId);
 
     // 3. Delete note hashtags (child of deadline_notes and hashtags)
-    await supabase
-      .from(DB_TABLES.NOTE_HASHTAGS)
-      .delete()
-      .eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.NOTE_HASHTAGS, userId);
 
     // 4. Delete hashtags
-    await supabase.from(DB_TABLES.HASHTAGS).delete().eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.HASHTAGS, userId);
 
     // 5. Delete deadline notes
-    await supabase
-      .from(DB_TABLES.DEADLINE_NOTES)
-      .delete()
-      .eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.DEADLINE_NOTES, userId);
 
     // 6. Delete deadline contacts
-    await supabase
-      .from(DB_TABLES.DEADLINE_CONTACTS)
-      .delete()
-      .eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.DEADLINE_CONTACTS, userId);
 
     // 7. Delete deadline tags (junction table)
-    await supabase.from(DB_TABLES.DEADLINE_TAGS).delete().eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.DEADLINE_TAGS, userId);
 
     // 8. Delete tags
-    await supabase.from(DB_TABLES.TAGS).delete().eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.TAGS, userId);
 
     // 9. Delete deadline progress
-    await supabase
-      .from(DB_TABLES.DEADLINE_PROGRESS)
-      .delete()
-      .eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.DEADLINE_PROGRESS, userId);
 
     // 10. Delete deadline status
-    await supabase
-      .from(DB_TABLES.DEADLINE_STATUS)
-      .delete()
-      .eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.DEADLINE_STATUS, userId);
 
     // 11. Delete disclosure templates
-    await supabase
-      .from(DB_TABLES.DISCLOSURE_TEMPLATES)
-      .delete()
-      .eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.DISCLOSURE_TEMPLATES, userId);
 
     // 12. Delete deadlines (parent table)
-    await supabase.from(DB_TABLES.DEADLINES).delete().eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.DEADLINES, userId);
 
     // 13. Delete user activities
-    await supabase
-      .from(DB_TABLES.USER_ACTIVITIES)
-      .delete()
-      .eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.USER_ACTIVITIES, userId);
 
     // 14. Delete avatar files from storage
     try {
@@ -219,7 +206,7 @@ class AuthService {
     }
 
     // 15. Clear profile data (keep email for account identification)
-    await supabase
+    const { error: profileError } = await supabase
       .from(DB_TABLES.PROFILES)
       .update({
         avatar_url: null,
@@ -231,8 +218,14 @@ class AuthService {
       })
       .eq('id', userId);
 
+    if (profileError) {
+      throw new Error(
+        `Failed to clear profile data: ${profileError.message}`
+      );
+    }
+
     // 16. Delete user settings
-    await supabase.from(DB_TABLES.USER_SETTINGS).delete().eq('user_id', userId);
+    await this.deleteFromTable(DB_TABLES.USER_SETTINGS, userId);
 
     // Note: We keep the profile row (with email) and books (shared resource)
 
