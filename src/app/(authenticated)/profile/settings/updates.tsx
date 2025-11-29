@@ -92,16 +92,16 @@ export default function AppUpdatesScreen() {
   }, []);
 
   const handleApplyUpdate = useCallback(async () => {
-    Alert.alert('Apply Update', 'The app will restart to apply the update.', [
+    Alert.alert('Apply Update', 'The app will reload to apply the update.', [
       { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Restart Now',
+        text: 'Reload Now',
         onPress: async () => {
           try {
             await Updates.reloadAsync();
           } catch (error) {
             const message =
-              error instanceof Error ? error.message : 'Restart failed';
+              error instanceof Error ? error.message : 'Reload failed';
             setUpdateStatus({ type: 'error', message });
           }
         },
@@ -214,15 +214,15 @@ export default function AppUpdatesScreen() {
                 Update ready!
               </ThemedText>
               <ThemedText typography="bodySmall" color="textSecondary">
-                Restart the app to apply changes
+                Reload the app to apply changes
               </ThemedText>
             </View>
             <ThemedButton
-              title="Restart"
+              title="Reload"
               variant="primary"
               size="sm"
               onPress={handleApplyUpdate}
-              testID="settings-restart-button"
+              testID="settings-reload-button"
             />
           </View>
         );
