@@ -6,7 +6,6 @@ import {
   calculateCurrentProgress,
   calculateTotalQuantity,
   getPaceEstimate,
-  getReadingEstimate,
 } from '@/utils/deadlineCalculations';
 import {
   calculateDaysLeft,
@@ -461,7 +460,6 @@ export interface DeadlineCalculationResult {
   urgencyLevel: 'overdue' | 'urgent' | 'good' | 'approaching' | 'impossible';
   urgencyColor: string;
   statusMessage: string;
-  readingEstimate: string;
   paceEstimate: string;
   unit: string;
   userPace: number;
@@ -488,7 +486,6 @@ export function createDeadlineCalculationResult(
   }
 ): DeadlineCalculationResult {
   const unit = getUnitForFormat(deadline.format);
-  const readingEstimate = getReadingEstimate(deadline.format, remaining);
   const paceEstimate = getPaceEstimate(
     deadline.format,
     new Date(deadline.deadline_date),
@@ -505,7 +502,6 @@ export function createDeadlineCalculationResult(
     urgencyLevel,
     urgencyColor,
     statusMessage,
-    readingEstimate,
     paceEstimate,
     unit,
     userPace: paceData.userPace,

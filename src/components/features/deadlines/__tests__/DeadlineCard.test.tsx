@@ -5,10 +5,7 @@ import { DeadlineCard } from '../DeadlineCard';
 
 import { useDeadlineCardViewModel } from '@/hooks/useDeadlineCardViewModel';
 import { useTheme } from '@/hooks/useThemeColor';
-import {
-  getBookCoverIcon,
-  getGradientBackground,
-} from '@/utils/deadlineDisplayUtils';
+import { getGradientBackground } from '@/utils/deadlineDisplayUtils';
 
 jest.mock('@/hooks/useDeadlineCardViewModel', () => ({
   useDeadlineCardViewModel: jest.fn(),
@@ -30,7 +27,6 @@ jest.mock('@/hooks/useThemeColor', () => ({
 }));
 
 jest.mock('@/utils/deadlineDisplayUtils', () => ({
-  getBookCoverIcon: jest.fn(),
   getGradientBackground: jest.fn(),
 }));
 
@@ -153,7 +149,6 @@ describe('DeadlineCard', () => {
       createMockViewModel()
     );
 
-    (getBookCoverIcon as jest.Mock).mockReturnValue('📕');
     (getGradientBackground as jest.Mock).mockReturnValue([
       '#FF6B6B',
       '#4DABF7',

@@ -10,10 +10,7 @@ import {
   parseServerDateOnly,
   parseServerDateTime,
 } from '@/utils/dateNormalization';
-import {
-  getBookCoverIcon,
-  getGradientBackground,
-} from '@/utils/deadlineDisplayUtils';
+import { getGradientBackground } from '@/utils/deadlineDisplayUtils';
 import { formatProgressDisplay } from '@/utils/deadlineUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -101,11 +98,7 @@ export const DeadlineInFlightItem: React.FC<DeadlineInFlightItemProps> = ({
           style={styles.cover}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-        >
-          <ThemedText typography="titleSubLarge">
-            {getBookCoverIcon(deadline, 0)}
-          </ThemedText>
-        </LinearGradient>
+        />
       )}
 
       {/* Content */}

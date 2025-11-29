@@ -1,4 +1,5 @@
 import LinearProgressBar from '@/components/shared/LinearProgressBar';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing, Typography } from '@/constants/Colors';
 import { PROGRESS_TYPE } from '@/constants/status';
 import { useTheme } from '@/hooks/useThemeColor';
@@ -25,7 +26,7 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
 }) => {
   const progressPercentage = total > 0 ? Math.floor((current / total) * 100) : 0;
   const isListening = type === PROGRESS_TYPE.LISTENING;
-  const icon = isListening ? '🎧' : '📖';
+  const iconName = isListening ? 'headphones' : 'book.fill';
   const label = isListening ? 'Listening' : 'Reading';
   const { colors } = useTheme();
 
@@ -43,7 +44,7 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
     <ThemedView style={styles.statCard}>
       <View style={styles.statHeader}>
         <View style={styles.statLabel}>
-          <ThemedText style={styles.statIcon}>{icon}</ThemedText>
+          <IconSymbol name={iconName} size={18} color="#2B3D4F" />
           <ThemedText style={styles.labelText}>{label}</ThemedText>
         </View>
         <ThemedText style={styles.statValue}>{displayValue}</ThemedText>
@@ -88,10 +89,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-  },
-  statIcon: {
-    fontSize: 18,
-    lineHeight: 24,
   },
   labelText: {
     color: '#2B3D4F',

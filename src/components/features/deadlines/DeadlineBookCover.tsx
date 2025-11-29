@@ -1,8 +1,4 @@
-import { ThemedText } from '@/components/themed';
-import {
-  getBookCoverIcon,
-  getGradientBackground,
-} from '@/utils/deadlineDisplayUtils';
+import { getGradientBackground } from '@/utils/deadlineDisplayUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
@@ -35,14 +31,10 @@ export function DeadlineBookCover({
   return (
     <LinearGradient
       colors={getGradientBackground(deadline, daysLeft)}
-      style={[styles.bookCover, styles.bookCoverPlaceholder]}
+      style={styles.bookCover}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-    >
-      <ThemedText typography="titleSubLarge" style={styles.bookCoverIcon}>
-        {getBookCoverIcon(deadline, daysLeft)}
-      </ThemedText>
-    </LinearGradient>
+    />
   );
 }
 
@@ -52,12 +44,5 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 5,
     flexShrink: 0,
-  },
-  bookCoverPlaceholder: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bookCoverIcon: {
-    // Typography token provides fontSize and lineHeight
   },
 });

@@ -3,10 +3,7 @@ import { Spacing } from '@/constants/Colors';
 import { useFetchBookById } from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import {
-  getBookCoverIcon,
-  getGradientBackground,
-} from '@/utils/deadlineDisplayUtils';
+import { getGradientBackground } from '@/utils/deadlineDisplayUtils';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -59,11 +56,7 @@ const BookCover: React.FC<{
         style={styles.bookCover}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-      >
-        <ThemedText typography="headlineSmall">
-          {getBookCoverIcon(deadline, 0)}
-        </ThemedText>
-      </LinearGradient>
+      />
     </Pressable>
   );
 };

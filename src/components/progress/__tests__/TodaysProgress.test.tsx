@@ -89,15 +89,10 @@ describe('TodaysProgress', () => {
       type: 'reading' as const,
     };
 
-    it('should render reading icon and label', () => {
+    it('should render reading label', () => {
       render(<TodaysProgress {...defaultProps} />);
 
-      const texts = screen.getAllByTestId('themed-text');
-      const iconText = texts.find(text => text.children.includes('📖'));
-      const labelText = texts.find(text => text.children.includes('Reading'));
-
-      expect(iconText).toBeTruthy();
-      expect(labelText).toBeTruthy();
+      expect(screen.getByText('Reading')).toBeTruthy();
     });
 
     it('should call utility functions with correct reading parameters', () => {
@@ -159,15 +154,10 @@ describe('TodaysProgress', () => {
       type: 'listening' as const,
     };
 
-    it('should render listening icon and label', () => {
+    it('should render listening label', () => {
       render(<TodaysProgress {...listeningProps} />);
 
-      const texts = screen.getAllByTestId('themed-text');
-      const iconText = texts.find(text => text.children.includes('🎧'));
-      const labelText = texts.find(text => text.children.includes('Listening'));
-
-      expect(iconText).toBeTruthy();
-      expect(labelText).toBeTruthy();
+      expect(screen.getByText('Listening')).toBeTruthy();
     });
 
     it('should call utility functions with correct listening parameters', () => {
@@ -197,12 +187,7 @@ describe('TodaysProgress', () => {
       const props = { total: 200, current: 100 };
       render(<TodaysProgress {...props} />);
 
-      const texts = screen.getAllByTestId('themed-text');
-      const iconText = texts.find(text => text.children.includes('📖'));
-      const labelText = texts.find(text => text.children.includes('Reading'));
-
-      expect(iconText).toBeTruthy();
-      expect(labelText).toBeTruthy();
+      expect(screen.getByText('Reading')).toBeTruthy();
       expect(mockGetDisplayValue).toHaveBeenCalledWith(100, 200, false);
     });
   });

@@ -96,7 +96,6 @@ const createMockAgendaItem = (
     urgencyLevel: 'good' as const,
     urgencyColor: '#F59E0B',
     statusMessage: 'On track',
-    readingEstimate: '5 hours remaining',
     paceEstimate: '1 hour per day',
     unit: 'pages',
     userPace: 20,

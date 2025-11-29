@@ -1,8 +1,9 @@
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { IconSymbol } from './IconSymbol';
 
 interface CustomToastProps {
   text1?: string;
@@ -19,7 +20,7 @@ const CustomToast = ({
 }: CustomToastProps & {
   gradientColors: readonly [string, string];
   iconGradientColors: readonly [string, string];
-  icon: string;
+  icon: ReactNode;
 }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -39,7 +40,7 @@ const CustomToast = ({
             end={[1, 1]}
             style={styles.iconContainer}
           >
-            <Text style={styles.icon}>{icon}</Text>
+            {icon}
           </LinearGradient>
 
           <View style={styles.messageContainer}>
@@ -71,7 +72,7 @@ const CustomToastWithAction = ({
 }: CustomToastProps & {
   gradientColors: readonly [string, string];
   iconGradientColors: readonly [string, string];
-  icon: string;
+  icon: ReactNode;
   actionText?: string;
   onActionPress?: () => void;
 }) => {
@@ -93,7 +94,7 @@ const CustomToastWithAction = ({
             end={[1, 1]}
             style={styles.iconContainer}
           >
-            <Text style={styles.icon}>{icon}</Text>
+            {icon}
           </LinearGradient>
 
           <View style={styles.messageContainer}>
@@ -142,7 +143,7 @@ const SuccessToast = (props: CustomToastProps) => {
       {...props}
       gradientColors={[colors.success, '#FAF8F5'] as const}
       iconGradientColors={[colors.success, colors.peach] as const}
-      icon="✓"
+      icon={<IconSymbol name="checkmark" size={20} color="#FFFFFF" />}
     />
   );
 };
@@ -156,7 +157,7 @@ const ErrorToast = (props: CustomToastProps) => {
       {...props}
       gradientColors={[colors.error, '#FAF8F5'] as const}
       iconGradientColors={[colors.error, colors.darkPink] as const}
-      icon="!"
+      icon={<Text style={styles.icon}>!</Text>}
     />
   );
 };
@@ -170,7 +171,7 @@ const InfoToast = (props: CustomToastProps) => {
       {...props}
       gradientColors={[colors.info, '#FAF8F5'] as const}
       iconGradientColors={[colors.info, colors.warning] as const}
-      icon="i"
+      icon={<Text style={styles.icon}>i</Text>}
     />
   );
 };
@@ -184,7 +185,7 @@ const WarningToast = (props: CustomToastProps) => {
       {...props}
       gradientColors={[colors.orange, '#FAF8F5'] as const}
       iconGradientColors={[colors.orange, colors.warning] as const}
-      icon="⚠"
+      icon={<IconSymbol name="exclamationmark.triangle" size={20} color="#FFFFFF" />}
     />
   );
 };
@@ -200,7 +201,7 @@ const SuccessWithActionToast = (
       {...props}
       gradientColors={[colors.success, '#FAF8F5'] as const}
       iconGradientColors={[colors.success, colors.peach] as const}
-      icon="✓"
+      icon={<IconSymbol name="checkmark" size={20} color="#FFFFFF" />}
     />
   );
 };
@@ -216,7 +217,7 @@ const InfoWithActionToast = (
       {...props}
       gradientColors={[colors.info, '#FAF8F5'] as const}
       iconGradientColors={[colors.info, colors.warning] as const}
-      icon="↻"
+      icon={<IconSymbol name="arrow.clockwise" size={20} color="#FFFFFF" />}
     />
   );
 };
