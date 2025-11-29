@@ -1,8 +1,9 @@
 import { analytics } from '@/lib/analytics/client';
 import { posthog } from '@/lib/posthog';
 import { AppleProfileData, authService, profileService } from '@/services';
+import { userSettingsService } from '@/services/userSettings.service';
 import { Database } from '@/types/database.types';
-import { AuthError, AuthResponse, Session } from '@supabase/supabase-js';
+import { AuthResponse, Session } from '@supabase/supabase-js';
 import { router, useSegments } from 'expo-router';
 import {
   PropsWithChildren,
@@ -16,7 +17,6 @@ import {
   createAsyncAuthOperations,
   createProfileOperations,
   createSessionManager,
-  createAuthHandlers,
 } from '@/utils/authProviderUtils';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -43,15 +43,6 @@ type AuthData = {
     email?: string | null;
     fullName?: any;
   }) => Promise<{ data: Profile | null; error: Error | null }>;
-  requestResetPasswordEmail: (
-    email: string,
-    redirectTo: string
-  ) => Promise<{ error: AuthError | null }>;
-  updatePassword: (password: string) => Promise<{ error: AuthError | null }>;
-  setSessionFromUrl: (
-    accessToken: string,
-    refreshToken: string
-  ) => Promise<{ error: AuthError | null }>;
 };
 
 const AuthContext = createContext<AuthData>({
@@ -65,9 +56,6 @@ const AuthContext = createContext<AuthData>({
   uploadAvatar: async () => ({ data: null, error: null }),
   refreshProfile: async () => {},
   updateProfileFromApple: async () => ({ data: null, error: null }),
-  requestResetPasswordEmail: async () => ({ error: null }),
-  updatePassword: async () => ({ error: null }),
-  setSessionFromUrl: async () => ({ error: null }),
 });
 
 export default function AuthProvider({ children }: PropsWithChildren) {
@@ -84,19 +72,25 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     setProfile
   );
   const sessionManager = createSessionManager();
-  const { createAuthErrorResponse } = createAuthHandlers(
-    session,
-    profile,
-    setProfile
-  );
 
   useEffect(() => {
     const fetchSession = async () => {
+      // Initialize analytics opt-out state from local storage
+      await analytics.initialize();
+
       const { session } = await authService.getSession();
       setSession(session);
       if (session) {
         const profileData = await profileService.getProfile(session.user.id);
         setProfile(profileData);
+
+        // Load user settings and sync analytics opt-out preference
+        try {
+          const settings = await userSettingsService.getSettings(session.user.id);
+          await analytics.setOptOut(!settings.analytics_enabled);
+        } catch (err) {
+          console.error('Error loading user settings:', err);
+        }
 
         posthog.identify(session.user.id, {
           email: session.user.email || '',
@@ -198,52 +192,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     });
   };
 
-  const requestResetPasswordEmail = async (
-    email: string,
-    redirectTo: string
-  ) => {
-    try {
-      await authService.requestPasswordReset({ email, redirectTo });
-      return createAuthErrorResponse(null);
-    } catch (error) {
-      return createAuthErrorResponse(error as AuthError);
-    }
-  };
-
-  const setSessionFromUrl = async (
-    accessToken: string,
-    refreshToken: string
-  ) => {
-    try {
-      const { session } = await authService.setSession({
-        accessToken,
-        refreshToken,
-      });
-      if (session) {
-        setSession(session);
-        const profileData = await profileService.getProfile(session.user.id);
-        setProfile(profileData);
-
-        posthog.identify(session.user.id, {
-          email: session.user.email || '',
-          username: profileData?.username || '',
-        });
-      }
-      return { error: null };
-    } catch (error) {
-      return { error: error as AuthError };
-    }
-  };
-
-  const updatePassword = async (password: string) => {
-    try {
-      await authService.updatePassword(password);
-      return createAuthErrorResponse(null);
-    } catch (error) {
-      return createAuthErrorResponse(error as AuthError);
-    }
-  };
-
   const providerValue = {
     session,
     isLoading,
@@ -255,9 +203,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     uploadAvatar,
     refreshProfile,
     updateProfileFromApple,
-    requestResetPasswordEmail,
-    updatePassword,
-    setSessionFromUrl,
   };
   return (
     <AuthContext.Provider value={providerValue}>

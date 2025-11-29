@@ -13,18 +13,22 @@ import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useRouter } from 'expo-router';
+import * as Linking from 'expo-linking';
 import React, { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 
 import { z } from 'zod';
 import { ROUTES } from '@/constants/routes';
+
+const FORGOT_PASSWORD_URL = 'https://www.shelfcontrolapp.com/auth/forgot-password';
 
 const signInSchema = z.object({
   email: z.string({ message: 'Email is required' }).email('Invalid email'),
@@ -206,17 +210,15 @@ export default function SignInScreen() {
             </ThemedText>
           </TouchableOpacity>
 
-          {/* Add Forgot Password Link - iOS only */}
-          {Platform.OS === 'ios' && (
-            <Link
-              href={ROUTES.AUTH.RESET_PASSWORD_REQUEST}
-              style={styles.forgotPasswordLink}
-            >
-              <ThemedText color="primary" style={styles.forgotPasswordText}>
-                Forgot Password?
-              </ThemedText>
-            </Link>
-          )}
+          {/* Forgot Password Link - opens external website */}
+          <Pressable
+            onPress={() => Linking.openURL(FORGOT_PASSWORD_URL)}
+            style={styles.forgotPasswordLink}
+          >
+            <ThemedText color="primary" style={styles.forgotPasswordText}>
+              Forgot Password?
+            </ThemedText>
+          </Pressable>
         </ThemedView>
 
         <ThemedView style={styles.divider} />

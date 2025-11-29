@@ -11,9 +11,6 @@ jest.mock('@/lib/supabase', () => ({
       signUp: jest.fn(),
       signOut: jest.fn(),
       signInWithIdToken: jest.fn(),
-      resetPasswordForEmail: jest.fn(),
-      updateUser: jest.fn(),
-      setSession: jest.fn(),
       onAuthStateChange: jest.fn(),
       startAutoRefresh: jest.fn(),
       stopAutoRefresh: jest.fn(),
@@ -271,114 +268,6 @@ describe('AuthService', () => {
     });
   });
 
-  describe('requestPasswordReset', () => {
-    it('should request password reset successfully', async () => {
-      (supabase.auth.resetPasswordForEmail as jest.Mock).mockResolvedValue({
-        error: null,
-      });
-
-      const result = await authService.requestPasswordReset({
-        email: 'test@example.com',
-        redirectTo: 'https://app.example.com/reset-password',
-      });
-
-      expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalledWith(
-        'test@example.com',
-        {
-          redirectTo: 'https://app.example.com/reset-password',
-        }
-      );
-
-      expect(result).toEqual({ error: null });
-    });
-
-    it('should throw error when password reset fails', async () => {
-      const mockError = new Error('Email not found');
-      (supabase.auth.resetPasswordForEmail as jest.Mock).mockResolvedValue({
-        error: mockError,
-      });
-
-      await expect(
-        authService.requestPasswordReset({
-          email: 'nonexistent@example.com',
-          redirectTo: 'https://app.example.com/reset-password',
-        })
-      ).rejects.toThrow('Email not found');
-    });
-  });
-
-  describe('updatePassword', () => {
-    it('should update password successfully', async () => {
-      (supabase.auth.updateUser as jest.Mock).mockResolvedValue({
-        error: null,
-      });
-
-      const result = await authService.updatePassword('newpassword123');
-
-      expect(supabase.auth.updateUser).toHaveBeenCalledWith({
-        password: 'newpassword123',
-      });
-
-      expect(result).toEqual({ error: null });
-    });
-
-    it('should throw error when password update fails', async () => {
-      const mockError = new Error('Password update failed');
-      (supabase.auth.updateUser as jest.Mock).mockResolvedValue({
-        error: mockError,
-      });
-
-      await expect(
-        authService.updatePassword('newpassword123')
-      ).rejects.toThrow('Password update failed');
-    });
-  });
-
-  describe('setSession', () => {
-    it('should set session successfully', async () => {
-      const mockUser = { id: 'user123', email: 'test@example.com' };
-      const mockSession = {
-        access_token: 'new-token',
-        refresh_token: 'new-refresh',
-      };
-
-      (supabase.auth.setSession as jest.Mock).mockResolvedValue({
-        data: { user: mockUser, session: mockSession },
-        error: null,
-      });
-
-      const result = await authService.setSession({
-        accessToken: 'new-token',
-        refreshToken: 'new-refresh',
-      });
-
-      expect(supabase.auth.setSession).toHaveBeenCalledWith({
-        access_token: 'new-token',
-        refresh_token: 'new-refresh',
-      });
-
-      expect(result).toEqual({
-        session: mockSession,
-        user: mockUser,
-      });
-    });
-
-    it('should throw error when setting session fails', async () => {
-      const mockError = new Error('Invalid session tokens');
-      (supabase.auth.setSession as jest.Mock).mockResolvedValue({
-        data: { user: null, session: null },
-        error: mockError,
-      });
-
-      await expect(
-        authService.setSession({
-          accessToken: 'invalid-token',
-          refreshToken: 'invalid-refresh',
-        })
-      ).rejects.toThrow('Invalid session tokens');
-    });
-  });
-
   describe('onAuthStateChange', () => {
     it('should set up auth state change listener', () => {
       const mockCallback = jest.fn();
@@ -459,29 +348,5 @@ describe('AuthService', () => {
       expect(signInResult.error).toBeNull();
     });
 
-    it('should handle password reset flow', async () => {
-      // Request password reset
-      (supabase.auth.resetPasswordForEmail as jest.Mock).mockResolvedValue({
-        error: null,
-      });
-
-      await authService.requestPasswordReset({
-        email: 'test@example.com',
-        redirectTo: 'https://app.example.com/reset',
-      });
-
-      expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalled();
-
-      // Update password after reset
-      (supabase.auth.updateUser as jest.Mock).mockResolvedValue({
-        error: null,
-      });
-
-      await authService.updatePassword('newpassword123');
-
-      expect(supabase.auth.updateUser).toHaveBeenCalledWith({
-        password: 'newpassword123',
-      });
-    });
   });
 });

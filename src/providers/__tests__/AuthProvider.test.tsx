@@ -21,9 +21,6 @@ jest.mock('@/services', () => ({
     signIn: jest.fn(),
     signOut: jest.fn(),
     signUp: jest.fn(),
-    requestPasswordReset: jest.fn(),
-    setSession: jest.fn(),
-    updatePassword: jest.fn(),
   },
   profileService: {
     getProfile: jest.fn(),
@@ -751,142 +748,6 @@ describe('AuthProvider', () => {
     });
   });
 
-  describe('Password Management Functions', () => {
-    describe('requestResetPasswordEmail', () => {
-      it('should call authService.requestPasswordReset', async () => {
-        const { result } = renderHook(() => useAuth(), {
-          wrapper: AuthProvider,
-        });
-
-        await act(async () => {
-          const response = await result.current.requestResetPasswordEmail(
-            'test@example.com',
-            'https://app.example.com/reset'
-          );
-          expect(response).toEqual({ error: null });
-        });
-
-        expect(mockAuthService.requestPasswordReset).toHaveBeenCalledWith({
-          email: 'test@example.com',
-          redirectTo: 'https://app.example.com/reset',
-        });
-      });
-
-      it('should handle password reset errors', async () => {
-        const mockError = new Error('Reset failed') as AuthError;
-        mockAuthService.requestPasswordReset.mockRejectedValue(mockError);
-
-        const { result } = renderHook(() => useAuth(), {
-          wrapper: AuthProvider,
-        });
-
-        await act(async () => {
-          const response = await result.current.requestResetPasswordEmail(
-            'test@example.com',
-            'https://app.example.com/reset'
-          );
-          expect(response).toEqual({ error: mockError });
-        });
-      });
-    });
-
-    describe('updatePassword', () => {
-      it('should call authService.updatePassword', async () => {
-        const { result } = renderHook(() => useAuth(), {
-          wrapper: AuthProvider,
-        });
-
-        await act(async () => {
-          const response = await result.current.updatePassword('newpassword');
-          expect(response).toEqual({ error: null });
-        });
-
-        expect(mockAuthService.updatePassword).toHaveBeenCalledWith(
-          'newpassword'
-        );
-      });
-
-      it('should handle password update errors', async () => {
-        const mockError = new Error('Update failed') as AuthError;
-        mockAuthService.updatePassword.mockRejectedValue(mockError);
-
-        const { result } = renderHook(() => useAuth(), {
-          wrapper: AuthProvider,
-        });
-
-        await act(async () => {
-          const response = await result.current.updatePassword('newpassword');
-          expect(response).toEqual({ error: mockError });
-        });
-      });
-    });
-
-    describe('setSessionFromUrl', () => {
-      it('should set session from tokens and fetch profile', async () => {
-        mockAuthService.setSession.mockResolvedValue({
-          session: mockSession,
-          user: mockSession.user,
-        });
-        mockProfileService.getProfile.mockResolvedValue(mockProfile);
-
-        const { result } = renderHook(() => useAuth(), {
-          wrapper: AuthProvider,
-        });
-
-        await act(async () => {
-          const response = await result.current.setSessionFromUrl(
-            'access-token',
-            'refresh-token'
-          );
-          expect(response).toEqual({ error: null });
-        });
-
-        expect(mockAuthService.setSession).toHaveBeenCalledWith({
-          accessToken: 'access-token',
-          refreshToken: 'refresh-token',
-        });
-        expect(mockProfileService.getProfile).toHaveBeenCalledWith('user-123');
-      });
-
-      it('should handle setSession errors', async () => {
-        const mockError = new Error('Invalid tokens') as AuthError;
-        mockAuthService.setSession.mockRejectedValue(mockError);
-
-        const { result } = renderHook(() => useAuth(), {
-          wrapper: AuthProvider,
-        });
-
-        await act(async () => {
-          const response = await result.current.setSessionFromUrl(
-            'invalid',
-            'tokens'
-          );
-          expect(response).toEqual({ error: mockError });
-        });
-      });
-
-      it('should not fetch profile when session is null', async () => {
-        mockAuthService.setSession.mockResolvedValue({
-          session: null,
-          user: null,
-        });
-
-        const { result } = renderHook(() => useAuth(), {
-          wrapper: AuthProvider,
-        });
-
-        await act(async () => {
-          await result.current.setSessionFromUrl(
-            'access-token',
-            'refresh-token'
-          );
-        });
-
-        expect(mockProfileService.getProfile).not.toHaveBeenCalled();
-      });
-    });
-  });
-
   describe('Navigation Logic', () => {
     beforeEach(() => {
       // Reset router mock
@@ -1122,9 +983,6 @@ describe('AuthProvider', () => {
         'uploadAvatar',
         'refreshProfile',
         'updateProfileFromApple',
-        'requestResetPasswordEmail',
-        'updatePassword',
-        'setSessionFromUrl',
       ];
 
       expectedMethods.forEach(method => {

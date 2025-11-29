@@ -13,8 +13,6 @@ export type {
   SignInParams,
   SignUpParams,
   AppleSignInParams,
-  ResetPasswordParams,
-  SetSessionParams,
 } from './auth.service';
 export type { UpdateProfileParams, AppleProfileData } from './profile.service';
 export type {
