@@ -410,7 +410,7 @@ export default function AppUpdatesScreen() {
                       >
                         &quot;{release.buildName}&quot;
                       </ThemedText>
-                      <ThemedText typography="labelSmall" color="textMuted">
+                      <ThemedText typography="labelMedium" color="textMuted">
                         v{release.version}
                       </ThemedText>
                     </View>
@@ -521,7 +521,7 @@ export default function AppUpdatesScreen() {
           <View
             style={[
               styles.modalIntro,
-              { backgroundColor: colors.surfaceVariant },
+              { backgroundColor: colors.primary + '30'},
             ]}
           >
             <Image
@@ -558,7 +558,7 @@ export default function AppUpdatesScreen() {
                   >
                     {release.buildName}
                   </ThemedText>
-                  <ThemedText typography="labelSmall" color="textMuted">
+                  <ThemedText typography="labelMedium" color="textMuted">
                     v{release.version}
                   </ThemedText>
                 </View>
