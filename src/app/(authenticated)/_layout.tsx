@@ -40,7 +40,7 @@ export default function TabLayout() {
   }, [pathname]);
 
   if (!session) {
-    return <Redirect href="/(auth)/sign-in" />;
+    return <Redirect href="/(auth)/sign-up" />;
   }
 
   const HomeTabButton = (props: any) => (

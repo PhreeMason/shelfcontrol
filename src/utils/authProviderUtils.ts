@@ -70,7 +70,7 @@ export const createNavigationLogic = () => {
 
   const getRedirectPath = (session: Session | null, inAuthGroup: boolean) => {
     if (shouldRedirectToAuth(session, inAuthGroup)) {
-      return '/(auth)/sign-in';
+      return '/(auth)/sign-up';
     }
     if (shouldRedirectToHome(session, inAuthGroup)) {
       return '/';

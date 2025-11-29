@@ -772,12 +772,12 @@ describe('AuthProvider', () => {
       });
 
       await waitFor(() => {
-        expect(mockRouter.replace).toHaveBeenCalledWith('/(auth)/sign-in');
+        expect(mockRouter.replace).toHaveBeenCalledWith('/(auth)/sign-up');
       });
     });
 
     it('should redirect to home when session exists and in auth group', async () => {
-      mockUseSegments.mockReturnValue(['(auth)', 'sign-in']);
+      mockUseSegments.mockReturnValue(['(auth)', 'sign-up']);
       mockAuthService.getSession.mockResolvedValue({
         session: mockSession,
         error: null,
@@ -819,7 +819,7 @@ describe('AuthProvider', () => {
     });
 
     it('should not redirect when no session but in auth group', async () => {
-      mockUseSegments.mockReturnValue(['(auth)', 'sign-in']);
+      mockUseSegments.mockReturnValue(['(auth)', 'sign-up']);
       mockAuthService.getSession.mockResolvedValue({
         session: null,
         error: null,

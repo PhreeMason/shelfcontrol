@@ -220,7 +220,7 @@ describe('authProviderUtils', () => {
     describe('getRedirectPath', () => {
       it('should return auth path when should redirect to auth', () => {
         const result = navigationLogic.getRedirectPath(null, false);
-        expect(result).toBe('/(auth)/sign-in');
+        expect(result).toBe('/(auth)/sign-up');
       });
 
       it('should return home path when should redirect to home', () => {
@@ -252,7 +252,7 @@ describe('authProviderUtils', () => {
         );
         expect(result).toEqual({
           shouldRedirect: true,
-          path: '/(auth)/sign-in',
+          path: '/(auth)/sign-up',
         });
       });
 
@@ -278,7 +278,7 @@ describe('authProviderUtils', () => {
         const result = navigationLogic.determineRedirectAction(null, [], false);
         expect(result).toEqual({
           shouldRedirect: true,
-          path: '/(auth)/sign-in',
+          path: '/(auth)/sign-up',
         });
       });
     });
