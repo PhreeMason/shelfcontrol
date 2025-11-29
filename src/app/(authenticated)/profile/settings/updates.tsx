@@ -288,13 +288,6 @@ export default function AppUpdatesScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <ThemedText
-          typography="bodyMedium"
-          color="textSecondary"
-          style={styles.subtitle}
-        >
-          Keep ShelfControl up to date
-        </ThemedText>
 
         {/* Version Card with Build Name */}
         <ThemedView
@@ -530,9 +523,6 @@ export default function AppUpdatesScreen() {
             />
             <ThemedText typography="titleMedium" style={styles.modalIntroTitle}>
               Previous Chapters of ShelfControl
-            </ThemedText>
-            <ThemedText typography="bodyMedium" color="textSecondary">
-              romance trope-inspired updates
             </ThemedText>
           </View>
 

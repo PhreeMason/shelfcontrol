@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -37,7 +38,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
     >
       <View style={styles.headerContent}>
         {showBackButton ? (
-          <TouchableOpacity onPress={onBack}>
+          <TouchableOpacity style={styles.backButton} onPress={onBack}>
             <IconSymbol
               name="chevron.left"
               size={Platform.OS === 'ios' ? 24 : 40}
@@ -48,14 +49,16 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           <View style={styles.headerSpacer} />
         )}
 
+        <View style={styles.rightElement}>
+          {rightElement}
+        </View>
+
         <ThemedText
           typography="headlineSmall"
           style={[styles.headerTitle, { color: colors.textOnPrimary }]}
         >
           {title}
         </ThemedText>
-
-        {rightElement || <View style={styles.headerSpacer} />}
       </View>
       {children}
     </LinearGradient>
@@ -69,14 +72,27 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.lg,
+  },
+  backButton: {
+    position: 'absolute',
+    left: Spacing.lg,
+    zIndex: 1,
+  },
+  rightElement: {
+    position: 'absolute',
+    right: Spacing.lg,
+    zIndex: 1,
   },
   headerTitle: {
-    flex: 1,
     textAlign: 'center',
   },
   headerSpacer: {
-    width: 15,
+    position: 'absolute',
+    left: Spacing.lg,
+    zIndex: 1,
+    width: 24,
   },
 });
 

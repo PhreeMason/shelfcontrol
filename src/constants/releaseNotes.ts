@@ -7,7 +7,7 @@ export interface ReleaseNote {
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
     buildName: 'Doctor Romance',
-    version: '1.53.0',
+    version: '1.53.2',
     features: [
       'Data & Privacy settings with account deletion',
       'Improved password reset flow',

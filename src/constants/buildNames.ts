@@ -1,5 +1,5 @@
 /**
- * Romance trope build names for ShelfControl releases.
+ * trope build names for ShelfControl releases.
  * Mark as used: true when assigned to a release.
  */
 

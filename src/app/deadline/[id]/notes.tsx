@@ -516,7 +516,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
@@ -534,9 +534,10 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   headerTitle: {
-    fontSize: 20,
-    lineHeight: 28,
+    fontSize: 18,
+    lineHeight: 22,
     fontWeight: '600',
+    flexShrink: 1,
   },
   keyboardView: {
     flex: 1,
