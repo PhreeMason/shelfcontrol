@@ -68,7 +68,7 @@ export type SortOrder =
  * - 'good': Required pace <= user's historical pace (Comfortable)
  * - 'approaching': Required pace slightly above user's pace (Tight)
  * - 'urgent': Near deadline, needs attention (Tight)
- * - 'overdue': Deadline has passed (Past due)
+ * - 'overdue': (Past due)
  * - 'impossible': Still time but pace is very challenging (Tough)
  * - null: No pace data to judge against (hidden label)
  */

@@ -142,7 +142,8 @@ export default function AboutScreen() {
             </ThemedText>
             <IconSymbol name="heart.fill" size={14} color={colors.primary} />
             <ThemedText typography="bodySmall" color="textMuted">
-              {' '}by readers, for readers
+              {' '}
+              by readers, for readers
             </ThemedText>
           </View>
         </ThemedView>

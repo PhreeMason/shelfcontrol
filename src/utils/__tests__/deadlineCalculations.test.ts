@@ -187,7 +187,7 @@ describe('deadlineCalculations', () => {
       expect(getPaceEstimate('audio', deadline, 600)).toBe('2 hours/day'); // 600 minutes / 5 days = 120 minutes/day = 2 hours/day
     });
 
-    it('should warn when deadline has passed', () => {
+    it('should warn when Due date has passed', () => {
       const pastDeadline = new Date('2024-01-10T12:00:00Z'); // 5 days before mock date
       expect(getPaceEstimate('physical', pastDeadline, 100)).toBe(
         'This due date has already passed'

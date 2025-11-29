@@ -6,6 +6,16 @@ export interface ReleaseNote {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    buildName: 'Doctor Romance',
+    version: '1.53.0',
+    features: [
+      'Data & Privacy settings with account deletion',
+      'Improved password reset flow',
+      'Better navigation after deleting a book',
+      'Style improvements and bug fixes',
+    ],
+  },
+  {
     buildName: 'Childhood Sweethearts',
     version: '1.52.0',
     features: [
@@ -43,3 +53,8 @@ export const RELEASE_NOTES: ReleaseNote[] = [
 export const getCurrentRelease = (): ReleaseNote => RELEASE_NOTES[0];
 
 export const getPreviousReleases = (): ReleaseNote[] => RELEASE_NOTES.slice(1);
+
+export const getRecentPreviousReleases = (limit: number = 2): ReleaseNote[] =>
+  RELEASE_NOTES.slice(1, limit + 1);
+
+export const getAllPreviousReleases = (): ReleaseNote[] => RELEASE_NOTES.slice(1);

@@ -86,7 +86,9 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
         // Load user settings and sync analytics opt-out preference
         try {
-          const settings = await userSettingsService.getSettings(session.user.id);
+          const settings = await userSettingsService.getSettings(
+            session.user.id
+          );
           await analytics.setOptOut(!settings.analytics_enabled);
         } catch (err) {
           console.error('Error loading user settings:', err);

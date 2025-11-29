@@ -1,6 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react-native';
-import { ImpactPreviewSection, ImpactPreviewData } from '../ImpactPreviewSection';
+import {
+  ImpactPreviewSection,
+  ImpactPreviewData,
+} from '../ImpactPreviewSection';
 
 // Mock dependencies following minimal mocking strategy from TESTING.md
 jest.mock('@/components/themed', () => ({
@@ -15,7 +18,10 @@ jest.mock('@/components/ui/IconSymbol', () => ({
   IconSymbol: ({ name, size }: any) => {
     const React = require('react');
     const { View } = require('react-native');
-    return React.createElement(View, { testID: `icon-${name}`, style: { width: size, height: size } });
+    return React.createElement(View, {
+      testID: `icon-${name}`,
+      style: { width: size, height: size },
+    });
   },
 }));
 
@@ -43,7 +49,9 @@ jest.mock('@/utils/paceCalculations', () => ({
       const hours = Math.floor(minutes / 60);
       const remainingMinutes = minutes % 60;
       if (hours > 0) {
-        return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m/day` : `${hours}h/day`;
+        return remainingMinutes > 0
+          ? `${hours}h ${remainingMinutes}m/day`
+          : `${hours}h/day`;
       }
       return `${minutes}m/day`;
     }
@@ -52,7 +60,9 @@ jest.mock('@/utils/paceCalculations', () => ({
 }));
 
 describe('ImpactPreviewSection', () => {
-  const createMockImpactData = (overrides: Partial<ImpactPreviewData> = {}): ImpactPreviewData => ({
+  const createMockImpactData = (
+    overrides: Partial<ImpactPreviewData> = {}
+  ): ImpactPreviewData => ({
     format: 'physical',
     thisBookPacePerDay: 25,
     activeBookCount: 2,
@@ -72,10 +82,7 @@ describe('ImpactPreviewSection', () => {
   describe('Component Rendering', () => {
     it('should render the impact preview container', () => {
       render(
-        <ImpactPreviewSection
-          impactData={createMockImpactData()}
-          mode="new"
-        />
+        <ImpactPreviewSection impactData={createMockImpactData()} mode="new" />
       );
 
       expect(screen.getByText('If you add this book:')).toBeTruthy();
@@ -83,10 +90,7 @@ describe('ImpactPreviewSection', () => {
 
     it('should render active books section', () => {
       render(
-        <ImpactPreviewSection
-          impactData={createMockImpactData()}
-          mode="new"
-        />
+        <ImpactPreviewSection impactData={createMockImpactData()} mode="new" />
       );
 
       expect(screen.getByText('With your active books')).toBeTruthy();
@@ -250,7 +254,10 @@ describe('ImpactPreviewSection', () => {
     it('should display pages per day for physical format', () => {
       render(
         <ImpactPreviewSection
-          impactData={createMockImpactData({ format: 'physical', activeWithThisPacePerDay: 50 })}
+          impactData={createMockImpactData({
+            format: 'physical',
+            activeWithThisPacePerDay: 50,
+          })}
           mode="new"
         />
       );
@@ -261,7 +268,10 @@ describe('ImpactPreviewSection', () => {
     it('should display pages per day for eBook format', () => {
       render(
         <ImpactPreviewSection
-          impactData={createMockImpactData({ format: 'eBook', activeWithThisPacePerDay: 45 })}
+          impactData={createMockImpactData({
+            format: 'eBook',
+            activeWithThisPacePerDay: 45,
+          })}
           mode="new"
         />
       );
@@ -272,7 +282,10 @@ describe('ImpactPreviewSection', () => {
     it('should display minutes for audio format under 60 minutes', () => {
       render(
         <ImpactPreviewSection
-          impactData={createMockImpactData({ format: 'audio', activeWithThisPacePerDay: 45 })}
+          impactData={createMockImpactData({
+            format: 'audio',
+            activeWithThisPacePerDay: 45,
+          })}
           mode="new"
         />
       );
@@ -283,7 +296,10 @@ describe('ImpactPreviewSection', () => {
     it('should display hours and minutes for audio format over 60 minutes', () => {
       render(
         <ImpactPreviewSection
-          impactData={createMockImpactData({ format: 'audio', activeWithThisPacePerDay: 90 })}
+          impactData={createMockImpactData({
+            format: 'audio',
+            activeWithThisPacePerDay: 90,
+          })}
           mode="new"
         />
       );
@@ -294,7 +310,10 @@ describe('ImpactPreviewSection', () => {
     it('should display just hours for audio format with exact hour value', () => {
       render(
         <ImpactPreviewSection
-          impactData={createMockImpactData({ format: 'audio', activeWithThisPacePerDay: 120 })}
+          impactData={createMockImpactData({
+            format: 'audio',
+            activeWithThisPacePerDay: 120,
+          })}
           mode="new"
         />
       );
@@ -424,7 +443,9 @@ describe('ImpactPreviewSection', () => {
 
       const toggle = screen.getByRole('button');
       expect(toggle).toBeTruthy();
-      expect(toggle.props.accessibilityLabel).toBe('Show impact if pending books start');
+      expect(toggle.props.accessibilityLabel).toBe(
+        'Show impact if pending books start'
+      );
     });
 
     it('should update accessibility state when expanded', () => {
@@ -469,7 +490,10 @@ describe('ImpactPreviewSection', () => {
     it('should handle audio format with very large minutes', () => {
       render(
         <ImpactPreviewSection
-          impactData={createMockImpactData({ format: 'audio', activeWithThisPacePerDay: 240 })}
+          impactData={createMockImpactData({
+            format: 'audio',
+            activeWithThisPacePerDay: 240,
+          })}
           mode="new"
         />
       );

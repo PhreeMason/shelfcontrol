@@ -35,8 +35,8 @@ const getUrgencyLabel = (urgency: UrgencyLevel): string | null => {
     good: 'Comfortable',
     approaching: 'Tight',
     urgent: 'Tight',
-    overdue: 'Past due', // Deadline has passed
-    impossible: 'Tough', // Still time but pace is very challenging
+    overdue: 'Past due',
+    impossible: 'Tough',
   };
   return labelMap[urgency] ?? null;
 };
@@ -96,17 +96,16 @@ export const ImpactPreviewSection: React.FC<ImpactPreviewSectionProps> = ({
         { backgroundColor: colors.surface, borderColor: colors.border },
       ]}
     >
-      <ThemedText
-        typography="bodyMedium"
-        color="secondary"
-      >
+      <ThemedText typography="bodyMedium" color="secondary">
         If you add this book:
       </ThemedText>
 
       {/* Active Books Row */}
       <View style={[styles.row, { borderBottomColor: colors.border }]}>
         <View>
-          <ThemedText typography="titleMedium">With your active books</ThemedText>
+          <ThemedText typography="titleMedium">
+            With your active books
+          </ThemedText>
           <ThemedText typography="bodySmall" color="textMuted">
             {bookCountLabel}
           </ThemedText>

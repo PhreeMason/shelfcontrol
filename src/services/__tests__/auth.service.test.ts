@@ -347,6 +347,5 @@ describe('AuthService', () => {
       expect(signInResult.data).toEqual(signUpMockData);
       expect(signInResult.error).toBeNull();
     });
-
   });
 });

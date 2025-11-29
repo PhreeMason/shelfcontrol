@@ -4,8 +4,8 @@ import {
   STORAGE_BUCKETS,
 } from '@/constants/database';
 import { DEADLINE_STATUS, VALID_STATUS_TRANSITIONS } from '@/constants/status';
-import { posthog } from '@/lib/posthog';
 import { dayjs } from '@/lib/dayjs';
+import { posthog } from '@/lib/posthog';
 import { generateId, supabase } from '@/lib/supabase';
 import { Database } from '@/types/database.types';
 import {
@@ -635,7 +635,7 @@ class DeadlinesService {
       const deadline = deadlineResults?.[0];
 
       if (!deadline) {
-        throw new Error('Deadline not found or access denied');
+        throw new Error('Book not found or access denied');
       }
 
       const deadlineData = deadline as unknown as {

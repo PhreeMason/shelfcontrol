@@ -1,5 +1,5 @@
+import { generateId, supabase } from '@/lib/supabase';
 import { reviewTrackingService } from '../reviewTracking.service';
-import { supabase, generateId } from '@/lib/supabase';
 
 jest.mock('@/lib/supabase', () => ({
   generateId: jest.fn(),
@@ -207,7 +207,7 @@ describe('ReviewTrackingService', () => {
       expect(result).toEqual({ review_tracking_id: 'rt-1' });
     });
 
-    it('should throw error if deadline not found', async () => {
+    it('should throw error if Book not found', async () => {
       mockSupabaseFrom.mockImplementation(() => ({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
@@ -223,7 +223,7 @@ describe('ReviewTrackingService', () => {
 
       await expect(
         reviewTrackingService.createReviewTracking(userId, mockParams)
-      ).rejects.toThrow('Deadline not found or access denied');
+      ).rejects.toThrow('Book not found or access denied');
     });
 
     it('should throw error if user does not own deadline', async () => {
@@ -242,7 +242,7 @@ describe('ReviewTrackingService', () => {
 
       await expect(
         reviewTrackingService.createReviewTracking(userId, mockParams)
-      ).rejects.toThrow('Deadline not found or access denied');
+      ).rejects.toThrow('Book not found or access denied');
     });
 
     it('should throw error if no platforms provided', async () => {
@@ -1082,7 +1082,7 @@ describe('ReviewTrackingService', () => {
 
       await expect(
         reviewTrackingService.getReviewTrackingByDeadline(userId, deadlineId)
-      ).rejects.toThrow('Deadline not found or access denied');
+      ).rejects.toThrow('Book not found or access denied');
     });
 
     it('should throw error if review tracking query fails with non-PGRST116 error', async () => {

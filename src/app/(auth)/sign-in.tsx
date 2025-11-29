@@ -28,7 +28,8 @@ import {
 import { z } from 'zod';
 import { ROUTES } from '@/constants/routes';
 
-const FORGOT_PASSWORD_URL = 'https://www.shelfcontrolapp.com/auth/forgot-password';
+const FORGOT_PASSWORD_URL =
+  'https://www.shelfcontrolapp.com/auth/forgot-password';
 
 const signInSchema = z.object({
   email: z.string({ message: 'Email is required' }).email('Invalid email'),

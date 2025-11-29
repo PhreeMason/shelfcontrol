@@ -1,19 +1,19 @@
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import {
+  createCompletionCallbacks,
+  createCompletionErrorToast,
+  createCompletionSuccessToast,
   getCompletionFormSteps,
+  getCompletionStatus,
+  getCurrentStepComponent,
   getInitialStep,
   getTotalSteps,
-  createCompletionSuccessToast,
-  createCompletionErrorToast,
-  getCurrentStepComponent,
-  createCompletionCallbacks,
   handleReviewQuestionResponse,
   shouldShowCelebration,
-  shouldShowReviewQuestion,
   shouldShowReviewForm,
-  getCompletionStatus,
+  shouldShowReviewQuestion,
   validateCompletionFlow,
 } from '../completionFlowUtils';
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 
 describe('completionFlowUtils', () => {
   describe('getCompletionFormSteps', () => {
@@ -337,7 +337,7 @@ describe('completionFlowUtils', () => {
     it('should return invalid for undefined deadline', () => {
       const result = validateCompletionFlow(undefined);
       expect(result.isValid).toBe(false);
-      expect(result.error).toBe('Deadline not found');
+      expect(result.error).toBe('Book not found');
     });
   });
 });

@@ -168,7 +168,10 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
               <ThemedButton
                 title={isLoading ? '' : confirmButtonText}
                 variant="error"
-                style={[styles.button, !isConfirmEnabled && styles.buttonDisabled]}
+                style={[
+                  styles.button,
+                  !isConfirmEnabled && styles.buttonDisabled,
+                ]}
                 onPress={handleConfirm}
                 disabled={!isConfirmEnabled}
                 testID="confirmation-modal-confirm-button"

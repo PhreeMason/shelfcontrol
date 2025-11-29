@@ -1,5 +1,5 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react-native';
+import React from 'react';
 import { PaceEstimateBox } from '../PaceEstimateBox';
 
 // Mock dependencies following minimal mocking strategy from TESTING.md
@@ -68,56 +68,77 @@ describe('PaceEstimateBox', () => {
 
   describe('Overdue State', () => {
     it('should not render "to finish on time" text when estimate contains "passed"', () => {
-      render(<PaceEstimateBox paceEstimate="Deadline has passed" />);
+      render(<PaceEstimateBox paceEstimate="Due date has passed" />);
 
       expect(screen.queryByText('to finish on time')).toBeNull();
     });
 
     it('should render the overdue message', () => {
-      render(<PaceEstimateBox paceEstimate="Deadline has passed" />);
+      render(<PaceEstimateBox paceEstimate="Due date has passed" />);
 
-      expect(screen.getByText('Deadline has passed')).toBeTruthy();
+      expect(screen.getByText('Due date has passed')).toBeTruthy();
     });
   });
 
   describe('Urgency Level Styling', () => {
     it('should apply good urgency styling by default for non-overdue', () => {
-      render(<PaceEstimateBox paceEstimate="25 pages/day" urgencyLevel="good" />);
+      render(
+        <PaceEstimateBox paceEstimate="25 pages/day" urgencyLevel="good" />
+      );
 
       // The component renders, styling is applied via LinearGradient colors
       expect(screen.getByTestId('linear-gradient')).toBeTruthy();
     });
 
     it('should handle approaching urgency level', () => {
-      render(<PaceEstimateBox paceEstimate="35 pages/day" urgencyLevel="approaching" />);
+      render(
+        <PaceEstimateBox
+          paceEstimate="35 pages/day"
+          urgencyLevel="approaching"
+        />
+      );
 
       expect(screen.getByTestId('linear-gradient')).toBeTruthy();
       expect(screen.getByText('35 pages/day')).toBeTruthy();
     });
 
     it('should handle urgent urgency level', () => {
-      render(<PaceEstimateBox paceEstimate="45 pages/day" urgencyLevel="urgent" />);
+      render(
+        <PaceEstimateBox paceEstimate="45 pages/day" urgencyLevel="urgent" />
+      );
 
       expect(screen.getByTestId('linear-gradient')).toBeTruthy();
       expect(screen.getByText('45 pages/day')).toBeTruthy();
     });
 
     it('should handle overdue urgency level', () => {
-      render(<PaceEstimateBox paceEstimate="Deadline has passed" urgencyLevel="overdue" />);
+      render(
+        <PaceEstimateBox
+          paceEstimate="Due date has passed"
+          urgencyLevel="overdue"
+        />
+      );
 
       expect(screen.getByTestId('linear-gradient')).toBeTruthy();
-      expect(screen.getByText('Deadline has passed')).toBeTruthy();
+      expect(screen.getByText('Due date has passed')).toBeTruthy();
     });
 
     it('should handle impossible urgency level', () => {
-      render(<PaceEstimateBox paceEstimate="100 pages/day" urgencyLevel="impossible" />);
+      render(
+        <PaceEstimateBox
+          paceEstimate="100 pages/day"
+          urgencyLevel="impossible"
+        />
+      );
 
       expect(screen.getByTestId('linear-gradient')).toBeTruthy();
       expect(screen.getByText('100 pages/day')).toBeTruthy();
     });
 
     it('should handle null urgency level (no user pace data)', () => {
-      render(<PaceEstimateBox paceEstimate="25 pages/day" urgencyLevel={null} />);
+      render(
+        <PaceEstimateBox paceEstimate="25 pages/day" urgencyLevel={null} />
+      );
 
       expect(screen.getByTestId('linear-gradient')).toBeTruthy();
       expect(screen.getByText('25 pages/day')).toBeTruthy();
@@ -155,7 +176,9 @@ describe('PaceEstimateBox', () => {
     });
 
     it('should handle "passed" anywhere in the estimate string', () => {
-      render(<PaceEstimateBox paceEstimate="The deadline has passed already" />);
+      render(
+        <PaceEstimateBox paceEstimate="The Due date has passed already" />
+      );
 
       expect(screen.queryByText('to finish on time')).toBeNull();
     });
@@ -174,7 +197,9 @@ describe('PaceEstimateBox', () => {
 
   describe('Props Handling', () => {
     it('should update when paceEstimate prop changes', () => {
-      const { rerender } = render(<PaceEstimateBox paceEstimate="25 pages/day" />);
+      const { rerender } = render(
+        <PaceEstimateBox paceEstimate="25 pages/day" />
+      );
 
       expect(screen.getByText('25 pages/day')).toBeTruthy();
 
@@ -191,20 +216,24 @@ describe('PaceEstimateBox', () => {
 
       expect(screen.getByTestId('linear-gradient')).toBeTruthy();
 
-      rerender(<PaceEstimateBox paceEstimate="25 pages/day" urgencyLevel="urgent" />);
+      rerender(
+        <PaceEstimateBox paceEstimate="25 pages/day" urgencyLevel="urgent" />
+      );
 
       expect(screen.getByTestId('linear-gradient')).toBeTruthy();
     });
 
     it('should transition from non-overdue to overdue', () => {
-      const { rerender } = render(<PaceEstimateBox paceEstimate="25 pages/day" />);
+      const { rerender } = render(
+        <PaceEstimateBox paceEstimate="25 pages/day" />
+      );
 
       expect(screen.getByText('to finish on time')).toBeTruthy();
 
-      rerender(<PaceEstimateBox paceEstimate="Deadline has passed" />);
+      rerender(<PaceEstimateBox paceEstimate="Due date has passed" />);
 
       expect(screen.queryByText('to finish on time')).toBeNull();
-      expect(screen.getByText('Deadline has passed')).toBeTruthy();
+      expect(screen.getByText('Due date has passed')).toBeTruthy();
     });
   });
 });

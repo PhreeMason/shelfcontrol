@@ -363,8 +363,18 @@ describe('DeadlineFormContainer', () => {
         progressPercentage: 50,
         currentProgress: 100,
       })),
-      userPaceData: { averagePace: 25, readingDaysCount: 7, isReliable: true, calculationMethod: 'recent_data' },
-      userListeningPaceData: { averagePace: 60, listeningDaysCount: 5, isReliable: true, calculationMethod: 'recent_data' },
+      userPaceData: {
+        averagePace: 25,
+        readingDaysCount: 7,
+        isReliable: true,
+        calculationMethod: 'recent_data',
+      },
+      userListeningPaceData: {
+        averagePace: 60,
+        listeningDaysCount: 5,
+        isReliable: true,
+        calculationMethod: 'recent_data',
+      },
     });
     (useTheme as jest.Mock).mockReturnValue({
       colors: { background: '#ffffff' },
@@ -386,7 +396,7 @@ describe('DeadlineFormContainer', () => {
 
     it('should show error when deadline missing in edit mode', () => {
       render(<DeadlineFormContainer mode="edit" />);
-      expect(screen.getByText('Deadline not found')).toBeTruthy();
+      expect(screen.getByText('Book not found')).toBeTruthy();
       expect(screen.getByText('Go Back')).toBeTruthy();
     });
   });
@@ -605,8 +615,18 @@ describe('DeadlineFormContainer', () => {
           progressPercentage: 0,
           currentProgress: 0,
         })),
-        userPaceData: { averagePace: 0, readingDaysCount: 0, isReliable: false, calculationMethod: 'default_fallback' },
-        userListeningPaceData: { averagePace: 0, listeningDaysCount: 0, isReliable: false, calculationMethod: 'default_fallback' },
+        userPaceData: {
+          averagePace: 0,
+          readingDaysCount: 0,
+          isReliable: false,
+          calculationMethod: 'default_fallback',
+        },
+        userListeningPaceData: {
+          averagePace: 0,
+          listeningDaysCount: 0,
+          isReliable: false,
+          calculationMethod: 'default_fallback',
+        },
       });
 
       render(<DeadlineFormContainer mode="new" />);
@@ -808,7 +828,7 @@ describe('DeadlineFormContainer', () => {
       const { rerender } = render(
         <DeadlineFormContainer mode="edit" existingDeadline={undefined} />
       );
-      expect(screen.getByText('Deadline not found')).toBeTruthy();
+      expect(screen.getByText('Book not found')).toBeTruthy();
 
       rerender(<DeadlineFormContainer mode="new" />);
       expect(screen.getByTestId('app-header')).toBeTruthy();
@@ -894,7 +914,7 @@ describe('DeadlineFormContainer', () => {
         <DeadlineFormContainer mode="edit" existingDeadline={undefined} />
       );
 
-      expect(screen.getByText('Deadline not found')).toBeTruthy();
+      expect(screen.getByText('Book not found')).toBeTruthy();
       expect(screen.getByText('Go Back')).toBeTruthy();
 
       const goBackButton = screen.getByText('Go Back');

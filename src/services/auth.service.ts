@@ -27,7 +27,6 @@ export interface AppleSignInParams {
   identityToken: string;
 }
 
-
 class AuthService {
   /**
    * Get the current session
@@ -219,9 +218,7 @@ class AuthService {
       .eq('id', userId);
 
     if (profileError) {
-      throw new Error(
-        `Failed to clear profile data: ${profileError.message}`
-      );
+      throw new Error(`Failed to clear profile data: ${profileError.message}`);
     }
 
     // 16. Delete user settings

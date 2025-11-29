@@ -28,7 +28,10 @@ class Analytics {
   async setOptOut(optOut: boolean): Promise<void> {
     this.isOptedOut = optOut;
     try {
-      await AsyncStorage.setItem(ANALYTICS_OPT_OUT_KEY, optOut ? 'true' : 'false');
+      await AsyncStorage.setItem(
+        ANALYTICS_OPT_OUT_KEY,
+        optOut ? 'true' : 'false'
+      );
     } catch {
       // Silently fail storage write
     }

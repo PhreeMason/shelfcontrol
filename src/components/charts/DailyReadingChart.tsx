@@ -123,7 +123,8 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
           variant="secondary"
           testID="empty-message"
         >
-          Not enough progress data to display chart. Start reading to see your progress!
+          Not enough progress data to display chart. Start reading to see your
+          progress!
         </ThemedText>
       </ThemedView>
     );
@@ -135,7 +136,7 @@ const DailyReadingChart: React.FC<DailyReadingChartProps> = ({ deadline }) => {
   const yAxisMax =
     Math.ceil(
       (maxValue * CHART_CONFIG.Y_AXIS_BUFFER_MULTIPLIER) /
-      CHART_CONFIG.Y_AXIS_ROUNDING_FACTOR
+        CHART_CONFIG.Y_AXIS_ROUNDING_FACTOR
     ) * CHART_CONFIG.Y_AXIS_ROUNDING_FACTOR;
 
   // Use appropriate widths based on data type (intraday vs multi-day)

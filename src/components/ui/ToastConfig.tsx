@@ -185,7 +185,9 @@ const WarningToast = (props: CustomToastProps) => {
       {...props}
       gradientColors={[colors.orange, '#FAF8F5'] as const}
       iconGradientColors={[colors.orange, colors.warning] as const}
-      icon={<IconSymbol name="exclamationmark.triangle" size={20} color="#FFFFFF" />}
+      icon={
+        <IconSymbol name="exclamationmark.triangle" size={20} color="#FFFFFF" />
+      }
     />
   );
 };

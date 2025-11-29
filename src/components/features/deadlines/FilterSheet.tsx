@@ -626,7 +626,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
               onPress={onClose}
             />
             <ThemedButton
-              title={`SHOW ${getFilteredCount()} DEADLINES`}
+              title={`SHOW ${getFilteredCount()} BOOKS`}
               variant="primary"
               style={styles.applyButton}
               onPress={onClose}

@@ -24,7 +24,8 @@ const TodaysProgress: React.FC<TodaysProgressProps> = ({
   current,
   type = 'reading',
 }) => {
-  const progressPercentage = total > 0 ? Math.floor((current / total) * 100) : 0;
+  const progressPercentage =
+    total > 0 ? Math.floor((current / total) * 100) : 0;
   const isListening = type === PROGRESS_TYPE.LISTENING;
   const iconName = isListening ? 'headphones' : 'book.fill';
   const label = isListening ? 'Listening' : 'Reading';

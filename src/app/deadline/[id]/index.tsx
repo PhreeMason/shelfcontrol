@@ -11,10 +11,10 @@ import ReviewProgressSection from '@/components/features/review/ReviewProgressSe
 import ReadingProgressUpdate from '@/components/progress/ReadingProgressUpdate';
 import ReadingStats from '@/components/stats/ReadingStats';
 import {
-    ThemedButton,
-    ThemedKeyboardAwareScrollView,
-    ThemedText,
-    ThemedView,
+  ThemedButton,
+  ThemedKeyboardAwareScrollView,
+  ThemedText,
+  ThemedView,
 } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Shadows } from '@/constants/Theme';

@@ -36,7 +36,7 @@ export const BUILD_NAMES: BuildName[] = [
 
   // D
   { name: 'Destined Mates', used: false },
-  { name: 'Doctor Romance', used: false },
+  { name: 'Doctor Romance', used: true }, // v1.53.0
   { name: 'Divorce/Second Divorce', used: false },
 
   // E
@@ -168,7 +168,7 @@ export const BUILD_NAMES: BuildName[] = [
 ];
 
 export const getAvailableBuildNames = (): string[] =>
-  BUILD_NAMES.filter((b) => !b.used).map((b) => b.name);
+  BUILD_NAMES.filter(b => !b.used).map(b => b.name);
 
 export const getUsedBuildNames = (): string[] =>
-  BUILD_NAMES.filter((b) => b.used).map((b) => b.name);
+  BUILD_NAMES.filter(b => b.used).map(b => b.name);

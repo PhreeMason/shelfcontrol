@@ -379,7 +379,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
       onError?: (error: Error) => void
     ) => {
       addDeadlineMutation(params, {
-        onSuccess: (data) => {
+        onSuccess: data => {
           analytics.track('deadline_created', {
             format: params.deadlineDetails.format,
             status: params.status as AnalyticsDeadlineStatus,

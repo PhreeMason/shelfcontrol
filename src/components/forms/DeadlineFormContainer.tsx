@@ -6,6 +6,7 @@ import {
   ThemedView,
 } from '@/components/themed';
 import { Spacing } from '@/constants/Colors';
+import { ROUTES } from '@/constants/routes';
 import { useFormFlowTracking } from '@/hooks/analytics/useFormFlowTracking';
 import {
   useDeleteDeadlineCover,
@@ -14,16 +15,17 @@ import {
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { SelectedBook } from '@/types/bookSearch';
-import { ReadingDeadlineWithProgress, UrgencyLevel } from '@/types/deadline.types';
+import {
+  ReadingDeadlineWithProgress,
+  UrgencyLevel,
+} from '@/types/deadline.types';
 import { calculateLocalDaysLeft } from '@/utils/dateNormalization';
 import {
+  calculateCurrentProgressFromForm,
   calculateRemainingFromForm,
   calculateTotalQuantityFromForm,
-  calculateCurrentProgressFromForm,
   getPaceEstimate,
 } from '@/utils/deadlineCalculations';
-import { getPaceBasedStatus } from '@/utils/paceCalculations';
-import { mapPaceToUrgency } from '@/utils/deadlineProviderUtils';
 import {
   DeadlineFormData,
   deadlineFormSchema,
@@ -46,7 +48,9 @@ import {
   prepareDeadlineDetailsFromForm,
   prepareProgressDetailsFromForm,
 } from '@/utils/deadlineFormUtils';
+import { mapPaceToUrgency } from '@/utils/deadlineProviderUtils';
 import { getInitialStepFromSearchParams } from '@/utils/deadlineUtils';
+import { getPaceBasedStatus } from '@/utils/paceCalculations';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, {
@@ -78,7 +82,12 @@ const calculateUrgencyFromPace = (
   if (daysLeft <= 0) return 'overdue';
   if (userPace <= 0) return null; // No pace data = hide label
 
-  const status = getPaceBasedStatus(userPace, requiredPace, daysLeft, progressPercentage);
+  const status = getPaceBasedStatus(
+    userPace,
+    requiredPace,
+    daysLeft,
+    progressPercentage
+  );
   return mapPaceToUrgency(status, daysLeft);
 };
 
@@ -267,7 +276,9 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
 
     // Use dateNormalization utility for consistent timezone handling
     const deadlineString =
-      deadline instanceof Date ? deadline.toISOString().split('T')[0] : deadline;
+      deadline instanceof Date
+        ? deadline.toISOString().split('T')[0]
+        : deadline;
     const daysLeft = calculateLocalDaysLeft(deadlineString);
 
     const total = calculateTotalQuantityFromForm(
@@ -291,7 +302,12 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
         : userPaceData.averagePace;
     const requiredPace = daysLeft > 0 ? remaining / daysLeft : 0;
 
-    return calculateUrgencyFromPace(userPace, requiredPace, daysLeft, progressPercentage);
+    return calculateUrgencyFromPace(
+      userPace,
+      requiredPace,
+      daysLeft,
+      progressPercentage
+    );
   }, [
     watchedValues.deadline,
     watchedValues.totalQuantity,
@@ -326,7 +342,9 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
 
     // Use dateNormalization utility for consistent timezone handling
     const deadlineString =
-      deadline instanceof Date ? deadline.toISOString().split('T')[0] : deadline;
+      deadline instanceof Date
+        ? deadline.toISOString().split('T')[0]
+        : deadline;
     const daysLeft = calculateLocalDaysLeft(deadlineString);
 
     // Calculate this book's required pace
@@ -378,10 +396,20 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       activeBookCount: activeExcludingCurrent.length,
       activeTotalPacePerDay,
       activeWithThisPacePerDay,
-      activeUrgency: calculateUrgencyFromPace(userPace, activeWithThisPacePerDay, daysLeft, impactProgressPercentage),
+      activeUrgency: calculateUrgencyFromPace(
+        userPace,
+        activeWithThisPacePerDay,
+        daysLeft,
+        impactProgressPercentage
+      ),
       pendingBookCount: pendingByFormat.length,
       pendingTotalPacePerDay,
-      pendingUrgency: calculateUrgencyFromPace(userPace, pendingTotalPacePerDay, daysLeft, impactProgressPercentage),
+      pendingUrgency: calculateUrgencyFromPace(
+        userPace,
+        pendingTotalPacePerDay,
+        daysLeft,
+        impactProgressPercentage
+      ),
     };
   }, [
     watchedValues.deadline,
@@ -465,7 +493,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       deadlineDetails.cover_image_url = null;
     }
 
-    const successCallback = () => {
+    const successCallback = (newDeadlineId?: string) => {
       if (mode === 'new') {
         formFlowTracking.markCompleted();
       }
@@ -475,7 +503,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
 
       // Don't set isSubmitting to false - we're navigating away immediately
       // and keeping the button disabled prevents duplicate submissions
-      createSuccessToast(mode)();
+      createSuccessToast(mode, newDeadlineId)();
     };
 
     const errorCallback = async (error: Error) => {
@@ -656,7 +684,16 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, currentStep, reactHookFormState, isSubmitting]);
 
-  // Show error if deadline not found in edit mode
+  // Safe navigation helper - navigates back if possible, otherwise goes to home
+  const safeGoBack = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace(ROUTES.HOME);
+    }
+  }, []);
+
+  // Show error if Book not found in edit mode
   if (mode === 'edit' && !existingDeadline) {
     return (
       <SafeAreaView
@@ -664,12 +701,12 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
         style={{ flex: 1, backgroundColor: colors.background }}
       >
         <ThemedView style={styles.container}>
-          <AppHeader title="Edit Deadline" onBack={() => router.back()} />
+          <AppHeader title="Edit Deadline" onBack={safeGoBack} />
           <ThemedView style={styles.content}>
-            <ThemedText>Deadline not found</ThemedText>
+            <ThemedText>Book not found</ThemedText>
             <ThemedButton
               title="Go Back"
-              onPress={() => router.back()}
+              onPress={safeGoBack}
               style={{ marginTop: Spacing.md }}
             />
           </ThemedView>
