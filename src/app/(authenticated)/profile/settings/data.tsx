@@ -213,7 +213,7 @@ export default function DataPrivacyScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader title="Data & Privacy" onBack={() => router.back()} />
+      <AppHeader title="Data & Privacy" onBack={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)} />
 
       <ScrollView
         style={styles.scrollContainer}
@@ -352,7 +352,7 @@ export default function DataPrivacyScreen() {
             styles.dangerZone,
             {
               backgroundColor: colors.errorContainer,
-              borderColor: colors.error,
+              borderColor: colors.scaryRed,
             },
           ]}
         >
@@ -364,14 +364,14 @@ export default function DataPrivacyScreen() {
             />
             <ThemedText
               typography="titleSmall"
-              style={{ color: colors.urgent }}
+              style={{ color: colors.scaryRed }}
             >
               Danger Zone
             </ThemedText>
           </View>
           <ThemedText
-            typography="bodySmall"
-            color="textSecondary"
+            typography="bodyMedium"
+            color="secondary"
             style={styles.dangerDesc}
           >
             These actions cannot be undone
@@ -381,14 +381,15 @@ export default function DataPrivacyScreen() {
               title="Delete All Data"
               variant="outline"
               onPress={() => setShowDeleteDataModal(true)}
-              style={[styles.dangerButton, { borderColor: colors.error }]}
-              textColor="urgent"
+              style={[styles.dangerButton, { borderColor: colors.scaryRed }]}
+              textColor="scaryRed"
               testID="settings-delete-all-data-button"
             />
             <ThemedButton
               title="Delete Account"
               variant="error"
               onPress={() => setShowDeleteAccountModal(true)}
+              style={{ backgroundColor: colors.scaryRed + '90'}}
               testID="settings-delete-account-button"
             />
           </View>

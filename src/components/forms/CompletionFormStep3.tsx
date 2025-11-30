@@ -187,7 +187,11 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
             text1: 'Review tracking updated!',
           });
           setIsSubmitting(false);
-          router.back();
+          if (router.canGoBack()) {
+            router.back();
+          } else {
+            router.replace(ROUTES.HOME);
+          }
         },
         onError: error => {
           console.error('Error updating review tracking:', error);
@@ -435,7 +439,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
           <ThemedButton
             title="Cancel"
             variant="ghost"
-            onPress={() => router.back()}
+            onPress={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
             disabled={isSubmitting}
             testID="cancel-button"
             style={styles.primaryButton}

@@ -2,7 +2,6 @@ import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
-import { ROUTES } from '@/constants/routes';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
@@ -15,7 +14,6 @@ import {
   calculateProgress,
   calculateProgressPercentage,
 } from '@/utils/deadlineUtils';
-import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -67,7 +65,6 @@ export const DeleteDeadlineModal: React.FC<DeleteDeadlineModalProps> = ({
       () => {
         setIsDeleting(false);
         onClose();
-        router.replace(ROUTES.HOME);
       },
       error => {
         setIsDeleting(false);

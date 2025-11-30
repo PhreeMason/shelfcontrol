@@ -6,6 +6,7 @@ import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ROUTES } from '@/constants/routes';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -99,7 +100,16 @@ export default function EditProfile() {
           avatar_changed: avatarUploaded,
         });
         Alert.alert('Success', 'Profile updated successfully', [
-          { text: 'OK', onPress: () => router.back() },
+          {
+            text: 'OK',
+            onPress: () => {
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace(ROUTES.HOME);
+              }
+            },
+          },
         ]);
       }
     } catch (err) {
@@ -111,6 +121,14 @@ export default function EditProfile() {
   };
 
   const handleBack = () => {
+    const navigateBack = () => {
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace(ROUTES.HOME);
+      }
+    };
+
     if (isDirty || newAvatarUri) {
       Alert.alert(
         'Discard Changes',
@@ -120,12 +138,12 @@ export default function EditProfile() {
           {
             text: 'Discard',
             style: 'destructive',
-            onPress: () => router.back(),
+            onPress: navigateBack,
           },
         ]
       );
     } else {
-      router.back();
+      navigateBack();
     }
   };
 

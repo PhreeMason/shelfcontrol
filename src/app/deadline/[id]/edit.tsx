@@ -3,6 +3,7 @@ import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
+import { ROUTES } from '@/constants/routes';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
@@ -20,7 +21,11 @@ const EditDeadline = () => {
     if (deadline) {
       const { isCompleted } = getDeadlineStatus(deadline);
       if (isCompleted) {
-        router.back();
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.replace(ROUTES.HOME);
+        }
       }
     }
   }, [deadline, router]);
@@ -40,7 +45,7 @@ const EditDeadline = () => {
             </ThemedText>
             <ThemedButton
               title="Go Back"
-              onPress={() => router.back()}
+              onPress={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
               style={{ marginTop: 16 }}
             />
           </ThemedView>

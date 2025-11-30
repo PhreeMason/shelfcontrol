@@ -4,6 +4,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import Constants from 'expo-constants';
+import { ROUTES } from '@/constants/routes';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
@@ -103,7 +104,7 @@ export default function AboutScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader title="About & Support" onBack={() => router.back()} />
+      <AppHeader title="About & Support" onBack={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)} />
 
       <ScrollView
         style={styles.scrollContainer}

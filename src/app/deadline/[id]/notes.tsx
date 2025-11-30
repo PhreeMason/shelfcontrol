@@ -26,6 +26,7 @@ import {
 } from '@/utils/hashtagUtils';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
+import { ROUTES } from '@/constants/routes';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -328,7 +329,7 @@ const Notes = () => {
     >
       <AppHeader
         title="Notes"
-        onBack={() => router.back()}
+        onBack={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
         rightElement={filterButton}
       />
       <View style={styles.header}>

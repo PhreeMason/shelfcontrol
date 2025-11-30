@@ -25,6 +25,7 @@ import { useDeadlines } from '@/providers/DeadlineProvider';
 import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
 import { getDeadlineSourceOptions } from '@/utils/getDeadlineSourceOptions';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ROUTES } from '@/constants/routes';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
@@ -87,6 +88,14 @@ const DeadlineView = () => {
   }
 
   if (!deadline || fallbackError) {
+    const handleErrorBack = () => {
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace(ROUTES.HOME);
+      }
+    };
+
     return (
       <SafeAreaView
         edges={['right', 'bottom', 'left']}
@@ -96,7 +105,7 @@ const DeadlineView = () => {
           <ThemedText variant="title">Book not found</ThemedText>
           <ThemedButton
             title="Go Back"
-            onPress={() => router.back()}
+            onPress={handleErrorBack}
             style={{ marginTop: 16 }}
           />
         </ThemedView>
@@ -107,7 +116,11 @@ const DeadlineView = () => {
   const { isPending, isPaused, latestStatus } = getDeadlineStatus(deadline);
 
   const handleBack = () => {
-    router.back();
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace(ROUTES.HOME);
+    }
   };
 
   const headerProps = {

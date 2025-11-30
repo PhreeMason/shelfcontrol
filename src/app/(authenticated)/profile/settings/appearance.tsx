@@ -3,6 +3,7 @@ import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
+import { ROUTES } from '@/constants/routes';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -37,7 +38,7 @@ export default function AppearanceScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader title="Display & Appearance" onBack={() => router.back()} />
+      <AppHeader title="Display & Appearance" onBack={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)} />
 
       <ScrollView
         style={styles.scrollContainer}

@@ -1,3 +1,6 @@
+import { SelectedBook } from '@/types/bookSearch';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { DeadlineFormData } from '../deadlineFormSchema';
 import {
   createDateChangeHandler,
   createErrorToast,
@@ -15,9 +18,6 @@ import {
   prepareDeadlineDetailsFromForm,
   prepareProgressDetailsFromForm,
 } from '../deadlineFormUtils';
-import { DeadlineFormData } from '../deadlineFormSchema';
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { SelectedBook } from '@/types/bookSearch';
 
 // Mock Toast
 jest.mock('react-native-toast-message', () => ({
@@ -1223,7 +1223,7 @@ describe('deadlineFormUtils', () => {
       expect(Toast.show).toHaveBeenCalledWith({
         swipeable: true,
         type: 'success',
-        text1: 'Deadline added successfully!',
+        text1: 'Book added successfully!',
         autoHide: true,
         visibilityTime: 2000,
         position: 'top',

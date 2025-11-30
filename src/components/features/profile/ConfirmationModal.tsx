@@ -30,7 +30,7 @@ interface ConfirmationModalProps {
   isLoading?: boolean;
 }
 
-const CONFIRMATION_PHRASE = 'i understand';
+const CONFIRMATION_PHRASE = 'I understand';
 
 export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   visible,
@@ -97,13 +97,13 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             <View
               style={[
                 styles.iconContainer,
-                { backgroundColor: colors.error + '20' },
+                { backgroundColor: colors.scaryRed + '20' },
               ]}
             >
               <IconSymbol
                 name="exclamationmark.triangle"
                 size={36}
-                color={colors.error}
+                color={colors.scaryRed}
               />
             </View>
 
@@ -118,7 +118,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
               <View
                 style={[
                   styles.warningBox,
-                  { backgroundColor: colors.error + '15' },
+                  { backgroundColor: colors.scaryRed + '15' },
                 ]}
               >
                 {warningPoints.map((point, index) => (
@@ -170,6 +170,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 variant="error"
                 style={[
                   styles.button,
+                  { backgroundColor: colors.scaryRed },
                   !isConfirmEnabled && styles.buttonDisabled,
                 ]}
                 onPress={handleConfirm}

@@ -11,6 +11,7 @@ import {
 } from '@/constants/releaseNotes';
 import { useTheme } from '@/hooks/useThemeColor';
 import Constants from 'expo-constants';
+import { ROUTES } from '@/constants/routes';
 import { useRouter } from 'expo-router';
 import * as Updates from 'expo-updates';
 import React, { useCallback, useState } from 'react';
@@ -281,7 +282,7 @@ export default function AppUpdatesScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader title="App Updates" onBack={() => router.back()} />
+      <AppHeader title="App Updates" onBack={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)} />
 
       <ScrollView
         style={styles.scrollContainer}

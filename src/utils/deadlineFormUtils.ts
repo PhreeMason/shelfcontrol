@@ -1,4 +1,5 @@
 import { ROUTES } from '@/constants/routes';
+import { posthog } from '@/lib/posthog';
 import { SelectedBook } from '@/types/bookSearch';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { router } from 'expo-router';
@@ -10,7 +11,6 @@ import {
   calculateTotalQuantityFromForm,
 } from './deadlineCalculations';
 import { DeadlineFormData } from './deadlineFormSchema';
-import { posthog } from '@/lib/posthog';
 
 export type FormMode = 'new' | 'edit';
 
@@ -546,8 +546,8 @@ export const handleBookSelection = (
 export const createSuccessToast = (mode: FormMode, newDeadlineId?: string) => {
   const message =
     mode === 'new'
-      ? 'Deadline added successfully!'
-      : 'Deadline updated successfully!';
+      ? 'Book added successfully!'
+      : 'Book updated successfully!';
 
   return () => {
     // Show toast first

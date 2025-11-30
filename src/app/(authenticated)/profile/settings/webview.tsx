@@ -2,6 +2,7 @@ import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
+import { ROUTES } from '@/constants/routes';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
@@ -22,7 +23,7 @@ export default function WebViewScreen() {
       >
         <View style={styles.header}>
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
             style={styles.backButton}
             hitSlop={8}
           >
@@ -53,7 +54,7 @@ export default function WebViewScreen() {
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
           style={styles.backButton}
           hitSlop={8}
         >

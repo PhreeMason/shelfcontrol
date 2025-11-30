@@ -4,6 +4,7 @@ import { ThemedText, ThemedView } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing, Typography } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
+import { ROUTES } from '@/constants/routes';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -28,7 +29,7 @@ export default function ReadingPreferencesScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader title="Reading Preferences" onBack={() => router.back()} />
+      <AppHeader title="Reading Preferences" onBack={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)} />
 
       <ScrollView
         style={styles.scrollContainer}

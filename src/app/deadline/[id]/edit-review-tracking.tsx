@@ -3,6 +3,7 @@ import { ThemedButton, ThemedText, ThemedView } from '@/components/themed';
 import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
+import { ROUTES } from '@/constants/routes';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
@@ -30,7 +31,7 @@ const EditReviewTracking = () => {
           </ThemedText>
           <ThemedButton
             title="Go Back"
-            onPress={() => router.back()}
+            onPress={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
             style={{ marginTop: 16 }}
           />
         </ThemedView>
@@ -51,7 +52,7 @@ const EditReviewTracking = () => {
           </ThemedText>
           <ThemedButton
             title="Go Back"
-            onPress={() => router.back()}
+            onPress={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
             style={{ marginTop: 16 }}
           />
         </ThemedView>

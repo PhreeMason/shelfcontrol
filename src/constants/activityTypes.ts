@@ -50,12 +50,12 @@ export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
   deadline_created: {
     icon: 'plus',
     color: '#64748B', // Blue-gray - creation action
-    label: 'Deadline Created',
+    label: 'Due date Created',
   },
   deadline_due: {
     icon: 'calendar.badge.clock',
     color: 'dynamic', // Uses urgency color from getDeadlineCalculations
-    label: 'Deadline Due',
+    label: 'Due date Due',
   },
   review_due: {
     icon: 'square.and.pencil',
