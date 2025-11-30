@@ -6,6 +6,16 @@ export interface ReleaseNote {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    buildName: 'Enemies to Lovers',
+    version: '1.54.0',
+    features: [
+      'Mark ARCs as applied when adding books',
+      'Safer account and data deletion with extra confirmation',
+      'Fixed navigation bug on book details page',
+      'Bug fixes and performance improvements',
+    ],
+  },
+  {
     buildName: 'Doctor Romance',
     version: '1.53.2',
     features: [

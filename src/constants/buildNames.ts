@@ -71,7 +71,7 @@ export const BUILD_NAMES: BuildName[] = [
   { name: 'Employee/Boss', used: false },
   { name: 'Enchanted Object', used: false },
   { name: 'Enchanted Sleep', used: false },
-  { name: 'Enemies to Lovers', used: false },
+  { name: 'Enemies to Lovers', used: true }, // v1.54.0
   { name: 'Epistolary', used: false },
   { name: 'Evil Overlord', used: false },
   { name: 'Evil Rulers', used: false },
