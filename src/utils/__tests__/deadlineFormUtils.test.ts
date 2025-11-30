@@ -46,7 +46,7 @@ describe('deadlineFormUtils', () => {
       expect(defaults.bookAuthor).toBe('');
       expect(defaults.format).toBe('eBook');
       expect(defaults.type).toBe('');
-      expect(defaults.status).toBe('active');
+      expect(defaults.status).toBe('pending');
       expect(defaults.flexibility).toBe('flexible');
       expect(defaults.deadline).toBeInstanceOf(Date);
     });
@@ -92,7 +92,7 @@ describe('deadlineFormUtils', () => {
       const state = initializeFormState('new');
 
       expect(state.selectedFormat).toBe('eBook');
-      expect(state.selectedStatus).toBe('active');
+      expect(state.selectedStatus).toBe('pending');
       expect(state.selectedPriority).toBe('flexible');
       expect(state.showDatePicker).toBe(false);
       expect(state.paceEstimate).toBe('');
@@ -105,7 +105,7 @@ describe('deadlineFormUtils', () => {
       const state = initializeFormState('edit');
 
       expect(state.selectedFormat).toBe('physical');
-      expect(state.selectedStatus).toBe('active');
+      expect(state.selectedStatus).toBe('pending');
       expect(state.deadlineFromPublicationDate).toBeUndefined();
       expect(state.previousPageCount).toBeUndefined();
     });
@@ -1237,7 +1237,7 @@ describe('deadlineFormUtils', () => {
       expect(Toast.show).toHaveBeenCalledWith({
         swipeable: true,
         type: 'success',
-        text1: 'Deadline updated successfully!',
+        text1: 'Book updated successfully!',
         autoHide: true,
         visibilityTime: 2000,
         position: 'top',

@@ -444,7 +444,12 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
       existingDeadline
     );
 
-    const statusValue = selectedStatus === 'pending' ? 'pending' : 'reading';
+    const statusValue =
+      selectedStatus === 'pending'
+        ? 'pending'
+        : selectedStatus === 'applied'
+          ? 'applied'
+          : 'reading';
 
     // Handle cover image based on source mode
     if (

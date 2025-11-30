@@ -74,7 +74,7 @@ describe('ProgressHeader', () => {
       expect.objectContaining({
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 14, // Spacing.md
         gap: 8,
       })
     );

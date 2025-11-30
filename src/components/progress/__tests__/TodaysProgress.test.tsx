@@ -288,9 +288,9 @@ describe('TodaysProgress', () => {
 
       render(<TodaysProgress {...structureProps} />);
 
-      // Should have icon, label, display value, encouragement, and remaining text
+      // Should have label, display value, encouragement, and remaining text
       const texts = screen.getAllByTestId('themed-text');
-      expect(texts.length).toBe(5);
+      expect(texts.length).toBe(4);
 
       expect(screen.getByText('Test Display')).toBeTruthy();
       expect(screen.getByText('Test Remaining')).toBeTruthy();

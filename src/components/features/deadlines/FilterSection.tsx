@@ -50,6 +50,7 @@ interface FilterSectionProps {
 }
 
 const filterOptions: FilterOption[] = [
+  { key: 'applied', label: 'Applied' },
   { key: 'pending', label: 'Pending' },
   { key: 'active', label: 'Active' },
   { key: 'overdue', label: 'Past Due' },
@@ -95,10 +96,12 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     completedDeadlines,
     toReviewDeadlines,
     didNotFinishDeadlines,
+    appliedDeadlines,
   } = useDeadlines();
 
   const getBaseDeadlines = (): ReadingDeadlineWithProgress[] => {
     const deadlineMap = new Map<string, ReadingDeadlineWithProgress[]>();
+    deadlineMap.set('applied', appliedDeadlines);
     deadlineMap.set('active', activeDeadlines);
     deadlineMap.set('overdue', overdueDeadlines);
     deadlineMap.set('pending', pendingDeadlines);
@@ -117,6 +120,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   const baseDeadlines = getBaseDeadlines();
 
   const statusCounts: Record<FilterType, number> = {
+    applied: appliedDeadlines.length,
     active: activeDeadlines.length,
     overdue: overdueDeadlines.length,
     pending: pendingDeadlines.length,
@@ -181,7 +185,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 )}
                 <ThemedButton
                   title={
-                    option.key === 'active' || option.key === 'pending'
+                    option.key === 'applied' ||
+                    option.key === 'active' ||
+                    option.key === 'pending'
                       ? option.label
                       : `${option.label} (${statusCounts[option.key]})`
                   }

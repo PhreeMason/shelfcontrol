@@ -113,6 +113,8 @@ export const StatusChangeActionSheet: React.FC<
     startReadingDeadline,
     resumeDeadline,
     pauseDeadline,
+    markReceivedDeadline,
+    markAppliedDeadline,
     rejectDeadline,
     withdrawDeadline,
     completeDeadline,
@@ -165,6 +167,18 @@ export const StatusChangeActionSheet: React.FC<
     const isFullyComplete = currentProgress >= totalQuantity;
 
     const options: Record<string, StatusOption> = {
+      applied: {
+        label: 'Mark as Applied',
+        icon: 'paperplane.fill',
+        color: colors.primary,
+        description: 'Applied for book, awaiting response',
+      },
+      pending: {
+        label: 'Mark as Received',
+        icon: 'tray.and.arrow.down.fill',
+        color: colors.primary,
+        description: 'Move to pending, ready to start',
+      },
       reading: {
         label: 'Start Reading',
         icon: 'book.fill',
@@ -300,6 +314,50 @@ export const StatusChangeActionSheet: React.FC<
 
     // Handle instant transitions
     switch (targetStatus) {
+      case DEADLINE_STATUS.PENDING:
+        // Transition from applied → pending (mark as received)
+        markReceivedDeadline(
+          deadline.id,
+          () => {
+            Toast.show({
+              type: 'success',
+              text1: `Received ${deadline.book_title}`,
+            });
+            onClose();
+          },
+          error => {
+            console.error('Failed to mark as received:', error);
+            Toast.show({
+              type: 'error',
+              text1: 'Failed to mark as received',
+              text2: 'Please try again',
+            });
+          }
+        );
+        break;
+
+      case DEADLINE_STATUS.APPLIED:
+        // Transition from pending/reading → applied (mark as applied)
+        markAppliedDeadline(
+          deadline.id,
+          () => {
+            Toast.show({
+              type: 'success',
+              text1: `Applied for ${deadline.book_title}`,
+            });
+            onClose();
+          },
+          error => {
+            console.error('Failed to mark as applied:', error);
+            Toast.show({
+              type: 'error',
+              text1: 'Failed to mark as applied',
+              text2: 'Please try again',
+            });
+          }
+        );
+        break;
+
       case DEADLINE_STATUS.READING:
         if (currentStatus === DEADLINE_STATUS.PENDING) {
           startReadingDeadline(
@@ -477,6 +535,7 @@ export const StatusChangeActionSheet: React.FC<
 
   const getCurrentStatusLabel = () => {
     const labels: Record<string, string> = {
+      applied: 'Applied',
       pending: 'Pending',
       reading: 'Active',
       paused: 'Paused',

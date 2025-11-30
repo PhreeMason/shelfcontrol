@@ -416,11 +416,17 @@ export const usePauseDeadline = () =>
 export const useResumeDeadline = () =>
   useUpdateDeadlineStatus(DEADLINE_STATUS.READING);
 
+export const useMarkReceivedDeadline = () =>
+  useUpdateDeadlineStatus(DEADLINE_STATUS.PENDING);
+
 export const useRejectDeadline = () =>
   useUpdateDeadlineStatus(DEADLINE_STATUS.REJECTED);
 
 export const useWithdrawDeadline = () =>
   useUpdateDeadlineStatus(DEADLINE_STATUS.WITHDREW);
+
+export const useMarkAppliedDeadline = () =>
+  useUpdateDeadlineStatus(DEADLINE_STATUS.APPLIED);
 
 export const useGetDeadlineById = (deadlineId: string | undefined) => {
   const { session } = useAuth();

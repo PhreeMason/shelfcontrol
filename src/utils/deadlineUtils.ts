@@ -46,6 +46,7 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   const didNotFinish: ReadingDeadlineWithProgress[] = [];
   const pending: ReadingDeadlineWithProgress[] = [];
   const paused: ReadingDeadlineWithProgress[] = [];
+  const applied: ReadingDeadlineWithProgress[] = [];
 
   const today = dayjs().startOf('day');
 
@@ -69,6 +70,8 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
       didNotFinish.push(deadline);
     } else if (latestStatus === 'pending') {
       pending.push(deadline);
+    } else if (latestStatus === 'applied') {
+      applied.push(deadline);
     } else if (latestStatus === 'paused') {
       paused.push(deadline);
     } else if (latestStatus === 'rejected' || latestStatus === 'withdrew') {
@@ -87,6 +90,7 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   didNotFinish.sort(sortByStatusDate);
   pending.sort(sortDeadlines);
   paused.sort(sortDeadlines);
+  applied.sort(sortDeadlines);
 
   return {
     active,
@@ -96,6 +100,7 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
     didNotFinish,
     pending,
     paused,
+    applied,
   };
 };
 

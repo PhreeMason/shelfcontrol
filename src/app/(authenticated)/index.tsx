@@ -161,11 +161,12 @@ export default function HomeScreen() {
       filterCount++;
     }
 
-    analytics.track('filters_applied', {
-      active_tab: selectedFilter,
-      active_filters: activeFilters,
-      filter_count: filterCount,
-    });
+    filterCount &&
+      analytics.track('filters_applied', {
+        active_tab: selectedFilter,
+        active_filters: activeFilters,
+        filter_count: filterCount,
+      });
   }, [
     selectedFilter,
     timeRangeFilter,

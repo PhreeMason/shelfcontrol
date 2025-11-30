@@ -4,6 +4,8 @@ import {
   useDeleteDeadline,
   useDidNotFinishDeadline,
   useGetDeadlines,
+  useMarkAppliedDeadline,
+  useMarkReceivedDeadline,
   usePauseDeadline,
   useRejectDeadline,
   useResumeDeadline,
@@ -69,6 +71,7 @@ interface DeadlineContextType {
   didNotFinishDeadlines: ReadingDeadlineWithProgress[];
   pendingDeadlines: ReadingDeadlineWithProgress[];
   pausedDeadlines: ReadingDeadlineWithProgress[];
+  appliedDeadlines: ReadingDeadlineWithProgress[];
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
@@ -131,12 +134,22 @@ interface DeadlineContextType {
     onSuccess?: () => void,
     onError?: (error: Error) => void
   ) => void;
+  markReceivedDeadline: (
+    deadlineId: string,
+    onSuccess?: () => void,
+    onError?: (error: Error) => void
+  ) => void;
   rejectDeadline: (
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
   ) => void;
   withdrawDeadline: (
+    deadlineId: string,
+    onSuccess?: () => void,
+    onError?: (error: Error) => void
+  ) => void;
+  markAppliedDeadline: (
     deadlineId: string,
     onSuccess?: () => void,
     onError?: (error: Error) => void
@@ -241,8 +254,10 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
   const { mutate: didNotFinishDeadlineMutation } = useDidNotFinishDeadline();
   const { mutate: pauseDeadlineMutation } = usePauseDeadline();
   const { mutate: resumeDeadlineMutation } = useResumeDeadline();
+  const { mutate: markReceivedDeadlineMutation } = useMarkReceivedDeadline();
   const { mutate: rejectDeadlineMutation } = useRejectDeadline();
   const { mutate: withdrawDeadlineMutation } = useWithdrawDeadline();
+  const { mutate: markAppliedDeadlineMutation } = useMarkAppliedDeadline();
 
   const {
     active: activeDeadlines,
@@ -252,6 +267,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     didNotFinish: didNotFinishDeadlines,
     pending: pendingDeadlines,
     paused: pausedDeadlines,
+    applied: appliedDeadlines,
   } = useMemo(() => separateDeadlines(deadlines), [deadlines]);
 
   const userPaceData = useMemo(() => {
@@ -589,6 +605,26 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     [resumeDeadlineMutation]
   );
 
+  const markReceivedDeadline = useCallback(
+    (
+      deadlineId: string,
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      markReceivedDeadlineMutation(deadlineId, {
+        onSuccess: () => {
+          analytics.track('deadline_received');
+          onSuccess?.();
+        },
+        onError: (error: Error) => {
+          console.error('Error marking book as received:', error);
+          onError?.(error);
+        },
+      });
+    },
+    [markReceivedDeadlineMutation]
+  );
+
   const rejectDeadline = useCallback(
     (
       deadlineId: string,
@@ -629,6 +665,26 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     [withdrawDeadlineMutation]
   );
 
+  const markAppliedDeadline = useCallback(
+    (
+      deadlineId: string,
+      onSuccess?: () => void,
+      onError?: (error: Error) => void
+    ) => {
+      markAppliedDeadlineMutation(deadlineId, {
+        onSuccess: () => {
+          analytics.track('deadline_applied');
+          onSuccess?.();
+        },
+        onError: (error: Error) => {
+          console.error('Error marking book as applied:', error);
+          onError?.(error);
+        },
+      });
+    },
+    [markAppliedDeadlineMutation]
+  );
+
   const value: DeadlineContextType = {
     deadlines,
     activeDeadlines,
@@ -638,6 +694,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     didNotFinishDeadlines,
     pendingDeadlines,
     pausedDeadlines,
+    appliedDeadlines,
     isLoading,
     error,
     refetch,
@@ -654,8 +711,10 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     didNotFinishDeadline,
     pauseDeadline,
     resumeDeadline,
+    markReceivedDeadline,
     rejectDeadline,
     withdrawDeadline,
+    markAppliedDeadline,
 
     getDeadlineCalculations,
 

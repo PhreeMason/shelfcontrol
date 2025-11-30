@@ -46,6 +46,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     didNotFinishDeadlines,
     pendingDeadlines,
     pausedDeadlines,
+    appliedDeadlines,
     isLoading,
     error,
   } = useDeadlines();
@@ -138,6 +139,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       active: activeDeadlines,
       pending: pendingDeadlines,
       paused: pausedDeadlines,
+      applied: appliedDeadlines,
       overdue: overdueDeadlines,
       toReview: toReviewDeadlines,
       completed: completedDeadlines,
@@ -197,6 +199,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     deadlineMap.set('overdue', overdueDeadlines);
     deadlineMap.set('pending', pendingDeadlines);
     deadlineMap.set('paused', pausedDeadlines);
+    deadlineMap.set('applied', appliedDeadlines);
     deadlineMap.set('completed', completedDeadlines);
     deadlineMap.set('toReview', toReviewDeadlines);
     deadlineMap.set('didNotFinish', didNotFinishDeadlines);
@@ -219,6 +222,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       overdue: 'No overdue due dates',
       pending: 'No pending due dates',
       paused: 'No paused due dates',
+      applied: 'No applied books',
       completed: 'No completed books',
       toReview: 'No books waiting for reviews',
       didNotFinish: 'No books marked as did not finish',

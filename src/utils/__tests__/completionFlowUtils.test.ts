@@ -337,7 +337,7 @@ describe('completionFlowUtils', () => {
     it('should return invalid for undefined deadline', () => {
       const result = validateCompletionFlow(undefined);
       expect(result.isValid).toBe(false);
-      expect(result.error).toBe('Book not found');
+      expect(result.error).toBe('Deadline not found');
     });
   });
 });

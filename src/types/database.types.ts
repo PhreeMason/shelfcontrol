@@ -399,6 +399,7 @@ export type Database = {
           cover_image_url: string | null;
           created_at: string;
           deadline_date: string;
+          deadline_type: string | null;
           disclosure_source_name: string | null;
           disclosure_template_id: string | null;
           disclosure_text: string | null;
@@ -406,6 +407,7 @@ export type Database = {
           format: Database['public']['Enums']['book_format_enum'];
           id: string;
           publishers: string[] | null;
+          source: string | null;
           total_quantity: number;
           type: string | null;
           updated_at: string;
@@ -419,6 +421,7 @@ export type Database = {
           cover_image_url?: string | null;
           created_at?: string;
           deadline_date: string;
+          deadline_type?: string | null;
           disclosure_source_name?: string | null;
           disclosure_template_id?: string | null;
           disclosure_text?: string | null;
@@ -426,6 +429,7 @@ export type Database = {
           format: Database['public']['Enums']['book_format_enum'];
           id?: string;
           publishers?: string[] | null;
+          source?: string | null;
           total_quantity: number;
           type?: string | null;
           updated_at?: string;
@@ -439,6 +443,7 @@ export type Database = {
           cover_image_url?: string | null;
           created_at?: string;
           deadline_date?: string;
+          deadline_type?: string | null;
           disclosure_source_name?: string | null;
           disclosure_template_id?: string | null;
           disclosure_text?: string | null;
@@ -446,6 +451,7 @@ export type Database = {
           format?: Database['public']['Enums']['book_format_enum'];
           id?: string;
           publishers?: string[] | null;
+          source?: string | null;
           total_quantity?: number;
           type?: string | null;
           updated_at?: string;
@@ -1036,6 +1042,7 @@ export type Database = {
       book_format_enum: 'physical' | 'eBook' | 'audio';
       deadline_flexibility: 'flexible' | 'strict';
       deadline_status_enum:
+        | 'applied'
         | 'pending'
         | 'reading'
         | 'paused'
@@ -1178,6 +1185,7 @@ export const Constants = {
       book_format_enum: ['physical', 'eBook', 'audio'],
       deadline_flexibility: ['flexible', 'strict'],
       deadline_status_enum: [
+        'applied',
         'pending',
         'reading',
         'paused',

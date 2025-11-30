@@ -91,6 +91,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
 
   const getFilterDisplayName = (filter: string): string => {
     const displayNames: Record<string, string> = {
+      applied: 'Applied',
       pending: 'Pending',
       active: 'Active',
       paused: 'Paused',
@@ -545,6 +546,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
                 <View style={styles.filterRow}>
                   {(
                     [
+                      'applied',
                       'active',
                       'pending',
                       'paused',
@@ -555,6 +557,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
                     ] as FilterType[]
                   ).map(status => {
                     const statusLabels: Record<string, string> = {
+                      applied: 'Applied',
                       active: 'Active',
                       pending: 'Pending',
                       paused: 'Paused',

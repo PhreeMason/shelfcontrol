@@ -27,7 +27,7 @@ export interface FormNavigationHandlers {
 
 export interface FormStateConfig {
   selectedFormat: 'physical' | 'eBook' | 'audio';
-  selectedStatus: 'pending' | 'active';
+  selectedStatus: 'applied' | 'pending' | 'active';
   selectedPriority: 'flexible' | 'strict';
   showDatePicker: boolean;
   paceEstimate: string;
@@ -93,7 +93,7 @@ export const getFormDefaultValues = (
     type: '' as const,
     acquisition_source: '' as const,
     publishers: undefined as string[] | undefined,
-    status: 'active' as const,
+    status: 'pending' as const,
     deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
     flexibility: 'flexible' as const,
     ignoreInCalcs: true,
@@ -121,7 +121,7 @@ export const getFormDefaultValues = (
 export const initializeFormState = (mode: FormMode): FormStateConfig => {
   const baseState: FormStateConfig = {
     selectedFormat: mode === 'new' ? 'eBook' : 'physical',
-    selectedStatus: 'active',
+    selectedStatus: 'pending',
     selectedPriority: 'flexible',
     showDatePicker: false,
     paceEstimate: '',
@@ -299,7 +299,7 @@ export const populateFormFromDeadline = (
 ): {
   selectedFormat: 'physical' | 'eBook' | 'audio';
   selectedPriority: 'flexible' | 'strict';
-  selectedStatus: 'pending' | 'active';
+  selectedStatus: 'applied' | 'pending' | 'active';
 } => {
   try {
     // Safely set form values with fallbacks
@@ -339,9 +339,15 @@ export const populateFormFromDeadline = (
         ? deadline.status[deadline.status.length - 1]
         : null;
 
-    let selectedStatus: 'pending' | 'active' = 'active';
+    let selectedStatus: 'applied' | 'pending' | 'active' = 'active';
     if (latestStatus) {
-      selectedStatus = latestStatus.status === 'pending' ? 'pending' : 'active';
+      if (latestStatus.status === 'applied') {
+        selectedStatus = 'applied';
+      } else if (latestStatus.status === 'pending') {
+        selectedStatus = 'pending';
+      } else {
+        selectedStatus = 'active';
+      }
       setValue('status', selectedStatus);
     }
 
@@ -386,7 +392,7 @@ export const populateFormFromDeadline = (
     return {
       selectedFormat: 'physical' as const,
       selectedPriority: 'flexible' as const,
-      selectedStatus: 'active' as const,
+      selectedStatus: 'active' as 'applied' | 'pending' | 'active',
     };
   }
 };

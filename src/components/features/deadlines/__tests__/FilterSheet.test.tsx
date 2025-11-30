@@ -153,6 +153,7 @@ describe('FilterSheet', () => {
     selectedTags: [] as string[],
     onTagsChange: jest.fn(),
     excludedStatuses: [] as (
+      | 'applied'
       | 'active'
       | 'pending'
       | 'paused'
@@ -171,6 +172,7 @@ describe('FilterSheet', () => {
       | 'highestPace',
     onSortOrderChange: jest.fn(),
     statusCounts: {
+      applied: 0,
       active: 5,
       pending: 3,
       paused: 2,
@@ -421,7 +423,7 @@ describe('FilterSheet', () => {
     it('should display correct filtered deadline count', () => {
       render(<FilterSheet {...defaultProps} />);
 
-      expect(screen.getByText('SHOW 3 DEADLINES')).toBeTruthy();
+      expect(screen.getByText('SHOW 3 BOOKS')).toBeTruthy();
     });
 
     it('should update count when filters change', () => {
@@ -450,7 +452,7 @@ describe('FilterSheet', () => {
         />
       );
 
-      expect(screen.getByText('SHOW 1 DEADLINES')).toBeTruthy();
+      expect(screen.getByText('SHOW 1 BOOKS')).toBeTruthy();
     });
   });
 
@@ -481,7 +483,7 @@ describe('FilterSheet', () => {
 
       render(<FilterSheet {...defaultProps} onClose={onClose} />);
 
-      fireEvent.press(screen.getByText('SHOW 3 DEADLINES'));
+      fireEvent.press(screen.getByText('SHOW 3 BOOKS'));
 
       expect(onClose).toHaveBeenCalledTimes(1);
     });
@@ -514,7 +516,7 @@ describe('FilterSheet', () => {
         />
       );
 
-      expect(screen.getByText('SHOW 0 DEADLINES')).toBeTruthy();
+      expect(screen.getByText('SHOW 0 BOOKS')).toBeTruthy();
     });
 
     it('should handle empty available sources', () => {
@@ -563,10 +565,26 @@ describe('FilterSheet', () => {
     it('should show status counts in exclusion buttons', () => {
       render(<FilterSheet {...defaultProps} selectedFilter="all" />);
 
+      expect(screen.getByText('Applied 0')).toBeTruthy();
       expect(screen.getByText('Active 5')).toBeTruthy();
       expect(screen.getByText('Pending 3')).toBeTruthy();
       expect(screen.getByText('Completed 10')).toBeTruthy();
       expect(screen.getByText('DNF 2')).toBeTruthy();
+    });
+
+    it('should call onExcludedStatusesChange when applied status is toggled', () => {
+      const onExcludedStatusesChange = jest.fn();
+      render(
+        <FilterSheet
+          {...defaultProps}
+          selectedFilter="all"
+          onExcludedStatusesChange={onExcludedStatusesChange}
+        />
+      );
+
+      fireEvent.press(screen.getByText('Applied 0'));
+
+      expect(onExcludedStatusesChange).toHaveBeenCalledWith(['applied']);
     });
 
     it('should call onExcludedStatusesChange when status is toggled', () => {
@@ -591,6 +609,7 @@ describe('FilterSheet', () => {
           selectedFilter="all"
           excludedStatuses={['completed']}
           statusCounts={{
+            applied: 0,
             active: 1,
             pending: 0,
             paused: 0,
@@ -603,7 +622,7 @@ describe('FilterSheet', () => {
         />
       );
 
-      expect(screen.getByText(/SHOW 1 DEADLINES/)).toBeTruthy();
+      expect(screen.getByText(/SHOW 1 BOOKS/)).toBeTruthy();
     });
 
     it('should update filtered count when multiple statuses are excluded', () => {
@@ -613,6 +632,7 @@ describe('FilterSheet', () => {
           selectedFilter="all"
           excludedStatuses={['active', 'completed']}
           statusCounts={{
+            applied: 0,
             active: 1,
             pending: 0,
             paused: 0,
@@ -625,7 +645,7 @@ describe('FilterSheet', () => {
         />
       );
 
-      expect(screen.getByText(/SHOW 1 DEADLINES/)).toBeTruthy();
+      expect(screen.getByText(/SHOW 1 BOOKS/)).toBeTruthy();
     });
 
     it('should not apply status exclusions to count when not on "all" filter', () => {
@@ -637,7 +657,7 @@ describe('FilterSheet', () => {
         />
       );
 
-      expect(screen.getByText(/SHOW 3 DEADLINES/)).toBeTruthy();
+      expect(screen.getByText(/SHOW 3 BOOKS/)).toBeTruthy();
     });
   });
 

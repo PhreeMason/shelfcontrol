@@ -189,7 +189,8 @@ class DeadlinesService {
       .from(DB_TABLES.DEADLINE_STATUS)
       .insert({
         deadline_id: finalDeadlineId,
-        status: (status || DEADLINE_STATUS.READING) as 'reading' | 'pending',
+        status: (status ||
+          DEADLINE_STATUS.READING) as Database['public']['Enums']['deadline_status_enum'],
         updated_at: new Date().toISOString(),
       })
       .select()
@@ -311,7 +312,7 @@ class DeadlinesService {
         .from(DB_TABLES.DEADLINE_STATUS)
         .insert({
           deadline_id: deadlineDetails.id!,
-          status: status as 'reading' | 'pending',
+          status: status as Database['public']['Enums']['deadline_status_enum'],
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
@@ -492,9 +493,7 @@ class DeadlinesService {
 
     const uniqueTypes = [
       ...new Set(
-        data
-          ?.map(d => d.type)
-          .filter((s): s is string => s !== null) || []
+        data?.map(d => d.type).filter((s): s is string => s !== null) || []
       ),
     ];
     return uniqueTypes.sort();
@@ -731,7 +730,7 @@ class DeadlinesService {
       const fetchedDeadline = deadlineResults?.[0];
 
       if (deadlineError || !fetchedDeadline) {
-        throw new Error('Deadline not found or access denied');
+        throw new Error('Book not found or access denied');
       }
 
       deadline = fetchedDeadline;

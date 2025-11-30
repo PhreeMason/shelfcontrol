@@ -32,8 +32,8 @@ interface DeadlineFormStep2CombinedProps {
   control: Control<DeadlineFormData>;
   selectedFormat: 'physical' | 'eBook' | 'audio';
   onFormatChange: (format: 'physical' | 'eBook' | 'audio') => void;
-  selectedStatus: 'pending' | 'active';
-  onStatusChange: (status: 'pending' | 'active') => void;
+  selectedStatus: 'applied' | 'pending' | 'active';
+  onStatusChange: (status: 'applied' | 'pending' | 'active') => void;
   selectedPriority: 'flexible' | 'strict';
   onPriorityChange: (priority: 'flexible' | 'strict') => void;
   setValue: (name: keyof DeadlineFormData, value: any) => void;

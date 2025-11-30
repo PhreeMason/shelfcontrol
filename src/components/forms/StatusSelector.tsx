@@ -5,8 +5,8 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface StatusSelectorProps {
-  selectedStatus: string;
-  onSelectStatus: (status: 'pending' | 'active') => void;
+  selectedStatus: 'applied' | 'pending' | 'active';
+  onSelectStatus: (status: 'applied' | 'pending' | 'active') => void;
 }
 
 export const StatusSelector = ({
@@ -19,8 +19,9 @@ export const StatusSelector = ({
   const textMutedColor = colors.textMuted;
 
   const statuses = [
-    { key: 'active', label: 'Active' },
     { key: 'pending', label: 'Pending' },
+    { key: 'active', label: 'Active' },
+    { key: 'applied', label: 'Applied' },
   ];
 
   return (
@@ -38,7 +39,9 @@ export const StatusSelector = ({
                 borderColor: isSelected ? primaryColor : textMutedColor,
               },
             ]}
-            onPress={() => onSelectStatus(status.key as 'pending' | 'active')}
+            onPress={() =>
+              onSelectStatus(status.key as 'applied' | 'pending' | 'active')
+            }
           >
             <ThemedText
               color={isSelected ? 'text' : 'textMuted'}

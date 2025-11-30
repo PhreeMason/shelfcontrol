@@ -28,8 +28,10 @@ jest.mock('@/hooks/useDeadlines', () => ({
   useToReviewDeadline: () => ({ mutate: mockMutate }),
   usePauseDeadline: () => ({ mutate: mockMutate }),
   useResumeDeadline: () => ({ mutate: mockMutate }),
+  useMarkReceivedDeadline: () => ({ mutate: mockMutate }),
   useRejectDeadline: () => ({ mutate: mockMutate }),
   useWithdrawDeadline: () => ({ mutate: mockMutate }),
+  useMarkAppliedDeadline: () => ({ mutate: mockMutate }),
 }));
 
 // Mock utility functions
@@ -44,6 +46,8 @@ jest.mock('@/utils/deadlineUtils', () => ({
     toReview: deadlines.slice(4, 5),
     didNotFinish: deadlines.slice(5, 6),
     pending: deadlines.slice(6, 7),
+    paused: deadlines.slice(7, 8),
+    applied: deadlines.slice(8, 9),
   })),
 }));
 
@@ -149,6 +153,8 @@ describe('DeadlineProvider', () => {
       expect(result.current.toReviewDeadlines).toBeDefined();
       expect(result.current.didNotFinishDeadlines).toBeDefined();
       expect(result.current.pendingDeadlines).toBeDefined();
+      expect(result.current.pausedDeadlines).toBeDefined();
+      expect(result.current.appliedDeadlines).toBeDefined();
       expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBeNull();
       expect(typeof result.current.refetch).toBe('function');
@@ -166,6 +172,7 @@ describe('DeadlineProvider', () => {
       expect(typeof result.current.completeDeadline).toBe('function');
       expect(typeof result.current.startReadingDeadline).toBe('function');
       expect(typeof result.current.didNotFinishDeadline).toBe('function');
+      expect(typeof result.current.markAppliedDeadline).toBe('function');
 
       // Calculations
       expect(typeof result.current.getDeadlineCalculations).toBe('function');

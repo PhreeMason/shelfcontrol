@@ -54,7 +54,7 @@ export const deadlineFormSchema = z
     flexibility: z.enum(['flexible', 'strict'], {
       errorMap: () => ({ message: 'Please select pace flexibility' }),
     }),
-    status: z.enum(['pending', 'active'], {
+    status: z.enum(['applied', 'pending', 'active'], {
       errorMap: () => ({ message: 'Please select a status' }),
     }),
     // Optional book linking fields

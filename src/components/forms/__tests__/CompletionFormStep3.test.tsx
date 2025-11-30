@@ -34,6 +34,7 @@ jest.mock('expo-router', () => ({
   router: {
     replace: jest.fn(),
     back: jest.fn(),
+    canGoBack: jest.fn(() => false),
   },
 }));
 jest.mock('react-native-toast-message', () => ({

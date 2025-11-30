@@ -21,6 +21,18 @@ jest.mock('@/constants/Colors', () => ({
       fontWeight: 'bold',
     },
   },
+  Spacing: {
+    xs: 4,
+    sm: 8,
+    md: 14,
+    lg: 22,
+    xl: 30,
+  },
+  BorderRadius: {
+    sm: 4,
+    md: 8,
+    lg: 12,
+  },
 }));
 
 jest.mock('../AudiobookProgressInput', () => {

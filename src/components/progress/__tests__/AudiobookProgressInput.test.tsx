@@ -141,8 +141,8 @@ describe('AudiobookProgressInput', () => {
           expect.objectContaining({
             fontSize: 30,
             borderRadius: 10,
-            paddingHorizontal: 20,
-            paddingVertical: 10,
+            paddingHorizontal: 22, // Spacing.lg
+            paddingVertical: 8, // Spacing.sm
             borderWidth: 2,
             fontWeight: '900',
             textAlignVertical: 'center',

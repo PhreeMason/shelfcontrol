@@ -6,6 +6,7 @@ export const DEADLINE_STATUS: Record<
   Uppercase<DeadlineStatusEnum>,
   DeadlineStatusEnum
 > = {
+  APPLIED: 'applied',
   COMPLETE: 'complete',
   READING: 'reading',
   DID_NOT_FINISH: 'did_not_finish',
@@ -41,8 +42,9 @@ export const VALID_STATUS_TRANSITIONS: Record<
   DeadlineStatusEnum,
   DeadlineStatusEnum[]
 > = {
-  pending: ['reading', 'rejected', 'withdrew'],
-  reading: ['paused', 'to_review', 'complete', 'did_not_finish'],
+  applied: ['pending', 'rejected', 'withdrew'],
+  pending: ['applied', 'reading', 'rejected', 'withdrew'],
+  reading: ['applied', 'paused', 'to_review', 'complete', 'did_not_finish'],
   paused: ['reading', 'complete', 'did_not_finish'],
   to_review: ['complete', 'did_not_finish'],
   complete: [],
