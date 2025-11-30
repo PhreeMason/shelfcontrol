@@ -383,7 +383,7 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
           analytics.track('deadline_created', {
             format: params.deadlineDetails.format,
             status: params.status as AnalyticsDeadlineStatus,
-            type: params.deadlineDetails.deadline_type || 'Personal',
+            type: params.deadlineDetails.type || 'Personal',
             book_source: params.analyticsContext?.book_source || 'manual',
             has_deadline_date: !!params.deadlineDetails.deadline_date,
             creation_duration_seconds:

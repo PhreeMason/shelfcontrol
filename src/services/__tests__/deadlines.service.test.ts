@@ -52,7 +52,7 @@ describe('DeadlinesService', () => {
         total_quantity: 300,
         format: 'physical',
         flexibility: 'flexible',
-        deadline_type: 'Personal',
+        type: 'Personal',
       },
       progressDetails: {
         current_progress: 0,
@@ -426,7 +426,7 @@ describe('DeadlinesService', () => {
         format: 'eBook',
         flexibility: 'strict',
         user_id: userId,
-        deadline_type: 'Personal',
+        type: 'Personal',
       },
       progressDetails: {
         current_progress: 100,
@@ -1766,7 +1766,7 @@ describe('DeadlinesService', () => {
           id: 'rd-1',
           book_title: 'Book 1',
           format: 'physical',
-          deadline_type: 'ARC',
+          type: 'ARC',
           deadline_progress: [{ current_progress: 100 }],
           deadline_status: [{ status: 'complete' }],
         },
@@ -1774,7 +1774,7 @@ describe('DeadlinesService', () => {
           id: 'rd-2',
           book_title: 'Book 2',
           format: 'eBook',
-          deadline_type: 'Personal',
+          type: 'Personal',
           deadline_progress: [{ current_progress: 200 }],
           deadline_status: [{ status: 'reading' }],
         },
@@ -1799,10 +1799,7 @@ describe('DeadlinesService', () => {
         expect.stringContaining('deadline_progress')
       );
       expect(mockEq).toHaveBeenCalledWith('user_id', userId);
-      expect(result).toEqual([
-        { ...mockHistory[0], type: 'ARC' },
-        { ...mockHistory[1], type: 'Personal' },
-      ]);
+      expect(result).toEqual(mockHistory);
     });
 
     it('should return deadline history with format filter', async () => {
@@ -1811,7 +1808,7 @@ describe('DeadlinesService', () => {
           id: 'rd-1',
           book_title: 'Book 1',
           format: 'physical',
-          deadline_type: 'Personal',
+          type: 'Personal',
         },
       ];
 
@@ -1837,7 +1834,7 @@ describe('DeadlinesService', () => {
       const result = await deadlinesService.getDeadlineHistory(params);
 
       expect(mockIn).toHaveBeenCalledWith('format', ['physical', 'eBook']);
-      expect(result).toEqual([{ ...mockHistory[0], type: 'Personal' }]);
+      expect(result).toEqual(mockHistory);
     });
 
     it('should throw error when history query fails', async () => {

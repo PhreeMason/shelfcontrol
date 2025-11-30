@@ -134,7 +134,7 @@ describe('deadlineFormUtils', () => {
       expect(result.book_title).toBe('Test Book');
       expect(result.author).toBe('Test Author');
       expect(result.format).toBe('eBook');
-      expect(result.deadline_type).toBe('Library');
+      expect(result.type).toBe('Library');
       expect(result.total_quantity).toBe(300);
       expect(result.flexibility).toBe('flexible');
       expect(result.deadline_date).toBe('2024-12-01T00:00:00.000Z');

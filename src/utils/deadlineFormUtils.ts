@@ -159,7 +159,7 @@ export const prepareDeadlineDetailsFromForm = (
     deadline_date: data.deadline.toISOString(),
     total_quantity: finalTotalQuantity,
     format: selectedFormat,
-    deadline_type: data.type,
+    type: data.type,
     acquisition_source: data.acquisition_source || null,
     publishers: filteredPublishers?.length ? filteredPublishers : null,
     flexibility: selectedPriority,

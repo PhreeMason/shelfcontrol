@@ -131,7 +131,7 @@ describe('DisclosureSection', () => {
     format: 'physical',
     total_quantity: 300,
     flexibility: 'strict',
-    deadline_type: 'manual',
+    type: 'manual',
     disclosure_text: 'This is a test disclosure message.',
     disclosure_source_name: 'Publisher A',
     disclosure_template_id: 'template-1',

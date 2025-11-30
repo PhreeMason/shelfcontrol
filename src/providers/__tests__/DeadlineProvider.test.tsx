@@ -230,7 +230,7 @@ describe('DeadlineProvider', () => {
           format: 'physical' as const,
           total_quantity: 300,
           flexibility: 'strict' as const,
-          deadline_type: 'manual' as const,
+          type: 'manual' as const,
         },
         progressDetails: {
           deadline_id: 'test-id',
@@ -262,7 +262,7 @@ describe('DeadlineProvider', () => {
           format: 'physical' as const,
           total_quantity: 300,
           flexibility: 'strict' as const,
-          deadline_type: 'manual' as const,
+          type: 'manual' as const,
           user_id: 'user-id',
         },
         progressDetails: {
@@ -499,7 +499,7 @@ describe('DeadlineProvider', () => {
               format: 'physical' as const,
               total_quantity: 300,
               flexibility: 'strict' as const,
-              deadline_type: 'manual' as const,
+              type: 'manual' as const,
             },
             progressDetails: {
               deadline_id: 'test-id',
@@ -535,7 +535,7 @@ describe('DeadlineProvider', () => {
               format: 'physical' as const,
               total_quantity: 300,
               flexibility: 'strict' as const,
-              deadline_type: 'manual' as const,
+              type: 'manual' as const,
             },
             progressDetails: {
               deadline_id: 'test-id',

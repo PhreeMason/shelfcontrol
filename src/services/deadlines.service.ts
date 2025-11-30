@@ -476,13 +476,7 @@ class DeadlinesService {
     if (error) throw error;
 
     const deadlines = data as unknown as ReadingDeadlineWithProgress[];
-    return deadlines.map(d => {
-      const normalized = {
-        ...d,
-        type: (d as any).deadline_type || 'Personal',
-      };
-      return sortDeadlineArrays(normalized);
-    });
+    return deadlines.map(d => sortDeadlineArrays(d));
   }
 
   /**
@@ -491,7 +485,7 @@ class DeadlinesService {
   async getUniqueDeadlineTypes(userId: string): Promise<string[]> {
     const { data, error } = await supabase
       .from(DB_TABLES.DEADLINES)
-      .select('deadline_type')
+      .select('type')
       .eq('user_id', userId);
 
     if (error) throw error;
@@ -499,7 +493,7 @@ class DeadlinesService {
     const uniqueTypes = [
       ...new Set(
         data
-          ?.map(d => d.deadline_type)
+          ?.map(d => d.type)
           .filter((s): s is string => s !== null) || []
       ),
     ];
@@ -560,11 +554,7 @@ class DeadlinesService {
     }
 
     const deadline = data as unknown as ReadingDeadlineWithProgress;
-    const normalizedDeadline = {
-      ...deadline,
-      type: (deadline as any).deadline_type || 'Personal',
-    };
-    return sortDeadlineArrays(normalizedDeadline);
+    return sortDeadlineArrays(deadline);
   }
 
   /**
@@ -817,7 +807,7 @@ class DeadlinesService {
         format,
         total_quantity,
         deadline_date,
-        deadline_type,
+        type,
         flexibility,
         created_at,
         deadline_progress (
@@ -844,12 +834,7 @@ class DeadlinesService {
 
     if (error) throw error;
 
-    return (
-      deadlines?.map((d: any) => ({
-        ...d,
-        type: d.deadline_type,
-      })) || []
-    );
+    return deadlines || [];
   }
 
   async getUserProgressForToday(userId: string) {
