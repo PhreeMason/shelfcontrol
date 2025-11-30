@@ -49,9 +49,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           <View style={styles.headerSpacer} />
         )}
 
-        <View style={styles.rightElement}>
-          {rightElement}
-        </View>
+        <View style={styles.rightElement}>{rightElement}</View>
 
         <ThemedText
           typography="headlineSmall"

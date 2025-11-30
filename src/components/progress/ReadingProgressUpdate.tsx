@@ -284,9 +284,7 @@ const ReadingProgressUpdate = ({
   const { isPaused } = getDeadlineStatus(deadline);
   const pausedDate = isPaused ? getPausedDate(deadline) : null;
 
-  const {
-      countdownColor,
-    } = useDeadlineCardState(deadline, urgencyLevel);
+  const { countdownColor } = useDeadlineCardState(deadline, urgencyLevel);
 
   // Update scrubber value and form (called from gesture)
   const updateScrubberValue = useCallback(
@@ -375,10 +373,16 @@ const ReadingProgressUpdate = ({
           {/* Progress Scrubber (simplified - no +/- buttons) */}
           <ThemedView>
             <View style={styles.scrubberLabels}>
-              <ThemedText typography="titleMedium" style={{color: countdownColor}}>
+              <ThemedText
+                typography="titleMedium"
+                style={{ color: countdownColor }}
+              >
                 {formatProgressDisplay(deadline.format, scrubberValue)}
               </ThemedText>
-              <ThemedText typography="titleMedium" style={{color: countdownColor}}>
+              <ThemedText
+                typography="titleMedium"
+                style={{ color: countdownColor }}
+              >
                 {deadline.format === 'audio'
                   ? `${formatProgressDisplay(deadline.format, totalQuantity - scrubberValue)} left`
                   : `${totalQuantity - scrubberValue} left`}

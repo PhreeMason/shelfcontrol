@@ -282,14 +282,18 @@ export default function AppUpdatesScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader title="App Updates" onBack={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)} />
+      <AppHeader
+        title="App Updates"
+        onBack={() =>
+          router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)
+        }
+      />
 
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-
         {/* Version Card with Build Name */}
         <ThemedView
           style={[
@@ -515,7 +519,7 @@ export default function AppUpdatesScreen() {
           <View
             style={[
               styles.modalIntro,
-              { backgroundColor: colors.primary + '30'},
+              { backgroundColor: colors.primary + '30' },
             ]}
           >
             <Image

@@ -439,7 +439,9 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
           <ThemedButton
             title="Cancel"
             variant="ghost"
-            onPress={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
+            onPress={() =>
+              router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)
+            }
             disabled={isSubmitting}
             testID="cancel-button"
             style={styles.primaryButton}

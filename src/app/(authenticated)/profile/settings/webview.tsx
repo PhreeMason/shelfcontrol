@@ -23,7 +23,9 @@ export default function WebViewScreen() {
       >
         <View style={styles.header}>
           <Pressable
-            onPress={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
+            onPress={() =>
+              router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)
+            }
             style={styles.backButton}
             hitSlop={8}
           >
@@ -54,7 +56,9 @@ export default function WebViewScreen() {
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Pressable
-          onPress={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
+          onPress={() =>
+            router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)
+          }
           style={styles.backButton}
           hitSlop={8}
         >

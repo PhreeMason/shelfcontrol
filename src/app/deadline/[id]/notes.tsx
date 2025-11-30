@@ -329,7 +329,9 @@ const Notes = () => {
     >
       <AppHeader
         title="Notes"
-        onBack={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
+        onBack={() =>
+          router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)
+        }
         rightElement={filterButton}
       />
       <View style={styles.header}>

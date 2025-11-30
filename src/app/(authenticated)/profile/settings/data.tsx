@@ -213,7 +213,12 @@ export default function DataPrivacyScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader title="Data & Privacy" onBack={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)} />
+      <AppHeader
+        title="Data & Privacy"
+        onBack={() =>
+          router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)
+        }
+      />
 
       <ScrollView
         style={styles.scrollContainer}
@@ -389,7 +394,7 @@ export default function DataPrivacyScreen() {
               title="Delete Account"
               variant="error"
               onPress={() => setShowDeleteAccountModal(true)}
-              style={{ backgroundColor: colors.scaryRed + '90'}}
+              style={{ backgroundColor: colors.scaryRed + '90' }}
               testID="settings-delete-account-button"
             />
           </View>

@@ -38,7 +38,12 @@ export default function AppearanceScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader title="Display & Appearance" onBack={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)} />
+      <AppHeader
+        title="Display & Appearance"
+        onBack={() =>
+          router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)
+        }
+      />
 
       <ScrollView
         style={styles.scrollContainer}

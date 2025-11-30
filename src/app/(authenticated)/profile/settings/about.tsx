@@ -104,7 +104,12 @@ export default function AboutScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader title="About & Support" onBack={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)} />
+      <AppHeader
+        title="About & Support"
+        onBack={() =>
+          router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)
+        }
+      />
 
       <ScrollView
         style={styles.scrollContainer}

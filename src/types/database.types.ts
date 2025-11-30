@@ -399,7 +399,6 @@ export type Database = {
           cover_image_url: string | null;
           created_at: string;
           deadline_date: string;
-          deadline_type: string | null;
           disclosure_source_name: string | null;
           disclosure_template_id: string | null;
           disclosure_text: string | null;
@@ -407,8 +406,8 @@ export type Database = {
           format: Database['public']['Enums']['book_format_enum'];
           id: string;
           publishers: string[] | null;
-          source: string | null;
           total_quantity: number;
+          type: string | null;
           updated_at: string;
           user_id: string;
         };
@@ -420,7 +419,6 @@ export type Database = {
           cover_image_url?: string | null;
           created_at?: string;
           deadline_date: string;
-          deadline_type?: string | null;
           disclosure_source_name?: string | null;
           disclosure_template_id?: string | null;
           disclosure_text?: string | null;
@@ -428,8 +426,8 @@ export type Database = {
           format: Database['public']['Enums']['book_format_enum'];
           id?: string;
           publishers?: string[] | null;
-          source?: string | null;
           total_quantity: number;
+          type?: string | null;
           updated_at?: string;
           user_id: string;
         };
@@ -441,7 +439,6 @@ export type Database = {
           cover_image_url?: string | null;
           created_at?: string;
           deadline_date?: string;
-          deadline_type?: string | null;
           disclosure_source_name?: string | null;
           disclosure_template_id?: string | null;
           disclosure_text?: string | null;
@@ -449,8 +446,8 @@ export type Database = {
           format?: Database['public']['Enums']['book_format_enum'];
           id?: string;
           publishers?: string[] | null;
-          source?: string | null;
           total_quantity?: number;
+          type?: string | null;
           updated_at?: string;
           user_id?: string;
         };
@@ -901,6 +898,23 @@ export type Database = {
           format: string;
         }[];
       };
+      get_most_active_users_today: {
+        Args: {
+          p_exclude_user_ids?: string[];
+          p_limit?: number;
+          p_tz?: string;
+        };
+        Returns: {
+          activity_count: number;
+          avatar_url: string;
+          email: string;
+          first_name: string;
+          last_name: string;
+          user_id: string;
+          username: string;
+          yesterday_rank: number;
+        }[];
+      };
       get_reading_notes_csv: {
         Args: { p_user_id: string };
         Returns: {
@@ -958,6 +972,7 @@ export type Database = {
           cover_image_url: string;
           deadline_count: number;
           title: string;
+          yesterday_rank: number;
         }[];
       };
       get_top_deadline_users: {
@@ -970,11 +985,16 @@ export type Database = {
           last_name: string;
           user_id: string;
           username: string;
+          yesterday_rank: number;
         }[];
       };
       get_top_pages_read_today:
         | {
-            Args: { p_exclude_user_ids?: string[]; p_limit?: number };
+            Args: {
+              p_exclude_user_ids?: string[];
+              p_limit?: number;
+              p_tz?: string;
+            };
             Returns: {
               avatar_url: string;
               email: string;
@@ -983,14 +1003,11 @@ export type Database = {
               pages_read: number;
               user_id: string;
               username: string;
+              yesterday_rank: number;
             }[];
           }
         | {
-            Args: {
-              p_exclude_user_ids?: string[];
-              p_limit?: number;
-              p_tz?: string;
-            };
+            Args: { p_exclude_user_ids?: string[]; p_limit?: number };
             Returns: {
               avatar_url: string;
               email: string;

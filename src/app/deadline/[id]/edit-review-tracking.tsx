@@ -31,7 +31,9 @@ const EditReviewTracking = () => {
           </ThemedText>
           <ThemedButton
             title="Go Back"
-            onPress={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
+            onPress={() =>
+              router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)
+            }
             style={{ marginTop: 16 }}
           />
         </ThemedView>
@@ -52,7 +54,9 @@ const EditReviewTracking = () => {
           </ThemedText>
           <ThemedButton
             title="Go Back"
-            onPress={() => router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)}
+            onPress={() =>
+              router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)
+            }
             style={{ marginTop: 16 }}
           />
         </ThemedView>

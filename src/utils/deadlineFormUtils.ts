@@ -545,9 +545,7 @@ export const handleBookSelection = (
  */
 export const createSuccessToast = (mode: FormMode, newDeadlineId?: string) => {
   const message =
-    mode === 'new'
-      ? 'Book added successfully!'
-      : 'Book updated successfully!';
+    mode === 'new' ? 'Book added successfully!' : 'Book updated successfully!';
 
   return () => {
     // Show toast first
