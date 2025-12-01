@@ -6,6 +6,16 @@ export interface ReleaseNote {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    buildName: 'Fated Mates',
+    version: '1.58.0',
+    features: [
+      'Custom dates on your calendar',
+      'Book covers in calendar view',
+      'Audiobook data autopopulates',
+      'Enhanced calendar styling and filters',
+    ],
+  },
+  {
     buildName: 'Enemies to Lovers',
     version: '1.54.0',
     features: [

@@ -84,7 +84,7 @@ export const BUILD_NAMES: BuildName[] = [
   { name: 'Fake Dating', used: false },
   { name: 'Fake Engagement', used: false },
   { name: 'Fake Marriage', used: false },
-  { name: 'Fated Mates', used: false },
+  { name: 'Fated Mates', used: true },
   { name: 'Final Showdown', used: false },
   { name: 'First Love', used: false },
   { name: 'Fish Out of Water', used: false },
