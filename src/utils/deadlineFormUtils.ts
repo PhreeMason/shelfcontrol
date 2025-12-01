@@ -47,7 +47,8 @@ export const createFormNavigation = (
   setCurrentStep: (step: number) => void,
   _mode: FormMode,
   _getFormErrors: () => Record<string, any>,
-  _setFocus: (field: keyof DeadlineFormData) => void
+  _setFocus: (field: keyof DeadlineFormData) => void,
+  resetForm?: () => void
 ): FormNavigationHandlers => {
   const nextStep = async () => {
     if (config.currentStep < config.totalSteps) {
@@ -67,6 +68,10 @@ export const createFormNavigation = (
 
   const goBack = () => {
     if (config.currentStep > 1) {
+      // Reset form when going back to step 1 to clear previous book's data
+      if (config.currentStep === 2 && resetForm) {
+        resetForm();
+      }
       setCurrentStep(config.currentStep - 1);
     } else {
       if (router.canGoBack()) {

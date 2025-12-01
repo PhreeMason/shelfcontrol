@@ -1,5 +1,12 @@
 import { DB_TABLES } from '@/constants/database';
 import { supabase } from '@/lib/supabase';
+import {
+  AudiobookData,
+  GetAudiobookRequest,
+  GetAudiobookResponse,
+  GetAudibleAudiobookRequest,
+  GetAudibleAudiobookResponse,
+} from '@/types/audiobook.types';
 import { FullBookData, SearchBooksResponse } from '@/types/bookSearch';
 import { activityService } from './activity.service';
 
@@ -122,6 +129,73 @@ class BooksService {
     });
 
     return data;
+  }
+
+  /**
+   * Get audiobook duration data
+   * First checks community cache (2+ users with same duration), then falls back to Spotify
+   */
+  async getAudiobookDuration(
+    request: GetAudiobookRequest
+  ): Promise<AudiobookData> {
+    const { data, error } =
+      await supabase.functions.invoke<GetAudiobookResponse>('get-audiobook', {
+        body: request,
+      });
+
+    if (error || !data?.success) {
+      throw new Error(
+        data?.error || error?.message || 'Failed to fetch audiobook data'
+      );
+    }
+
+    // Include source for attribution display
+    return {
+      ...data.data!,
+      source: data.source,
+    };
+  }
+
+  /**
+   * Get audiobook duration from Audible (fallback when Spotify result is rejected)
+   * Scrapes Audible search results for duration data
+   */
+  async getAudiobookFromAudible(
+    request: GetAudibleAudiobookRequest
+  ): Promise<AudiobookData | null> {
+    const { data, error } =
+      await supabase.functions.invoke<GetAudibleAudiobookResponse>(
+        'get-audiobook-audible',
+        { body: request }
+      );
+
+    if (error || !data?.success || !data.data) {
+      // Return null instead of throwing - this is a fallback, not critical
+      return null;
+    }
+
+    // Map Audible response to AudiobookData format
+    const result: AudiobookData = {
+      spotify_id: null,
+      title: data.data.title,
+      author: data.data.author,
+      narrator: data.data.narrator,
+      description: null,
+      duration_ms: data.data.duration_ms,
+      total_chapters: null,
+      publisher: null,
+      release_date: null,
+      isbn: null,
+      cover_url: data.data.cover_url,
+      source: 'audible',
+    };
+
+    // Only add asin if present
+    if (data.data.asin) {
+      result.asin = data.data.asin;
+    }
+
+    return result;
   }
 }
 

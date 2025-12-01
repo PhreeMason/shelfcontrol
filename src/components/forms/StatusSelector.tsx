@@ -20,8 +20,8 @@ export const StatusSelector = ({
 
   const statuses = [
     { key: 'pending', label: 'Pending' },
-    { key: 'active', label: 'Active' },
     { key: 'applied', label: 'Applied' },
+    { key: 'active', label: 'Active' },
   ];
 
   return (
@@ -65,8 +65,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 2,
     borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    paddingVertical: Spacing.lg,
+    paddingVertical: Spacing.md,
     alignItems: 'center',
   },
 });

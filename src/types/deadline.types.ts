@@ -19,6 +19,7 @@ export type ReadingDeadlineWithProgress = Omit<
   status?: ReadingDeadlineStatus[];
   books?: {
     publisher: string | null;
+    cover_image_url: string | null;
   } | null;
   publishers?: string[] | null;
   disclosure_text?: string | null;

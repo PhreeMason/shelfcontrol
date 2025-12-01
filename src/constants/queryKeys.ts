@@ -51,6 +51,8 @@ export const QUERY_KEYS = {
       ['books', 'ids', bookIds.sort().join(',')] as const,
     AUDIOBOOK_DURATION: (bookId: string) =>
       ['audiobooks', 'duration', bookId] as const,
+    AUDIOBOOK_AUDIBLE: (title: string) =>
+      ['audiobooks', 'audible', title] as const,
   },
   PROFILE: {
     DETAIL: (userId: string) => ['profile', userId] as const,

@@ -5,11 +5,17 @@ import TypeTypeaheadInput from '@/components/shared/TypeTypeaheadInput';
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
+import {
+  useGetAudiobookDuration,
+  useGetAudiobookFromAudible,
+} from '@/hooks/useBooks';
 import { useTheme } from '@/hooks/useThemeColor';
+import { UrgencyLevel } from '@/types/deadline.types';
+import { convertMsToHoursAndMinutes } from '@/utils/audiobookTimeUtils';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import { toTitleCase } from '@/utils/stringUtils';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Control, Controller, useWatch } from 'react-hook-form';
 import {
   LayoutChangeEvent,
@@ -18,8 +24,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { AudiobookDurationHelpText } from './AudiobookDurationHelpText';
 import { FormatSelector } from './FormatSelector';
-import { UrgencyLevel } from '@/types/deadline.types';
 import {
   ImpactPreviewData,
   ImpactPreviewSection,
@@ -91,10 +97,100 @@ export const DeadlineFormStep2Combined = ({
   const publishers = useWatch({ control, name: 'publishers' }) || [];
   const watchedValues = {
     bookTitle: useWatch({ control, name: 'bookTitle' }),
+    bookAuthor: useWatch({ control, name: 'bookAuthor' }),
+    totalQuantity: useWatch({ control, name: 'totalQuantity' }),
+    totalMinutes: useWatch({ control, name: 'totalMinutes' }),
     currentProgress: useWatch({ control, name: 'currentProgress' }),
     currentMinutes: useWatch({ control, name: 'currentMinutes' }),
     deadline: useWatch({ control, name: 'deadline' }),
   };
+
+  // Audiobook duration auto-fill
+  const audiobookRequest =
+    selectedFormat === 'audio' && watchedValues.bookTitle && mode === 'new'
+      ? {
+          bookId: watchedBookId || undefined,
+          title: watchedValues.bookTitle,
+          author: watchedValues.bookAuthor || undefined,
+        }
+      : null;
+
+  const { data: audiobookData, isLoading: isLoadingAudiobook } =
+    useGetAudiobookDuration(audiobookRequest);
+
+  // Track if user rejected Spotify result to trigger Audible fallback
+  const [rejectedSpotify, setRejectedSpotify] = useState(false);
+
+  // Audible fallback - only query when user rejects Spotify result
+  const audibleRequest =
+    rejectedSpotify && watchedValues.bookTitle
+      ? {
+          title: watchedValues.bookTitle,
+          author: watchedValues.bookAuthor || undefined,
+        }
+      : null;
+
+  const { data: audibleData, isLoading: isLoadingAudible } =
+    useGetAudiobookFromAudible(audibleRequest, rejectedSpotify);
+
+  // Handle "Not right?" rejection
+  const handleRejectSpotify = useCallback(() => {
+    setRejectedSpotify(true);
+    // Clear the auto-filled values so Audible can fill them
+    setValue('totalQuantity', 0);
+    setValue('totalMinutes', 0);
+  }, [setValue]);
+
+  // Reset rejection state when format changes away from audio
+  useEffect(() => {
+    if (selectedFormat !== 'audio') {
+      setRejectedSpotify(false);
+    }
+  }, [selectedFormat]);
+
+  // Consolidated auto-fill effect for both Spotify and Audible
+  // This single effect prevents competing updates and respects user choices
+  useEffect(() => {
+    if (selectedFormat !== 'audio') return;
+
+    // Priority 1: Audible data (when user rejected Spotify)
+    if (rejectedSpotify && audibleData?.duration_ms) {
+      const { hours, minutes } = convertMsToHoursAndMinutes(
+        audibleData.duration_ms
+      );
+      setValue('totalQuantity', hours);
+      setValue('totalMinutes', minutes > 0 ? minutes : 0);
+      return;
+    }
+
+    // Priority 2: Spotify data (only if not rejected and fields are empty)
+    if (!rejectedSpotify && audiobookData?.duration_ms) {
+      // Only auto-fill if user hasn't manually entered values
+      const hasManualHours =
+        watchedValues.totalQuantity && watchedValues.totalQuantity > 0;
+      const hasManualMinutes =
+        watchedValues.totalMinutes && watchedValues.totalMinutes > 0;
+
+      if (!hasManualHours) {
+        const { hours, minutes } = convertMsToHoursAndMinutes(
+          audiobookData.duration_ms
+        );
+        setValue('totalQuantity', hours);
+
+        if (minutes > 0 && !hasManualMinutes) {
+          setValue('totalMinutes', minutes);
+        }
+      }
+    }
+  }, [
+    audiobookData,
+    audibleData,
+    rejectedSpotify,
+    selectedFormat,
+    setValue,
+    watchedValues.totalQuantity,
+    watchedValues.totalMinutes,
+  ]);
 
   // Publisher management
   const addPublisher = () => {
@@ -268,7 +364,7 @@ export const DeadlineFormStep2Combined = ({
           color="textMuted"
           style={{ marginTop: Spacing.sm, lineHeight: 18 }}
         >
-          Is this book actively being read or pending?
+          Is this book actively being read?
         </ThemedText>
       </View>
 
@@ -325,9 +421,18 @@ export const DeadlineFormStep2Combined = ({
             </View>
           ) : null}
         </View>
-        <ThemedText color="textMuted" style={{ lineHeight: 18 }}>
-          We'll use this to calculate your daily reading pace
-        </ThemedText>
+        <View style={{ marginTop: -Spacing.md }}>
+          <AudiobookDurationHelpText
+            selectedFormat={selectedFormat}
+            audiobookRequest={audiobookRequest}
+            isLoadingAudiobook={isLoadingAudiobook}
+            isLoadingAudible={isLoadingAudible}
+            rejectedSpotify={rejectedSpotify}
+            audiobookData={audiobookData}
+            audibleData={audibleData}
+            onRejectSpotify={handleRejectSpotify}
+          />
+        </View>
       </View>
 
       {/* ========== ADDITIONAL INFORMATION SECTION ========== */}

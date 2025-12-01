@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
-import { corsHeaders, getSpotifyToken, Logger, sanitizeSearchQuery } from './utils.ts';
+import { corsHeaders, getSpotifyToken, isGoodMatch, Logger, sanitizeSearchQuery } from './utils.ts';
 
 interface AudiobookData {
   spotify_id: string | null;
@@ -25,9 +25,55 @@ interface AudiobookSearchResult {
   total_chapters: number;
 }
 
-async function fetchFromSpotify(supabase: any, audiobookId: string): Promise<AudiobookData> {
+/**
+ * Fetch ALL chapters from Spotify with pagination to get accurate total duration.
+ * The main audiobook endpoint only returns the first page of chapters (limit 50).
+ */
+async function fetchAllChapters(
+  token: string,
+  audiobookId: string,
+  logger: Logger
+): Promise<number> {
+  let totalDurationMs = 0;
+  let nextUrl: string | null = `https://api.spotify.com/v1/audiobooks/${audiobookId}/chapters?limit=50&market=US`;
+  let pageCount = 0;
+
+  while (nextUrl) {
+    pageCount++;
+    logger.log(`Fetching chapters page ${pageCount}`);
+
+    const response = await fetch(nextUrl, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        `Spotify chapters API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`
+      );
+    }
+
+    const data = await response.json();
+    const chapters = data.items || [];
+
+    logger.log(`Page ${pageCount}: ${chapters.length} chapters fetched, total in audiobook: ${data.total}`);
+
+    for (const chapter of chapters) {
+      totalDurationMs += chapter.duration_ms || 0;
+    }
+
+    nextUrl = data.next; // null when no more pages
+  }
+
+  const hours = (totalDurationMs / 3600000).toFixed(2);
+  logger.log(`Total duration from ${pageCount} page(s): ${totalDurationMs}ms (${hours} hours)`);
+  return totalDurationMs;
+}
+
+async function fetchFromSpotify(supabase: any, audiobookId: string, logger: Logger): Promise<AudiobookData> {
   const token = await getSpotifyToken(supabase);
 
+  // Fetch audiobook metadata
   const response = await fetch(
     `https://api.spotify.com/v1/audiobooks/${audiobookId}`,
     { headers: { Authorization: `Bearer ${token}` } }
@@ -42,11 +88,19 @@ async function fetchFromSpotify(supabase: any, audiobookId: string): Promise<Aud
 
   const data = await response.json();
 
-  // Only calculate duration if we have actual chapter data - no guessing
-  const totalDurationMs = data.chapters?.items?.reduce(
-    (sum: number, chapter: { duration_ms: number }) => sum + chapter.duration_ms,
-    0
-  ) || null;
+  // Log raw response data for debugging
+  logger.log(`Audiobook: "${data.name}"`);
+  logger.log(`Total chapters reported: ${data.total_chapters}`);
+  logger.log(`Chapters in initial response: ${data.chapters?.items?.length || 0}`);
+  logger.log(`Chapters pagination - total: ${data.chapters?.total}, limit: ${data.chapters?.limit}`);
+
+  // Fetch ALL chapters to get accurate duration (pagination required for >50 chapters)
+  let totalDurationMs: number | null = null;
+  if (data.total_chapters > 0) {
+    totalDurationMs = await fetchAllChapters(token, audiobookId, logger);
+  } else {
+    logger.log('No chapters available - duration will be null');
+  }
 
   return {
     spotify_id: audiobookId,
@@ -90,7 +144,7 @@ async function getAudiobookData(supabase: any, audiobookId: string, logger: Logg
   }
 
   logger.log('Cache miss, fetching from Spotify');
-  const audiobookData = await fetchFromSpotify(supabase, audiobookId);
+  const audiobookData = await fetchFromSpotify(supabase, audiobookId, logger);
 
   // Only cache if we have duration (the main value we care about)
   if (audiobookData.duration_ms) {
@@ -239,25 +293,46 @@ Deno.serve(async (req) => {
       }
     }
 
+
     // Path 3: Fall back to Spotify search by title/author
     if (title && typeof title === 'string') {
       const searchQuery = sanitizeSearchQuery(`${title} ${author || ''}`);
       logger.log(`Searching Spotify for: "${searchQuery}"`);
 
-      const searchResults = await searchSpotify(supabase, searchQuery, 1, logger);
+      // Fetch top 2 results to balance accuracy with performance
+      const searchResults = await searchSpotify(supabase, searchQuery, 2, logger);
 
       if (searchResults.length > 0) {
-        const firstResult = searchResults[0];
-        logger.log(`Found match: ${firstResult.title} (${firstResult.spotify_id})`);
+        logger.log(`Spotify returned ${searchResults.length} results, validating...`);
 
-        const audiobookData = await getAudiobookData(supabase, firstResult.spotify_id, logger);
-        return new Response(
-          JSON.stringify({ success: true, source: 'spotify', data: audiobookData }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        // Find first result that meets similarity threshold
+        for (const result of searchResults) {
+          const { isMatch, titleScore, authorScore } = isGoodMatch(
+            title,
+            result.title,
+            author,
+            result.author,
+            logger
+          );
+
+          if (isMatch) {
+            logger.log(`✓ Accepted: ${result.title} (title: ${(titleScore * 100).toFixed(1)}%, author: ${authorScore ? (authorScore * 100).toFixed(1) + '%' : 'N/A'})`);
+
+            const audiobookData = await getAudiobookData(supabase, result.spotify_id, logger);
+            return new Response(
+              JSON.stringify({ success: true, source: 'spotify', data: audiobookData }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          } else {
+            logger.log(`✗ Rejected: ${result.title} (title: ${(titleScore * 100).toFixed(1)}%, author: ${authorScore ? (authorScore * 100).toFixed(1) + '%' : 'N/A'})`);
+          }
+        }
+
+
+        logger.log('No results met similarity threshold');
+      } else {
+        logger.log('No Spotify results found');
       }
-
-      logger.log('No Spotify results found');
     }
 
     // No valid input or no results

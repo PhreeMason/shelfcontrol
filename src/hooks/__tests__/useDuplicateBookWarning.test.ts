@@ -1,7 +1,7 @@
-import { showDuplicateBookWarning } from '../useDuplicateBookWarning';
-import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { SelectedBook } from '@/types/bookSearch';
+import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import Toast from 'react-native-toast-message';
+import { showDuplicateBookWarning } from '../useDuplicateBookWarning';
 
 jest.mock('react-native-toast-message', () => ({
   __esModule: true,
@@ -83,7 +83,7 @@ describe('showDuplicateBookWarning', () => {
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'warning',
-        text1: 'This book already has a due date',
+        text1: 'You have already added this ARC!',
         text2: expect.stringContaining('Status: reading'),
       })
     );
@@ -105,7 +105,7 @@ describe('showDuplicateBookWarning', () => {
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'warning',
-        text1: 'This book already has a due date',
+        text1: 'You have already added this ARC!',
       })
     );
   });

@@ -171,6 +171,7 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     setValue,
     trigger,
     setFocus,
+    reset,
     formState: reactHookFormState,
   } = useForm<DeadlineFormData>({
     resolver: zodResolver(deadlineFormSchema),
@@ -178,6 +179,24 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     reValidateMode: 'onChange',
     defaultValues: getFormDefaultValues(mode),
   });
+
+  // Reset all form state (both React Hook Form and local state)
+  // Used when going back from step 2 to step 1 to clear previous book's data
+  const resetAllFormState = useCallback(() => {
+    // Reset React Hook Form fields to defaults
+    reset(getFormDefaultValues(mode));
+
+    // Reset local state to defaults
+    setSelectedFormat('eBook');
+    setSelectedStatus('pending');
+    setSelectedPriority('flexible');
+    setDeadlineFromPublicationDate(false);
+    setPreviousPageCount(null);
+
+    // Reset initialization flags so form can be re-populated from params if needed
+    isInitialized.current = false;
+    bookSelectedRef.current = false;
+  }, [reset, mode]);
 
   const watchedValues = watch();
 
@@ -604,7 +623,8 @@ const DeadlineFormContainer: React.FC<DeadlineFormContainerProps> = ({
     setCurrentStep,
     mode,
     () => reactHookFormState.errors,
-    setFocus
+    setFocus,
+    resetAllFormState
   );
 
   // Event handlers

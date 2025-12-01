@@ -22,6 +22,23 @@ export function convertMinutesToHoursAndMinutes(totalMinutes: number): {
 }
 
 /**
+ * Converts milliseconds to hours and minutes
+ * @param durationMs - Duration in milliseconds
+ * @returns Object with hours and minutes
+ */
+export function convertMsToHoursAndMinutes(durationMs: number): {
+  hours: number;
+  minutes: number;
+} {
+  if (durationMs < 0) {
+    throw new Error('Duration cannot be negative');
+  }
+
+  const totalMinutes = Math.round(durationMs / 60000);
+  return convertMinutesToHoursAndMinutes(totalMinutes);
+}
+
+/**
  * Converts hours and minutes to total minutes
  * @param hours - Number of hours
  * @param minutes - Number of minutes (optional, defaults to 0)

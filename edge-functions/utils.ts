@@ -84,3 +84,81 @@ export class Logger {
     return this.logs;
   }
 }
+
+/**
+ * Calculate Levenshtein distance between two strings.
+ * Returns a similarity score from 0 (completely different) to 1 (identical).
+ */
+export function calculateSimilarity(str1: string, str2: string): number {
+  const s1 = str1.toLowerCase().trim();
+  const s2 = str2.toLowerCase().trim();
+
+  if (s1 === s2) return 1.0;
+  if (s1.length === 0 || s2.length === 0) return 0.0;
+
+  const matrix: number[][] = [];
+
+  // Initialize matrix
+  for (let i = 0; i <= s2.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= s1.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  // Fill matrix with Levenshtein distances
+  for (let i = 1; i <= s2.length; i++) {
+    for (let j = 1; j <= s1.length; j++) {
+      if (s2.charAt(i - 1) === s1.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1, // substitution
+          matrix[i][j - 1] + 1,     // insertion
+          matrix[i - 1][j] + 1      // deletion
+        );
+      }
+    }
+  }
+
+  const distance = matrix[s2.length][s1.length];
+  const maxLength = Math.max(s1.length, s2.length);
+  return 1 - (distance / maxLength);
+}
+
+/**
+ * Check if a search result is a good match for the query.
+ * Uses title and author similarity to validate results.
+ */
+export function isGoodMatch(
+  searchTitle: string,
+  resultTitle: string,
+  searchAuthor: string | undefined,
+  resultAuthor: string | undefined,
+  logger: Logger
+): { isMatch: boolean; titleScore: number; authorScore: number | null } {
+  const titleScore = calculateSimilarity(searchTitle, resultTitle);
+
+  logger.log(`Title similarity: "${searchTitle}" vs "${resultTitle}" = ${(titleScore * 100).toFixed(1)}%`);
+
+  // If no author provided, only check title
+  if (!searchAuthor) {
+    const isMatch = titleScore >= 0.6;
+    logger.log(`No author provided, title match: ${isMatch}`);
+    return { isMatch, titleScore, authorScore: null };
+  }
+
+  // Check author similarity
+  const authorScore = resultAuthor
+    ? calculateSimilarity(searchAuthor, resultAuthor)
+    : 0;
+
+  logger.log(`Author similarity: "${searchAuthor}" vs "${resultAuthor}" = ${(authorScore * 100).toFixed(1)}%`);
+
+  // Require both title and author to meet thresholds
+  const isMatch = titleScore >= 0.6 && authorScore >= 0.5;
+
+  logger.log(`Combined match result: ${isMatch} (title: ${titleScore >= 0.6}, author: ${authorScore >= 0.5})`);
+
+  return { isMatch, titleScore, authorScore };
+}

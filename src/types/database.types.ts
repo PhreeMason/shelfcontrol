@@ -14,6 +14,60 @@ export type Database = {
   };
   public: {
     Tables: {
+      audiobook_cache: {
+        Row: {
+          author: string | null;
+          cover_url: string | null;
+          created_at: string | null;
+          description: string | null;
+          duration_ms: number;
+          expires_at: string | null;
+          id: string;
+          isbn: string | null;
+          metadata: Json | null;
+          narrator: string | null;
+          publisher: string | null;
+          release_date: string | null;
+          spotify_id: string;
+          title: string;
+          total_chapters: number | null;
+        };
+        Insert: {
+          author?: string | null;
+          cover_url?: string | null;
+          created_at?: string | null;
+          description?: string | null;
+          duration_ms: number;
+          expires_at?: string | null;
+          id?: string;
+          isbn?: string | null;
+          metadata?: Json | null;
+          narrator?: string | null;
+          publisher?: string | null;
+          release_date?: string | null;
+          spotify_id: string;
+          title: string;
+          total_chapters?: number | null;
+        };
+        Update: {
+          author?: string | null;
+          cover_url?: string | null;
+          created_at?: string | null;
+          description?: string | null;
+          duration_ms?: number;
+          expires_at?: string | null;
+          id?: string;
+          isbn?: string | null;
+          metadata?: Json | null;
+          narrator?: string | null;
+          publisher?: string | null;
+          release_date?: string | null;
+          spotify_id?: string;
+          title?: string;
+          total_chapters?: number | null;
+        };
+        Relationships: [];
+      };
       authors: {
         Row: {
           created_at: string | null;
@@ -219,6 +273,51 @@ export type Database = {
           },
           {
             foreignKeyName: 'deadline_contacts_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      deadline_custom_dates: {
+        Row: {
+          created_at: string;
+          date: string;
+          deadline_id: string;
+          id: string;
+          name: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          date: string;
+          deadline_id: string;
+          id?: string;
+          name: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          date?: string;
+          deadline_id?: string;
+          id?: string;
+          name?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'deadline_custom_dates_deadline_id_fkey';
+            columns: ['deadline_id'];
+            isOneToOne: false;
+            referencedRelation: 'deadlines';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'deadline_custom_dates_user_id_fkey';
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
@@ -724,6 +823,30 @@ export type Database = {
           },
         ];
       };
+      spotify_tokens: {
+        Row: {
+          access_token: string;
+          created_at: string | null;
+          expires_at: string;
+          id: number;
+          updated_at: string | null;
+        };
+        Insert: {
+          access_token: string;
+          created_at?: string | null;
+          expires_at: string;
+          id?: number;
+          updated_at?: string | null;
+        };
+        Update: {
+          access_token?: string;
+          created_at?: string | null;
+          expires_at?: string;
+          id?: number;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
       tags: {
         Row: {
           color: string;
@@ -1036,6 +1159,8 @@ export type Database = {
               username: string;
             }[];
           };
+      show_limit: { Args: never; Returns: number };
+      show_trgm: { Args: { '': string }; Returns: string[] };
       store_book_with_authors: { Args: { book_data: Json }; Returns: string };
     };
     Enums: {

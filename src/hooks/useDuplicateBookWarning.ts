@@ -53,7 +53,7 @@ export const showDuplicateBookWarning = ({
   Toast.show({
     swipeable: true,
     type: 'warning',
-    text1: 'This book already has a due date',
+    text1: 'You have already added this ARC!',
     text2: detailsText,
     visibilityTime: 5000,
     position: 'top',

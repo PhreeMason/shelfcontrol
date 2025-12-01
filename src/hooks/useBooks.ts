@@ -1,5 +1,9 @@
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { booksService } from '@/services';
+import {
+  GetAudiobookRequest,
+  GetAudibleAudiobookRequest,
+} from '@/types/audiobook.types';
 import { FullBookData, SearchBooksResponse } from '@/types/bookSearch';
 import { useQuery } from '@tanstack/react-query';
 
@@ -66,5 +70,38 @@ export const useFetchBookById = (book_id: string | null) => {
     queryFn: async () => fetchBookById(book_id!),
     staleTime: 1000 * 60 * 30,
     enabled: !!book_id,
+  });
+};
+
+/**
+ * Hook to get audiobook duration data.
+ * First checks community cache (2+ users with same duration), then falls back to Spotify.
+ */
+export const useGetAudiobookDuration = (
+  request: GetAudiobookRequest | null
+) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.BOOKS.AUDIOBOOK_DURATION(
+      request?.bookId || request?.title || ''
+    ),
+    queryFn: () => booksService.getAudiobookDuration(request!),
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+    enabled: !!request && !!(request.bookId || request.title),
+  });
+};
+
+/**
+ * Hook to get audiobook duration from Audible (fallback).
+ * Used when user rejects Spotify result via "Not right?" button.
+ */
+export const useGetAudiobookFromAudible = (
+  request: GetAudibleAudiobookRequest | null,
+  enabled: boolean = true
+) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.BOOKS.AUDIOBOOK_AUDIBLE(request?.title || ''),
+    queryFn: () => booksService.getAudiobookFromAudible(request!),
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+    enabled: enabled && !!request?.title,
   });
 };
