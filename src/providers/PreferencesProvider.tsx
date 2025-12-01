@@ -59,6 +59,10 @@ interface PreferencesContextType {
   setExcludedCalendarActivities: (activities: CalendarFilterType[]) => void;
   hideDatesOnCovers: boolean;
   setHideDatesOnCovers: (hide: boolean) => void;
+  showActivityBars: boolean;
+  setShowActivityBars: (show: boolean) => void;
+  showCoverOnCalendar: boolean;
+  setShowCoverOnCalendar: (show: boolean) => void;
   isLoading: boolean;
 }
 
@@ -91,6 +95,10 @@ const PreferencesContext = createContext<PreferencesContextType>({
   setExcludedCalendarActivities: () => {},
   hideDatesOnCovers: false,
   setHideDatesOnCovers: () => {},
+  showActivityBars: true,
+  setShowActivityBars: () => {},
+  showCoverOnCalendar: false,
+  setShowCoverOnCalendar: () => {},
   isLoading: true,
 });
 
@@ -108,6 +116,8 @@ const STORAGE_KEYS = {
   DEADLINE_VIEW_MODE: '@preferences/deadlineViewMode',
   EXCLUDED_CALENDAR_ACTIVITIES: '@preferences/excludedCalendarActivities',
   HIDE_DATES_ON_COVERS: '@preferences/hideDatesOnCovers',
+  SHOW_ACTIVITY_BARS: '@preferences/showActivityBars',
+  SHOW_COVER_ON_CALENDAR: '@preferences/showCoverOnCalendar',
 };
 
 export default function PreferencesProvider({ children }: PropsWithChildren) {
@@ -134,6 +144,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
   const [excludedCalendarActivities, setExcludedCalendarActivitiesState] =
     useState<CalendarFilterType[]>([]);
   const [hideDatesOnCovers, setHideDatesOnCoversState] = useState(false);
+  const [showActivityBars, setShowActivityBarsState] = useState(true);
+  const [showCoverOnCalendar, setShowCoverOnCalendarState] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -153,6 +165,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           savedDeadlineViewMode,
           savedExcludedCalendarActivities,
           savedHideDatesOnCovers,
+          savedShowActivityBars,
+          savedShowCoverOnCalendar,
         ] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FILTER),
           AsyncStorage.getItem(STORAGE_KEYS.TIME_RANGE_FILTER),
@@ -167,6 +181,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           AsyncStorage.getItem(STORAGE_KEYS.DEADLINE_VIEW_MODE),
           AsyncStorage.getItem(STORAGE_KEYS.EXCLUDED_CALENDAR_ACTIVITIES),
           AsyncStorage.getItem(STORAGE_KEYS.HIDE_DATES_ON_COVERS),
+          AsyncStorage.getItem(STORAGE_KEYS.SHOW_ACTIVITY_BARS),
+          AsyncStorage.getItem(STORAGE_KEYS.SHOW_COVER_ON_CALENDAR),
         ]);
 
         if (savedFilter) {
@@ -218,6 +234,16 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
         if (savedHideDatesOnCovers) {
           setHideDatesOnCoversState(
             JSON.parse(savedHideDatesOnCovers) as boolean
+          );
+        }
+        if (savedShowActivityBars) {
+          setShowActivityBarsState(
+            JSON.parse(savedShowActivityBars) as boolean
+          );
+        }
+        if (savedShowCoverOnCalendar) {
+          setShowCoverOnCalendarState(
+            JSON.parse(savedShowCoverOnCalendar) as boolean
           );
         }
       } catch (error) {
@@ -392,6 +418,30 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     }
   };
 
+  const setShowActivityBars = async (show: boolean) => {
+    try {
+      setShowActivityBarsState(show);
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.SHOW_ACTIVITY_BARS,
+        JSON.stringify(show)
+      );
+    } catch (error) {
+      console.error('Error saving show activity bars preference:', error);
+    }
+  };
+
+  const setShowCoverOnCalendar = async (show: boolean) => {
+    try {
+      setShowCoverOnCalendarState(show);
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.SHOW_COVER_ON_CALENDAR,
+        JSON.stringify(show)
+      );
+    } catch (error) {
+      console.error('Error saving show cover on calendar preference:', error);
+    }
+  };
+
   const value = {
     selectedFilter,
     setSelectedFilter,
@@ -421,6 +471,10 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     setExcludedCalendarActivities,
     hideDatesOnCovers,
     setHideDatesOnCovers,
+    showActivityBars,
+    setShowActivityBars,
+    showCoverOnCalendar,
+    setShowCoverOnCalendar,
     isLoading,
   };
 

@@ -75,7 +75,14 @@ export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
   onExcludedActivitiesChange,
 }) => {
   const { colors } = useTheme();
-  const { hideDatesOnCovers, setHideDatesOnCovers } = usePreferences();
+  const {
+    hideDatesOnCovers,
+    setHideDatesOnCovers,
+    showActivityBars,
+    setShowActivityBars,
+    showCoverOnCalendar,
+    setShowCoverOnCalendar,
+  } = usePreferences();
   const insets = useSafeAreaInsets();
   const translateY = useSharedValue(1000);
 
@@ -105,6 +112,21 @@ export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
 
   const selectAllFilters = () => {
     onExcludedActivitiesChange([]);
+  };
+
+  // Mutual exclusivity handlers for covers vs activity bars
+  const handleActivityBarsChange = (value: boolean) => {
+    setShowActivityBars(value);
+    if (value) {
+      setShowCoverOnCalendar(false);
+    }
+  };
+
+  const handleCoverOnCalendarChange = (value: boolean) => {
+    setShowCoverOnCalendar(value);
+    if (value) {
+      setShowActivityBars(false);
+    }
   };
 
   // Show "Clear All" when any filters are selected (items showing)
@@ -249,6 +271,26 @@ export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
               <ThemedText typography="titleMedium" style={styles.sectionTitle}>
                 Display Options
               </ThemedText>
+              <View style={styles.toggleRow}>
+                <ThemedText typography="labelLarge">
+                  Show activity bars
+                </ThemedText>
+                <Switch
+                  value={showActivityBars}
+                  onValueChange={handleActivityBarsChange}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                />
+              </View>
+              <View style={styles.toggleRow}>
+                <ThemedText typography="labelLarge">
+                  Show book covers
+                </ThemedText>
+                <Switch
+                  value={showCoverOnCalendar}
+                  onValueChange={handleCoverOnCalendarChange}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                />
+              </View>
               <View style={styles.toggleRow}>
                 <ThemedText typography="labelLarge">
                   Hide dates on covers

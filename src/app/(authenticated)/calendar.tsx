@@ -339,6 +339,7 @@ export default function CalendarScreen() {
         onBack={NOOP}
         showBackButton={false}
         rightElement={<CalendarFilterToggle />}
+        headerStyle={{paddingBottom: Spacing.md}}
       />
       <View style={styles.content}>
         <View

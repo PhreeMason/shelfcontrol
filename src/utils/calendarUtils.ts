@@ -1,10 +1,8 @@
-import {
-  ACTIVITY_DOT_COLOR,
-  ACTIVITY_TYPE_CONFIG,
-} from '@/constants/activityTypes';
+import { ACTIVITY_TYPE_CONFIG } from '@/constants/activityTypes';
 import { dayjs } from '@/lib/dayjs';
 import { posthog } from '@/lib/posthog';
 import {
+  ActivityBarInfo,
   AgendaActivityItem,
   DailyActivity,
   EnrichedActivity,
@@ -24,6 +22,12 @@ const URGENCY_PRIORITY = [
   'approaching',
   'good',
 ] as const;
+
+// Maximum number of activity bars to display per calendar cell
+const MAX_ACTIVITY_BARS = 6;
+
+// Gray color for non-deadline activity bars
+const OTHER_ACTIVITY_BAR_COLOR = '#9CA3AF';
 
 /**
  * Get activity priority for sorting (lower number = higher priority)
@@ -246,8 +250,297 @@ export function transformActivitiesToAgendaItems(
   return result;
 }
 
+// ============================================================================
+// calculateMarkedDates - Helper Types and Functions
+// ============================================================================
+
 /**
- * Calculate marked dates for calendar with custom cell styling and dots
+ * Urgency data for a deadline on a specific date
+ */
+interface UrgencyData {
+  urgencyLevel: string;
+  urgencyColor: string;
+  deadlineId: string;
+  coverImageUrl: string | null;
+}
+
+/**
+ * Groups activities by date in YYYY-MM-DD format
+ * Uses parseServerDateTime to convert UTC to local timezone
+ */
+function groupActivitiesByDate(
+  activities: DailyActivity[]
+): Record<string, DailyActivity[]> {
+  const grouped: Record<string, DailyActivity[]> = {};
+
+  activities.forEach(activity => {
+    const date = parseServerDateTime(activity.activity_timestamp).format(
+      'YYYY-MM-DD'
+    );
+    if (!grouped[date]) {
+      grouped[date] = [];
+    }
+    grouped[date].push(activity);
+  });
+
+  return grouped;
+}
+
+/**
+ * Collects and sorts urgency data for deadline_due activities
+ * Returns sorted array with most urgent deadline first
+ */
+function getDeadlineUrgencyData(
+  deadlineDueActivities: DailyActivity[],
+  deadlines: ReadingDeadlineWithProgress[],
+  getDeadlineCalculations: (
+    deadline: ReadingDeadlineWithProgress
+  ) => DeadlineCalculationResult
+): UrgencyData[] {
+  const urgencyData: UrgencyData[] = [];
+
+  deadlineDueActivities.forEach(activity => {
+    const deadline = deadlines.find(d => d.id === activity.deadline_id);
+    if (deadline) {
+      const calculations = getDeadlineCalculations(deadline);
+      const coverUrl =
+        deadline.cover_image_url || deadline.books?.cover_image_url;
+      urgencyData.push({
+        urgencyLevel: calculations.urgencyLevel,
+        urgencyColor: calculations.urgencyColor,
+        deadlineId: deadline.id,
+        coverImageUrl: getCoverImageUrl(coverUrl),
+      });
+    }
+  });
+
+  // Sort by urgency priority (most urgent first)
+  urgencyData.sort(
+    (a, b) =>
+      getUrgencyPriorityIndex(a.urgencyLevel) -
+      getUrgencyPriorityIndex(b.urgencyLevel)
+  );
+
+  return urgencyData;
+}
+
+/**
+ * Builds activity bars array for horizontal bar display
+ * Prioritizes deadline activities, adds one gray bar for other activities if room
+ */
+function buildActivityBars(
+  urgencyData: UrgencyData[],
+  otherActivitiesCount: number
+): ActivityBarInfo[] {
+  const bars: ActivityBarInfo[] = [];
+
+  // Add deadline bars (up to MAX_ACTIVITY_BARS), sorted by urgency (most urgent first)
+  for (const data of urgencyData.slice(0, MAX_ACTIVITY_BARS)) {
+    bars.push({
+      color: data.urgencyColor,
+      isDeadline: true,
+    });
+  }
+
+  // If room remains and other activities exist, add ONE gray bar
+  if (bars.length < MAX_ACTIVITY_BARS && otherActivitiesCount > 0) {
+    bars.push({
+      color: OTHER_ACTIVITY_BAR_COLOR,
+      isDeadline: false,
+    });
+  }
+
+  return bars;
+}
+
+/**
+ * Builds marking for a date with deadline_due activities
+ * Uses the most urgent deadline's color for background styling
+ */
+function buildDeadlineMarking(
+  primaryUrgency: UrgencyData,
+  activityBars: ActivityBarInfo[]
+): MarkedDatesConfig[string] {
+  return {
+    customStyles: {
+      container: {
+        backgroundColor: primaryUrgency.urgencyColor + OPACITY.CALENDAR,
+        borderRadius: 4,
+      },
+      text: {
+        color: primaryUrgency.urgencyColor,
+        fontWeight: '600' as const,
+      },
+      coverImageUrl: primaryUrgency.coverImageUrl,
+      activityBars,
+    },
+  };
+}
+
+/**
+ * Builds marking for a date with custom_date activities (no deadline_due)
+ * Uses the custom_date color for styling
+ */
+function buildCustomDateMarking(
+  customDateActivities: DailyActivity[],
+  deadlines: ReadingDeadlineWithProgress[],
+  otherActivitiesCount: number
+): MarkedDatesConfig[string] {
+  // Get cover image from the first custom date's deadline
+  let primaryCoverUrl: string | null = null;
+  const firstActivity = customDateActivities[0];
+
+  if (firstActivity) {
+    const deadline = deadlines.find(d => d.id === firstActivity.deadline_id);
+    if (deadline) {
+      const coverUrl =
+        deadline.cover_image_url || deadline.books?.cover_image_url;
+      primaryCoverUrl = getCoverImageUrl(coverUrl);
+    }
+  }
+
+  // Build activity bars for custom_date (treat as non-deadline bars)
+  const activityBars: ActivityBarInfo[] = [];
+  const customDateColor = ACTIVITY_TYPE_CONFIG.custom_date.color;
+  const totalBars = Math.min(customDateActivities.length, MAX_ACTIVITY_BARS);
+
+  for (let i = 0; i < totalBars; i++) {
+    activityBars.push({
+      color: customDateColor,
+      isDeadline: false,
+    });
+  }
+
+  // Add one gray bar for other activities if room
+  if (activityBars.length < MAX_ACTIVITY_BARS && otherActivitiesCount > 0) {
+    activityBars.push({
+      color: OTHER_ACTIVITY_BAR_COLOR,
+      isDeadline: false,
+    });
+  }
+
+  return {
+    customStyles: {
+      container: {
+        backgroundColor:
+          ACTIVITY_TYPE_CONFIG.custom_date.color + OPACITY.CALENDAR,
+        borderRadius: 4,
+      },
+      text: {
+        color: ACTIVITY_TYPE_CONFIG.custom_date.color,
+        fontWeight: '600' as const,
+      },
+      coverImageUrl: primaryCoverUrl,
+      activityBars,
+    },
+  };
+}
+
+/**
+ * Builds marking for a date with only activity events (no deadlines or custom dates)
+ * Uses a subtle grey background
+ */
+function buildActivityOnlyMarking(
+  nonDeadlineActivities: DailyActivity[],
+  deadlines: ReadingDeadlineWithProgress[]
+): MarkedDatesConfig[string] {
+  // Get cover from first activity's deadline
+  let activityCoverUrl: string | null = null;
+  const firstActivity = nonDeadlineActivities[0];
+
+  if (firstActivity) {
+    const deadline = deadlines.find(d => d.id === firstActivity.deadline_id);
+    if (deadline) {
+      const coverUrl =
+        deadline.cover_image_url || deadline.books?.cover_image_url;
+      activityCoverUrl = getCoverImageUrl(coverUrl);
+    }
+  }
+
+  // Build activity bars - all gray for non-deadline activities
+  const activityBars: ActivityBarInfo[] = [];
+  const totalBars = Math.min(nonDeadlineActivities.length, MAX_ACTIVITY_BARS);
+
+  for (let i = 0; i < totalBars; i++) {
+    activityBars.push({
+      color: OTHER_ACTIVITY_BAR_COLOR,
+      isDeadline: false,
+    });
+  }
+
+  return {
+    customStyles: {
+      container: {
+        backgroundColor: ACTIVITY_TYPE_CONFIG.custom_date.color + OPACITY.SUBTLE,
+        borderRadius: 4,
+      },
+      coverImageUrl: activityCoverUrl,
+      activityBars,
+    },
+  };
+}
+
+/**
+ * Builds marking for a single date based on its activities
+ * Returns null if no marking should be applied
+ */
+function buildMarkingForDate(
+  dateActivities: DailyActivity[],
+  deadlines: ReadingDeadlineWithProgress[],
+  getDeadlineCalculations: (
+    deadline: ReadingDeadlineWithProgress
+  ) => DeadlineCalculationResult
+): MarkedDatesConfig[string] | null {
+  const deadlineDueActivities = dateActivities.filter(
+    a => a.activity_type === 'deadline_due'
+  );
+  const customDateActivities = dateActivities.filter(
+    a => a.activity_type === 'custom_date'
+  );
+  const nonDeadlineActivities = dateActivities.filter(
+    a => a.activity_type !== 'deadline_due' && a.activity_type !== 'custom_date'
+  );
+
+  // Priority 1: Dates with deadline_due activities
+  if (deadlineDueActivities.length > 0) {
+    const urgencyData = getDeadlineUrgencyData(
+      deadlineDueActivities,
+      deadlines,
+      getDeadlineCalculations
+    );
+
+    if (urgencyData.length > 0) {
+      const activityBars = buildActivityBars(
+        urgencyData,
+        nonDeadlineActivities.length
+      );
+      return buildDeadlineMarking(urgencyData[0], activityBars);
+    }
+  }
+
+  // Priority 2: Dates with custom_date activities
+  if (customDateActivities.length > 0) {
+    return buildCustomDateMarking(
+      customDateActivities,
+      deadlines,
+      nonDeadlineActivities.length
+    );
+  }
+
+  // Priority 3: Dates with other activities only
+  if (nonDeadlineActivities.length > 0) {
+    return buildActivityOnlyMarking(nonDeadlineActivities, deadlines);
+  }
+
+  return null;
+}
+
+// ============================================================================
+// calculateMarkedDates - Main Export
+// ============================================================================
+
+/**
+ * Calculate marked dates for calendar with custom cell styling
  * @param activities - Array of activities from get_daily_activities
  * @param deadlines - Array of all deadlines
  * @param getDeadlineCalculations - Function to calculate deadline metrics
@@ -255,10 +548,9 @@ export function transformActivitiesToAgendaItems(
  *
  * Logic:
  * - Deadline dates get tinted background (urgencyColor + OPACITY.CALENDAR)
- * - When multiple deadlines on same date: highest urgency = background, others = dots
+ * - When multiple deadlines on same date: highest urgency determines background
+ * - Custom date activities get their own color styling
  * - Activity-only dates get subtle grey background
- * - Deadlines with activities get a grey activity dot
- * - Max 3 dots per date (lower priority deadlines + activity dot)
  */
 export function calculateMarkedDates(
   activities: DailyActivity[],
@@ -268,198 +560,16 @@ export function calculateMarkedDates(
   ) => DeadlineCalculationResult
 ): MarkedDatesConfig {
   const markedDates: MarkedDatesConfig = {};
-  const MAX_DOTS = 3;
+  const groupedByDate = groupActivitiesByDate(activities);
 
-  // Group activities by date
-  const groupedByDate: Record<string, DailyActivity[]> = {};
-  activities.forEach(activity => {
-    // Extract date in user's local timezone to avoid day-offset issues
-    const date = parseServerDateTime(activity.activity_timestamp).format(
-      'YYYY-MM-DD'
-    );
-    if (!groupedByDate[date]) {
-      groupedByDate[date] = [];
-    }
-    groupedByDate[date].push(activity);
-  });
-
-  // Process each date
   Object.entries(groupedByDate).forEach(([date, dateActivities]) => {
-    const deadlineDueActivities = dateActivities.filter(
-      a => a.activity_type === 'deadline_due'
+    const marking = buildMarkingForDate(
+      dateActivities,
+      deadlines,
+      getDeadlineCalculations
     );
-    const customDateActivities = dateActivities.filter(
-      a => a.activity_type === 'custom_date'
-    );
-    const nonDeadlineActivities = dateActivities.filter(
-      a =>
-        a.activity_type !== 'deadline_due' && a.activity_type !== 'custom_date'
-    );
-    const hasNonDeadlineActivities = nonDeadlineActivities.length > 0;
-
-    if (deadlineDueActivities.length > 0) {
-      // Collect urgency data for all deadlines on this date
-      const urgencyData: {
-        urgencyLevel: string;
-        urgencyColor: string;
-        deadlineId: string;
-        coverImageUrl: string | null;
-      }[] = [];
-
-      deadlineDueActivities.forEach(activity => {
-        const deadline = deadlines.find(d => d.id === activity.deadline_id);
-        if (deadline) {
-          const calculations = getDeadlineCalculations(deadline);
-          // Prioritize deadline's custom cover over book's cover (same as useDeadlineCardViewModel)
-          const coverUrl =
-            deadline.cover_image_url || deadline.books?.cover_image_url;
-          urgencyData.push({
-            urgencyLevel: calculations.urgencyLevel,
-            urgencyColor: calculations.urgencyColor,
-            deadlineId: deadline.id,
-            coverImageUrl: getCoverImageUrl(coverUrl),
-          });
-        }
-      });
-
-      if (urgencyData.length > 0) {
-        // Sort by urgency priority (most urgent first)
-        urgencyData.sort(
-          (a, b) =>
-            getUrgencyPriorityIndex(a.urgencyLevel) -
-            getUrgencyPriorityIndex(b.urgencyLevel)
-        );
-
-        // First (most urgent) becomes the background
-        const primaryUrgency = urgencyData[0];
-
-        // Build dots array for lower priority deadlines
-        const dots: { key: string; color: string }[] = [];
-
-        // Add dots for remaining deadlines (skip first, it's the background)
-        const remainingDeadlines = urgencyData.slice(1);
-        const maxDeadlineDots = hasNonDeadlineActivities
-          ? MAX_DOTS - 1
-          : MAX_DOTS;
-
-        remainingDeadlines.slice(0, maxDeadlineDots).forEach((data, index) => {
-          dots.push({
-            key: `deadline_${index}`,
-            color: data.urgencyColor,
-          });
-        });
-
-        // Add dots for custom dates
-        customDateActivities.forEach((_, index) => {
-          if (dots.length < MAX_DOTS) {
-            dots.push({
-              key: `custom_${index}`,
-              color: ACTIVITY_TYPE_CONFIG.custom_date.color,
-            });
-          }
-        });
-
-        // Add grey activity dot if there are non-deadline activities
-        if (hasNonDeadlineActivities && dots.length < MAX_DOTS) {
-          dots.push({
-            key: 'activity',
-            color: ACTIVITY_DOT_COLOR,
-          });
-        }
-
-        const marking: MarkedDatesConfig[string] = {
-          customStyles: {
-            container: {
-              backgroundColor: primaryUrgency.urgencyColor + OPACITY.CALENDAR,
-              borderRadius: 4,
-            },
-            text: {
-              color: primaryUrgency.urgencyColor,
-              fontWeight: '600' as const,
-            },
-            coverImageUrl: primaryUrgency.coverImageUrl,
-          },
-        };
-
-        // Only add dots property if there are dots to show
-        if (dots.length > 0) {
-          marking.dots = dots;
-        }
-
-        markedDates[date] = marking;
-      }
-    } else {
-      // No deadlines, check for custom dates or other activities
-      if (customDateActivities.length > 0) {
-        // Custom dates get their own dot color
-        const dots: { key: string; color: string }[] = [];
-        let primaryCoverUrl: string | null = null;
-
-        customDateActivities.slice(0, MAX_DOTS).forEach((activity, index) => {
-          dots.push({
-            key: `custom_${index}`,
-            color: ACTIVITY_TYPE_CONFIG.custom_date.color,
-          });
-
-          // Get cover image for the first custom date (primary)
-          if (index === 0) {
-            const deadline = deadlines.find(d => d.id === activity.deadline_id);
-            if (deadline) {
-              const coverUrl =
-                deadline.cover_image_url || deadline.books?.cover_image_url;
-              primaryCoverUrl = getCoverImageUrl(coverUrl);
-            }
-          }
-        });
-
-        if (hasNonDeadlineActivities && dots.length < MAX_DOTS) {
-          dots.push({
-            key: 'activity',
-            color: ACTIVITY_DOT_COLOR,
-          });
-        }
-
-        markedDates[date] = {
-          dots,
-          customStyles: {
-            container: {
-              backgroundColor:
-                ACTIVITY_TYPE_CONFIG.custom_date.color + OPACITY.CALENDAR,
-              borderRadius: 4,
-            },
-            text: {
-              color: ACTIVITY_TYPE_CONFIG.custom_date.color,
-              fontWeight: '600' as const,
-            },
-            coverImageUrl: primaryCoverUrl,
-          },
-        };
-      } else {
-        // Activity-only dates: get cover from first activity's deadline
-        let activityCoverUrl: string | null = null;
-
-        const firstActivity = nonDeadlineActivities[0];
-        if (firstActivity) {
-          const deadline = deadlines.find(
-            d => d.id === firstActivity.deadline_id
-          );
-          if (deadline) {
-            const coverUrl =
-              deadline.cover_image_url || deadline.books?.cover_image_url;
-            activityCoverUrl = getCoverImageUrl(coverUrl);
-          }
-        }
-
-        markedDates[date] = {
-          customStyles: {
-            container: {
-              backgroundColor: ACTIVITY_DOT_COLOR + OPACITY.SUBTLE,
-              borderRadius: 4,
-            },
-            coverImageUrl: activityCoverUrl,
-          },
-        };
-      }
+    if (marking) {
+      markedDates[date] = marking;
     }
   });
 

@@ -119,15 +119,19 @@ export interface AgendaActivityItem {
 }
 
 /**
+ * Information for rendering a single activity bar in the calendar cell
+ */
+export interface ActivityBarInfo {
+  color: string; // Urgency color for deadlines, gray for other activities
+  isDeadline: boolean; // Whether this bar represents a deadline_due activity
+}
+
+/**
  * Marked dates configuration for react-native-calendars
- * Supports both multi-dot (legacy) and custom styles (new)
+ * Uses custom marking type for deadline highlighting with cover images
  */
 export interface MarkedDatesConfig {
   [date: string]: {
-    dots?: {
-      key: string; // Unique key for the dot (e.g., 'activity', 'deadline_1')
-      color: string; // Hex color code
-    }[];
     selected?: boolean; // Whether this date is selected
     selectedColor?: string; // Color for selected date
     // Custom styles for deadline highlighting (markingType="custom")
@@ -155,6 +159,8 @@ export interface MarkedDatesConfig {
       };
       // Cover image URL for the most urgent deadline on this date
       coverImageUrl?: string | null;
+      // Array of activity bars for horizontal bar display (max 6)
+      activityBars?: ActivityBarInfo[];
     };
   };
 }
