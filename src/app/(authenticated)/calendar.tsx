@@ -325,6 +325,8 @@ export default function CalendarScreen() {
           <Calendar
             current={currentMonth}
             markedDates={markedDates}
+            hideExtraDays
+            enableSwipeMonths
             dayComponent={CustomDayComponent as React.ComponentType}
             onDayPress={handleDayPress}
             onMonthChange={handleMonthChange}

@@ -61,6 +61,12 @@ const ACTIVITY_FILTERS: FilterConfig[] = [
   { type: 'custom_date', label: 'Important Dates' },
 ];
 
+// All filter types combined for Clear All / Select All functionality
+const ALL_FILTER_TYPES: CalendarFilterType[] = [
+  ...DUE_DATE_FILTERS.map(f => f.type),
+  ...ACTIVITY_FILTERS.map(f => f.type),
+];
+
 export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
   visible,
   onClose,
@@ -93,10 +99,17 @@ export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
   };
 
   const clearAllFilters = () => {
+    onExcludedActivitiesChange(ALL_FILTER_TYPES);
+  };
+
+  const selectAllFilters = () => {
     onExcludedActivitiesChange([]);
   };
 
-  const hasActiveFilters = excludedActivities.length > 0;
+  // Show "Clear All" when any filters are selected (items showing)
+  const hasActiveFilters = excludedActivities.length < ALL_FILTER_TYPES.length;
+  // Show "Select All" when all filters are cleared (nothing showing)
+  const allFiltersCleared = excludedActivities.length === ALL_FILTER_TYPES.length;
 
   // Render a filter item - color boxes only for due date filters (colorKey)
   const renderFilterItem = (filter: FilterConfig) => {
@@ -176,6 +189,19 @@ export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
                   <ThemedText
                     typography="titleMedium"
                     style={[styles.closeButton, { color: colors.darkPink }]}
+                  >
+                    Clear All
+                  </ThemedText>
+                </TouchableOpacity>
+              )}
+              {allFiltersCleared && (
+                <TouchableOpacity
+                  onPress={selectAllFilters}
+                  style={styles.clearButton}
+                >
+                  <ThemedText
+                    typography="titleMedium"
+                    style={[styles.closeButton, { color: colors.primary }]}
                   >
                     Select All
                   </ThemedText>
