@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ACTIVITY_DOT_COLOR } from '@/constants/activityTypes';
-import { Spacing } from '@/constants/Colors';
+import { Spacing, Typography } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { OPACITY } from '@/utils/formatters';
 import React, { useState } from 'react';
@@ -54,7 +54,7 @@ export const CalendarLegend: React.FC = () => {
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
-    rotation.value = withTiming(isExpanded ? 0 : 180, { duration: 200 });
+    rotation.value = withTiming(isExpanded ? 0 : 90, { duration: 200 });
   };
 
   const chevronStyle = useAnimatedStyle(() => ({
@@ -75,11 +75,11 @@ export const CalendarLegend: React.FC = () => {
           isExpanded ? 'Hide calendar legend' : 'Show calendar legend'
         }
         accessibilityState={{ expanded: isExpanded }}
-        accessibilityHint="Double tap to toggle the calendar legend explanation"
+        accessibilityHint="Tap to toggle the calendar legend explanation"
       >
         <ThemedText typography="titleSmall">Calendar Legend</ThemedText>
         <Animated.View style={chevronStyle}>
-          <IconSymbol name="chevron.down" size={20} color={colors.text} />
+          <IconSymbol name="chevron.right" size={20} color={colors.text} />
         </Animated.View>
       </Pressable>
 
@@ -108,7 +108,8 @@ export const CalendarLegend: React.FC = () => {
               color="textMuted"
               style={styles.infoText}
             >
-              When multiple due dates fall on one day, the most urgent is shown
+              When multiple due dates fall on one day, the most urgent is shown.
+              Book covers appear on dates with deadlines.
             </ThemedText>
           </View>
         </View>
@@ -150,8 +151,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   colorBoxText: {
-    fontSize: 10,
-    fontWeight: '600',
+    ...Typography.labelSmall,
   },
   infoContainer: {
     flexDirection: 'row',

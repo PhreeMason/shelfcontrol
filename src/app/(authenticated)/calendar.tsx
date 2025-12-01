@@ -1,15 +1,18 @@
 import { ActivityTimelineItem } from '@/components/features/calendar/ActivityTimelineItem';
 import { CalendarFilterToggle } from '@/components/features/calendar/CalendarFilterToggle';
 import { CalendarLegend } from '@/components/features/calendar/CalendarLegend';
+import { CustomDayComponent } from '@/components/features/calendar/CustomDayComponent';
 import { DeadlineDueCard } from '@/components/features/calendar/DeadlineDueCard';
 import { ReviewDueCard } from '@/components/features/calendar/ReviewDueCard';
 import AppHeader from '@/components/shared/AppHeader';
 import { ThemedText } from '@/components/themed';
+import { CalendarFilterType } from '@/constants/activityTypes';
 import { useGetDailyActivities } from '@/hooks/useCalendar';
 import { useTheme } from '@/hooks/useTheme';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { usePreferences } from '@/providers/PreferencesProvider';
 import { validateDailyActivities } from '@/types/calendar.types';
+import { ReadingDeadlineWithProgress, UrgencyLevel } from '@/types/deadline.types';
 import {
   calculateMarkedDates,
   transformActivitiesToAgendaItems,
@@ -69,20 +72,65 @@ export default function CalendarScreen() {
     [rawActivities]
   );
 
+  // Get deadline calculations (must be before filteredActivities)
+  const { deadlines, getDeadlineCalculations } = useDeadlines();
+
+  /**
+   * Map urgency level to the corresponding CalendarFilterType for deadline_due activities
+   */
+  const getDeadlineFilterType = (
+    urgencyLevel: UrgencyLevel,
+    deadline: ReadingDeadlineWithProgress
+  ): CalendarFilterType => {
+    // Get latest status (status array is sorted ASC by created_at, so last element is most recent)
+    const statusArray = deadline.status;
+    const currentStatus =
+      statusArray && statusArray.length > 0
+        ? statusArray[statusArray.length - 1].status
+        : undefined;
+
+    // Check if deadline is completed (status-based, not urgency-based)
+    if (currentStatus === 'complete') {
+      return 'deadline_due_completed';
+    }
+
+    // Map urgency levels to filter types
+    switch (urgencyLevel) {
+      case 'good':
+        return 'deadline_due_good';
+      case 'approaching':
+        return 'deadline_due_approaching';
+      case 'urgent':
+      case 'overdue':
+      case 'impossible':
+        return 'deadline_due_urgent';
+      default:
+        return 'deadline_due_good'; // Default to "on track"
+    }
+  };
+
   // Filter activities based on user preference
   const filteredActivities = useMemo(() => {
     return activities.filter(activity => {
-      // Check if this activity type is excluded
-      if (excludedCalendarActivities.includes(activity.activity_type)) {
+      // Special handling for deadline_due - check urgency-based filters
+      if (activity.activity_type === 'deadline_due') {
+        const deadline = deadlines.find(d => d.id === activity.deadline_id);
+        if (deadline) {
+          const calculations = getDeadlineCalculations(deadline);
+          const filterType = getDeadlineFilterType(calculations.urgencyLevel, deadline);
+          return !excludedCalendarActivities.includes(filterType);
+        }
+        return true; // Show if we can't find the deadline
+      }
+
+      // For non-deadline_due activities, check directly against activity type
+      if (excludedCalendarActivities.includes(activity.activity_type as CalendarFilterType)) {
         return false;
       }
 
       return true;
     });
-  }, [activities, excludedCalendarActivities]);
-
-  // Get deadline calculations
-  const { deadlines, getDeadlineCalculations } = useDeadlines();
+  }, [activities, excludedCalendarActivities, deadlines, getDeadlineCalculations]);
 
   // Transform activities to agenda format
   const agendaItems = useMemo(() => {
@@ -243,11 +291,11 @@ export default function CalendarScreen() {
         rightElement={<CalendarFilterToggle />}
       />
       <View style={styles.content}>
-        <View style={styles.calendarContainer}>
+        <View style={[styles.calendarContainer, { borderBottomColor: colors.border }]}>
           <Calendar
             current={currentMonth}
             markedDates={markedDates}
-            markingType="custom"
+            dayComponent={CustomDayComponent as React.ComponentType}
             onDayPress={handleDayPress}
             onMonthChange={handleMonthChange}
             theme={{
@@ -357,7 +405,6 @@ const styles = StyleSheet.create({
   },
   calendarContainer: {
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0', // Using border color
   },
   loadingContainer: {
     flex: 1,

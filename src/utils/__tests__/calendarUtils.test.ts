@@ -507,7 +507,7 @@ describe('calendarUtils', () => {
       mockGetCalculations.mockClear();
     });
 
-    it('should add grey dot for dates with non-deadline activities', () => {
+    it('should add grey background (no dots) for dates with non-deadline activities only', () => {
       const activities: DailyActivity[] = [
         createMockActivity(
           'progress',
@@ -521,14 +521,14 @@ describe('calendarUtils', () => {
       const result = calculateMarkedDates(activities, [], mockGetCalculations);
 
       expect(result['2025-01-15']).toBeDefined();
-      expect(result['2025-01-15']!.dots).toHaveLength(1);
-      expect(result['2025-01-15']!.dots![0]).toEqual({
-        key: 'activity',
-        color: ACTIVITY_DOT_COLOR,
-      });
+      // Activity-only dates: subtle grey background, no dots
+      expect(result['2025-01-15']!.dots).toBeUndefined();
+      expect(result['2025-01-15']!.customStyles?.container?.backgroundColor).toBe(
+        ACTIVITY_DOT_COLOR + '20' // OPACITY.SUBTLE
+      );
     });
 
-    it('should add colored dots for deadline_due activities', () => {
+    it('should show background only for single deadline_due (no dots)', () => {
       const deadline = createMockDeadline('d1', 'The Great Gatsby');
       const calculations = createMockCalculations('#EF4444');
       const activities: DailyActivity[] = [
@@ -550,14 +550,14 @@ describe('calendarUtils', () => {
       );
 
       expect(result['2025-01-15']).toBeDefined();
-      expect(result['2025-01-15']!.dots).toHaveLength(1);
-      expect(result['2025-01-15']!.dots![0]).toEqual({
-        key: 'deadline_0',
-        color: '#EF4444',
-      });
+      // Single deadline: background only, no dots
+      expect(result['2025-01-15']!.dots).toBeUndefined();
+      expect(result['2025-01-15']!.customStyles?.container?.backgroundColor).toBe(
+        '#EF444440'
+      );
     });
 
-    it('should add both grey and colored dots when date has both types', () => {
+    it('should add grey activity dot when deadline has other activities', () => {
       const deadline = createMockDeadline('d1', 'The Great Gatsby');
       const calculations = createMockCalculations('#EF4444');
       const activities: DailyActivity[] = [
@@ -585,22 +585,30 @@ describe('calendarUtils', () => {
         mockGetCalculations
       );
 
-      expect(result['2025-01-15']!.dots).toHaveLength(2);
+      // Single deadline = background, activities present = 1 grey activity dot
+      expect(result['2025-01-15']!.dots).toHaveLength(1);
       expect(result['2025-01-15']!.dots![0]).toEqual({
         key: 'activity',
         color: ACTIVITY_DOT_COLOR,
       });
-      expect(result['2025-01-15']!.dots![1]).toEqual({
-        key: 'deadline_0',
-        color: '#EF4444',
-      });
+      // Background should be the deadline urgency color
+      expect(result['2025-01-15']!.customStyles?.container?.backgroundColor).toBe(
+        '#EF444440'
+      );
     });
 
     it('should handle multiple deadline_due on same date', () => {
       const deadline1 = createMockDeadline('d1', 'Book A');
       const deadline2 = createMockDeadline('d2', 'Book B');
-      const calculations1 = createMockCalculations('#EF4444');
-      const calculations2 = createMockCalculations('#F59E0B');
+      // Create calculations with different urgency levels
+      const calculations1: DeadlineCalculationResult = {
+        ...createMockCalculations('#EF4444'),
+        urgencyLevel: 'urgent', // Higher priority
+      };
+      const calculations2: DeadlineCalculationResult = {
+        ...createMockCalculations('#F59E0B'),
+        urgencyLevel: 'approaching', // Lower priority
+      };
       const activities: DailyActivity[] = [
         createMockActivity(
           'deadline_due',
@@ -628,9 +636,12 @@ describe('calendarUtils', () => {
         mockGetCalculations
       );
 
-      expect(result['2025-01-15']!.dots).toHaveLength(2);
-      expect(result['2025-01-15']!.dots![0].color).toBe('#EF4444');
-      expect(result['2025-01-15']!.dots![1].color).toBe('#F59E0B');
+      // First (urgent) deadline = background, second (approaching) = dot
+      expect(result['2025-01-15']!.customStyles?.container?.backgroundColor).toBe(
+        '#EF444440'
+      );
+      expect(result['2025-01-15']!.dots).toHaveLength(1);
+      expect(result['2025-01-15']!.dots![0].color).toBe('#F59E0B');
     });
 
     it('should handle empty activities array', () => {
@@ -638,9 +649,79 @@ describe('calendarUtils', () => {
       expect(result).toEqual({});
     });
 
-    it('should not add dots for dates with only deadline_due (no other activities)', () => {
-      const deadline = createMockDeadline('d1', 'The Great Gatsby');
-      const calculations = createMockCalculations('#EF4444');
+    it('should cap dots at maximum of 3', () => {
+      // Create 4 deadlines with different urgency levels
+      const deadline1 = createMockDeadline('d1', 'Book A');
+      const deadline2 = createMockDeadline('d2', 'Book B');
+      const deadline3 = createMockDeadline('d3', 'Book C');
+      const deadline4 = createMockDeadline('d4', 'Book D');
+
+      const calculations1: DeadlineCalculationResult = {
+        ...createMockCalculations('#EF4444'),
+        urgencyLevel: 'overdue',
+      };
+      const calculations2: DeadlineCalculationResult = {
+        ...createMockCalculations('#F59E0B'),
+        urgencyLevel: 'urgent',
+      };
+      const calculations3: DeadlineCalculationResult = {
+        ...createMockCalculations('#10B981'),
+        urgencyLevel: 'approaching',
+      };
+      const calculations4: DeadlineCalculationResult = {
+        ...createMockCalculations('#7a5a8c'),
+        urgencyLevel: 'good',
+      };
+
+      const activities: DailyActivity[] = [
+        createMockActivity('deadline_due', '2025-01-15', '2025-01-15T12:00:00Z', 'd1', 'Book A'),
+        createMockActivity('deadline_due', '2025-01-15', '2025-01-15T12:00:00Z', 'd2', 'Book B'),
+        createMockActivity('deadline_due', '2025-01-15', '2025-01-15T12:00:00Z', 'd3', 'Book C'),
+        createMockActivity('deadline_due', '2025-01-15', '2025-01-15T12:00:00Z', 'd4', 'Book D'),
+      ];
+
+      mockGetCalculations
+        .mockReturnValueOnce(calculations1)
+        .mockReturnValueOnce(calculations2)
+        .mockReturnValueOnce(calculations3)
+        .mockReturnValueOnce(calculations4);
+
+      const result = calculateMarkedDates(
+        activities,
+        [deadline1, deadline2, deadline3, deadline4],
+        mockGetCalculations
+      );
+
+      // First (overdue) = background, remaining 3 = dots (capped at 3)
+      expect(result['2025-01-15']!.customStyles?.container?.backgroundColor).toBe(
+        '#EF444440'
+      );
+      expect(result['2025-01-15']!.dots).toHaveLength(3);
+    });
+
+    it('should handle missing deadline for deadline_due activity', () => {
+      const activities: DailyActivity[] = [
+        createMockActivity(
+          'deadline_due',
+          '2025-01-15',
+          '2025-01-15T12:00:00Z',
+          'nonexistent',
+          'The Great Gatsby'
+        ),
+      ];
+
+      const result = calculateMarkedDates(activities, [], mockGetCalculations);
+
+      // Should not crash, but also not add a dot
+      expect(result['2025-01-15']).toBeUndefined();
+    });
+
+    it('should include coverImageUrl in customStyles when deadline has cover', () => {
+      const deadline: ReadingDeadlineWithProgress = {
+        ...createMockDeadline('d1', 'The Great Gatsby'),
+        cover_image_url: 'https://example.com/cover.jpg',
+      };
+      const calculations = createMockCalculations('#7a5a8c');
       const activities: DailyActivity[] = [
         createMockActivity(
           'deadline_due',
@@ -659,26 +740,44 @@ describe('calendarUtils', () => {
         mockGetCalculations
       );
 
-      // Should only have the deadline dot, not the activity dot
-      expect(result['2025-01-15']!.dots).toHaveLength(1);
-      expect(result['2025-01-15']!.dots![0].key).toBe('deadline_0');
+      expect(result['2025-01-15']).toBeDefined();
+      expect(result['2025-01-15']!.customStyles?.coverImageUrl).toBe(
+        'https://example.com/cover.jpg'
+      );
     });
 
-    it('should handle missing deadline for deadline_due activity', () => {
+    it('should fallback to book cover_image_url when deadline has no custom cover', () => {
+      const deadline: ReadingDeadlineWithProgress = {
+        ...createMockDeadline('d1', 'The Great Gatsby'),
+        cover_image_url: null,
+        books: {
+          publisher: 'Penguin',
+          cover_image_url: 'https://example.com/book-cover.jpg',
+        },
+      };
+      const calculations = createMockCalculations('#7a5a8c');
       const activities: DailyActivity[] = [
         createMockActivity(
           'deadline_due',
           '2025-01-15',
           '2025-01-15T12:00:00Z',
-          'nonexistent',
+          'd1',
           'The Great Gatsby'
         ),
       ];
 
-      const result = calculateMarkedDates(activities, [], mockGetCalculations);
+      mockGetCalculations.mockReturnValue(calculations);
 
-      // Should not crash, but also not add a dot
-      expect(result['2025-01-15']).toBeUndefined();
+      const result = calculateMarkedDates(
+        activities,
+        [deadline],
+        mockGetCalculations
+      );
+
+      expect(result['2025-01-15']).toBeDefined();
+      expect(result['2025-01-15']!.customStyles?.coverImageUrl).toBe(
+        'https://example.com/book-cover.jpg'
+      );
     });
   });
 

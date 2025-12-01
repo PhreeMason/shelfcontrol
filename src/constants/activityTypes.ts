@@ -15,6 +15,17 @@ export type ActivityType =
   | 'custom_date';
 
 /**
+ * Calendar filter types - extends ActivityType with granular deadline_due filters
+ * Used for filtering calendar activities by urgency level
+ */
+export type CalendarFilterType =
+  | 'deadline_due_completed'
+  | 'deadline_due_good'
+  | 'deadline_due_approaching'
+  | 'deadline_due_urgent'
+  | Exclude<ActivityType, 'deadline_due'>;
+
+/**
  * Configuration for each activity type including icon, color, and label
  */
 export interface ActivityTypeConfig {

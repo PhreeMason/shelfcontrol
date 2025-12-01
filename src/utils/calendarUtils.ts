@@ -11,6 +11,7 @@ import { DeadlineCalculationResult } from '@/utils/deadlineProviderUtils';
 import { parseServerDateTime } from '@/utils/dateNormalization';
 import { posthog } from '@/lib/posthog';
 import { OPACITY } from '@/utils/formatters';
+import { getCoverImageUrl } from '@/utils/coverImageUtils';
 
 // Priority order: most urgent wins when multiple deadlines on same date
 const URGENCY_PRIORITY = [
@@ -22,14 +23,15 @@ const URGENCY_PRIORITY = [
 ] as const;
 
 /**
- * Get the highest priority urgency level from a list
+ * Get the urgency priority index (lower = more urgent)
  */
-function getHighestUrgency(urgencyLevels: string[]): string {
-  for (const level of URGENCY_PRIORITY) {
-    if (urgencyLevels.includes(level)) return level;
-  }
-  return 'good';
+function getUrgencyPriorityIndex(urgencyLevel: string): number {
+  const index = URGENCY_PRIORITY.indexOf(
+    urgencyLevel as (typeof URGENCY_PRIORITY)[number]
+  );
+  return index === -1 ? URGENCY_PRIORITY.length : index;
 }
+
 
 /**
  * Calculate the start and end dates for a given month
@@ -196,16 +198,18 @@ export function transformActivitiesToAgendaItems(
 }
 
 /**
- * Calculate marked dates for calendar with custom cell styling
+ * Calculate marked dates for calendar with custom cell styling and dots
  * @param activities - Array of activities from get_daily_activities
  * @param deadlines - Array of all deadlines
  * @param getDeadlineCalculations - Function to calculate deadline metrics
  * @returns MarkedDatesConfig object for react-native-calendars (custom marking type)
  *
- * New Logic:
+ * Logic:
  * - Deadline dates get tinted background (urgencyColor + OPACITY.CALENDAR)
- * - When multiple deadlines on same date, show most urgent color
- * - Activity-only dates get no marking (deadlines stand out more)
+ * - When multiple deadlines on same date: highest urgency = background, others = dots
+ * - Activity-only dates get subtle grey background
+ * - Deadlines with activities get a grey activity dot
+ * - Max 3 dots per date (lower priority deadlines + activity dot)
  */
 export function calculateMarkedDates(
   activities: DailyActivity[],
@@ -215,6 +219,7 @@ export function calculateMarkedDates(
   ) => DeadlineCalculationResult
 ): MarkedDatesConfig {
   const markedDates: MarkedDatesConfig = {};
+  const MAX_DOTS = 3;
 
   // Group activities by date
   const groupedByDate: Record<string, DailyActivity[]> = {};
@@ -234,48 +239,94 @@ export function calculateMarkedDates(
     const deadlineDueActivities = dateActivities.filter(
       a => a.activity_type === 'deadline_due'
     );
+    const nonDeadlineActivities = dateActivities.filter(
+      a => a.activity_type !== 'deadline_due'
+    );
+    const hasNonDeadlineActivities = nonDeadlineActivities.length > 0;
 
     if (deadlineDueActivities.length > 0) {
       // Collect urgency data for all deadlines on this date
-      const urgencyData: { urgencyLevel: string; urgencyColor: string }[] = [];
+      const urgencyData: {
+        urgencyLevel: string;
+        urgencyColor: string;
+        deadlineId: string;
+        coverImageUrl: string | null;
+      }[] = [];
 
       deadlineDueActivities.forEach(activity => {
         const deadline = deadlines.find(d => d.id === activity.deadline_id);
         if (deadline) {
           const calculations = getDeadlineCalculations(deadline);
+          // Prioritize deadline's custom cover over book's cover (same as useDeadlineCardViewModel)
+          const coverUrl =
+            deadline.cover_image_url || deadline.books?.cover_image_url;
           urgencyData.push({
             urgencyLevel: calculations.urgencyLevel,
             urgencyColor: calculations.urgencyColor,
+            deadlineId: deadline.id,
+            coverImageUrl: getCoverImageUrl(coverUrl),
           });
         }
       });
 
       if (urgencyData.length > 0) {
-        // Get highest priority urgency
-        const highestUrgency = getHighestUrgency(
-          urgencyData.map(d => d.urgencyLevel)
+        // Sort by urgency priority (most urgent first)
+        urgencyData.sort(
+          (a, b) =>
+            getUrgencyPriorityIndex(a.urgencyLevel) -
+            getUrgencyPriorityIndex(b.urgencyLevel)
         );
-        const urgencyColor = urgencyData.find(
-          d => d.urgencyLevel === highestUrgency
-        )?.urgencyColor;
 
-        if (urgencyColor) {
-          markedDates[date] = {
-            customStyles: {
-              container: {
-                backgroundColor: urgencyColor + OPACITY.CALENDAR,
-                borderRadius: 4,
-              },
-              text: {
-                color: urgencyColor,
-                fontWeight: '600' as const,
-              },
-            },
-          };
+        // First (most urgent) becomes the background
+        const primaryUrgency = urgencyData[0];
+
+        // Build dots array for lower priority deadlines
+        const dots: { key: string; color: string }[] = [];
+
+        // Add dots for remaining deadlines (skip first, it's the background)
+        const remainingDeadlines = urgencyData.slice(1);
+        const maxDeadlineDots = hasNonDeadlineActivities
+          ? MAX_DOTS - 1
+          : MAX_DOTS;
+
+        remainingDeadlines.slice(0, maxDeadlineDots).forEach((data, index) => {
+          dots.push({
+            key: `deadline_${index}`,
+            color: data.urgencyColor,
+          });
+        });
+
+        // Add grey activity dot if there are non-deadline activities
+        if (hasNonDeadlineActivities && dots.length < MAX_DOTS) {
+          dots.push({
+            key: 'activity',
+            color: ACTIVITY_DOT_COLOR,
+          });
         }
+
+        const marking: MarkedDatesConfig[string] = {
+          customStyles: {
+            container: {
+              backgroundColor: primaryUrgency.urgencyColor + OPACITY.CALENDAR,
+              borderRadius: 4,
+            },
+            text: {
+              color: primaryUrgency.urgencyColor,
+              fontWeight: '600' as const,
+            },
+            coverImageUrl: primaryUrgency.coverImageUrl,
+          },
+        };
+
+        // Only add dots property if there are dots to show
+        if (dots.length > 0) {
+          marking.dots = dots;
+        }
+
+        markedDates[date] = marking;
       }
     } else {
-      // Activity-only dates: subtle grey background tint
+      // Activity-only dates: subtle grey background tint (no dots needed)
       markedDates[date] = {
         customStyles: {
           container: {

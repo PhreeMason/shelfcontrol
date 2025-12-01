@@ -11,6 +11,10 @@ jest.mock('@/hooks/useThemeColor', () => ({
       outline: '#cccccc',
       darkPink: '#ff0000',
       border: '#eeeeee',
+      successGreen: '#10B981',
+      good: '#7a5a8c',
+      approaching: '#d4a46a',
+      urgent: '#c8696e',
     },
   }),
 }));
@@ -38,11 +42,18 @@ describe('CalendarFilterSheet', () => {
     );
 
     expect(screen.getByText('Filter Activities')).toBeTruthy();
-    expect(screen.getByText('Books Due')).toBeTruthy();
+    // Due date filters
+    expect(screen.getByText('Due Dates')).toBeTruthy();
+    expect(screen.getByText('Completed')).toBeTruthy();
+    expect(screen.getByText('On Track')).toBeTruthy();
+    expect(screen.getByText('Tight')).toBeTruthy();
+    expect(screen.getByText('Urgent/Overdue')).toBeTruthy();
+    // Activity event filters
+    expect(screen.getByText('Activity Events')).toBeTruthy();
     expect(screen.getByText('New Books Added')).toBeTruthy();
   });
 
-  it('toggles activity filters correctly', () => {
+  it('toggles due date filters correctly', () => {
     render(
       <CalendarFilterSheet
         visible={true}
@@ -52,9 +63,9 @@ describe('CalendarFilterSheet', () => {
       />
     );
 
-    fireEvent.press(screen.getByText('Books Due'));
+    fireEvent.press(screen.getByText('On Track'));
     expect(mockOnExcludedActivitiesChange).toHaveBeenCalledWith([
-      'deadline_due',
+      'deadline_due_good',
     ]);
   });
 
@@ -63,12 +74,12 @@ describe('CalendarFilterSheet', () => {
       <CalendarFilterSheet
         visible={true}
         onClose={mockOnClose}
-        excludedActivities={['deadline_due']}
+        excludedActivities={['deadline_due_urgent']}
         onExcludedActivitiesChange={mockOnExcludedActivitiesChange}
       />
     );
 
-    fireEvent.press(screen.getByText('Books Due'));
+    fireEvent.press(screen.getByText('Urgent/Overdue'));
     expect(mockOnExcludedActivitiesChange).toHaveBeenCalledWith([]);
   });
 
@@ -77,7 +88,7 @@ describe('CalendarFilterSheet', () => {
       <CalendarFilterSheet
         visible={true}
         onClose={mockOnClose}
-        excludedActivities={['deadline_due', 'note']}
+        excludedActivities={['deadline_due_completed', 'note']}
         onExcludedActivitiesChange={mockOnExcludedActivitiesChange}
       />
     );

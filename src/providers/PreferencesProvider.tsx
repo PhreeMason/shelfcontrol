@@ -1,4 +1,4 @@
-import { ActivityType } from '@/constants/activityTypes';
+import { CalendarFilterType } from '@/constants/activityTypes';
 import {
   BookFormat,
   FilterType,
@@ -55,8 +55,10 @@ interface PreferencesContextType {
   setMetricViewMode: (format: BookFormat, mode: MetricViewMode) => void;
   deadlineViewMode: DeadlineViewMode;
   setDeadlineViewMode: (mode: DeadlineViewMode) => void;
-  excludedCalendarActivities: ActivityType[];
-  setExcludedCalendarActivities: (activities: ActivityType[]) => void;
+  excludedCalendarActivities: CalendarFilterType[];
+  setExcludedCalendarActivities: (activities: CalendarFilterType[]) => void;
+  hideDatesOnCovers: boolean;
+  setHideDatesOnCovers: (hide: boolean) => void;
   isLoading: boolean;
 }
 
@@ -87,6 +89,8 @@ const PreferencesContext = createContext<PreferencesContextType>({
   setDeadlineViewMode: () => {},
   excludedCalendarActivities: [],
   setExcludedCalendarActivities: () => {},
+  hideDatesOnCovers: false,
+  setHideDatesOnCovers: () => {},
   isLoading: true,
 });
 
@@ -103,6 +107,7 @@ const STORAGE_KEYS = {
   METRIC_VIEW_MODES: '@preferences/metricViewModes',
   DEADLINE_VIEW_MODE: '@preferences/deadlineViewMode',
   EXCLUDED_CALENDAR_ACTIVITIES: '@preferences/excludedCalendarActivities',
+  HIDE_DATES_ON_COVERS: '@preferences/hideDatesOnCovers',
 };
 
 export default function PreferencesProvider({ children }: PropsWithChildren) {
@@ -127,7 +132,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
   const [deadlineViewMode, setDeadlineViewModeState] =
     useState<DeadlineViewMode>('list');
   const [excludedCalendarActivities, setExcludedCalendarActivitiesState] =
-    useState<ActivityType[]>([]);
+    useState<CalendarFilterType[]>([]);
+  const [hideDatesOnCovers, setHideDatesOnCoversState] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -146,6 +152,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           savedMetricViewModes,
           savedDeadlineViewMode,
           savedExcludedCalendarActivities,
+          savedHideDatesOnCovers,
         ] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FILTER),
           AsyncStorage.getItem(STORAGE_KEYS.TIME_RANGE_FILTER),
@@ -159,6 +166,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           AsyncStorage.getItem(STORAGE_KEYS.METRIC_VIEW_MODES),
           AsyncStorage.getItem(STORAGE_KEYS.DEADLINE_VIEW_MODE),
           AsyncStorage.getItem(STORAGE_KEYS.EXCLUDED_CALENDAR_ACTIVITIES),
+          AsyncStorage.getItem(STORAGE_KEYS.HIDE_DATES_ON_COVERS),
         ]);
 
         if (savedFilter) {
@@ -204,8 +212,11 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
         }
         if (savedExcludedCalendarActivities) {
           setExcludedCalendarActivitiesState(
-            JSON.parse(savedExcludedCalendarActivities) as ActivityType[]
+            JSON.parse(savedExcludedCalendarActivities) as CalendarFilterType[]
           );
+        }
+        if (savedHideDatesOnCovers) {
+          setHideDatesOnCoversState(JSON.parse(savedHideDatesOnCovers) as boolean);
         }
       } catch (error) {
         console.error('Error loading preferences:', error);
@@ -353,7 +364,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     }
   };
 
-  const setExcludedCalendarActivities = async (activities: ActivityType[]) => {
+  const setExcludedCalendarActivities = async (activities: CalendarFilterType[]) => {
     try {
       setExcludedCalendarActivitiesState(activities);
       await AsyncStorage.setItem(
@@ -362,6 +373,18 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
       );
     } catch (error) {
       console.error('Error saving calendar filter preference:', error);
+    }
+  };
+
+  const setHideDatesOnCovers = async (hide: boolean) => {
+    try {
+      setHideDatesOnCoversState(hide);
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.HIDE_DATES_ON_COVERS,
+        JSON.stringify(hide)
+      );
+    } catch (error) {
+      console.error('Error saving hide dates on covers preference:', error);
     }
   };
 
@@ -392,6 +415,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     setDeadlineViewMode,
     excludedCalendarActivities,
     setExcludedCalendarActivities,
+    hideDatesOnCovers,
+    setHideDatesOnCovers,
     isLoading,
   };
 

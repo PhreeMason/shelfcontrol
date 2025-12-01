@@ -153,6 +153,8 @@ export interface MarkedDatesConfig {
           | '800'
           | '900';
       };
+      // Cover image URL for the most urgent deadline on this date
+      coverImageUrl?: string | null;
     };
   };
 }
