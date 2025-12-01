@@ -11,7 +11,8 @@ export type ActivityType =
   | 'status'
   | 'note'
   | 'review'
-  | 'review_due';
+  | 'review_due'
+  | 'custom_date';
 
 /**
  * Configuration for each activity type including icon, color, and label
@@ -61,6 +62,11 @@ export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
     icon: 'square.and.pencil',
     color: Colors.light.orange, // Orange - matches review
     label: 'Review Due',
+  },
+  custom_date: {
+    icon: 'calendar.badge.plus',
+    color: Colors.light.accent, // Accent - important dates
+    label: 'Custom Date',
   },
 } as const;
 

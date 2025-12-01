@@ -18,6 +18,11 @@ export const QUERY_KEYS = {
     BY_DEADLINE: (userId: string, deadlineId: string) =>
       ['contacts', userId, deadlineId] as const,
   },
+  CUSTOM_DATES: {
+    BY_DEADLINE: (userId: string, deadlineId: string) =>
+      ['custom_dates', userId, deadlineId] as const,
+    ALL_NAMES: (userId: string) => ['custom_dates', 'names', userId] as const,
+  },
   TAGS: {
     ALL: (userId: string) => ['tags', userId] as const,
     BY_DEADLINE: (userId: string, deadlineId: string) =>
@@ -44,6 +49,8 @@ export const QUERY_KEYS = {
     BY_ID: (bookId: string) => ['book', 'id', bookId] as const,
     BY_IDS: (bookIds: string[]) =>
       ['books', 'ids', bookIds.sort().join(',')] as const,
+    AUDIOBOOK_DURATION: (bookId: string) =>
+      ['audiobooks', 'duration', bookId] as const,
   },
   PROFILE: {
     DETAIL: (userId: string) => ['profile', userId] as const,
@@ -103,6 +110,11 @@ export const MUTATION_KEYS = {
     ADD: 'addContact',
     UPDATE: 'updateContact',
     DELETE: 'deleteContact',
+  },
+  CUSTOM_DATES: {
+    ADD: 'addCustomDate',
+    UPDATE: 'updateCustomDate',
+    DELETE: 'deleteCustomDate',
   },
   TAGS: {
     CREATE: 'createTag',

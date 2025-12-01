@@ -12,100 +12,33 @@ Add a "Custom Dates" feature allowing users to add named dates (press releases, 
 
 ---
 
-## Phase 1: Database Layer
+## Phase 1: Database Layer ✅ COMPLETE
 
 ### 1.1 Create Migration File
-- [ ] **File**: `supabase/migrations/[timestamp]_add_deadline_custom_dates.sql`
-
-```sql
--- Create deadline_custom_dates table
-create table deadline_custom_dates (
-  id text not null primary key,
-  deadline_id text references deadlines(id) on delete cascade not null,
-  user_id uuid references profiles(id) on delete cascade not null,
-  name text not null,
-  date date not null,
-  created_at timestamp with time zone not null default now(),
-  updated_at timestamp with time zone not null default now()
-);
-
--- Enable RLS
-alter table deadline_custom_dates enable row level security;
-
--- RLS Policies (view, insert, update, delete for own data)
-create policy "Users can view own custom dates" on deadline_custom_dates
-  for select using ((select auth.uid()) = user_id);
-create policy "Users can insert own custom dates" on deadline_custom_dates
-  for insert with check ((select auth.uid()) = user_id);
-create policy "Users can update own custom dates" on deadline_custom_dates
-  for update using ((select auth.uid()) = user_id);
-create policy "Users can delete own custom dates" on deadline_custom_dates
-  for delete using ((select auth.uid()) = user_id);
-
--- Auto-update timestamps trigger
-CREATE TRIGGER handle_times
-    BEFORE INSERT OR UPDATE ON deadline_custom_dates
-    FOR EACH ROW EXECUTE PROCEDURE handle_times();
-
--- Indexes
-create index deadline_custom_dates_deadline_id_idx on deadline_custom_dates (deadline_id);
-create index deadline_custom_dates_user_id_idx on deadline_custom_dates (user_id);
-create index deadline_custom_dates_date_idx on deadline_custom_dates (date);
-```
+- [x] **File**: `supabase/migrations/20251201040000_add_deadline_custom_dates.sql`
 
 ### 1.2 Update RPC Function
-- [ ] Add UNION ALL to `get_daily_activities` function:
-
-```sql
-UNION ALL
--- Custom dates (all-day events)
-SELECT
-  dcd.date as activity_date,
-  'custom_date'::text as activity_type,
-  d.id as deadline_id,
-  d.book_title,
-  dcd.date::timestamptz as activity_timestamp,
-  jsonb_build_object(
-    'custom_date_name', dcd.name,
-    'custom_date_id', dcd.id,
-    'format', d.format,
-    'author', d.author
-  ) as metadata
-FROM deadline_custom_dates dcd
-INNER JOIN deadlines d ON dcd.deadline_id = d.id
-WHERE d.user_id = p_user_id
-  AND dcd.date >= p_start_date
-  AND dcd.date <= p_end_date
-```
+- [x] Added UNION ALL to `get_daily_activities` function for `custom_date` activity type
 
 ---
 
-## Phase 2: Type System Updates
+## Phase 2: Type System Updates ✅ COMPLETE
 
-### Files to Modify
+### Files Modified
 
 | Status | File | Change |
 |--------|------|--------|
-| [ ] | `src/types/customDates.types.ts` | **CREATE** - DeadlineCustomDate, Insert, Update types |
-| [ ] | `src/constants/database.ts` | Add `DEADLINE_CUSTOM_DATES: 'deadline_custom_dates'` |
-| [ ] | `src/constants/queryKeys.ts` | Add `CUSTOM_DATES.BY_DEADLINE`, `CUSTOM_DATES.ALL_NAMES` |
-| [ ] | `src/constants/activityTypes.ts` | Add `'custom_date'` to ActivityType, add config |
-| [ ] | `src/types/calendar.types.ts` | Add `'custom_date'` to validTypes array |
-
-### Activity Type Config
-```typescript
-custom_date: {
-  icon: 'calendar.badge.plus',
-  color: Colors.light.accent,
-  label: 'Custom Date',
-},
-```
+| [x] | `src/types/customDates.types.ts` | **CREATED** - DeadlineCustomDate, Insert, Update types |
+| [x] | `src/constants/database.ts` | Added `DEADLINE_CUSTOM_DATES: 'deadline_custom_dates'` |
+| [x] | `src/constants/queryKeys.ts` | Added `CUSTOM_DATES.BY_DEADLINE`, `CUSTOM_DATES.ALL_NAMES` + mutation keys |
+| [x] | `src/constants/activityTypes.ts` | Added `'custom_date'` to ActivityType + config |
+| [x] | `src/types/calendar.types.ts` | Added `'custom_date'` to validTypes array |
 
 ---
 
-## Phase 3: Service Layer
+## Phase 3: Service Layer ✅ COMPLETE
 
-- [ ] **File**: `src/services/customDates.service.ts`
+- [x] **File**: `src/services/customDates.service.ts`
 
 Methods:
 - `getCustomDates(userId, deadlineId)` - Fetch dates for a deadline, ordered by date
@@ -262,9 +195,9 @@ import { DeadlineCustomDatesSection } from '@/components/features/deadlines/Dead
 ### Create (10 files)
 | Status | File |
 |--------|------|
-| [ ] | `supabase/migrations/[timestamp]_add_deadline_custom_dates.sql` |
-| [ ] | `src/types/customDates.types.ts` |
-| [ ] | `src/services/customDates.service.ts` |
+| [x] | `supabase/migrations/20251201040000_add_deadline_custom_dates.sql` |
+| [x] | `src/types/customDates.types.ts` |
+| [x] | `src/services/customDates.service.ts` |
 | [ ] | `src/hooks/useCustomDates.ts` |
 | [ ] | `src/schemas/customDateFormSchema.ts` |
 | [ ] | `src/components/features/deadlines/DeadlineCustomDatesSection.tsx` |
@@ -276,10 +209,10 @@ import { DeadlineCustomDatesSection } from '@/components/features/deadlines/Dead
 ### Modify (7 files)
 | Status | File | Change |
 |--------|------|--------|
-| [ ] | `src/constants/database.ts` | Add table constant |
-| [ ] | `src/constants/queryKeys.ts` | Add query keys |
-| [ ] | `src/constants/activityTypes.ts` | Add custom_date type |
-| [ ] | `src/types/calendar.types.ts` | Update validation |
+| [x] | `src/constants/database.ts` | Add table constant |
+| [x] | `src/constants/queryKeys.ts` | Add query keys |
+| [x] | `src/constants/activityTypes.ts` | Add custom_date type |
+| [x] | `src/types/calendar.types.ts` | Update validation |
 | [ ] | `src/app/deadline/[id]/index.tsx` | Add section |
 | [ ] | `src/app/(authenticated)/calendar.tsx` | Handle all-day display |
 | [ ] | `src/utils/calendarUtils.ts` | Update transforms |

@@ -27,6 +27,7 @@ function isValidActivityType(type: string): type is ActivityType {
     'note',
     'review',
     'review_due',
+    'custom_date',
   ];
   return validTypes.includes(type as ActivityType);
 }
