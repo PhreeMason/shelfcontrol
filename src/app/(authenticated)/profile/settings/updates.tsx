@@ -46,10 +46,21 @@ export default function AppUpdatesScreen() {
   const [showPreviousReleases, setShowPreviousReleases] = useState(false);
 
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
-  const runtimeVersion = __DEV__
-    ? appVersion
-    : (Updates.runtimeVersion ?? 'N/A');
   const isDevMode = __DEV__;
+
+  const getUpdateDisplayText = () => {
+    if (isDevMode) {
+      return 'Development build';
+    }
+    const storeName = Platform.OS === 'ios' ? 'App Store' : 'Play Store';
+    if (Updates.isEmbeddedLaunch) {
+      return `${storeName} build`;
+    }
+    if (Updates.createdAt) {
+      return `Updated: ${Updates.createdAt.toLocaleDateString()}`;
+    }
+    return `${storeName} build`;
+  };
 
   const currentRelease = getCurrentRelease();
   const recentPreviousReleases = getRecentPreviousReleases(2);
@@ -342,7 +353,7 @@ export default function AppUpdatesScreen() {
             Version {appVersion}
           </ThemedText>
           <ThemedText typography="bodySmall" color="textMuted">
-            Runtime: {runtimeVersion}
+            {getUpdateDisplayText()}
           </ThemedText>
 
           {/* What's New Section */}
