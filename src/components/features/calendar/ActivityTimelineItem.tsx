@@ -173,6 +173,16 @@ function getActivityDetails(activity: ActivityTimelineItemProps['activity']): {
       break;
     }
 
+    case 'custom_date': {
+      const { custom_date_name } = metadata;
+      if (custom_date_name) {
+        text = custom_date_name;
+      } else {
+        text = 'Important date';
+      }
+      break;
+    }
+
     default:
       text = book_title;
   }
