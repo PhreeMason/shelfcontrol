@@ -4,6 +4,7 @@ import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { DeadlineCalculationResult } from '@/utils/deadlineProviderUtils';
 import {
   getMonthDateRange,
+  getActivityPriority,
   enrichDeadlineActivity,
   sortActivitiesByTime,
   transformActivitiesToAgendaItems,
@@ -44,6 +45,8 @@ const createMockDeadline = (
   author: 'Test Author',
   acquisition_source: null,
   type: 'Personal',
+  source: null,
+  deadline_type: null,
   publishers: null,
   deadline_date: '2025-01-31',
   total_quantity: 300,
@@ -121,6 +124,144 @@ describe('calendarUtils', () => {
         startDate: '2025-04-01',
         endDate: '2025-04-30',
       });
+    });
+  });
+
+  describe('getActivityPriority', () => {
+    it('should return priority 1 for progress at 100% (book completion)', () => {
+      const activity = createMockActivity(
+        'progress',
+        '2025-01-15',
+        '2025-01-15T10:00:00Z',
+        'd1',
+        'Book A',
+        { current_progress: 300, total_quantity: 300 }
+      );
+
+      expect(getActivityPriority(activity)).toBe(1);
+    });
+
+    it('should return priority 1 for progress exceeding total (edge case)', () => {
+      const activity = createMockActivity(
+        'progress',
+        '2025-01-15',
+        '2025-01-15T10:00:00Z',
+        'd1',
+        'Book A',
+        { current_progress: 350, total_quantity: 300 }
+      );
+
+      expect(getActivityPriority(activity)).toBe(1);
+    });
+
+    it('should return priority 3 for regular progress updates', () => {
+      const activity = createMockActivity(
+        'progress',
+        '2025-01-15',
+        '2025-01-15T10:00:00Z',
+        'd1',
+        'Book A',
+        { current_progress: 150, total_quantity: 300 }
+      );
+
+      expect(getActivityPriority(activity)).toBe(3);
+    });
+
+    it('should return priority 3 for progress with no metadata', () => {
+      const activity = createMockActivity(
+        'progress',
+        '2025-01-15',
+        '2025-01-15T10:00:00Z',
+        'd1',
+        'Book A',
+        {}
+      );
+
+      expect(getActivityPriority(activity)).toBe(3);
+    });
+
+    it('should return priority 2 for review_due', () => {
+      const activity = createMockActivity(
+        'review_due',
+        '2025-01-15',
+        '2025-01-15T10:00:00Z',
+        'd1',
+        'Book A'
+      );
+
+      expect(getActivityPriority(activity)).toBe(2);
+    });
+
+    it('should return priority 4 for deadline_created', () => {
+      const activity = createMockActivity(
+        'deadline_created',
+        '2025-01-15',
+        '2025-01-15T10:00:00Z',
+        'd1',
+        'Book A'
+      );
+
+      expect(getActivityPriority(activity)).toBe(4);
+    });
+
+    it('should return priority 5 for review', () => {
+      const activity = createMockActivity(
+        'review',
+        '2025-01-15',
+        '2025-01-15T10:00:00Z',
+        'd1',
+        'Book A'
+      );
+
+      expect(getActivityPriority(activity)).toBe(5);
+    });
+
+    it('should return priority 6 for status', () => {
+      const activity = createMockActivity(
+        'status',
+        '2025-01-15',
+        '2025-01-15T10:00:00Z',
+        'd1',
+        'Book A'
+      );
+
+      expect(getActivityPriority(activity)).toBe(6);
+    });
+
+    it('should return priority 7 for note', () => {
+      const activity = createMockActivity(
+        'note',
+        '2025-01-15',
+        '2025-01-15T10:00:00Z',
+        'd1',
+        'Book A'
+      );
+
+      expect(getActivityPriority(activity)).toBe(7);
+    });
+
+    it('should return priority 7 for custom_date', () => {
+      const activity = createMockActivity(
+        'custom_date',
+        '2025-01-15',
+        '2025-01-15T10:00:00Z',
+        'd1',
+        'Book A'
+      );
+
+      expect(getActivityPriority(activity)).toBe(7);
+    });
+
+    it('should return priority 7 for deadline_due (catch-all)', () => {
+      const activity = createMockActivity(
+        'deadline_due',
+        '2025-01-15',
+        '2025-01-15T12:00:00Z',
+        'd1',
+        'Book A'
+      );
+
+      expect(getActivityPriority(activity)).toBe(7);
     });
   });
 

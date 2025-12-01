@@ -165,6 +165,7 @@ export interface MarkedDatesConfig {
  */
 export interface ActivityTimelineItemProps {
   activity: EnrichedActivity;
+  coverImageUrl?: string | null | undefined;
   onPress?: () => void;
 }
 

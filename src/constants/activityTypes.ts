@@ -23,6 +23,7 @@ export type CalendarFilterType =
   | 'deadline_due_good'
   | 'deadline_due_approaching'
   | 'deadline_due_urgent'
+  | 'progress_complete' // Progress events at 100%
   | Exclude<ActivityType, 'deadline_due'>;
 
 /**

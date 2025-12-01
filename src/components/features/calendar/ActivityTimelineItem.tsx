@@ -8,14 +8,18 @@ import { formatActivityTime } from '@/utils/calendarUtils';
 import { formatBookFormat, formatStatus, OPACITY } from '@/utils/formatters';
 import { formatAudiobookTime } from '@/utils/timeFormatUtils';
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 /**
  * ActivityTimelineItem Component
  * Renders individual activity timeline items (non-deadline items) with time badge, icon, and details
  */
 export const ActivityTimelineItem: React.FC<ActivityTimelineItemProps> =
-  React.memo(function ActivityTimelineItem({ activity, onPress }) {
+  React.memo(function ActivityTimelineItem({
+    activity,
+    coverImageUrl,
+    onPress,
+  }) {
     const { colors } = useTheme();
     const config = ACTIVITY_TYPE_CONFIG[activity.activity_type];
 
@@ -39,17 +43,29 @@ export const ActivityTimelineItem: React.FC<ActivityTimelineItemProps> =
         )}
 
         <View style={styles.timelineColumn}>
-          <View
-            style={[
-              styles.iconCircle,
-              {
-                backgroundColor: config.color + OPACITY.SUBTLE,
-                borderColor: colors.background,
-              },
-            ]}
-          >
-            <IconSymbol name={config.icon} size={16} color={config.color} />
-          </View>
+          {coverImageUrl ? (
+            <View
+              style={[styles.coverContainer, { borderColor: colors.border }]}
+            >
+              <Image
+                source={{ uri: coverImageUrl }}
+                style={styles.coverImage}
+                resizeMode="cover"
+              />
+            </View>
+          ) : (
+            <View
+              style={[
+                styles.iconCircle,
+                {
+                  backgroundColor: config.color + OPACITY.SUBTLE,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
+              <IconSymbol name={config.icon} size={16} color={config.color} />
+            </View>
+          )}
         </View>
 
         {/* Content Column */}
@@ -215,7 +231,18 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
+    borderWidth: 1,
+  },
+  coverContainer: {
+    width: 28,
+    height: 38, // ~6:9 aspect ratio for book covers
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  coverImage: {
+    width: '100%',
+    height: '100%',
   },
   content: {
     flex: 1,

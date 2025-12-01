@@ -1,167 +1,233 @@
-import { supabase } from '@/lib/supabase';
+import { generateId, supabase } from '@/lib/supabase';
 import { activityService } from '../activity.service';
 import { customDatesService } from '../customDates.service';
 
 // Mock dependencies
 jest.mock('@/lib/supabase', () => ({
-    supabase: {
-        from: jest.fn(() => ({
-            select: jest.fn(),
-            insert: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn(),
-            eq: jest.fn(),
-            order: jest.fn(),
-        })),
-        rpc: jest.fn(),
-    },
+  generateId: jest.fn(),
+  supabase: {
+    from: jest.fn(() => ({
+      select: jest.fn().mockReturnThis(),
+      insert: jest.fn().mockReturnThis(),
+      update: jest.fn().mockReturnThis(),
+      delete: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      order: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      single: jest.fn().mockReturnThis(),
+    })),
+  },
 }));
 
 jest.mock('../activity.service', () => ({
-    activityService: {
-        trackUserActivity: jest.fn(),
-    },
+  activityService: {
+    trackUserActivity: jest.fn(),
+  },
 }));
 
+const mockSupabaseFrom = supabase.from as jest.Mock;
+const mockGenerateId = generateId as jest.Mock;
+
 describe('CustomDatesService', () => {
-    const mockUserId = 'user-123';
-    const mockDeadlineId = 'deadline-123';
-    const mockCustomDateId = 'dcd_123';
+  const mockUserId = 'user-123';
+  const mockDeadlineId = 'deadline-123';
+  const mockCustomDateId = 'dcd_123';
 
-    beforeEach(() => {
-        jest.clearAllMocks();
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockGenerateId.mockReturnValue(mockCustomDateId);
+  });
+
+  describe('getCustomDates', () => {
+    it('should fetch custom dates for a deadline', async () => {
+      const mockData = [{ id: mockCustomDateId, name: 'Test Date' }];
+      const mockOrder = jest
+        .fn()
+        .mockResolvedValue({ data: mockData, error: null });
+      const mockSelect = jest.fn().mockReturnThis();
+
+      mockSupabaseFrom.mockReturnValue({
+        select: mockSelect,
+        eq: jest.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
+            order: mockOrder,
+          }),
+        }),
+      });
+
+      const result = await customDatesService.getCustomDates(
+        mockUserId,
+        mockDeadlineId
+      );
+
+      expect(supabase.from).toHaveBeenCalledWith('deadline_custom_dates');
+      expect(mockSelect).toHaveBeenCalledWith('*');
+      expect(mockOrder).toHaveBeenCalledWith('date', { ascending: true });
+      expect(result).toEqual(mockData);
     });
 
-    describe('getCustomDates', () => {
-        it('should fetch custom dates for a deadline', async () => {
-            const mockData = [{ id: mockCustomDateId, name: 'Test Date' }];
-            const mockSelect = jest.fn().mockReturnThis();
-            const mockEq = jest.fn().mockReturnThis();
-            const mockOrder = jest.fn().mockResolvedValue({ data: mockData, error: null });
+    it('should throw error on fetch failure', async () => {
+      const mockError = new Error('Fetch failed');
+      const mockOrder = jest
+        .fn()
+        .mockResolvedValue({ data: null, error: mockError });
 
-            (supabase.from as jest.Mock).mockReturnValue({
-                select: mockSelect,
-                eq: mockEq,
-                order: mockOrder,
-            });
+      mockSupabaseFrom.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
+            order: mockOrder,
+          }),
+        }),
+      });
 
-            const result = await customDatesService.getCustomDates(mockUserId, mockDeadlineId);
-
-            expect(supabase.from).toHaveBeenCalledWith('deadline_custom_dates');
-            expect(mockSelect).toHaveBeenCalledWith('*');
-            expect(mockEq).toHaveBeenCalledWith('user_id', mockUserId);
-            expect(mockEq).toHaveBeenCalledWith('deadline_id', mockDeadlineId);
-            expect(mockOrder).toHaveBeenCalledWith('date', { ascending: true });
-            expect(result).toEqual(mockData);
-        });
-
-        it('should throw error on fetch failure', async () => {
-            const mockError = { message: 'Fetch failed' };
-            const mockSelect = jest.fn().mockReturnThis();
-            const mockEq = jest.fn().mockReturnThis();
-            const mockOrder = jest.fn().mockResolvedValue({ data: null, error: mockError });
-
-            (supabase.from as jest.Mock).mockReturnValue({
-                select: mockSelect,
-                eq: mockEq,
-                order: mockOrder,
-            });
-
-            await expect(customDatesService.getCustomDates(mockUserId, mockDeadlineId))
-                .rejects.toThrow('Fetch failed');
-        });
+      await expect(
+        customDatesService.getCustomDates(mockUserId, mockDeadlineId)
+      ).rejects.toThrow('Fetch failed');
     });
+  });
 
-    describe('getAllCustomDateNames', () => {
-        it('should fetch distinct custom date names', async () => {
-            const mockData = [{ name: 'Date 1' }, { name: 'Date 2' }];
-            const mockRpc = jest.fn().mockResolvedValue({ data: mockData, error: null });
-            (supabase.rpc as jest.Mock) = mockRpc;
+  describe('getAllCustomDateNames', () => {
+    it('should fetch distinct custom date names', async () => {
+      const mockData = [
+        { name: 'Date 1' },
+        { name: 'Date 2' },
+        { name: 'Date 1' },
+      ];
+      const mockOrder = jest
+        .fn()
+        .mockResolvedValue({ data: mockData, error: null });
+      const mockSelect = jest.fn().mockReturnThis();
 
-            const result = await customDatesService.getAllCustomDateNames(mockUserId);
+      mockSupabaseFrom.mockReturnValue({
+        select: mockSelect,
+        eq: jest.fn().mockReturnValue({
+          order: mockOrder,
+        }),
+      });
 
-            expect(supabase.rpc).toHaveBeenCalledWith('get_distinct_custom_date_names', {
-                p_user_id: mockUserId,
-            });
-            expect(result).toEqual(['Date 1', 'Date 2']);
-        });
+      const result = await customDatesService.getAllCustomDateNames(mockUserId);
+
+      expect(supabase.from).toHaveBeenCalledWith('deadline_custom_dates');
+      expect(mockSelect).toHaveBeenCalledWith('name');
+      expect(result).toEqual(['Date 1', 'Date 2']);
     });
+  });
 
-    describe('addCustomDate', () => {
-        it('should add a custom date and track activity', async () => {
-            const mockInput = { name: 'New Date', date: '2025-01-01' };
-            const mockData = { id: mockCustomDateId, ...mockInput };
+  describe('addCustomDate', () => {
+    it('should add a custom date and track activity', async () => {
+      const mockInput = { name: 'New Date', date: '2025-01-01' };
+      const mockData = [{ id: mockCustomDateId, ...mockInput }];
 
-            const mockInsert = jest.fn().mockReturnThis();
-            const mockSelect = jest.fn().mockReturnThis();
-            const mockSingle = jest.fn().mockResolvedValue({ data: mockData, error: null });
+      const mockInsert = jest.fn().mockReturnThis();
+      const mockSelect = jest.fn().mockReturnThis();
+      const mockLimit = jest
+        .fn()
+        .mockResolvedValue({ data: mockData, error: null });
 
-            (supabase.from as jest.Mock).mockReturnValue({
-                insert: mockInsert,
-                select: mockSelect,
-                single: mockSingle,
-            });
+      mockSupabaseFrom.mockReturnValue({
+        insert: mockInsert,
+        select: mockSelect,
+        limit: mockLimit,
+      });
 
-            const result = await customDatesService.addCustomDate(mockUserId, mockDeadlineId, mockInput);
+      const result = await customDatesService.addCustomDate(
+        mockUserId,
+        mockDeadlineId,
+        mockInput
+      );
 
-            expect(supabase.from).toHaveBeenCalledWith('deadline_custom_dates');
-            expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({
-                user_id: mockUserId,
-                deadline_id: mockDeadlineId,
-                name: mockInput.name,
-                date: mockInput.date,
-            }));
-            expect(activityService.trackUserActivity).toHaveBeenCalledWith(expect.objectContaining({
-                userId: mockUserId,
-                activityType: 'custom_date',
-                deadlineId: mockDeadlineId,
-            }));
-            expect(result).toEqual(mockData);
-        });
+      expect(supabase.from).toHaveBeenCalledWith('deadline_custom_dates');
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: mockCustomDateId,
+          user_id: mockUserId,
+          deadline_id: mockDeadlineId,
+          name: mockInput.name,
+          date: mockInput.date,
+        })
+      );
+      expect(activityService.trackUserActivity).toHaveBeenCalledWith(
+        'custom_date_created',
+        expect.objectContaining({
+          deadlineId: mockDeadlineId,
+          customDateId: mockCustomDateId,
+          name: mockInput.name,
+        })
+      );
+      expect(result).toEqual(mockData[0]);
     });
+  });
 
-    describe('updateCustomDate', () => {
-        it('should update a custom date and track activity', async () => {
-            const mockUpdateData = { name: 'Updated Name' };
-            const mockData = { id: mockCustomDateId, ...mockUpdateData };
+  describe('updateCustomDate', () => {
+    it('should update a custom date and track activity', async () => {
+      const mockUpdateData = { name: 'Updated Name' };
+      const mockData = [{ id: mockCustomDateId, ...mockUpdateData }];
 
-            const mockUpdate = jest.fn().mockReturnThis();
-            const mockEq = jest.fn().mockReturnThis();
-            const mockSelect = jest.fn().mockReturnThis();
-            const mockSingle = jest.fn().mockResolvedValue({ data: mockData, error: null });
+      const mockUpdate = jest.fn().mockReturnThis();
+      const mockSelect = jest.fn().mockReturnThis();
+      const mockLimit = jest
+        .fn()
+        .mockResolvedValue({ data: mockData, error: null });
 
-            (supabase.from as jest.Mock).mockReturnValue({
-                update: mockUpdate,
-                eq: mockEq,
-                select: mockSelect,
-                single: mockSingle,
-            });
+      mockSupabaseFrom.mockReturnValue({
+        update: mockUpdate,
+        eq: jest.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
+            select: mockSelect,
+            limit: mockLimit,
+          }),
+        }),
+        select: mockSelect,
+        limit: mockLimit,
+      });
 
-            const result = await customDatesService.updateCustomDate(mockCustomDateId, mockUserId, mockUpdateData);
+      const result = await customDatesService.updateCustomDate(
+        mockCustomDateId,
+        mockUserId,
+        mockUpdateData
+      );
 
-            expect(supabase.from).toHaveBeenCalledWith('deadline_custom_dates');
-            expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining(mockUpdateData));
-            expect(mockEq).toHaveBeenCalledWith('id', mockCustomDateId);
-            expect(activityService.trackUserActivity).toHaveBeenCalled();
-            expect(result).toEqual(mockData);
-        });
+      expect(supabase.from).toHaveBeenCalledWith('deadline_custom_dates');
+      expect(mockUpdate).toHaveBeenCalledWith(
+        expect.objectContaining(mockUpdateData)
+      );
+      expect(activityService.trackUserActivity).toHaveBeenCalledWith(
+        'custom_date_updated',
+        expect.objectContaining({
+          customDateId: mockCustomDateId,
+        })
+      );
+      expect(result).toEqual(mockData[0]);
     });
+  });
 
-    describe('deleteCustomDate', () => {
-        it('should delete a custom date', async () => {
-            const mockDelete = jest.fn().mockReturnThis();
-            const mockEq = jest.fn().mockResolvedValue({ error: null });
+  describe('deleteCustomDate', () => {
+    it('should delete a custom date', async () => {
+      const mockDelete = jest.fn().mockReturnThis();
+      const mockEqOuter = jest.fn().mockReturnValue({
+        eq: jest.fn().mockResolvedValue({ error: null }),
+      });
 
-            (supabase.from as jest.Mock).mockReturnValue({
-                delete: mockDelete,
-                eq: mockEq,
-            });
+      mockSupabaseFrom.mockReturnValue({
+        delete: mockDelete,
+        eq: mockEqOuter,
+      });
 
-            await customDatesService.deleteCustomDate(mockCustomDateId, mockUserId);
+      const result = await customDatesService.deleteCustomDate(
+        mockCustomDateId,
+        mockUserId
+      );
 
-            expect(supabase.from).toHaveBeenCalledWith('deadline_custom_dates');
-            expect(mockDelete).toHaveBeenCalled();
-            expect(mockEq).toHaveBeenCalledWith('id', mockCustomDateId);
-        });
+      expect(supabase.from).toHaveBeenCalledWith('deadline_custom_dates');
+      expect(mockDelete).toHaveBeenCalled();
+      expect(activityService.trackUserActivity).toHaveBeenCalledWith(
+        'custom_date_deleted',
+        expect.objectContaining({
+          customDateId: mockCustomDateId,
+        })
+      );
+      expect(result).toEqual(mockCustomDateId);
     });
+  });
 });

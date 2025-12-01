@@ -929,7 +929,7 @@ describe('DeadlinesService', () => {
         *,
         progress:deadline_progress(*),
         status:deadline_status(*),
-        books(publisher)
+        books(publisher, cover_image_url)
       `);
       expect(mockEq).toHaveBeenCalledWith('user_id', userId);
       expect(mockOrder).toHaveBeenCalledWith('created_at', {

@@ -26,6 +26,44 @@ const URGENCY_PRIORITY = [
 ] as const;
 
 /**
+ * Get activity priority for sorting (lower number = higher priority)
+ * Used to determine which activities appear first in the timeline list
+ */
+export function getActivityPriority(activity: DailyActivity): number {
+  const { activity_type, metadata } = activity;
+
+  // 1. Progress at 100% is highest priority (book completion)
+  if (activity_type === 'progress') {
+    const currentProgress = metadata?.current_progress;
+    const totalQuantity = metadata?.total_quantity;
+    if (
+      currentProgress !== undefined &&
+      totalQuantity !== undefined &&
+      currentProgress >= totalQuantity
+    ) {
+      return 1;
+    }
+    // 3. Other progress updates
+    return 3;
+  }
+
+  // 2. Review due dates
+  if (activity_type === 'review_due') return 2;
+
+  // 4. New book added
+  if (activity_type === 'deadline_created') return 4;
+
+  // 5. Review posted
+  if (activity_type === 'review') return 5;
+
+  // 6. Status change
+  if (activity_type === 'status') return 6;
+
+  // 7. Everything else (notes, custom_date, etc.)
+  return 7;
+}
+
+/**
  * Get the urgency priority index (lower = more urgent)
  */
 function getUrgencyPriorityIndex(urgencyLevel: string): number {
@@ -106,8 +144,7 @@ export function sortActivitiesByTime(
     a => a.activity_type === 'deadline_due' || a.activity_type === 'custom_date'
   );
   const otherActivities = activities.filter(
-    a =>
-      a.activity_type !== 'deadline_due' && a.activity_type !== 'custom_date'
+    a => a.activity_type !== 'deadline_due' && a.activity_type !== 'custom_date'
   );
 
   // Sort deadline_due alphabetically by book title
@@ -181,21 +218,24 @@ export function transformActivitiesToAgendaItems(
         activity,
       };
 
-      // Add deadline data for deadline_due items
-      if (activity.activity_type === 'deadline_due') {
-        const deadline = deadlines.find(d => d.id === activity.deadline_id);
-        if (deadline && activity.deadlineCalculations) {
-          agendaItem.deadline = deadline;
+      // Add deadline data for all activity types (for cover image, calculations, etc.)
+      const deadline = deadlines.find(d => d.id === activity.deadline_id);
+      if (deadline) {
+        agendaItem.deadline = deadline;
+        // Add calculations only for deadline_due items
+        if (
+          activity.activity_type === 'deadline_due' &&
+          activity.deadlineCalculations
+        ) {
           agendaItem.calculations = activity.deadlineCalculations;
         }
-      } else if (activity.activity_type === 'custom_date') {
-        // Add deadline data for custom_date items (for cover image, etc.)
-        const deadline = deadlines.find(d => d.id === activity.deadline_id);
-        if (deadline) {
-          agendaItem.deadline = deadline;
-        }
-      } else {
-        // Add formatted timestamp for non-deadline items
+      }
+
+      // Add formatted timestamp for timed activities (not all-day events)
+      if (
+        activity.activity_type !== 'deadline_due' &&
+        activity.activity_type !== 'custom_date'
+      ) {
         agendaItem.timestamp = formatActivityTime(activity.activity_timestamp);
       }
 
@@ -395,13 +435,28 @@ export function calculateMarkedDates(
           },
         };
       } else {
-        // Activity-only dates: subtle grey background tint (no dots needed)
+        // Activity-only dates: get cover from first activity's deadline
+        let activityCoverUrl: string | null = null;
+
+        const firstActivity = nonDeadlineActivities[0];
+        if (firstActivity) {
+          const deadline = deadlines.find(
+            d => d.id === firstActivity.deadline_id
+          );
+          if (deadline) {
+            const coverUrl =
+              deadline.cover_image_url || deadline.books?.cover_image_url;
+            activityCoverUrl = getCoverImageUrl(coverUrl);
+          }
+        }
+
         markedDates[date] = {
           customStyles: {
             container: {
               backgroundColor: ACTIVITY_DOT_COLOR + OPACITY.SUBTLE,
               borderRadius: 4,
             },
+            coverImageUrl: activityCoverUrl,
           },
         };
       }

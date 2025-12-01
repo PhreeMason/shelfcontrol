@@ -13,7 +13,6 @@ import {
   ScrollView,
   StyleSheet,
   Switch,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -39,6 +38,7 @@ interface FilterConfig {
 }
 
 // Due date filters with urgency-based coloring (matching calendar legend)
+// Includes all-day events like custom_date (Important Dates)
 const DUE_DATE_FILTERS: FilterConfig[] = [
   {
     type: 'deadline_due_completed',
@@ -48,17 +48,18 @@ const DUE_DATE_FILTERS: FilterConfig[] = [
   { type: 'deadline_due_good', label: 'On Track', colorKey: 'good' },
   { type: 'deadline_due_approaching', label: 'Tight', colorKey: 'approaching' },
   { type: 'deadline_due_urgent', label: 'Urgent/Overdue', colorKey: 'urgent' },
+  { type: 'custom_date', label: 'Important Dates' },
 ];
 
 // Activity event filters (no color boxes, just labels)
 const ACTIVITY_FILTERS: FilterConfig[] = [
+  { type: 'progress_complete', label: 'Progress Complete' },
   { type: 'deadline_created', label: 'New Books Added' },
   { type: 'progress', label: 'Progress Updates' },
   { type: 'status', label: 'Status Changes' },
   { type: 'note', label: 'Notes' },
   { type: 'review', label: 'Reviews Posted' },
   { type: 'review_due', label: 'Review Due Dates' },
-  { type: 'custom_date', label: 'Important Dates' },
 ];
 
 // All filter types combined for Clear All / Select All functionality
@@ -109,7 +110,8 @@ export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
   // Show "Clear All" when any filters are selected (items showing)
   const hasActiveFilters = excludedActivities.length < ALL_FILTER_TYPES.length;
   // Show "Select All" when all filters are cleared (nothing showing)
-  const allFiltersCleared = excludedActivities.length === ALL_FILTER_TYPES.length;
+  const allFiltersCleared =
+    excludedActivities.length === ALL_FILTER_TYPES.length;
 
   // Render a filter item - color boxes only for due date filters (colorKey)
   const renderFilterItem = (filter: FilterConfig) => {
@@ -140,7 +142,9 @@ export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
               { backgroundColor: color + OPACITY.CALENDAR },
             ]}
           >
-            <Text style={[styles.colorBoxText, { color }]}>12</Text>
+            <ThemedText typography="labelSmall" style={{ color }}>
+              12
+            </ThemedText>
           </View>
         )}
         <ThemedText
@@ -339,13 +343,9 @@ const styles = StyleSheet.create({
   colorBox: {
     width: 20,
     height: 20,
-    borderRadius: 4,
+    borderRadius: BorderRadius.sm,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  colorBoxText: {
-    fontSize: 9,
-    fontWeight: '600',
   },
   filterLabel: {
     // Label styling handled by ThemedText

@@ -8,6 +8,7 @@ import { ReviewDueCard } from '@/components/features/calendar/ReviewDueCard';
 import AppHeader from '@/components/shared/AppHeader';
 import { ThemedText } from '@/components/themed';
 import { CalendarFilterType } from '@/constants/activityTypes';
+import { Spacing } from '@/constants/Colors';
 import { useGetDailyActivities } from '@/hooks/useCalendar';
 import { useTheme } from '@/hooks/useTheme';
 import { useDeadlines } from '@/providers/DeadlineProvider';
@@ -19,8 +20,10 @@ import {
 } from '@/types/deadline.types';
 import {
   calculateMarkedDates,
+  getActivityPriority,
   transformActivitiesToAgendaItems,
 } from '@/utils/calendarUtils';
+import { getCoverImageUrl } from '@/utils/coverImageUtils';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
@@ -28,7 +31,7 @@ import { Calendar, DateData } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Empty function constant for callbacks that don't need to do anything
-const NOOP = () => { };
+const NOOP = () => {};
 
 /**
  * Generate a unique key for agenda items in the list
@@ -130,7 +133,24 @@ export default function CalendarScreen() {
         return true; // Show if we can't find the deadline
       }
 
-      // For non-deadline_due activities, check directly against activity type
+      // Special handling for progress - separate 100% complete from regular progress
+      if (activity.activity_type === 'progress') {
+        const { current_progress, total_quantity } = activity.metadata || {};
+        const isComplete =
+          current_progress !== undefined &&
+          total_quantity !== undefined &&
+          current_progress >= total_quantity;
+
+        if (isComplete) {
+          // Check progress_complete filter for 100% progress events
+          return !excludedCalendarActivities.includes('progress_complete');
+        } else {
+          // Check regular progress filter for other progress events
+          return !excludedCalendarActivities.includes('progress');
+        }
+      }
+
+      // For other activities, check directly against activity type
       if (
         excludedCalendarActivities.includes(
           activity.activity_type as CalendarFilterType
@@ -234,12 +254,17 @@ export default function CalendarScreen() {
 
   const otherActivities = useMemo(
     () =>
-      selectedDateActivities.filter(
-        item =>
-          item.activityType !== 'deadline_due' &&
-          item.activityType !== 'review_due' &&
-          item.activityType !== 'custom_date'
-      ),
+      selectedDateActivities
+        .filter(
+          item =>
+            item.activityType !== 'deadline_due' &&
+            item.activityType !== 'review_due' &&
+            item.activityType !== 'custom_date'
+        )
+        .sort(
+          (a, b) =>
+            getActivityPriority(a.activity) - getActivityPriority(b.activity)
+        ),
     [selectedDateActivities]
   );
 
@@ -409,7 +434,7 @@ export default function CalendarScreen() {
                 />
               ))}
 
-              {/* Other Activities (Timed) - Rendered After */}
+              {/* Other Activities (Timed) - Rendered After, sorted by priority */}
               {otherActivities.map((item, index) => (
                 <ActivityTimelineItem
                   key={generateAgendaItemKey(
@@ -418,6 +443,10 @@ export default function CalendarScreen() {
                     index
                   )}
                   activity={item.activity}
+                  coverImageUrl={getCoverImageUrl(
+                    item.deadline?.cover_image_url ||
+                      item.deadline?.books?.cover_image_url
+                  )}
                   onPress={() => {
                     if (item.activityType === 'note') {
                       router.push(
@@ -457,47 +486,43 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: Spacing.lg,
   },
   loadingText: {
-    marginTop: 16,
-    fontSize: 16,
+    marginTop: Spacing.md,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: Spacing.lg,
   },
   errorText: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   errorSubtext: {
-    fontSize: 14,
     textAlign: 'center',
   },
   activitiesList: {
     flex: 1,
   },
   activitiesContent: {
-    paddingHorizontal: 12,
-    paddingTop: 20,
-    paddingBottom: 100,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.lg,
+    paddingBottom: 100, // Tab bar offset - intentionally fixed
   },
   emptyState: {
-    paddingTop: 40,
+    paddingTop: Spacing.xxl,
     alignItems: 'center',
   },
   inlineLoadingContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 12,
-    gap: 8,
+    paddingVertical: Spacing.md,
+    gap: Spacing.sm,
   },
   inlineLoadingText: {
-    fontSize: 14,
+    // Typography handled by ThemedText variant="muted"
   },
 });

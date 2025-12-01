@@ -83,7 +83,7 @@ describe('CalendarFilterSheet', () => {
     expect(mockOnExcludedActivitiesChange).toHaveBeenCalledWith([]);
   });
 
-  it('clears all filters when "Clear All" is pressed', () => {
+  it('excludes all activity types when "Clear All" is pressed', () => {
     render(
       <CalendarFilterSheet
         visible={true}
@@ -94,7 +94,21 @@ describe('CalendarFilterSheet', () => {
     );
 
     fireEvent.press(screen.getByText('Clear All'));
-    expect(mockOnExcludedActivitiesChange).toHaveBeenCalledWith([]);
+    // "Clear All" hides all calendar items by adding all types to excluded list
+    expect(mockOnExcludedActivitiesChange).toHaveBeenCalledWith([
+      'deadline_due_completed',
+      'deadline_due_good',
+      'deadline_due_approaching',
+      'deadline_due_urgent',
+      'custom_date',
+      'progress_complete',
+      'deadline_created',
+      'progress',
+      'status',
+      'note',
+      'review',
+      'review_due',
+    ]);
   });
 
   it('calls onClose when "Done" or "APPLY" is pressed', () => {

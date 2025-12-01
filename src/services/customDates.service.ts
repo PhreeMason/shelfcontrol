@@ -32,7 +32,7 @@ class CustomDatesService {
     if (error) throw error;
 
     const uniqueNames = [
-      ...new Set((data as { name: string }[]).map(d => d.name)),
+      ...new Set((data as unknown as { name: string }[]).map(d => d.name)),
     ];
     return uniqueNames;
   }

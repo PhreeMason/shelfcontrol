@@ -57,6 +57,8 @@ const createMockAgendaItem = (
     total_quantity: 200,
     format: 'physical',
     type: 'pages',
+    source: null,
+    deadline_type: null,
     acquisition_source: null,
     flexibility: 'flexible',
     publishers: null,
