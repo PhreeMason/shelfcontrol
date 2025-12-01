@@ -468,7 +468,7 @@ class DeadlinesService {
         *,
         progress:deadline_progress(*),
         status:deadline_status(*),
-        books(publisher)
+        books(publisher, cover_image_url)
       ` as any
       )
       .eq('user_id', userId)
@@ -536,7 +536,7 @@ class DeadlinesService {
         *,
         progress:deadline_progress(*),
         status:deadline_status(*),
-        books(publisher)
+        books(publisher, cover_image_url)
       ` as any
       )
       .eq('user_id', userId)
@@ -685,7 +685,7 @@ class DeadlinesService {
         *,
         progress:deadline_progress(*),
         status:deadline_status(*),
-        books(publisher)
+        books(publisher, cover_image_url)
       ` as any
       )
       .eq('id', deadlineId)

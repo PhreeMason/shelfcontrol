@@ -31,7 +31,9 @@ class CustomDatesService {
 
     if (error) throw error;
 
-    const uniqueNames = [...new Set((data as { name: string }[]).map(d => d.name))];
+    const uniqueNames = [
+      ...new Set((data as { name: string }[]).map(d => d.name)),
+    ];
     return uniqueNames;
   }
 
@@ -91,7 +93,10 @@ class CustomDatesService {
     return data?.[0] as unknown as DeadlineCustomDate;
   }
 
-  async deleteCustomDate(customDateId: string, userId: string): Promise<string> {
+  async deleteCustomDate(
+    customDateId: string,
+    userId: string
+  ): Promise<string> {
     const { error } = await supabase
       .from(DB_TABLES.DEADLINE_CUSTOM_DATES as any)
       .delete()

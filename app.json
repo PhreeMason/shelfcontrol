@@ -2,7 +2,7 @@
   "expo": {
     "name": "ShelfControl",
     "slug": "shelfControl",
-    "version": "1.54.0",
+    "version": "1.57.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
     "scheme": "shelfcontrol",
@@ -24,7 +24,7 @@
         "foregroundImage": "./src/assets/images/android-logo-2.png",
         "backgroundColor": "#ffffff"
       },
-      "versionCode": 13,
+      "versionCode": 14,
       "edgeToEdgeEnabled": true,
       "package": "com.grizzylabs.shelfControl",
       "intentFilters": [

@@ -1,6 +1,7 @@
 import { ActivityTimelineItem } from '@/components/features/calendar/ActivityTimelineItem';
 import { CalendarFilterToggle } from '@/components/features/calendar/CalendarFilterToggle';
 import { CalendarLegend } from '@/components/features/calendar/CalendarLegend';
+import { CustomDateCalendarCard } from '@/components/features/calendar/CustomDateCalendarCard';
 import { CustomDayComponent } from '@/components/features/calendar/CustomDayComponent';
 import { DeadlineDueCard } from '@/components/features/calendar/DeadlineDueCard';
 import { ReviewDueCard } from '@/components/features/calendar/ReviewDueCard';
@@ -12,7 +13,10 @@ import { useTheme } from '@/hooks/useTheme';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { usePreferences } from '@/providers/PreferencesProvider';
 import { validateDailyActivities } from '@/types/calendar.types';
-import { ReadingDeadlineWithProgress, UrgencyLevel } from '@/types/deadline.types';
+import {
+  ReadingDeadlineWithProgress,
+  UrgencyLevel,
+} from '@/types/deadline.types';
 import {
   calculateMarkedDates,
   transformActivitiesToAgendaItems,
@@ -24,7 +28,7 @@ import { Calendar, DateData } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Empty function constant for callbacks that don't need to do anything
-const NOOP = () => {};
+const NOOP = () => { };
 
 /**
  * Generate a unique key for agenda items in the list
@@ -117,20 +121,32 @@ export default function CalendarScreen() {
         const deadline = deadlines.find(d => d.id === activity.deadline_id);
         if (deadline) {
           const calculations = getDeadlineCalculations(deadline);
-          const filterType = getDeadlineFilterType(calculations.urgencyLevel, deadline);
+          const filterType = getDeadlineFilterType(
+            calculations.urgencyLevel,
+            deadline
+          );
           return !excludedCalendarActivities.includes(filterType);
         }
         return true; // Show if we can't find the deadline
       }
 
       // For non-deadline_due activities, check directly against activity type
-      if (excludedCalendarActivities.includes(activity.activity_type as CalendarFilterType)) {
+      if (
+        excludedCalendarActivities.includes(
+          activity.activity_type as CalendarFilterType
+        )
+      ) {
         return false;
       }
 
       return true;
     });
-  }, [activities, excludedCalendarActivities, deadlines, getDeadlineCalculations]);
+  }, [
+    activities,
+    excludedCalendarActivities,
+    deadlines,
+    getDeadlineCalculations,
+  ]);
 
   // Transform activities to agenda format
   const agendaItems = useMemo(() => {
@@ -208,12 +224,21 @@ export default function CalendarScreen() {
     [selectedDateActivities]
   );
 
+  const customDateActivities = useMemo(
+    () =>
+      selectedDateActivities.filter(
+        item => item.activityType === 'custom_date'
+      ),
+    [selectedDateActivities]
+  );
+
   const otherActivities = useMemo(
     () =>
       selectedDateActivities.filter(
         item =>
           item.activityType !== 'deadline_due' &&
-          item.activityType !== 'review_due'
+          item.activityType !== 'review_due' &&
+          item.activityType !== 'custom_date'
       ),
     [selectedDateActivities]
   );
@@ -291,7 +316,12 @@ export default function CalendarScreen() {
         rightElement={<CalendarFilterToggle />}
       />
       <View style={styles.content}>
-        <View style={[styles.calendarContainer, { borderBottomColor: colors.border }]}>
+        <View
+          style={[
+            styles.calendarContainer,
+            { borderBottomColor: colors.border },
+          ]}
+        >
           <Calendar
             current={currentMonth}
             markedDates={markedDates}
@@ -338,6 +368,21 @@ export default function CalendarScreen() {
                   key={generateAgendaItemKey(
                     item.activity.deadline_id,
                     'deadline_due',
+                    index
+                  )}
+                  agendaItem={item}
+                  onPress={() =>
+                    router.push(`/deadline/${item.activity.deadline_id}`)
+                  }
+                />
+              ))}
+
+              {/* Custom Date Items (All-Day) - Rendered After Deadlines */}
+              {customDateActivities.map((item, index) => (
+                <CustomDateCalendarCard
+                  key={generateAgendaItemKey(
+                    item.activity.deadline_id,
+                    'custom_date',
                     index
                   )}
                   agendaItem={item}

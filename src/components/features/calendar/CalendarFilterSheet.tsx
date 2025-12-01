@@ -40,7 +40,11 @@ interface FilterConfig {
 
 // Due date filters with urgency-based coloring (matching calendar legend)
 const DUE_DATE_FILTERS: FilterConfig[] = [
-  { type: 'deadline_due_completed', label: 'Completed', colorKey: 'successGreen' },
+  {
+    type: 'deadline_due_completed',
+    label: 'Completed',
+    colorKey: 'successGreen',
+  },
   { type: 'deadline_due_good', label: 'On Track', colorKey: 'good' },
   { type: 'deadline_due_approaching', label: 'Tight', colorKey: 'approaching' },
   { type: 'deadline_due_urgent', label: 'Urgent/Overdue', colorKey: 'urgent' },
@@ -54,7 +58,7 @@ const ACTIVITY_FILTERS: FilterConfig[] = [
   { type: 'note', label: 'Notes' },
   { type: 'review', label: 'Reviews Posted' },
   { type: 'review_due', label: 'Review Due Dates' },
-  { type: 'custom_date', label: 'Custom Dates' },
+  { type: 'custom_date', label: 'Important Dates' },
 ];
 
 export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
@@ -128,10 +132,7 @@ export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
         )}
         <ThemedText
           typography="labelLarge"
-          style={[
-            styles.filterLabel,
-            !isExcluded && { color: activeColor },
-          ]}
+          style={[styles.filterLabel, !isExcluded && { color: activeColor }]}
         >
           {filter.label}
         </ThemedText>
@@ -176,7 +177,7 @@ export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
                     typography="titleMedium"
                     style={[styles.closeButton, { color: colors.darkPink }]}
                   >
-                    Clear All
+                    Select All
                   </ThemedText>
                 </TouchableOpacity>
               )}

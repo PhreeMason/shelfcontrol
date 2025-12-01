@@ -523,7 +523,9 @@ describe('calendarUtils', () => {
       expect(result['2025-01-15']).toBeDefined();
       // Activity-only dates: subtle grey background, no dots
       expect(result['2025-01-15']!.dots).toBeUndefined();
-      expect(result['2025-01-15']!.customStyles?.container?.backgroundColor).toBe(
+      expect(
+        result['2025-01-15']!.customStyles?.container?.backgroundColor
+      ).toBe(
         ACTIVITY_DOT_COLOR + '20' // OPACITY.SUBTLE
       );
     });
@@ -552,9 +554,9 @@ describe('calendarUtils', () => {
       expect(result['2025-01-15']).toBeDefined();
       // Single deadline: background only, no dots
       expect(result['2025-01-15']!.dots).toBeUndefined();
-      expect(result['2025-01-15']!.customStyles?.container?.backgroundColor).toBe(
-        '#EF444440'
-      );
+      expect(
+        result['2025-01-15']!.customStyles?.container?.backgroundColor
+      ).toBe('#EF444440');
     });
 
     it('should add grey activity dot when deadline has other activities', () => {
@@ -592,9 +594,9 @@ describe('calendarUtils', () => {
         color: ACTIVITY_DOT_COLOR,
       });
       // Background should be the deadline urgency color
-      expect(result['2025-01-15']!.customStyles?.container?.backgroundColor).toBe(
-        '#EF444440'
-      );
+      expect(
+        result['2025-01-15']!.customStyles?.container?.backgroundColor
+      ).toBe('#EF444440');
     });
 
     it('should handle multiple deadline_due on same date', () => {
@@ -637,9 +639,9 @@ describe('calendarUtils', () => {
       );
 
       // First (urgent) deadline = background, second (approaching) = dot
-      expect(result['2025-01-15']!.customStyles?.container?.backgroundColor).toBe(
-        '#EF444440'
-      );
+      expect(
+        result['2025-01-15']!.customStyles?.container?.backgroundColor
+      ).toBe('#EF444440');
       expect(result['2025-01-15']!.dots).toHaveLength(1);
       expect(result['2025-01-15']!.dots![0].color).toBe('#F59E0B');
     });
@@ -674,10 +676,34 @@ describe('calendarUtils', () => {
       };
 
       const activities: DailyActivity[] = [
-        createMockActivity('deadline_due', '2025-01-15', '2025-01-15T12:00:00Z', 'd1', 'Book A'),
-        createMockActivity('deadline_due', '2025-01-15', '2025-01-15T12:00:00Z', 'd2', 'Book B'),
-        createMockActivity('deadline_due', '2025-01-15', '2025-01-15T12:00:00Z', 'd3', 'Book C'),
-        createMockActivity('deadline_due', '2025-01-15', '2025-01-15T12:00:00Z', 'd4', 'Book D'),
+        createMockActivity(
+          'deadline_due',
+          '2025-01-15',
+          '2025-01-15T12:00:00Z',
+          'd1',
+          'Book A'
+        ),
+        createMockActivity(
+          'deadline_due',
+          '2025-01-15',
+          '2025-01-15T12:00:00Z',
+          'd2',
+          'Book B'
+        ),
+        createMockActivity(
+          'deadline_due',
+          '2025-01-15',
+          '2025-01-15T12:00:00Z',
+          'd3',
+          'Book C'
+        ),
+        createMockActivity(
+          'deadline_due',
+          '2025-01-15',
+          '2025-01-15T12:00:00Z',
+          'd4',
+          'Book D'
+        ),
       ];
 
       mockGetCalculations
@@ -693,9 +719,9 @@ describe('calendarUtils', () => {
       );
 
       // First (overdue) = background, remaining 3 = dots (capped at 3)
-      expect(result['2025-01-15']!.customStyles?.container?.backgroundColor).toBe(
-        '#EF444440'
-      );
+      expect(
+        result['2025-01-15']!.customStyles?.container?.backgroundColor
+      ).toBe('#EF444440');
       expect(result['2025-01-15']!.dots).toHaveLength(3);
     });
 

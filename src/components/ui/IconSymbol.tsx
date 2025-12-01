@@ -51,6 +51,7 @@ export const MAPPING = {
   'arrow.clockwise': 'refresh',
   'exclamationmark.triangle': 'warning',
   'calendar.badge.clock': 'event-note',
+  'calendar.badge.plus': 'event-available',
   'trash.fill': 'delete',
   'pause.circle.fill': 'pause-circle-filled',
   'play.circle.fill': 'play-circle-filled',

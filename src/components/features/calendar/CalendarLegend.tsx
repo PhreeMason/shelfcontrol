@@ -27,9 +27,7 @@ const LegendItem: React.FC<LegendItemProps> = ({
 }) => {
   return (
     <View style={styles.legendItem}>
-      <View
-        style={[styles.colorBox, { backgroundColor: color + opacity }]}
-      >
+      <View style={[styles.colorBox, { backgroundColor: color + opacity }]}>
         {showText && <Text style={[styles.colorBoxText, { color }]}>12</Text>}
       </View>
       <ThemedText typography="labelMedium">{label}</ThemedText>
@@ -98,11 +96,7 @@ export const CalendarLegend: React.FC = () => {
 
           {/* Multiple deadlines info */}
           <View style={[styles.infoContainer, dynamicStyles.infoContainer]}>
-            <IconSymbol
-              name="info.circle"
-              size={14}
-              color={colors.textMuted}
-            />
+            <IconSymbol name="info.circle" size={14} color={colors.textMuted} />
             <ThemedText
               typography="bodySmall"
               color="textMuted"

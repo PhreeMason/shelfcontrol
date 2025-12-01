@@ -1,5 +1,9 @@
+import {
+  ACTIVITY_DOT_COLOR,
+  ACTIVITY_TYPE_CONFIG,
+} from '@/constants/activityTypes';
 import { dayjs } from '@/lib/dayjs';
-import { ACTIVITY_DOT_COLOR } from '@/constants/activityTypes';
+import { posthog } from '@/lib/posthog';
 import {
   AgendaActivityItem,
   DailyActivity,
@@ -7,11 +11,10 @@ import {
   MarkedDatesConfig,
 } from '@/types/calendar.types';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { DeadlineCalculationResult } from '@/utils/deadlineProviderUtils';
-import { parseServerDateTime } from '@/utils/dateNormalization';
-import { posthog } from '@/lib/posthog';
-import { OPACITY } from '@/utils/formatters';
 import { getCoverImageUrl } from '@/utils/coverImageUtils';
+import { parseServerDateTime } from '@/utils/dateNormalization';
+import { DeadlineCalculationResult } from '@/utils/deadlineProviderUtils';
+import { OPACITY } from '@/utils/formatters';
 
 // Priority order: most urgent wins when multiple deadlines on same date
 const URGENCY_PRIORITY = [
@@ -31,7 +34,6 @@ function getUrgencyPriorityIndex(urgencyLevel: string): number {
   );
   return index === -1 ? URGENCY_PRIORITY.length : index;
 }
-
 
 /**
  * Calculate the start and end dates for a given month
@@ -101,10 +103,11 @@ export function sortActivitiesByTime(
   activities: EnrichedActivity[]
 ): EnrichedActivity[] {
   const deadlineDue = activities.filter(
-    a => a.activity_type === 'deadline_due'
+    a => a.activity_type === 'deadline_due' || a.activity_type === 'custom_date'
   );
   const otherActivities = activities.filter(
-    a => a.activity_type !== 'deadline_due'
+    a =>
+      a.activity_type !== 'deadline_due' && a.activity_type !== 'custom_date'
   );
 
   // Sort deadline_due alphabetically by book title
@@ -185,6 +188,12 @@ export function transformActivitiesToAgendaItems(
           agendaItem.deadline = deadline;
           agendaItem.calculations = activity.deadlineCalculations;
         }
+      } else if (activity.activity_type === 'custom_date') {
+        // Add deadline data for custom_date items (for cover image, etc.)
+        const deadline = deadlines.find(d => d.id === activity.deadline_id);
+        if (deadline) {
+          agendaItem.deadline = deadline;
+        }
       } else {
         // Add formatted timestamp for non-deadline items
         agendaItem.timestamp = formatActivityTime(activity.activity_timestamp);
@@ -239,8 +248,12 @@ export function calculateMarkedDates(
     const deadlineDueActivities = dateActivities.filter(
       a => a.activity_type === 'deadline_due'
     );
+    const customDateActivities = dateActivities.filter(
+      a => a.activity_type === 'custom_date'
+    );
     const nonDeadlineActivities = dateActivities.filter(
-      a => a.activity_type !== 'deadline_due'
+      a =>
+        a.activity_type !== 'deadline_due' && a.activity_type !== 'custom_date'
     );
     const hasNonDeadlineActivities = nonDeadlineActivities.length > 0;
 
@@ -296,6 +309,16 @@ export function calculateMarkedDates(
           });
         });
 
+        // Add dots for custom dates
+        customDateActivities.forEach((_, index) => {
+          if (dots.length < MAX_DOTS) {
+            dots.push({
+              key: `custom_${index}`,
+              color: ACTIVITY_TYPE_CONFIG.custom_date.color,
+            });
+          }
+        });
+
         // Add grey activity dot if there are non-deadline activities
         if (hasNonDeadlineActivities && dots.length < MAX_DOTS) {
           dots.push({
@@ -326,15 +349,62 @@ export function calculateMarkedDates(
         markedDates[date] = marking;
       }
     } else {
-      // Activity-only dates: subtle grey background tint (no dots needed)
-      markedDates[date] = {
-        customStyles: {
-          container: {
-            backgroundColor: ACTIVITY_DOT_COLOR + OPACITY.SUBTLE,
-            borderRadius: 4,
+      // No deadlines, check for custom dates or other activities
+      if (customDateActivities.length > 0) {
+        // Custom dates get their own dot color
+        const dots: { key: string; color: string }[] = [];
+        let primaryCoverUrl: string | null = null;
+
+        customDateActivities.slice(0, MAX_DOTS).forEach((activity, index) => {
+          dots.push({
+            key: `custom_${index}`,
+            color: ACTIVITY_TYPE_CONFIG.custom_date.color,
+          });
+
+          // Get cover image for the first custom date (primary)
+          if (index === 0) {
+            const deadline = deadlines.find(d => d.id === activity.deadline_id);
+            if (deadline) {
+              const coverUrl =
+                deadline.cover_image_url || deadline.books?.cover_image_url;
+              primaryCoverUrl = getCoverImageUrl(coverUrl);
+            }
+          }
+        });
+
+        if (hasNonDeadlineActivities && dots.length < MAX_DOTS) {
+          dots.push({
+            key: 'activity',
+            color: ACTIVITY_DOT_COLOR,
+          });
+        }
+
+        markedDates[date] = {
+          dots,
+          customStyles: {
+            container: {
+              backgroundColor:
+                ACTIVITY_TYPE_CONFIG.custom_date.color + OPACITY.CALENDAR,
+              borderRadius: 4,
+            },
+            text: {
+              color: ACTIVITY_TYPE_CONFIG.custom_date.color,
+              fontWeight: '600' as const,
+            },
+            coverImageUrl: primaryCoverUrl,
           },
-        },
-      };
+        };
+      } else {
+        // Activity-only dates: subtle grey background tint (no dots needed)
+        markedDates[date] = {
+          customStyles: {
+            container: {
+              backgroundColor: ACTIVITY_DOT_COLOR + OPACITY.SUBTLE,
+              borderRadius: 4,
+            },
+          },
+        };
+      }
     }
   });
 

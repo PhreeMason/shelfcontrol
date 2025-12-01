@@ -3,6 +3,7 @@ import BookDetailsSection from '@/components/features/deadlines/BookDetailsSecti
 import { DeadlineActionSheet } from '@/components/features/deadlines/DeadlineActionSheet';
 import { DeadlineActionsSection } from '@/components/features/deadlines/DeadlineActionsSection';
 import { DeadlineContactsSection } from '@/components/features/deadlines/DeadlineContactsSection';
+import { DeadlineCustomDatesSection } from '@/components/features/deadlines/DeadlineCustomDatesSection';
 import DeadlineHeroSection from '@/components/features/deadlines/DeadlineHeroSection';
 import { DeadlineTagsSection } from '@/components/features/deadlines/DeadlineTagsSection';
 import DeadlineViewHeader from '@/components/features/deadlines/DeadlineViewHeader';
@@ -172,6 +173,8 @@ const DeadlineView = () => {
           ) : null}
 
           <DeadlineContactsSection deadline={deadline} />
+
+          <DeadlineCustomDatesSection deadline={deadline} />
 
           <DeadlineTagsSection deadline={deadline} />
 

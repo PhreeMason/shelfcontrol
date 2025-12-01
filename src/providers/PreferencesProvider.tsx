@@ -216,7 +216,9 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           );
         }
         if (savedHideDatesOnCovers) {
-          setHideDatesOnCoversState(JSON.parse(savedHideDatesOnCovers) as boolean);
+          setHideDatesOnCoversState(
+            JSON.parse(savedHideDatesOnCovers) as boolean
+          );
         }
       } catch (error) {
         console.error('Error loading preferences:', error);
@@ -364,7 +366,9 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     }
   };
 
-  const setExcludedCalendarActivities = async (activities: CalendarFilterType[]) => {
+  const setExcludedCalendarActivities = async (
+    activities: CalendarFilterType[]
+  ) => {
     try {
       setExcludedCalendarActivitiesState(activities);
       await AsyncStorage.setItem(

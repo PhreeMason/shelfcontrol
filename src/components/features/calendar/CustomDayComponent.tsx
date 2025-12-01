@@ -4,13 +4,7 @@ import { usePreferences } from '@/providers/PreferencesProvider';
 import { MarkedDatesConfig } from '@/types/calendar.types';
 import { OPACITY } from '@/utils/formatters';
 import React from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DateData } from 'react-native-calendars';
 
 /**

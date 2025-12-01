@@ -142,6 +142,22 @@ export interface EventPropertiesMap {
     deadline_status: DeadlineStatus;
   };
 
+  custom_date_added: {
+    deadline_id: string;
+    deadline_status: DeadlineStatus;
+    name: string;
+  };
+
+  custom_date_edited: {
+    deadline_id: string;
+    deadline_status: DeadlineStatus;
+  };
+
+  custom_date_deleted: {
+    deadline_id: string;
+    deadline_status: DeadlineStatus;
+  };
+
   deadline_disclosure_added: {
     deadline_id: string;
     deadline_status: DeadlineStatus;

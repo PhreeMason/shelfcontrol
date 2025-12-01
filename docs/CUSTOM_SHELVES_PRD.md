@@ -1,8 +1,8 @@
 # Custom Shelves Feature - Product Requirements Document
 
-> **Status**: Draft (Reviewed)
+> **Status**: Final
 > **Last Updated**: November 30, 2024
-> **Review Notes**: Decisions resolved for filter behavior, system shelves, default pins, and technical approach
+> **Review Notes**: All decisions resolved. Ready for implementation.
 
 ---
 
@@ -155,6 +155,7 @@ Build the infrastructure for Custom Shelves with the slide-out panel, using only
    - Selected shelf highlighted in panel and tab bar
    - Selection persists across sessions
    - **Selecting a shelf clears all advanced filters** (time range, formats, tags, etc.)
+   - **Pinned shelves display in fixed order** (All → Applied → Pending → Active → Past Due → Paused → To Review → Completed → DNF → Rejected → Withdrew)
 
 4. **Filter Behavior**
    - Selecting any shelf calls `clearAllFilters()` and resets all FilterSheet filters
@@ -213,7 +214,12 @@ Allow users to create, edit, and delete custom shelves with filter criteria.
    - Filter criteria as JSONB
    - Syncs across devices
 
-6. **Manage Shelves Screen** *(See `00.37.40.jpg`)*
+6. **Cross-Device Sync**
+   - Custom shelves sync immediately via Supabase
+   - `is_pinned` column controls tab bar visibility
+   - Changes on one device reflect on all user's devices
+
+7. **Manage Shelves Screen** *(See `00.37.40.jpg`)*
    - Reorder with drag handles
    - Edit/delete individual shelves
    - "Create new shelf" at top
@@ -293,6 +299,25 @@ DeadlinesList updates with filtered results
 | `pinnedShelves` | PreferencesProvider | AsyncStorage |
 | `isPanelOpen` | Home screen local state | None |
 | Custom shelves | Supabase (Phase 2) | Database |
+
+### AsyncStorage Keys (Phase 1)
+
+Following the existing `@preferences/*` pattern in PreferencesProvider:
+
+```typescript
+const SHELF_STORAGE_KEYS = {
+  SELECTED_SHELF: '@shelves/selectedShelf',   // SystemShelfId
+  PINNED_SHELVES: '@shelves/pinnedShelves',   // SystemShelfId[]
+};
+
+// Default pinned shelves (all 9 core system shelves)
+const DEFAULT_PINNED_SHELVES: SystemShelfId[] = [
+  'all', 'applied', 'pending', 'active', 'overdue',
+  'paused', 'toReview', 'completed', 'didNotFinish'
+];
+```
+
+**Note**: System shelf pins use AsyncStorage (local only). Custom shelf pins (Phase 2) use `custom_shelves.is_pinned` column (synced across devices).
 
 ### New PreferencesProvider Functions (Phase 1)
 
@@ -530,6 +555,53 @@ interface ShelfFilters {
 }
 ```
 
+### Filter Matching Logic
+
+Custom shelf filters use a **hybrid OR/AND approach**:
+
+- **Within a category**: OR logic (any match succeeds)
+- **Across categories**: AND logic (all categories must match)
+- **Empty array**: No filter applied (matches all)
+
+**Example:**
+```typescript
+// Shelf: "NetGalley Audio Books"
+{
+  types: ['NetGalley', 'Edelweiss'],     // OR: NetGalley OR Edelweiss
+  formats: ['audio'],                     // AND with types
+  statuses: ['reading', 'pending']        // AND with above
+}
+// Result: (NetGalley OR Edelweiss) AND audio AND (reading OR pending)
+```
+
+**Filter Application Pseudocode:**
+```typescript
+const matchesShelf = (deadline: Deadline, filters: ShelfFilters): boolean => {
+  // Empty filter = no restriction
+  const matchesStatuses = !filters.statuses?.length ||
+    filters.statuses.includes(deadline.status);
+
+  const matchesTags = !filters.tagIds?.length ||
+    deadline.tags.some(t => filters.tagIds!.includes(t.id));
+
+  const matchesTypes = !filters.types?.length ||
+    filters.types.includes(deadline.type);
+
+  const matchesFormats = !filters.formats?.length ||
+    filters.formats.includes(deadline.format);
+
+  const matchesPageRanges = !filters.pageRanges?.length ||
+    filters.pageRanges.some(range => isInPageRange(deadline, range));
+
+  const matchesTimeRange = !filters.timeRange ||
+    isInTimeRange(deadline, filters.timeRange);
+
+  // AND across all categories
+  return matchesStatuses && matchesTags && matchesTypes &&
+         matchesFormats && matchesPageRanges && matchesTimeRange;
+};
+```
+
 ### Filter JSONB Examples
 
 ```json
@@ -625,19 +697,26 @@ interface ShelfFilters {
 | Tab bar overflow | Horizontal scroll, no maximum | Matches current FilterSection behavior |
 | Animation library | Reanimated | Already used in codebase (`FilterSection.tsx`) |
 | Conditional shelves | Rejected/Withdrew only appear if count > 0 | Matches existing "Overdue" tab behavior |
+| Pin ordering | Fixed order based on system shelf definitions | Simplifies Phase 1; reordering deferred to Phase 3 |
+| Conditional shelf pinning | Pinnable; hidden from tab bar when count = 0 | Users may want quick access when items exist |
+| Phase 2 storage | Supabase from day one | Cross-device sync is expected for custom shelves |
+| Filter logic | OR within category, AND across categories | Intuitive: "any of these tags" but "must match format AND status" |
 
 ## Open Questions
 
-### Remaining Minor Questions (Can Decide During Implementation)
-
-1. **Minimum pinned shelves**: Can user unpin ALL shelves? (Recommendation: Yes, panel always accessible via hamburger)
-2. **Auto-switch on empty**: When current shelf becomes empty, auto-switch? (Recommendation: No, show empty state)
-3. **Panel close on navigate**: Should panel close when navigating away from home? (Recommendation: Yes)
-
-### Future Considerations
+### Future Considerations (Phase 3+)
 
 1. **Shelf sharing**: Do we want users to share shelf configurations?
 2. **Shelf limits**: Maximum number of custom shelves per user?
+3. **System shelf pin sync**: Should system shelf pins sync across devices? (Currently local-only)
+
+### Additional Resolved Decisions
+
+| Question | Decision |
+|----------|----------|
+| Minimum pinned shelves | Yes, user can unpin all; panel always accessible via hamburger |
+| Auto-switch on empty | No, show empty state |
+| Panel close on navigate | Yes, close when navigating away from home |
 
 ---
 
