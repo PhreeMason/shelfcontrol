@@ -120,7 +120,7 @@ export interface AgendaActivityItem {
 
 /**
  * Marked dates configuration for react-native-calendars
- * Used to show colored dots on calendar dates
+ * Supports both multi-dot (legacy) and custom styles (new)
  */
 export interface MarkedDatesConfig {
   [date: string]: {
@@ -130,6 +130,30 @@ export interface MarkedDatesConfig {
     }[];
     selected?: boolean; // Whether this date is selected
     selectedColor?: string; // Color for selected date
+    // Custom styles for deadline highlighting (markingType="custom")
+    customStyles?: {
+      container?: {
+        backgroundColor?: string;
+        borderRadius?: number;
+        borderWidth?: number;
+        borderColor?: string;
+      };
+      text?: {
+        color?: string;
+        fontWeight?:
+          | 'normal'
+          | 'bold'
+          | '100'
+          | '200'
+          | '300'
+          | '400'
+          | '500'
+          | '600'
+          | '700'
+          | '800'
+          | '900';
+      };
+    };
   };
 }
 

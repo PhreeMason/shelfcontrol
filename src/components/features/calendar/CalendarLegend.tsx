@@ -1,9 +1,11 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { ACTIVITY_DOT_COLOR } from '@/constants/activityTypes';
 import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
+import { OPACITY } from '@/utils/formatters';
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -13,24 +15,29 @@ import Animated, {
 interface LegendItemProps {
   color: string;
   label: string;
+  opacity?: string;
+  showText?: boolean;
 }
 
-const LegendItem: React.FC<LegendItemProps> = ({ color, label }) => {
+const LegendItem: React.FC<LegendItemProps> = ({
+  color,
+  label,
+  opacity = OPACITY.CALENDAR,
+  showText = true,
+}) => {
   return (
     <View style={styles.legendItem}>
-      <View style={[styles.dot, { backgroundColor: color }]} />
+      <View
+        style={[styles.colorBox, { backgroundColor: color + opacity }]}
+      >
+        {showText && <Text style={[styles.colorBoxText, { color }]}>12</Text>}
+      </View>
       <ThemedText typography="labelMedium">{label}</ThemedText>
     </View>
   );
 };
 
-interface CalendarLegendProps {
-  showAllActivities?: boolean;
-}
-
-export const CalendarLegend: React.FC<CalendarLegendProps> = ({
-  showAllActivities = false,
-}) => {
+export const CalendarLegend: React.FC = () => {
   const { colors, borderRadius } = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
   const rotation = useSharedValue(0);
@@ -80,31 +87,30 @@ export const CalendarLegend: React.FC<CalendarLegendProps> = ({
       {isExpanded && (
         <View style={styles.content}>
           <LegendItem color={colors.successGreen} label="Completed due date" />
-          {showAllActivities && (
-            <LegendItem color={colors.pending} label="Activity event" />
-          )}
           <LegendItem color={colors.good} label="On track due date" />
           <LegendItem color={colors.approaching} label="Tight due date" />
           <LegendItem color={colors.urgent} label="Urgent/Overdue due date" />
+          <LegendItem
+            color={ACTIVITY_DOT_COLOR}
+            label="Activity event"
+            opacity={OPACITY.SUBTLE}
+          />
 
-          {/* Multiple dots info */}
-          {showAllActivities && (
-            <View style={[styles.infoContainer, dynamicStyles.infoContainer]}>
-              <IconSymbol
-                name="info.circle"
-                size={14}
-                color={colors.textMuted}
-              />
-              <ThemedText
-                typography="bodySmall"
-                color="textMuted"
-                style={styles.infoText}
-              >
-                Multiple dots can appear on dates with both activities and due
-                dates
-              </ThemedText>
-            </View>
-          )}
+          {/* Multiple deadlines info */}
+          <View style={[styles.infoContainer, dynamicStyles.infoContainer]}>
+            <IconSymbol
+              name="info.circle"
+              size={14}
+              color={colors.textMuted}
+            />
+            <ThemedText
+              typography="bodySmall"
+              color="textMuted"
+              style={styles.infoText}
+            >
+              When multiple due dates fall on one day, the most urgent is shown
+            </ThemedText>
+          </View>
         </View>
       )}
     </View>
@@ -136,10 +142,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  dot: {
-    width: 8,
-    height: 8,
+  colorBox: {
+    width: 24,
+    height: 24,
     borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  colorBoxText: {
+    fontSize: 10,
+    fontWeight: '600',
   },
   infoContainer: {
     flexDirection: 'row',

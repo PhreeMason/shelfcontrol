@@ -112,6 +112,8 @@ export function formatNumber(
 export const OPACITY = {
   /** 12.5% opacity - used for subtle backgrounds */
   SUBTLE: '20',
+  /** 25% opacity - used for calendar cell backgrounds (more visible) */
+  CALENDAR: '40',
   /** 50% opacity - used for disabled states */
   MEDIUM: '80',
   /** 75% opacity - used for hover states */

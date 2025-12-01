@@ -10,6 +10,26 @@ import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { DeadlineCalculationResult } from '@/utils/deadlineProviderUtils';
 import { parseServerDateTime } from '@/utils/dateNormalization';
 import { posthog } from '@/lib/posthog';
+import { OPACITY } from '@/utils/formatters';
+
+// Priority order: most urgent wins when multiple deadlines on same date
+const URGENCY_PRIORITY = [
+  'overdue',
+  'urgent',
+  'impossible',
+  'approaching',
+  'good',
+] as const;
+
+/**
+ * Get the highest priority urgency level from a list
+ */
+function getHighestUrgency(urgencyLevels: string[]): string {
+  for (const level of URGENCY_PRIORITY) {
+    if (urgencyLevels.includes(level)) return level;
+  }
+  return 'good';
+}
 
 /**
  * Calculate the start and end dates for a given month
@@ -176,26 +196,16 @@ export function transformActivitiesToAgendaItems(
 }
 
 /**
- * Calculate marked dates for calendar with multi-dot support
+ * Calculate marked dates for calendar with custom cell styling
  * @param activities - Array of activities from get_daily_activities
  * @param deadlines - Array of all deadlines
  * @param getDeadlineCalculations - Function to calculate deadline metrics
- * @returns MarkedDatesConfig object for react-native-calendars
+ * @returns MarkedDatesConfig object for react-native-calendars (custom marking type)
  *
- * Dot Logic:
- * - If date has ANY non-deadline_due activity → add grey dot
- * - For EACH deadline_due on a date → add dot with urgency color
- *
- * @example
- * calculateMarkedDates(activities, deadlines, getDeadlineCalculations)
- * // Returns: {
- * //   '2025-01-15': {
- * //     dots: [
- * //       { key: 'activity', color: '#9CA3AF' },
- * //       { key: 'deadline_1', color: '#EF4444' }
- * //     ]
- * //   }
- * // }
+ * New Logic:
+ * - Deadline dates get tinted background (urgencyColor + OPACITY.CALENDAR)
+ * - When multiple deadlines on same date, show most urgent color
+ * - Activity-only dates get no marking (deadlines stand out more)
  */
 export function calculateMarkedDates(
   activities: DailyActivity[],
@@ -221,36 +231,59 @@ export function calculateMarkedDates(
 
   // Process each date
   Object.entries(groupedByDate).forEach(([date, dateActivities]) => {
-    const dots: { key: string; color: string }[] = [];
-
-    // Check if date has non-deadline activities
-    const hasOtherActivities = dateActivities.some(
-      a => a.activity_type !== 'deadline_due'
-    );
-    if (hasOtherActivities) {
-      dots.push({
-        key: 'activity',
-        color: ACTIVITY_DOT_COLOR,
-      });
-    }
-
-    // Add dots for each deadline_due
     const deadlineDueActivities = dateActivities.filter(
       a => a.activity_type === 'deadline_due'
     );
-    deadlineDueActivities.forEach((activity, index) => {
-      const deadline = deadlines.find(d => d.id === activity.deadline_id);
-      if (deadline) {
-        const calculations = getDeadlineCalculations(deadline);
-        dots.push({
-          key: `deadline_${index}`,
-          color: calculations.urgencyColor,
-        });
-      }
-    });
 
-    if (dots.length > 0) {
-      markedDates[date] = { dots };
+    if (deadlineDueActivities.length > 0) {
+      // Collect urgency data for all deadlines on this date
+      const urgencyData: { urgencyLevel: string; urgencyColor: string }[] = [];
+
+      deadlineDueActivities.forEach(activity => {
+        const deadline = deadlines.find(d => d.id === activity.deadline_id);
+        if (deadline) {
+          const calculations = getDeadlineCalculations(deadline);
+          urgencyData.push({
+            urgencyLevel: calculations.urgencyLevel,
+            urgencyColor: calculations.urgencyColor,
+          });
+        }
+      });
+
+      if (urgencyData.length > 0) {
+        // Get highest priority urgency
+        const highestUrgency = getHighestUrgency(
+          urgencyData.map(d => d.urgencyLevel)
+        );
+        const urgencyColor = urgencyData.find(
+          d => d.urgencyLevel === highestUrgency
+        )?.urgencyColor;
+
+        if (urgencyColor) {
+          markedDates[date] = {
+            customStyles: {
+              container: {
+                backgroundColor: urgencyColor + OPACITY.CALENDAR,
+                borderRadius: 4,
+              },
+              text: {
+                color: urgencyColor,
+                fontWeight: '600' as const,
+              },
+            },
+          };
+        }
+      }
+    } else {
+      // Activity-only dates: subtle grey background tint
+      markedDates[date] = {
+        customStyles: {
+          container: {
+            backgroundColor: ACTIVITY_DOT_COLOR + OPACITY.SUBTLE,
+            borderRadius: 4,
+          },
+        },
+      };
     }
   });
 

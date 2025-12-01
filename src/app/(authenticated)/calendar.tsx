@@ -93,7 +93,7 @@ export default function CalendarScreen() {
     );
   }, [filteredActivities, deadlines, getDeadlineCalculations]);
 
-  // Calculate marked dates for calendar dots
+  // Calculate marked dates for calendar with custom styling
   const markedDates = useMemo(() => {
     const marked = calculateMarkedDates(
       filteredActivities,
@@ -101,17 +101,31 @@ export default function CalendarScreen() {
       getDeadlineCalculations
     );
 
-    // Add selected date styling
+    // Add selection styling (border overlay preserves urgency background)
     if (marked[selectedDate]) {
       marked[selectedDate] = {
         ...marked[selectedDate],
-        selected: true,
-        selectedColor: colors.primary,
+        customStyles: {
+          ...marked[selectedDate].customStyles,
+          container: {
+            ...marked[selectedDate].customStyles?.container,
+            borderWidth: 2,
+            borderColor: colors.primary,
+          },
+        },
       };
     } else {
       marked[selectedDate] = {
-        selected: true,
-        selectedColor: colors.primary,
+        customStyles: {
+          container: {
+            borderWidth: 2,
+            borderColor: colors.primary,
+            borderRadius: 4,
+          },
+          text: {
+            fontWeight: 'bold',
+          },
+        },
       };
     }
 
@@ -233,7 +247,7 @@ export default function CalendarScreen() {
           <Calendar
             current={currentMonth}
             markedDates={markedDates}
-            markingType="multi-dot"
+            markingType="custom"
             onDayPress={handleDayPress}
             onMonthChange={handleMonthChange}
             theme={{
@@ -257,7 +271,7 @@ export default function CalendarScreen() {
           style={styles.activitiesList}
           contentContainerStyle={styles.activitiesContent}
         >
-          <CalendarLegend showAllActivities={true} />
+          <CalendarLegend />
 
           {isFetching && (
             <View style={styles.inlineLoadingContainer}>
