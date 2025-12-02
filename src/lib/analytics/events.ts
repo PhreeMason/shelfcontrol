@@ -109,6 +109,10 @@ export interface EventPropertiesMap {
 
   deadline_withdrew: Record<string, never>;
 
+  deadline_received: Record<string, never>;
+
+  deadline_applied: Record<string, never>;
+
   deadline_card_clicked: {
     deadline_status: DeadlineStatus;
     deadline_format: ReadingFormat;
@@ -439,6 +443,19 @@ export interface EventPropertiesMap {
   delete_all_data_failed: Record<string, never>;
   delete_account_initiated: Record<string, never>;
   delete_account_failed: Record<string, never>;
+
+  // Shelf panel events
+  shelf_panel_opened: Record<string, never>;
+
+  shelf_selected: {
+    shelf_id: string;
+    previous_shelf_id: string;
+  };
+
+  shelf_pin_toggled: {
+    shelf_id: string;
+    is_pinned: boolean;
+  };
 }
 
 export type EventName = keyof EventPropertiesMap;

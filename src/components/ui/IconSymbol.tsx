@@ -92,6 +92,20 @@ export const MAPPING = {
   'cylinder.fill': 'storage',
   'questionmark.circle': 'help-outline',
   'heart.fill': 'favorite',
+  // Shelf icons
+  'tray.full': 'all-inbox',
+  paperplane: 'send',
+  'paperplane.fill': 'send',
+  clock: 'schedule',
+  'clock.fill': 'schedule',
+  'exclamationmark.circle': 'error-outline',
+  'pause.circle': 'pause-circle-outline',
+  'xmark.circle': 'cancel',
+  'hand.thumbsdown': 'thumb-down',
+  'arrow.uturn.left': 'undo',
+  'line.3.horizontal': 'menu',
+  'pin': 'push-pin',
+  'pin.fill': 'push-pin',
 } as IconMapping;
 
 /**

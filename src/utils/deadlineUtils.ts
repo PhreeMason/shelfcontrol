@@ -47,6 +47,8 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   const pending: ReadingDeadlineWithProgress[] = [];
   const paused: ReadingDeadlineWithProgress[] = [];
   const applied: ReadingDeadlineWithProgress[] = [];
+  const rejected: ReadingDeadlineWithProgress[] = [];
+  const withdrew: ReadingDeadlineWithProgress[] = [];
 
   const today = dayjs().startOf('day');
 
@@ -74,8 +76,10 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
       applied.push(deadline);
     } else if (latestStatus === 'paused') {
       paused.push(deadline);
-    } else if (latestStatus === 'rejected' || latestStatus === 'withdrew') {
-      // Skip - these only appear in ALL tab
+    } else if (latestStatus === 'rejected') {
+      rejected.push(deadline);
+    } else if (latestStatus === 'withdrew') {
+      withdrew.push(deadline);
     } else if (deadlineDate.isBefore(today)) {
       overdue.push(deadline);
     } else {
@@ -91,6 +95,8 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   pending.sort(sortDeadlines);
   paused.sort(sortDeadlines);
   applied.sort(sortDeadlines);
+  rejected.sort(sortByStatusDate);
+  withdrew.sort(sortByStatusDate);
 
   return {
     active,
@@ -101,6 +107,8 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
     pending,
     paused,
     applied,
+    rejected,
+    withdrew,
   };
 };
 

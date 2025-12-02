@@ -2,31 +2,28 @@ import { ThemedButton } from '@/components/themed/ThemedButton';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Spacing } from '@/constants/Colors';
+import { getSystemShelf, sortShelfIds } from '@/constants/shelves';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
+import { useShelf } from '@/providers/ShelfProvider';
 import {
   BookFormat,
-  FilterType,
   PageRangeFilter,
   ReadingDeadlineWithProgress,
   SortOrder,
   TimeRangeFilter,
 } from '@/types/deadline.types';
-import React, { useState } from 'react';
+import { SystemShelfId } from '@/types/shelves.types';
+import React, { useMemo, useState } from 'react';
 import { LayoutChangeEvent, ScrollView, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { FilterSheet } from './FilterSheet';
 import { SearchBar } from './SearchBar';
 import { ViewToggleControl } from './ViewToggleControl';
 
-interface FilterOption {
-  key: FilterType;
-  label: string;
-}
-
 interface FilterSectionProps {
-  selectedFilter: FilterType;
-  onFilterChange: (filter: FilterType) => void;
+  selectedShelf: SystemShelfId;
+  onShelfChange: (shelf: SystemShelfId) => void;
   timeRangeFilter: TimeRangeFilter;
   onTimeRangeChange: (filter: TimeRangeFilter) => void;
   selectedFormats: BookFormat[];
@@ -37,8 +34,8 @@ interface FilterSectionProps {
   onTypesChange: (types: string[]) => void;
   selectedTags: string[];
   onTagsChange: (tags: string[]) => void;
-  excludedStatuses: FilterType[];
-  onExcludedStatusesChange: (statuses: FilterType[]) => void;
+  excludedStatuses: SystemShelfId[];
+  onExcludedStatusesChange: (statuses: SystemShelfId[]) => void;
   sortOrder: SortOrder;
   onSortOrderChange: (order: SortOrder) => void;
   availableTypes: string[];
@@ -49,21 +46,9 @@ interface FilterSectionProps {
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only';
 }
 
-const filterOptions: FilterOption[] = [
-  { key: 'applied', label: 'Applied' },
-  { key: 'pending', label: 'Pending' },
-  { key: 'active', label: 'Active' },
-  { key: 'overdue', label: 'Past Due' },
-  { key: 'paused', label: 'Paused' },
-  { key: 'toReview', label: 'To Review' },
-  { key: 'completed', label: 'Completed' },
-  { key: 'didNotFinish', label: 'DNF' },
-  { key: 'all', label: 'All' },
-];
-
 const FilterSection: React.FC<FilterSectionProps> = ({
-  selectedFilter,
-  onFilterChange,
+  selectedShelf,
+  onShelfChange,
   timeRangeFilter,
   onTimeRangeChange,
   selectedFormats,
@@ -97,7 +82,10 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     toReviewDeadlines,
     didNotFinishDeadlines,
     appliedDeadlines,
+    rejectedDeadlines,
+    withdrewDeadlines,
   } = useDeadlines();
+  const { pinnedShelves, shelfCounts } = useShelf();
 
   const getBaseDeadlines = (): ReadingDeadlineWithProgress[] => {
     const deadlineMap = new Map<string, ReadingDeadlineWithProgress[]>();
@@ -109,34 +97,30 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     deadlineMap.set('completed', completedDeadlines);
     deadlineMap.set('toReview', toReviewDeadlines);
     deadlineMap.set('didNotFinish', didNotFinishDeadlines);
+    deadlineMap.set('rejected', rejectedDeadlines);
+    deadlineMap.set('withdrew', withdrewDeadlines);
     deadlineMap.set('all', deadlines);
 
-    if (deadlineMap.has(selectedFilter)) {
-      return deadlineMap.get(selectedFilter)!;
+    if (deadlineMap.has(selectedShelf)) {
+      return deadlineMap.get(selectedShelf)!;
     }
     return activeDeadlines;
   };
 
   const baseDeadlines = getBaseDeadlines();
 
-  const statusCounts: Record<FilterType, number> = {
-    applied: appliedDeadlines.length,
-    active: activeDeadlines.length,
-    overdue: overdueDeadlines.length,
-    pending: pendingDeadlines.length,
-    paused: pausedDeadlines.length,
-    completed: completedDeadlines.length,
-    toReview: toReviewDeadlines.length,
-    didNotFinish: didNotFinishDeadlines.length,
-    all: deadlines.length,
-  };
-
-  const visibleOptions = filterOptions.filter(option => {
-    if (option.key === 'overdue' && overdueDeadlines.length === 0) {
-      return false;
-    }
-    return true;
-  });
+  // Get visible pinned shelves in fixed order, respecting conditional visibility
+  const visiblePinnedShelves = useMemo(
+    () =>
+      sortShelfIds(pinnedShelves).filter((shelfId) => {
+        const shelf = getSystemShelf(shelfId);
+        if (!shelf) return false;
+        // Hide conditional shelves (rejected, withdrew) when count = 0
+        if (shelf.isConditional && shelfCounts[shelfId] === 0) return false;
+        return true;
+      }),
+    [pinnedShelves, shelfCounts]
+  );
 
   const hasActiveFilters =
     timeRangeFilter !== 'all' ||
@@ -168,12 +152,15 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             size="sm"
           />
 
-          {visibleOptions.map(option => {
-            const isSelected = selectedFilter === option.key;
+          {visiblePinnedShelves.map(shelfId => {
+            const shelf = getSystemShelf(shelfId);
+            if (!shelf) return null;
+
+            const isSelected = selectedShelf === shelfId;
             const shouldShowStar = isSelected && hasActiveFilters;
 
             return (
-              <View key={option.key} style={styles.tabContainer}>
+              <View key={shelfId} style={styles.tabContainer}>
                 {shouldShowStar && (
                   <View style={styles.starIndicator}>
                     <IconSymbol
@@ -185,11 +172,11 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 )}
                 <ThemedButton
                   title={
-                    option.key === 'applied' ||
-                    option.key === 'active' ||
-                    option.key === 'pending'
-                      ? option.label
-                      : `${option.label} (${statusCounts[option.key]})`
+                    shelfId === 'applied' ||
+                    shelfId === 'active' ||
+                    shelfId === 'pending'
+                      ? shelf.name
+                      : `${shelf.name} (${shelfCounts[shelfId]})`
                   }
                   style={styles.filterButton}
                   variant={isSelected ? 'primary' : 'outline'}
@@ -197,7 +184,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                     if (isSelected) {
                       setShowFilterSheet(true);
                     } else {
-                      onFilterChange(option.key);
+                      onShelfChange(shelfId);
                     }
                   }}
                 />
@@ -219,7 +206,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         visible={showFilterSheet}
         onClose={() => setShowFilterSheet(false)}
         deadlines={baseDeadlines}
-        selectedFilter={selectedFilter}
+        selectedShelf={selectedShelf}
         timeRangeFilter={timeRangeFilter}
         onTimeRangeChange={onTimeRangeChange}
         selectedFormats={selectedFormats}
@@ -234,7 +221,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         onExcludedStatusesChange={onExcludedStatusesChange}
         sortOrder={sortOrder}
         onSortOrderChange={onSortOrderChange}
-        statusCounts={statusCounts}
+        statusCounts={shelfCounts}
         availableTypes={availableTypes}
       />
     </Animated.View>

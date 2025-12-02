@@ -72,6 +72,8 @@ interface DeadlineContextType {
   pendingDeadlines: ReadingDeadlineWithProgress[];
   pausedDeadlines: ReadingDeadlineWithProgress[];
   appliedDeadlines: ReadingDeadlineWithProgress[];
+  rejectedDeadlines: ReadingDeadlineWithProgress[];
+  withdrewDeadlines: ReadingDeadlineWithProgress[];
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
@@ -268,6 +270,8 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     pending: pendingDeadlines,
     paused: pausedDeadlines,
     applied: appliedDeadlines,
+    rejected: rejectedDeadlines,
+    withdrew: withdrewDeadlines,
   } = useMemo(() => separateDeadlines(deadlines), [deadlines]);
 
   const userPaceData = useMemo(() => {
@@ -695,6 +699,8 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
     pendingDeadlines,
     pausedDeadlines,
     appliedDeadlines,
+    rejectedDeadlines,
+    withdrewDeadlines,
     isLoading,
     error,
     refetch,

@@ -1,12 +1,17 @@
 import TodaysGoals from '@/components/progress/TodaysGoals';
 import { ThemedText, ThemedView } from '@/components/themed';
-import { Typography } from '@/constants/Colors';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Spacing, Typography } from '@/constants/Colors';
 import { dayjs } from '@/lib/dayjs';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
-const Header = () => {
+interface HeaderProps {
+  onOpenShelvesPanel?: () => void;
+}
+
+const Header = ({ onOpenShelvesPanel }: HeaderProps) => {
   const today = Date.now();
   const formattedDate = dayjs(today).format('dddd, MMMM D');
 
@@ -18,6 +23,19 @@ const Header = () => {
       style={styles.container}
     >
       <ThemedView style={styles.dateRow}>
+        {onOpenShelvesPanel && (
+          <Pressable
+            style={styles.menuButton}
+            onPress={onOpenShelvesPanel}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <IconSymbol
+              name="line.3.horizontal"
+              size={24}
+              color="rgba(250, 248, 245, 1)"
+            />
+          </Pressable>
+        )}
         <ThemedText style={styles.dateText}>{formattedDate}</ThemedText>
       </ThemedView>
       <TodaysGoals />
@@ -36,9 +54,13 @@ const styles = StyleSheet.create({
   dateRow: {
     backgroundColor: 'transparent',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     paddingBottom: 10,
+    gap: Spacing.md,
+  },
+  menuButton: {
+    padding: Spacing.xs,
   },
   dateText: {
     ...Typography.titleLarge,

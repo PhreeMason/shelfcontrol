@@ -5,12 +5,12 @@ import { useGetAllDeadlineTags, useGetAllTags } from '@/hooks/useTags';
 import { useTheme } from '@/hooks/useThemeColor';
 import {
   BookFormat,
-  FilterType,
   PageRangeFilter,
   ReadingDeadlineWithProgress,
   SortOrder,
   TimeRangeFilter,
 } from '@/types/deadline.types';
+import { SystemShelfId } from '@/types/shelves.types';
 import { isDateThisMonth, isDateThisWeek } from '@/utils/dateUtils';
 import React, { useEffect } from 'react';
 import {
@@ -33,7 +33,7 @@ interface FilterSheetProps {
   onClose: () => void;
   deadlines: ReadingDeadlineWithProgress[];
 
-  selectedFilter: string;
+  selectedShelf: SystemShelfId;
 
   timeRangeFilter: TimeRangeFilter;
   onTimeRangeChange: (filter: TimeRangeFilter) => void;
@@ -50,13 +50,13 @@ interface FilterSheetProps {
   selectedTags: string[];
   onTagsChange: (tags: string[]) => void;
 
-  excludedStatuses: FilterType[];
-  onExcludedStatusesChange: (statuses: FilterType[]) => void;
+  excludedStatuses: SystemShelfId[];
+  onExcludedStatusesChange: (statuses: SystemShelfId[]) => void;
 
   sortOrder: SortOrder;
   onSortOrderChange: (order: SortOrder) => void;
 
-  statusCounts?: Record<FilterType, number>;
+  statusCounts?: Record<SystemShelfId, number>;
 
   availableTypes: string[];
 }
@@ -65,7 +65,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   visible,
   onClose,
   deadlines,
-  selectedFilter,
+  selectedShelf,
   timeRangeFilter,
   onTimeRangeChange,
   selectedFormats,
@@ -148,7 +148,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     }
   };
 
-  const toggleExcludedStatus = (status: FilterType) => {
+  const toggleExcludedStatus = (status: SystemShelfId) => {
     if (excludedStatuses.includes(status)) {
       onExcludedStatusesChange(excludedStatuses.filter(s => s !== status));
     } else {
@@ -264,7 +264,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   const applyStatusExclusionsToCount = (count: number): number => {
     if (
       excludedStatuses.length === 0 ||
-      selectedFilter !== 'all' ||
+      selectedShelf !== 'all' ||
       !statusCounts
     ) {
       return count;
@@ -344,7 +344,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
           >
             <View style={styles.header}>
               <ThemedText typography="titleSubLarge" style={styles.title}>
-                Filter {getFilterDisplayName(selectedFilter)}
+                Filter {getFilterDisplayName(selectedShelf)}
               </ThemedText>
               <View style={styles.headerActions}>
                 {hasActiveFilters && (
@@ -535,7 +535,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
               </ScrollView>
             </View>
 
-            {selectedFilter === 'all' && (
+            {selectedShelf === 'all' && (
               <View style={styles.section}>
                 <ThemedText
                   typography="titleMedium"
@@ -554,7 +554,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
                       'toReview',
                       'completed',
                       'didNotFinish',
-                    ] as FilterType[]
+                    ] as SystemShelfId[]
                   ).map(status => {
                     const statusLabels: Record<string, string> = {
                       applied: 'Applied',
@@ -590,7 +590,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
                 Sort By
               </ThemedText>
               <View style={styles.filterRow}>
-                {(selectedFilter === 'all'
+                {(selectedShelf === 'all'
                   ? [
                       'default',
                       'soonest',

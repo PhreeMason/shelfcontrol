@@ -1,8 +1,8 @@
 # Custom Shelves Feature - Product Requirements Document
 
-> **Status**: Final
-> **Last Updated**: November 30, 2024
-> **Review Notes**: All decisions resolved. Ready for implementation.
+> **Status**: Phase 1 Complete ✅
+> **Last Updated**: December 1, 2024
+> **Review Notes**: Phase 1 complete. ShelfProvider architecture refactor done.
 
 ---
 
@@ -644,34 +644,121 @@ const matchesShelf = (deadline: Deadline, filters: ShelfFilters): boolean => {
 
 ### Phase 1 Steps
 
-| Step | Task | Files |
-|------|------|-------|
-| 1 | Create type definitions | `src/types/shelves.types.ts` |
-| 2 | Create default shelves constants | `src/constants/shelves.ts` |
-| 3 | Add pinnedShelves to PreferencesProvider | `src/providers/PreferencesProvider.tsx` |
-| 4 | Create ShelfRow component | `src/components/features/shelves/ShelfRow.tsx` |
-| 5 | Create ShelvesPanel component | `src/components/features/shelves/ShelvesPanel.tsx` |
-| 6 | Create ShelfTabBar component | `src/components/features/shelves/ShelfTabBar.tsx` |
-| 7 | Create useShelfCounts hook | `src/hooks/useShelfCounts.ts` |
-| 8 | Update Header with menu button | `src/components/navigation/Header.tsx` |
-| 9 | Integrate into Home screen | `src/app/(authenticated)/index.tsx` |
-| 10 | Testing & polish | - |
+| Step | Task | Files | Status |
+|------|------|-------|--------|
+| 1 | Create type definitions | `src/types/shelves.types.ts` | ✅ Done |
+| 2 | Create default shelves constants | `src/constants/shelves.ts` | ✅ Done |
+| 3 | Create ShelfProvider | `src/providers/ShelfProvider.tsx` | ✅ Done |
+| 4 | Create ShelfRow component | `src/components/features/shelves/ShelfRow.tsx` | ✅ Done |
+| 5 | Create ShelvesPanel component | `src/components/features/shelves/ShelvesPanel.tsx` | ✅ Done |
+| 6 | Create ShelfTabBar component | `src/components/features/shelves/ShelfTabBar.tsx` | ✅ Done |
+| 7 | Create useShelfCounts hook | `src/hooks/useShelfCounts.ts` | ✅ Done |
+| 8 | Update Header with menu button | `src/components/navigation/Header.tsx` | ✅ Done |
+| 9 | Integrate into Home screen | `src/app/(authenticated)/index.tsx` | ✅ Done |
+| 10 | Update FilterSection to use ShelfProvider | `src/components/features/deadlines/FilterSection.tsx` | ✅ Done |
+| 11 | Update FilterSheet to use ShelfProvider | `src/components/features/deadlines/FilterSheet.tsx` | ✅ Done |
+| 12 | Update FilteredDeadlines to use ShelfProvider | `src/components/features/deadlines/FilteredDeadlines.tsx` | ✅ Done |
+| 13 | Testing & polish | - | ✅ Done |
 
-### File Summary
+---
 
-**New Files (Phase 1)**:
-1. `src/types/shelves.types.ts`
-2. `src/constants/shelves.ts`
-3. `src/components/features/shelves/ShelvesPanel.tsx`
-4. `src/components/features/shelves/ShelfRow.tsx`
-5. `src/components/features/shelves/ShelfTabBar.tsx`
-6. `src/components/features/shelves/index.ts`
-7. `src/hooks/useShelfCounts.ts`
+## Implementation Progress (Phase 1) - COMPLETE ✅
 
-**Modified Files (Phase 1)**:
-1. `src/providers/PreferencesProvider.tsx`
-2. `src/components/navigation/Header.tsx`
-3. `src/app/(authenticated)/index.tsx`
+### Architecture Decision: ShelfProvider
+
+During implementation, we identified that PreferencesProvider was becoming overloaded (33+ state values). We created a dedicated **ShelfProvider** to:
+- Consolidate shelf selection, pinned shelves, and all filter state
+- Reduce prop drilling (FilterSection previously received 12+ props)
+- Provide a natural home for Phase 2 custom shelves
+
+### New Files Created
+
+1. `src/types/shelves.types.ts` - Type definitions for SystemShelfId, SystemShelf, ShelfCounts
+2. `src/constants/shelves.ts` - SYSTEM_SHELVES array, DEFAULT_PINNED_SHELVES, helper functions
+3. `src/providers/ShelfProvider.tsx` - **NEW** Dedicated provider for shelf + filter state
+4. `src/components/features/shelves/ShelvesPanel.tsx` - Slide-out panel with Reanimated animations
+5. `src/components/features/shelves/ShelfRow.tsx` - Individual shelf row with pin toggle
+6. `src/components/features/shelves/ShelfTabBar.tsx` - Horizontal tab bar for pinned shelves
+7. `src/components/features/shelves/index.ts` - Barrel exports
+8. `src/hooks/useShelfCounts.ts` - Hook to compute counts for each shelf
+
+### Modified Files
+
+1. `src/providers/PreferencesProvider.tsx`:
+   - **Removed** all shelf and filter state (~200 lines)
+   - Now only contains view preferences (deadlineViewMode, progressInputModes, metricViewModes, calendar settings)
+
+2. `src/app/_layout.tsx`:
+   - Added ShelfProvider to provider tree (wraps Stack inside DeadlineProvider)
+
+3. `src/providers/DeadlineProvider.tsx`:
+   - Added `rejectedDeadlines` and `withdrewDeadlines` to context
+   - Added analytics events for `deadline_received` and `deadline_applied`
+
+4. `src/utils/deadlineUtils.ts`:
+   - Updated `separateDeadlines()` to include `rejected` and `withdrew` arrays
+
+5. `src/components/navigation/Header.tsx`:
+   - Added hamburger menu button (left of date)
+   - Added `onOpenShelvesPanel` prop
+
+6. `src/components/ui/IconSymbol.tsx`:
+   - Added new icon mappings for shelf icons
+
+7. `src/app/(authenticated)/index.tsx`:
+   - Uses `useShelf()` hook for all filter state
+   - Integrated `ShelvesPanel` component
+
+8. `src/components/features/deadlines/FilterSection.tsx`:
+   - Updated props to use `selectedShelf`/`onShelfChange` instead of `selectedFilter`/`onFilterChange`
+   - Uses `SystemShelfId` type
+
+9. `src/components/features/deadlines/FilterSheet.tsx`:
+   - Updated to use `SystemShelfId` type
+
+10. `src/components/features/deadlines/FilteredDeadlines.tsx`:
+    - Updated to use `SystemShelfId` type
+
+11. `src/lib/analytics/events.ts`:
+    - Added `deadline_received` and `deadline_applied` events
+
+### Deleted Files
+
+1. `src/hooks/useShelfFiltering.ts` - Replaced by ShelfProvider
+
+### ShelfProvider API
+
+```typescript
+interface ShelfContextType {
+  // Shelf state
+  selectedShelf: SystemShelfId;
+  pinnedShelves: SystemShelfId[];
+  shelfCounts: ShelfCounts;
+
+  // Filter state (moved from PreferencesProvider)
+  timeRangeFilter: TimeRangeFilter;
+  selectedFormats: BookFormat[];
+  selectedPageRanges: PageRangeFilter[];
+  selectedTypes: string[];
+  selectedTags: string[];
+  excludedStatuses: SystemShelfId[];
+  sortOrder: SortOrder;
+
+  // Actions
+  selectShelf: (shelfId: SystemShelfId) => Promise<void>;  // Clears filters
+  toggleShelfPin: (shelfId: SystemShelfId) => Promise<void>;
+  setTimeRangeFilter: (filter: TimeRangeFilter) => Promise<void>;
+  // ... other filter setters
+  clearAllFilters: () => void;
+
+  isLoading: boolean;
+}
+```
+
+### Known Issues
+
+- Test files need updating for new prop names (`selectedFilter` → `selectedShelf`)
+- Some test fixtures missing `source` and `deadline_type` fields (pre-existing)
 
 ---
 

@@ -1,11 +1,5 @@
 import { CalendarFilterType } from '@/constants/activityTypes';
-import {
-  BookFormat,
-  FilterType,
-  PageRangeFilter,
-  SortOrder,
-  TimeRangeFilter,
-} from '@/types/deadline.types';
+import { BookFormat } from '@/types/deadline.types';
 import {
   DEFAULT_PROGRESS_INPUT_MODES,
   ProgressInputMode,
@@ -31,22 +25,7 @@ export const DEFAULT_METRIC_VIEW_MODES: MetricViewModePreferences = {
 };
 
 interface PreferencesContextType {
-  selectedFilter: FilterType;
-  setSelectedFilter: (filter: FilterType) => void;
-  timeRangeFilter: TimeRangeFilter;
-  setTimeRangeFilter: (filter: TimeRangeFilter) => void;
-  selectedFormats: BookFormat[];
-  setSelectedFormats: (formats: BookFormat[]) => void;
-  selectedPageRanges: PageRangeFilter[];
-  setSelectedPageRanges: (ranges: PageRangeFilter[]) => void;
-  selectedTypes: string[];
-  setSelectedTypes: (types: string[]) => void;
-  selectedTags: string[];
-  setSelectedTags: (tags: string[]) => void;
-  excludedStatuses: FilterType[];
-  setExcludedStatuses: (statuses: FilterType[]) => void;
-  sortOrder: SortOrder;
-  setSortOrder: (order: SortOrder) => void;
+  // View preferences
   progressInputModes: ProgressInputModePreferences;
   getProgressInputMode: (format: BookFormat) => ProgressInputMode;
   setProgressInputMode: (format: BookFormat, mode: ProgressInputMode) => void;
@@ -55,6 +34,8 @@ interface PreferencesContextType {
   setMetricViewMode: (format: BookFormat, mode: MetricViewMode) => void;
   deadlineViewMode: DeadlineViewMode;
   setDeadlineViewMode: (mode: DeadlineViewMode) => void;
+
+  // Calendar preferences
   excludedCalendarActivities: CalendarFilterType[];
   setExcludedCalendarActivities: (activities: CalendarFilterType[]) => void;
   hideDatesOnCovers: boolean;
@@ -63,26 +44,12 @@ interface PreferencesContextType {
   setShowActivityBars: (show: boolean) => void;
   showCoverOnCalendar: boolean;
   setShowCoverOnCalendar: (show: boolean) => void;
+
   isLoading: boolean;
 }
 
 const PreferencesContext = createContext<PreferencesContextType>({
-  selectedFilter: 'active',
-  setSelectedFilter: () => {},
-  timeRangeFilter: 'all',
-  setTimeRangeFilter: () => {},
-  selectedFormats: [],
-  setSelectedFormats: () => {},
-  selectedPageRanges: [],
-  setSelectedPageRanges: () => {},
-  selectedTypes: [],
-  setSelectedTypes: () => {},
-  selectedTags: [],
-  setSelectedTags: () => {},
-  excludedStatuses: [],
-  setExcludedStatuses: () => {},
-  sortOrder: 'default',
-  setSortOrder: () => {},
+  // View preference defaults
   progressInputModes: DEFAULT_PROGRESS_INPUT_MODES,
   getProgressInputMode: () => 'direct',
   setProgressInputMode: () => {},
@@ -91,6 +58,8 @@ const PreferencesContext = createContext<PreferencesContextType>({
   setMetricViewMode: () => {},
   deadlineViewMode: 'list',
   setDeadlineViewMode: () => {},
+
+  // Calendar preference defaults
   excludedCalendarActivities: [],
   setExcludedCalendarActivities: () => {},
   hideDatesOnCovers: false,
@@ -99,18 +68,11 @@ const PreferencesContext = createContext<PreferencesContextType>({
   setShowActivityBars: () => {},
   showCoverOnCalendar: false,
   setShowCoverOnCalendar: () => {},
+
   isLoading: true,
 });
 
 const STORAGE_KEYS = {
-  SELECTED_FILTER: '@preferences/selectedFilter',
-  TIME_RANGE_FILTER: '@preferences/timeRangeFilter',
-  SELECTED_FORMATS: '@preferences/selectedFormats',
-  SELECTED_PAGE_RANGES: '@preferences/selectedPageRanges',
-  SELECTED_TYPES: '@preferences/selectedTypes',
-  SELECTED_TAGS: '@preferences/selectedTags',
-  EXCLUDED_STATUSES: '@preferences/excludedStatuses',
-  SORT_ORDER: '@preferences/sortOrder',
   PROGRESS_INPUT_MODES: '@preferences/progressInputModes',
   METRIC_VIEW_MODES: '@preferences/metricViewModes',
   DEADLINE_VIEW_MODE: '@preferences/deadlineViewMode',
@@ -121,45 +83,27 @@ const STORAGE_KEYS = {
 };
 
 export default function PreferencesProvider({ children }: PropsWithChildren) {
-  const [selectedFilter, setSelectedFilterState] =
-    useState<FilterType>('active');
-  const [timeRangeFilter, setTimeRangeFilterState] =
-    useState<TimeRangeFilter>('all');
-  const [selectedFormats, setSelectedFormatsState] = useState<BookFormat[]>([]);
-  const [selectedPageRanges, setSelectedPageRangesState] = useState<
-    PageRangeFilter[]
-  >([]);
-  const [selectedTypes, setSelectedTypesState] = useState<string[]>([]);
-  const [selectedTags, setSelectedTagsState] = useState<string[]>([]);
-  const [excludedStatuses, setExcludedStatusesState] = useState<FilterType[]>(
-    []
-  );
-  const [sortOrder, setSortOrderState] = useState<SortOrder>('default');
+  // View preferences
   const [progressInputModes, setProgressInputModesState] =
     useState<ProgressInputModePreferences>(DEFAULT_PROGRESS_INPUT_MODES);
   const [metricViewModes, setMetricViewModesState] =
     useState<MetricViewModePreferences>(DEFAULT_METRIC_VIEW_MODES);
   const [deadlineViewMode, setDeadlineViewModeState] =
     useState<DeadlineViewMode>('list');
+
+  // Calendar preferences
   const [excludedCalendarActivities, setExcludedCalendarActivitiesState] =
     useState<CalendarFilterType[]>([]);
   const [hideDatesOnCovers, setHideDatesOnCoversState] = useState(false);
   const [showActivityBars, setShowActivityBarsState] = useState(true);
   const [showCoverOnCalendar, setShowCoverOnCalendarState] = useState(false);
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadPreferences = async () => {
       try {
         const [
-          savedFilter,
-          savedTimeRange,
-          savedFormats,
-          savedPageRanges,
-          savedTypes,
-          savedTags,
-          savedExcludedStatuses,
-          savedSortOrder,
           savedProgressInputModes,
           savedMetricViewModes,
           savedDeadlineViewMode,
@@ -168,14 +112,6 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           savedShowActivityBars,
           savedShowCoverOnCalendar,
         ] = await Promise.all([
-          AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FILTER),
-          AsyncStorage.getItem(STORAGE_KEYS.TIME_RANGE_FILTER),
-          AsyncStorage.getItem(STORAGE_KEYS.SELECTED_FORMATS),
-          AsyncStorage.getItem(STORAGE_KEYS.SELECTED_PAGE_RANGES),
-          AsyncStorage.getItem(STORAGE_KEYS.SELECTED_TYPES),
-          AsyncStorage.getItem(STORAGE_KEYS.SELECTED_TAGS),
-          AsyncStorage.getItem(STORAGE_KEYS.EXCLUDED_STATUSES),
-          AsyncStorage.getItem(STORAGE_KEYS.SORT_ORDER),
           AsyncStorage.getItem(STORAGE_KEYS.PROGRESS_INPUT_MODES),
           AsyncStorage.getItem(STORAGE_KEYS.METRIC_VIEW_MODES),
           AsyncStorage.getItem(STORAGE_KEYS.DEADLINE_VIEW_MODE),
@@ -185,34 +121,6 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
           AsyncStorage.getItem(STORAGE_KEYS.SHOW_COVER_ON_CALENDAR),
         ]);
 
-        if (savedFilter) {
-          setSelectedFilterState(savedFilter as FilterType);
-        }
-        if (savedTimeRange) {
-          setTimeRangeFilterState(savedTimeRange as TimeRangeFilter);
-        }
-        if (savedFormats) {
-          setSelectedFormatsState(JSON.parse(savedFormats) as BookFormat[]);
-        }
-        if (savedPageRanges) {
-          setSelectedPageRangesState(
-            JSON.parse(savedPageRanges) as PageRangeFilter[]
-          );
-        }
-        if (savedTypes) {
-          setSelectedTypesState(JSON.parse(savedTypes) as string[]);
-        }
-        if (savedTags) {
-          setSelectedTagsState(JSON.parse(savedTags) as string[]);
-        }
-        if (savedExcludedStatuses) {
-          setExcludedStatusesState(
-            JSON.parse(savedExcludedStatuses) as FilterType[]
-          );
-        }
-        if (savedSortOrder) {
-          setSortOrderState(savedSortOrder as SortOrder);
-        }
         if (savedProgressInputModes) {
           setProgressInputModesState(
             JSON.parse(savedProgressInputModes) as ProgressInputModePreferences
@@ -255,93 +163,6 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
 
     loadPreferences();
   }, []);
-
-  const setSelectedFilter = async (filter: FilterType) => {
-    try {
-      setSelectedFilterState(filter);
-      await AsyncStorage.setItem(STORAGE_KEYS.SELECTED_FILTER, filter);
-    } catch (error) {
-      console.error('Error saving filter preference:', error);
-    }
-  };
-
-  const setTimeRangeFilter = async (filter: TimeRangeFilter) => {
-    try {
-      setTimeRangeFilterState(filter);
-      await AsyncStorage.setItem(STORAGE_KEYS.TIME_RANGE_FILTER, filter);
-    } catch (error) {
-      console.error('Error saving due date filter preference:', error);
-    }
-  };
-
-  const setSelectedFormats = async (formats: BookFormat[]) => {
-    try {
-      setSelectedFormatsState(formats);
-      await AsyncStorage.setItem(
-        STORAGE_KEYS.SELECTED_FORMATS,
-        JSON.stringify(formats)
-      );
-    } catch (error) {
-      console.error('Error saving format filter preference:', error);
-    }
-  };
-
-  const setSelectedPageRanges = async (ranges: PageRangeFilter[]) => {
-    try {
-      setSelectedPageRangesState(ranges);
-      await AsyncStorage.setItem(
-        STORAGE_KEYS.SELECTED_PAGE_RANGES,
-        JSON.stringify(ranges)
-      );
-    } catch (error) {
-      console.error('Error saving page range filter preference:', error);
-    }
-  };
-
-  const setSelectedTypes = async (types: string[]) => {
-    try {
-      setSelectedTypesState(types);
-      await AsyncStorage.setItem(
-        STORAGE_KEYS.SELECTED_TYPES,
-        JSON.stringify(types)
-      );
-    } catch (error) {
-      console.error('Error saving type filter preference:', error);
-    }
-  };
-
-  const setSelectedTags = async (tags: string[]) => {
-    try {
-      setSelectedTagsState(tags);
-      await AsyncStorage.setItem(
-        STORAGE_KEYS.SELECTED_TAGS,
-        JSON.stringify(tags)
-      );
-    } catch (error) {
-      console.error('Error saving tag filter preference:', error);
-    }
-  };
-
-  const setExcludedStatuses = async (statuses: FilterType[]) => {
-    try {
-      setExcludedStatusesState(statuses);
-      await AsyncStorage.setItem(
-        STORAGE_KEYS.EXCLUDED_STATUSES,
-        JSON.stringify(statuses)
-      );
-    } catch (error) {
-      console.error('Error saving excluded statuses preference:', error);
-    }
-  };
-
-  const setSortOrder = async (order: SortOrder) => {
-    try {
-      setSortOrderState(order);
-      await AsyncStorage.setItem(STORAGE_KEYS.SORT_ORDER, order);
-    } catch (error) {
-      console.error('Error saving sort order preference:', error);
-    }
-  };
 
   const getProgressInputMode = (format: BookFormat): ProgressInputMode => {
     return progressInputModes[format] || 'direct';
@@ -443,22 +264,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
   };
 
   const value = {
-    selectedFilter,
-    setSelectedFilter,
-    timeRangeFilter,
-    setTimeRangeFilter,
-    selectedFormats,
-    setSelectedFormats,
-    selectedPageRanges,
-    setSelectedPageRanges,
-    selectedTypes,
-    setSelectedTypes,
-    selectedTags,
-    setSelectedTags,
-    excludedStatuses,
-    setExcludedStatuses,
-    sortOrder,
-    setSortOrder,
+    // View preferences
     progressInputModes,
     getProgressInputMode,
     setProgressInputMode,
@@ -467,6 +273,8 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     setMetricViewMode,
     deadlineViewMode,
     setDeadlineViewMode,
+
+    // Calendar preferences
     excludedCalendarActivities,
     setExcludedCalendarActivities,
     hideDatesOnCovers,
@@ -475,6 +283,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
     setShowActivityBars,
     showCoverOnCalendar,
     setShowCoverOnCalendar,
+
     isLoading,
   };
 

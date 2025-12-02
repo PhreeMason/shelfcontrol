@@ -2,12 +2,12 @@ import { useGetAllDeadlineTags } from '@/hooks/useTags';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
   BookFormat,
-  FilterType,
   PageRangeFilter,
   ReadingDeadlineWithProgress,
   SortOrder,
   TimeRangeFilter,
 } from '@/types/deadline.types';
+import { SystemShelfId } from '@/types/shelves.types';
 import { normalizeServerDate } from '@/utils/dateNormalization';
 import { isDateThisMonth, isDateThisWeek } from '@/utils/dateUtils';
 import { sortByPace } from '@/utils/deadlineSortingAdvanced';
@@ -15,19 +15,19 @@ import React from 'react';
 import DeadlinesList from './DeadlinesList';
 
 interface FilteredDeadlinesProps {
-  selectedFilter: FilterType;
+  selectedShelf: SystemShelfId;
   timeRangeFilter: TimeRangeFilter;
   selectedFormats: BookFormat[];
   selectedPageRanges: PageRangeFilter[];
   selectedTypes: string[];
   selectedTags: string[];
-  excludedStatuses: FilterType[];
+  excludedStatuses: SystemShelfId[];
   sortOrder: SortOrder;
   searchQuery: string;
 }
 
 const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
-  selectedFilter,
+  selectedShelf,
   timeRangeFilter,
   selectedFormats,
   selectedPageRanges,
@@ -130,11 +130,11 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   const applyStatusExclusions = (
     deadlines: ReadingDeadlineWithProgress[]
   ): ReadingDeadlineWithProgress[] => {
-    if (excludedStatuses.length === 0 || selectedFilter !== 'all') {
+    if (excludedStatuses.length === 0 || selectedShelf !== 'all') {
       return deadlines;
     }
 
-    const deadlineStatusMap = new Map<string, FilterType>();
+    const deadlineStatusMap = new Map<string, SystemShelfId>();
     const allDeadlinesByStatus = {
       active: activeDeadlines,
       pending: pendingDeadlines,
@@ -149,7 +149,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     Object.entries(allDeadlinesByStatus).forEach(
       ([status, statusDeadlines]) => {
         statusDeadlines.forEach(deadline => {
-          deadlineStatusMap.set(deadline.id, status as FilterType);
+          deadlineStatusMap.set(deadline.id, status as SystemShelfId);
         });
       }
     );
@@ -194,7 +194,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   const getFilteredDeadlines = (): ReadingDeadlineWithProgress[] => {
     let filtered: ReadingDeadlineWithProgress[];
 
-    const deadlineMap = new Map<FilterType, ReadingDeadlineWithProgress[]>();
+    const deadlineMap = new Map<SystemShelfId, ReadingDeadlineWithProgress[]>();
     deadlineMap.set('active', activeDeadlines);
     deadlineMap.set('overdue', overdueDeadlines);
     deadlineMap.set('pending', pendingDeadlines);
@@ -205,8 +205,8 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     deadlineMap.set('didNotFinish', didNotFinishDeadlines);
     deadlineMap.set('all', deadlines);
 
-    if (deadlineMap.has(selectedFilter)) {
-      filtered = deadlineMap.get(selectedFilter)!;
+    if (deadlineMap.has(selectedShelf)) {
+      filtered = deadlineMap.get(selectedShelf)!;
     } else {
       filtered = activeDeadlines;
     }
@@ -217,7 +217,7 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
   };
 
   const getEmptyMessage = (): string => {
-    const emptyMessages = {
+    const emptyMessages: Record<SystemShelfId, string> = {
       active: 'No active due dates',
       overdue: 'No overdue due dates',
       pending: 'No pending due dates',
@@ -226,13 +226,12 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       completed: 'No completed books',
       toReview: 'No books waiting for reviews',
       didNotFinish: 'No books marked as did not finish',
+      rejected: 'No rejected books',
+      withdrew: 'No withdrawn books',
       all: 'No books found',
     };
 
-    if (emptyMessages[selectedFilter as keyof typeof emptyMessages]) {
-      return emptyMessages[selectedFilter as keyof typeof emptyMessages];
-    }
-    return 'No books found';
+    return emptyMessages[selectedShelf] || 'No books found';
   };
 
   const filteredDeadlines = getFilteredDeadlines();

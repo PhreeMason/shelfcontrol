@@ -1,16 +1,17 @@
 import FilterSection from '@/components/features/deadlines/FilterSection';
 import FilteredDeadlines from '@/components/features/deadlines/FilteredDeadlines';
+import { ShelvesPanel } from '@/components/features/shelves';
 import { Header } from '@/components/navigation';
 import { ThemedView } from '@/components/themed';
 import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { useDeadlineTypes } from '@/hooks/useDeadlines';
 import { analytics } from '@/lib/analytics/client';
 import { useDeadlines } from '@/providers/DeadlineProvider';
-import { usePreferences } from '@/providers/PreferencesProvider';
-import { FilterType } from '@/types/deadline.types';
+import { useShelf } from '@/providers/ShelfProvider';
+import { SystemShelfId } from '@/types/shelves.types';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -31,8 +32,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const {
-    selectedFilter,
-    setSelectedFilter,
+    selectedShelf,
+    selectShelf,
     timeRangeFilter,
     setTimeRangeFilter,
     selectedFormats,
@@ -47,12 +48,24 @@ export default function HomeScreen() {
     setExcludedStatuses,
     sortOrder,
     setSortOrder,
-  } = usePreferences();
+  } = useShelf();
   const { refetch, isRefreshing } = useDeadlines();
   const { data: availableTypes = [] } = useDeadlineTypes();
-  const prevSelectedFilterRef = React.useRef<FilterType | null>(null);
+  const prevSelectedShelfRef = React.useRef<SystemShelfId | null>(null);
   const prevSortOrderRef = React.useRef(sortOrder);
   const [searchQuery, setSearchQuery] = React.useState('');
+
+  // Shelves panel state
+  const [isShelfPanelOpen, setIsShelfPanelOpen] = useState(false);
+
+  const handleOpenShelvesPanel = useCallback(() => {
+    setIsShelfPanelOpen(true);
+    analytics.track('shelf_panel_opened');
+  }, []);
+
+  const handleCloseShelvesPanel = useCallback(() => {
+    setIsShelfPanelOpen(false);
+  }, []);
 
   const gradientHeight = Math.max(insets.top, 10);
 
@@ -108,29 +121,16 @@ export default function HomeScreen() {
     filterTop.value = event.nativeEvent.layout.y;
   };
 
+  // Clear search query when shelf changes (filters are cleared by selectShelf in ShelfProvider)
   React.useEffect(() => {
     if (
-      prevSelectedFilterRef.current !== null &&
-      prevSelectedFilterRef.current !== selectedFilter
+      prevSelectedShelfRef.current !== null &&
+      prevSelectedShelfRef.current !== selectedShelf
     ) {
-      setTimeRangeFilter('all');
-      setSelectedFormats([]);
-      setSelectedPageRanges([]);
-      setSelectedTypes([]);
-      setSelectedTags([]);
-      setExcludedStatuses([]);
       setSearchQuery('');
     }
-    prevSelectedFilterRef.current = selectedFilter;
-  }, [
-    selectedFilter,
-    setTimeRangeFilter,
-    setSelectedFormats,
-    setSelectedPageRanges,
-    setSelectedTypes,
-    setSelectedTags,
-    setExcludedStatuses,
-  ]);
+    prevSelectedShelfRef.current = selectedShelf;
+  }, [selectedShelf]);
 
   React.useEffect(() => {
     const activeFilters: Record<string, any> = {};
@@ -163,12 +163,12 @@ export default function HomeScreen() {
 
     filterCount &&
       analytics.track('filters_applied', {
-        active_tab: selectedFilter,
+        active_tab: selectedShelf,
         active_filters: activeFilters,
         filter_count: filterCount,
       });
   }, [
-    selectedFilter,
+    selectedShelf,
     timeRangeFilter,
     selectedFormats,
     selectedPageRanges,
@@ -187,8 +187,8 @@ export default function HomeScreen() {
     }
   }, [sortOrder]);
 
-  const handleFilterChange = (filter: FilterType) => {
-    setSelectedFilter(filter);
+  const handleShelfChange = (shelfId: SystemShelfId) => {
+    selectShelf(shelfId);
   };
 
   return (
@@ -202,8 +202,8 @@ export default function HomeScreen() {
 
       {/* Sticky filter that appears when scrolling */}
       <FilterSection
-        selectedFilter={selectedFilter}
-        onFilterChange={handleFilterChange}
+        selectedShelf={selectedShelf}
+        onShelfChange={handleShelfChange}
         timeRangeFilter={timeRangeFilter}
         onTimeRangeChange={setTimeRangeFilter}
         selectedFormats={selectedFormats}
@@ -239,12 +239,12 @@ export default function HomeScreen() {
             <RefreshControl refreshing={isRefreshing} onRefresh={refetch} />
           }
         >
-          <Header />
+          <Header onOpenShelvesPanel={handleOpenShelvesPanel} />
 
           {/* Scrollable filter that hides when sticky */}
           <FilterSection
-            selectedFilter={selectedFilter}
-            onFilterChange={handleFilterChange}
+            selectedShelf={selectedShelf}
+            onShelfChange={handleShelfChange}
             timeRangeFilter={timeRangeFilter}
             onTimeRangeChange={setTimeRangeFilter}
             selectedFormats={selectedFormats}
@@ -267,7 +267,7 @@ export default function HomeScreen() {
           />
 
           <FilteredDeadlines
-            selectedFilter={selectedFilter}
+            selectedShelf={selectedShelf}
             timeRangeFilter={timeRangeFilter}
             selectedFormats={selectedFormats}
             selectedPageRanges={selectedPageRanges}
@@ -291,6 +291,12 @@ export default function HomeScreen() {
           />
         </Link>
       ) : null}
+
+      {/* Shelves Panel */}
+      <ShelvesPanel
+        visible={isShelfPanelOpen}
+        onClose={handleCloseShelvesPanel}
+      />
     </ThemedView>
   );
 }
