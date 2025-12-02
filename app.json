@@ -24,7 +24,7 @@
         "foregroundImage": "./src/assets/images/android-logo-2.png",
         "backgroundColor": "#ffffff"
       },
-      "versionCode": 17,
+      "versionCode": 18,
       "edgeToEdgeEnabled": true,
       "package": "com.grizzylabs.shelfControl",
       "intentFilters": [
