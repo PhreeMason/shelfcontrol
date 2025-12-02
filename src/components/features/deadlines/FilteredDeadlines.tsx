@@ -47,6 +47,8 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     pendingDeadlines,
     pausedDeadlines,
     appliedDeadlines,
+    rejectedDeadlines,
+    withdrewDeadlines,
     isLoading,
     error,
   } = useDeadlines();
@@ -144,6 +146,8 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       toReview: toReviewDeadlines,
       completed: completedDeadlines,
       didNotFinish: didNotFinishDeadlines,
+      rejected: rejectedDeadlines,
+      withdrew: withdrewDeadlines,
     };
 
     Object.entries(allDeadlinesByStatus).forEach(
@@ -203,6 +207,8 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
     deadlineMap.set('completed', completedDeadlines);
     deadlineMap.set('toReview', toReviewDeadlines);
     deadlineMap.set('didNotFinish', didNotFinishDeadlines);
+    deadlineMap.set('rejected', rejectedDeadlines);
+    deadlineMap.set('withdrew', withdrewDeadlines);
     deadlineMap.set('all', deadlines);
 
     if (deadlineMap.has(selectedShelf)) {
