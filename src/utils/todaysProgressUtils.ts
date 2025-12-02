@@ -132,3 +132,80 @@ export const getProgressBackgroundColor = (
 
   return `${backgroundColor}99`;
 };
+
+/**
+ * Message thresholds for overdue catch-up progress percentage
+ */
+const overdueMessageForProgressPercentage: Record<number, string> = {
+  100: 'Caught up!',
+  75: 'Almost there!',
+  50: 'Making progress!',
+  20: 'Keep going!',
+  0: 'Bonus reading today',
+};
+
+/**
+ * Formats the display value for overdue catch-up current/total progress
+ * @param current - Current progress value
+ * @param total - Total capacity available
+ * @param isListening - Whether this is listening (audio) or reading format
+ * @returns Formatted display string
+ */
+export const getOverdueDisplayValue = (
+  current: number,
+  total: number,
+  isListening: boolean
+): string => {
+  if (isListening) {
+    const currentFormatted = formatProgressDisplay('audio', current);
+    const totalFormatted = formatProgressDisplay('audio', total);
+    return `${currentFormatted}/${totalFormatted}`;
+  }
+  return `${current}/${total}`;
+};
+
+/**
+ * Formats the remaining capacity text for overdue catch-up
+ * @param current - Current progress value
+ * @param total - Total capacity available
+ * @param isListening - Whether this is listening (audio) or reading format
+ * @returns Formatted remaining text
+ */
+export const getOverdueRemainingText = (
+  current: number,
+  total: number,
+  isListening: boolean
+): string => {
+  const remaining = total - current;
+
+  if (remaining <= 0) {
+    return 'Goal reached!';
+  }
+
+  if (isListening) {
+    const remainingFormatted = formatProgressDisplay('audio', remaining);
+    return `${remainingFormatted} available`;
+  }
+  return `${remaining} pages available`;
+};
+
+/**
+ * Gets the encouragement message for overdue catch-up based on progress percentage
+ * @param progressPercentage - Progress percentage (0-infinity)
+ * @returns Encouragement message string
+ */
+export const getOverdueEncouragementMessage = (
+  progressPercentage: number
+): string => {
+  const thresholds = Object.keys(overdueMessageForProgressPercentage)
+    .map(Number)
+    .sort((a, b) => b - a);
+
+  for (const threshold of thresholds) {
+    if (progressPercentage >= threshold) {
+      return overdueMessageForProgressPercentage[threshold];
+    }
+  }
+
+  return overdueMessageForProgressPercentage[0];
+};

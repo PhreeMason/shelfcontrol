@@ -171,6 +171,57 @@ export interface DailyGoalImpact {
   addition: number;
 }
 
+export interface OverdueCatchUpTotals {
+  /** The available capacity for overdue catch-up (the goal) */
+  total: number;
+  /** Progress made on overdue books today (capped at available capacity) */
+  current: number;
+  /** Whether there's any available capacity for overdue catch-up */
+  hasCapacity: boolean;
+}
+
+/**
+ * Calculates the overdue catch-up totals based on user's extra reading capacity.
+ *
+ * The overdue catch-up feature allows users to work on overdue books using their
+ * leftover capacity after meeting their active reading goals.
+ *
+ * @param overdueDeadlines - Array of overdue deadlines (filtered by format)
+ * @param userPace - User's average pace (pages/day for reading, minutes/day for audio)
+ * @param todaysActiveGoal - Today's goal for active deadlines
+ * @param todaysActiveProgress - Progress made on active deadlines today
+ * @param getProgress - Function to get today's progress for a deadline
+ * @returns OverdueCatchUpTotals with total (capacity), current (progress), and hasCapacity flag
+ */
+export const calculateOverdueCatchUpTotals = (
+  overdueDeadlines: ReadingDeadlineWithProgress[],
+  userPace: number,
+  todaysActiveGoal: number,
+  todaysActiveProgress: number,
+  getProgress: (deadline: ReadingDeadlineWithProgress) => number
+): OverdueCatchUpTotals => {
+  // Calculate extra capacity from user's average pace
+  const extraCapacity = Math.max(0, userPace - todaysActiveGoal);
+
+  // Calculate how much of the extra capacity was used by additional active reading
+  const usedByActiveReading = Math.max(0, todaysActiveProgress - todaysActiveGoal);
+
+  // Available capacity for overdue catch-up
+  const availableForOverdue = Math.max(0, extraCapacity - usedByActiveReading);
+
+  // Calculate progress made on overdue books today
+  const overdueProgressToday = overdueDeadlines.reduce((total, deadline) => {
+    const progress = getProgress(deadline);
+    return total + (progress > 0 ? progress : 0);
+  }, 0);
+
+  return {
+    total: Math.round(availableForOverdue),
+    current: Math.round(overdueProgressToday),
+    hasCapacity: availableForOverdue > 0,
+  };
+};
+
 export const formatDailyGoalDisplay = (
   unitsPerDay: number,
   format: 'physical' | 'eBook' | 'audio'

@@ -1,9 +1,11 @@
+import OverdueCatchUpProgress from '@/components/progress/OverdueCatchUpProgress';
 import TodaysProgress from '@/components/progress/TodaysProgress';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { Spacing } from '@/constants/Colors';
 import { useTodaysDeadlines } from '@/hooks/useTodaysDeadlines';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import {
+  calculateOverdueCatchUpTotals,
   calculateTodaysAudioTotals,
   calculateTodaysReadingTotals,
 } from '@/utils/deadlineAggregationUtils';
@@ -11,12 +13,18 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 const TodaysGoals: React.FC = () => {
-  const { calculateProgressForToday } = useDeadlines();
+  const {
+    calculateProgressForToday,
+    userPaceData,
+    userListeningPaceData,
+  } = useDeadlines();
   const {
     audioDeadlines,
     readingDeadlines,
     allAudioDeadlines,
     allReadingDeadlines,
+    overdueReadingDeadlines,
+    overdueAudioDeadlines,
   } = useTodaysDeadlines();
 
   const audioTotals = useMemo(
@@ -40,6 +48,67 @@ const TodaysGoals: React.FC = () => {
   );
 
   const hasGoals = readingDeadlines.length > 0 || audioDeadlines.length > 0;
+  const averageReadingPace = Math.round(userPaceData?.averagePace || 0);
+  const averageListeningPace = Math.round(userListeningPaceData?.averagePace || 0);
+
+  // Calculate overdue catch-up totals for reading
+  const overdueReadingCatchUp = useMemo(
+    () =>
+      calculateOverdueCatchUpTotals(
+        overdueReadingDeadlines,
+        averageReadingPace,
+        readingTotals.total,
+        readingTotals.current,
+        calculateProgressForToday
+      ),
+    [
+      overdueReadingDeadlines,
+      averageReadingPace,
+      readingTotals,
+      calculateProgressForToday,
+    ]
+  );
+
+  // Calculate overdue catch-up totals for listening
+  const overdueAudioCatchUp = useMemo(
+    () =>
+      calculateOverdueCatchUpTotals(
+        overdueAudioDeadlines,
+        averageListeningPace,
+        audioTotals.total,
+        audioTotals.current,
+        calculateProgressForToday
+      ),
+    [
+      overdueAudioDeadlines,
+      averageListeningPace,
+      audioTotals,
+      calculateProgressForToday,
+    ]
+  );
+
+  // Show overdue reading catch-up when:
+  // 1. User has active reading goals
+  // 2. User has overdue reading books
+  // 3. User has met their active reading goal for today
+  // 4. User has extra capacity available
+  const showOverdueReadingCatchUp =
+    readingDeadlines.length > 0 &&
+    overdueReadingDeadlines.length > 0 &&
+    readingTotals.current >= readingTotals.total &&
+    overdueReadingCatchUp.hasCapacity;
+
+  // Show overdue audio catch-up when:
+  // 1. User has active audio goals
+  // 2. User has overdue audio books
+  // 3. User has met their active audio goal for today
+  // 4. User has extra capacity available
+  const showOverdueAudioCatchUp =
+    audioDeadlines.length > 0 &&
+    overdueAudioDeadlines.length > 0 &&
+    audioTotals.current >= audioTotals.total &&
+    overdueAudioCatchUp.hasCapacity;
+
 
   return (
     <ThemedView style={styles.container}>
@@ -62,6 +131,22 @@ const TodaysGoals: React.FC = () => {
               <TodaysProgress
                 total={audioTotals.total}
                 current={audioTotals.current}
+                type="listening"
+              />
+            )}
+
+            {showOverdueReadingCatchUp && (
+              <OverdueCatchUpProgress
+                total={overdueReadingCatchUp.total}
+                current={overdueReadingCatchUp.current}
+                type="reading"
+              />
+            )}
+
+            {showOverdueAudioCatchUp && (
+              <OverdueCatchUpProgress
+                total={overdueAudioCatchUp.total}
+                current={overdueAudioCatchUp.current}
                 type="listening"
               />
             )}

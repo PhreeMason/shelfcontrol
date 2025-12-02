@@ -13,10 +13,12 @@ interface TodaysDeadlines {
   allAudioDeadlines: ReadingDeadlineWithProgress[];
   allReadingDeadlines: ReadingDeadlineWithProgress[];
   allDeadlines: ReadingDeadlineWithProgress[];
+  overdueReadingDeadlines: ReadingDeadlineWithProgress[];
+  overdueAudioDeadlines: ReadingDeadlineWithProgress[];
 }
 
 export const useTodaysDeadlines = (): TodaysDeadlines => {
-  const { activeDeadlines, completedDeadlines } = useDeadlines();
+  const { activeDeadlines, completedDeadlines, overdueDeadlines } = useDeadlines();
 
   const allDeadlines = useMemo(() => {
     const today = dayjs().startOf('day');
@@ -87,11 +89,34 @@ export const useTodaysDeadlines = (): TodaysDeadlines => {
     };
   }, [activeDeadlinesOnly, allDeadlines]);
 
+  // Split overdue deadlines by format
+  const { overdueReadingDeadlines, overdueAudioDeadlines } = useMemo(() => {
+    const overdueReading: ReadingDeadlineWithProgress[] = [];
+    const overdueAudio: ReadingDeadlineWithProgress[] = [];
+
+    if (overdueDeadlines) {
+      overdueDeadlines.forEach(deadline => {
+        if (deadline.format === 'audio') {
+          overdueAudio.push(deadline);
+        } else {
+          overdueReading.push(deadline);
+        }
+      });
+    }
+
+    return {
+      overdueReadingDeadlines: overdueReading,
+      overdueAudioDeadlines: overdueAudio,
+    };
+  }, [overdueDeadlines]);
+
   return {
     audioDeadlines,
     readingDeadlines,
     allAudioDeadlines,
     allReadingDeadlines,
     allDeadlines,
+    overdueReadingDeadlines,
+    overdueAudioDeadlines,
   };
 };

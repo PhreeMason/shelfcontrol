@@ -106,6 +106,9 @@ export const MAPPING = {
   'line.3.horizontal': 'menu',
   'pin': 'push-pin',
   'pin.fill': 'push-pin',
+  'checkmark.circle': 'check-circle-outline',
+  heart: 'favorite-border',
+  'tag.fill': 'label',
 } as IconMapping;
 
 /**
