@@ -1,9 +1,10 @@
-import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
 import { ThemedText } from '@/components/themed/ThemedText';
+import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useThemeColor';
 import { SystemShelf } from '@/types/shelves.types';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { OPACITY } from '@/utils/formatters';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 interface ShelfRowProps {
   shelf: SystemShelf;
@@ -29,9 +30,8 @@ export function ShelfRow({
       style={[
         styles.container,
         {
-          backgroundColor: isSelected ? `${colors.primary}26` : 'transparent',
-          borderWidth: isSelected ? 1 : 0,
-          borderColor: isSelected ? `${colors.primary}4D` : 'transparent',
+          borderWidth: isSelected ? 2 : 0,
+          borderColor: isSelected ? colors.primary : 'transparent',
         },
       ]}
       onPress={onSelect}
@@ -39,7 +39,7 @@ export function ShelfRow({
       <View style={styles.leftContent}>
         <IconSymbol
           name={shelf.icon as IconSymbolName}
-          size={20}
+          size={shelf.id === 'withdrew' && Platform.OS === 'ios' ? 18 : 20}
           color={isSelected ? colors.primary : colors.text}
         />
         <ThemedText
@@ -47,25 +47,24 @@ export function ShelfRow({
           color={isSelected ? 'primary' : 'text'}
         >
           {shelf.name}
-        </ThemedText>
-      </View>
+          {' '}
 
-      <View style={styles.rightContent}>
-        <View
-          style={[
-            styles.countBadge,
-            {
-              backgroundColor: count > 0 ? `${colors.primary}33` : colors.disabled,
-            },
-          ]}
-        >
+        </ThemedText>
           <ThemedText
-            typography="bodySmall"
-            color={count > 0 ? 'primary' : 'textMuted'}
+            typography="labelLarge"
+            color='darkPurple'
+            style={{ 
+              backgroundColor: colors.primary + OPACITY.SUBTLE, 
+              borderRadius: BorderRadius.full,
+              paddingHorizontal: Spacing.xs,
+              paddingVertical: Spacing.xs
+            }}
           >
             {count}
           </ThemedText>
-        </View>
+      </View>
+
+      <View style={styles.rightContent}>
 
         <Pressable
           style={styles.pinButton}
@@ -78,7 +77,7 @@ export function ShelfRow({
           <IconSymbol
             name={isPinned ? 'pin.fill' : 'pin'}
             size={18}
-            color={isPinned ? colors.primary : colors.textMuted}
+            color={isPinned ? colors.urgent : colors.textMuted}
           />
         </Pressable>
       </View>
@@ -107,14 +106,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-  },
-  countBadge: {
-    minWidth: 28,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 2,
-    borderRadius: BorderRadius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   pinButton: {
     transform: [{ rotate: '45deg' }],
