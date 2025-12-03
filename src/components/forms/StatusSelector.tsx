@@ -19,8 +19,8 @@ export const StatusSelector = ({
   const textMutedColor = colors.textMuted;
 
   const statuses = [
-    { key: 'pending', label: 'Pending' },
     { key: 'applied', label: 'Applied' },
+    { key: 'pending', label: 'Pending (Approved)' },
     { key: 'active', label: 'Active' },
   ];
 
@@ -45,7 +45,7 @@ export const StatusSelector = ({
           >
             <ThemedText
               color={isSelected ? 'text' : 'textMuted'}
-              style={[{ fontWeight: '600' }, !isSelected && { opacity: 0.7 }]}
+              style={[{ fontWeight: '600', textAlign: 'center' }, !isSelected && { opacity: 0.7 }]}
             >
               {status.label}
             </ThemedText>
@@ -65,7 +65,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 2,
     borderRadius: BorderRadius.lg,
-    paddingVertical: Spacing.md,
+    padding: Spacing.md,
+    justifyContent: 'center',
     alignItems: 'center',
   },
 });

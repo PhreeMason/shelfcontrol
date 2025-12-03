@@ -247,7 +247,7 @@ export default function PreferencesProvider({ children }: PropsWithChildren) {
         JSON.stringify(show)
       );
     } catch (error) {
-      console.error('Error saving show activity bars preference:', error);
+      console.error('Error saving show activity dots preference:', error);
     }
   };
 

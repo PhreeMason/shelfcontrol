@@ -13,7 +13,7 @@ export const useAvatarPath = (userId: string | undefined) => {
       if (!userId) return null;
       return profileService.getAvatarPath(userId);
     },
-    staleTime: 1000 * 60 * 60 * 24,
+    staleTime: 1000 * 60 * 5, // 5 minutes - avatar updates should reflect quickly
     enabled: !!userId,
   });
 };
@@ -27,7 +27,7 @@ export const useAvatarSignedUrl = (avatarPath: string | null | undefined) => {
       if (!avatarPath) return null;
       return profileService.getAvatarSignedUrl(avatarPath);
     },
-    staleTime: 1000 * 60 * 60 * 24 * 30,
+    staleTime: 1000 * 60 * 60, // 1 hour - signed URLs are valid for 90 days but cache should refresh more often
     enabled: !!avatarPath,
   });
 };

@@ -124,7 +124,7 @@ describe('useProfile hooks', () => {
       expect(mockUseQuery).toHaveBeenCalledWith({
         queryKey: ['avatar', 'url', userId],
         queryFn: expect.any(Function),
-        staleTime: 1000 * 60 * 60 * 24, // 24 hours
+        staleTime: 1000 * 60 * 5, // 5 minutes - avatar updates should reflect quickly
         enabled: true,
       });
     });
@@ -135,7 +135,7 @@ describe('useProfile hooks', () => {
       expect(mockUseQuery).toHaveBeenCalledWith({
         queryKey: ['avatar', 'url', undefined],
         queryFn: expect.any(Function),
-        staleTime: 1000 * 60 * 60 * 24,
+        staleTime: 1000 * 60 * 5, // 5 minutes
         enabled: false,
       });
     });
@@ -184,7 +184,7 @@ describe('useProfile hooks', () => {
       expect(mockUseQuery).toHaveBeenCalledWith({
         queryKey: ['avatar', 'signedUrl', avatarPath],
         queryFn: expect.any(Function),
-        staleTime: 1000 * 60 * 60 * 24 * 30, // 30 days
+        staleTime: 1000 * 60 * 60, // 1 hour - signed URLs are valid for 90 days but cache should refresh more often
         enabled: true,
       });
     });
@@ -195,7 +195,7 @@ describe('useProfile hooks', () => {
       expect(mockUseQuery).toHaveBeenCalledWith({
         queryKey: ['avatar', 'signedUrl', undefined],
         queryFn: expect.any(Function),
-        staleTime: 1000 * 60 * 60 * 24 * 30,
+        staleTime: 1000 * 60 * 60, // 1 hour
         enabled: false,
       });
     });
@@ -206,7 +206,7 @@ describe('useProfile hooks', () => {
       expect(mockUseQuery).toHaveBeenCalledWith({
         queryKey: ['avatar', 'signedUrl', undefined],
         queryFn: expect.any(Function),
-        staleTime: 1000 * 60 * 60 * 24 * 30,
+        staleTime: 1000 * 60 * 60, // 1 hour
         enabled: false,
       });
     });
@@ -594,8 +594,8 @@ describe('useProfile hooks', () => {
       const signedUrlCall = mockUseQuery.mock.calls[2][0];
 
       expect(profileCall.staleTime).toBe(1000 * 60 * 5); // 5 minutes
-      expect(avatarUrlCall.staleTime).toBe(1000 * 60 * 60 * 24); // 24 hours
-      expect(signedUrlCall.staleTime).toBe(1000 * 60 * 60 * 24 * 30); // 30 days
+      expect(avatarUrlCall.staleTime).toBe(1000 * 60 * 5); // 5 minutes - avatar updates should reflect quickly
+      expect(signedUrlCall.staleTime).toBe(1000 * 60 * 60); // 1 hour
     });
 
     it('should handle complex cache invalidation patterns', async () => {

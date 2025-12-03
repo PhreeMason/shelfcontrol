@@ -11,6 +11,7 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -123,6 +124,15 @@ const Typeahead = ({
       ? `No matches found. Tap to create "${query}"`
       : `No matches found. Press Enter to use "${query}"`;
 
+  const isDropdownVisible =
+    shouldShowSuggestions(showSuggestions, filteredSuggestions, isLoading) ||
+    shouldShowNoResults(showSuggestions, query, filteredSuggestions, isLoading);
+
+  const handleDismiss = () => {
+    setShowSuggestions(false);
+    setIsFocused(false);
+  };
+
   return (
     <View style={styles.container}>
       <View
@@ -232,11 +242,27 @@ const Typeahead = ({
           {error}
         </ThemedText>
       )}
+
+      {isDropdownVisible && (
+        <Pressable
+          style={styles.backdrop}
+          onPress={handleDismiss}
+          testID="typeahead-backdrop"
+        />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  backdrop: {
+    position: 'absolute',
+    top: -1000,
+    left: -1000,
+    right: -1000,
+    bottom: -1000,
+    zIndex: 999,
+  },
   container: {
     position: 'relative',
     gap: Spacing.xs,

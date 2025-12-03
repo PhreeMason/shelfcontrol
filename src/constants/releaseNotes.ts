@@ -7,6 +7,16 @@ export interface ReleaseNote {
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
     buildName: 'Fated Mates',
+    version: '1.58.5',
+    features: [
+      'Fixed calendar showing custom dates one day off',
+      'Fixed progress input when entering percentages',
+      'Clarified that Pending and Applied are the same status',
+      'Fixed a bug preventing profile picture uploading',
+    ],
+  },
+  {
+    buildName: 'Fated Mates',
     version: '1.58.0',
     features: [
       'Custom dates on your calendar',

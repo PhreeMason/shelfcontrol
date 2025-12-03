@@ -100,7 +100,7 @@ export const DeadlineTagsSection = ({ deadline }: DeadlineTagsSectionProps) => {
   const excludeTagIds = deadlineTags.map(tag => tag.id);
 
   return (
-    <ThemedView style={styles.section}>
+    <ThemedView style={[styles.section, isAdding && styles.sectionElevated]}>
       <View style={styles.header}>
         <View style={styles.titleColumn}>
           <ThemedText variant="title">Tags</ThemedText>
@@ -232,6 +232,9 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     marginBottom: Spacing.md,
     ...Shadows.subtle,
+  },
+  sectionElevated: {
+    zIndex: 1,
   },
   header: {
     flexDirection: 'row',

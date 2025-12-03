@@ -17,7 +17,7 @@
         "NSCameraUsageDescription": "This app needs access to your camera to let you take a profile picture.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "12"
+      "buildNumber": "13"
     },
     "android": {
       "adaptiveIcon": {

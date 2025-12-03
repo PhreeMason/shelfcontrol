@@ -50,7 +50,7 @@ export const CustomDayComponent: React.FC<CustomDayComponentProps> = ({
   const textStyle = marking?.customStyles?.text;
   const coverImageUrl = marking?.customStyles?.coverImageUrl;
   const activityBars = marking?.customStyles?.activityBars;
-  // Determine if we should show activity bars
+  // Determine if we should show activity dots
   const hasActivityBars = activityBars && activityBars.length > 0;
   const shouldShowBars = showActivityBars && hasActivityBars;
 

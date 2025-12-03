@@ -114,7 +114,9 @@ export function useProgressInputViewModel({
         }
       }
     } else if (isPercentage) {
-      setDisplayValue(percentageFromValue.toString());
+      if (!isFocused) {
+        setDisplayValue(percentageFromValue.toString());
+      }
     } else if (isRemaining) {
       const formattedValue = formatAudiobookTime(remainingTimeFromValue);
       if (!isFocused) {

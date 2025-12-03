@@ -477,6 +477,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 13,
     fontStyle: 'italic',
+    paddingBottom: Spacing.sm,
   },
   contentContainer: {
     gap: Spacing.md,

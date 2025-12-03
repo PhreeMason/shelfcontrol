@@ -3,6 +3,8 @@ import Avatar from '@/components/shared/Avatar';
 import CustomInput from '@/components/shared/CustomInput';
 import { ThemedText, ThemedView } from '@/components/themed';
 import { useTheme } from '@/hooks/useThemeColor';
+import { useUpdateProfile, useUploadAvatar } from '@/hooks/useProfile';
+import { UpdateProfileParams } from '@/services';
 import { analytics } from '@/lib/analytics/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,7 +22,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
-import { BorderRadius, Spacing } from '@/constants/Colors';
+import { BorderRadius, Spacing, Typography } from '@/constants/Colors';
 
 const profileSchema = z.object({
   username: z
@@ -34,7 +36,9 @@ const profileSchema = z.object({
 type ProfileFields = z.infer<typeof profileSchema>;
 
 export default function EditProfile() {
-  const { profile, updateProfile, uploadAvatar } = useAuth();
+  const { profile, session } = useAuth();
+  const { mutateAsync: uploadAvatar } = useUploadAvatar();
+  const { mutateAsync: updateProfile } = useUpdateProfile();
   const [isLoading, setIsLoading] = useState(false);
   const [newAvatarUri, setNewAvatarUri] = useState<string | null>(null);
   const router = useRouter();
@@ -61,7 +65,7 @@ export default function EditProfile() {
   }, [profile, reset]);
 
   const onSavePress = async (data: ProfileFields) => {
-    if (isLoading) return;
+    if (isLoading || !session?.user?.id) return;
 
     setIsLoading(true);
     try {
@@ -69,49 +73,48 @@ export default function EditProfile() {
       let avatarUploaded = false;
 
       if (newAvatarUri) {
-        const { data: uploadedPath, error: uploadError } =
-          await uploadAvatar(newAvatarUri);
-        if (uploadError) {
+        try {
+          const uploadedPath = await uploadAvatar({
+            userId: session.user.id,
+            uri: newAvatarUri,
+          });
+          avatarPath = uploadedPath;
+          avatarUploaded = true;
+        } catch (uploadError) {
           Alert.alert(
             'Error',
-            `Failed to upload avatar: ${uploadError.message}`
+            `Failed to upload avatar: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}`
           );
           setIsLoading(false);
           return;
         }
-        avatarPath = uploadedPath;
-        avatarUploaded = true;
       }
 
-      const updates: any = {
+      const updates: UpdateProfileParams = {
         username: data.username,
         first_name: data.first_name || null,
         last_name: data.last_name || null,
         email: data.email || null,
-        avatar_url: avatarPath,
+        avatar_url: avatarPath ?? null,
       };
 
-      const { error } = await updateProfile(updates);
+      await updateProfile({ profileId: session.user.id, updates });
 
-      if (error) {
-        Alert.alert('Error', error.message);
-      } else {
-        analytics.track('profile_updated', {
-          avatar_changed: avatarUploaded,
-        });
-        Alert.alert('Success', 'Profile updated successfully', [
-          {
-            text: 'OK',
-            onPress: () => {
-              if (router.canGoBack()) {
-                router.back();
-              } else {
-                router.replace(ROUTES.HOME);
-              }
-            },
+      analytics.track('profile_updated', {
+        avatar_changed: avatarUploaded,
+      });
+      Alert.alert('Success', 'Profile updated successfully', [
+        {
+          text: 'OK',
+          onPress: () => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace(ROUTES.HOME);
+            }
           },
-        ]);
-      }
+        },
+      ]);
     } catch (err) {
       console.error('Profile update error:', err);
       Alert.alert('Error', 'An unexpected error occurred');
@@ -201,7 +204,10 @@ export default function EditProfile() {
                 onImageChange={handleImageChange}
                 showIcon={true}
               />
-              <ThemedText style={styles.avatarHint}>
+              <ThemedText
+                typography="bodyMedium"
+                style={[styles.avatarHint, { color: colors.textSecondary }]}
+              >
                 Tap to change profile picture
               </ThemedText>
             </ThemedView>
@@ -210,7 +216,7 @@ export default function EditProfile() {
               <ThemedView style={styles.inputGroup}>
                 <ThemedText style={styles.label}>
                   Username{' '}
-                  <ThemedText style={{ color: '#dc2626' }}>*</ThemedText>
+                  <ThemedText color="error">*</ThemedText>
                 </ThemedText>
                 <CustomInput
                   control={control}
@@ -276,9 +282,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   saveText: {
+    ...Typography.titleMedium,
     color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
   },
   saveTextDisabled: {
     color: 'rgba(255, 255, 255, 0.5)',
@@ -295,8 +300,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   avatarHint: {
-    fontSize: 14,
-    color: '#666',
     marginTop: Spacing.md,
     textAlign: 'center',
   },
@@ -308,8 +311,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   label: {
-    fontSize: 16,
-    fontWeight: '600',
+    ...Typography.titleMedium,
     marginBottom: Spacing.sm,
   },
 });

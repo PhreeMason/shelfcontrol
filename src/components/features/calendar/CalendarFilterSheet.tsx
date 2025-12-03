@@ -273,7 +273,7 @@ export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
               </ThemedText>
               <View style={styles.toggleRow}>
                 <ThemedText typography="labelLarge">
-                  Show activity bars
+                  Show activity dots
                 </ThemedText>
                 <Switch
                   value={showActivityBars}

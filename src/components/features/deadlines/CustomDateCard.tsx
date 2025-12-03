@@ -3,7 +3,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import { DeadlineCustomDate } from '@/types/customDates.types';
-import dayjs from 'dayjs';
+import { parseServerDateOnly } from '@/utils/dateNormalization';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 interface CustomDateCardProps {
@@ -19,7 +19,7 @@ export const CustomDateCard = ({
 }: CustomDateCardProps) => {
   const { colors } = useTheme();
 
-  const formattedDate = dayjs(customDate.date).format('MMM D, YYYY');
+  const formattedDate = parseServerDateOnly(customDate.date).format('MMM D, YYYY');
 
   return (
     <ThemedView style={[styles.card, { borderColor: colors.border }]}>

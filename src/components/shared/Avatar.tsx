@@ -1,6 +1,7 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useAvatarPath, useAvatarSignedUrl } from '@/hooks/useProfile';
+import { useTheme } from '@/hooks/useThemeColor';
 import { useAuth } from '@/providers/AuthProvider';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useMemo } from 'react';
@@ -31,6 +32,7 @@ const Avatar: React.FC<AvatarProps> = ({
   showIcon = false,
 }) => {
   const { session } = useAuth();
+  const { colors } = useTheme();
 
   const isAvatarUrlExternal = isExternalUrl(avatarUrl);
 
@@ -56,17 +58,7 @@ const Avatar: React.FC<AvatarProps> = ({
   const pickImage = async () => {
     if (!editable || !onImageChange) return;
 
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (!permissionResult.granted) {
-      Alert.alert(
-        'Permission Required',
-        'Please grant permission to access your photo library to change your profile picture.'
-      );
-      return;
-    }
-
+    // Show action sheet first, request permissions only when user makes a choice
     Alert.alert('Change Profile Picture', 'Choose an option', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Take Photo', onPress: () => openCamera() },
@@ -75,12 +67,13 @@ const Avatar: React.FC<AvatarProps> = ({
   };
 
   const openCamera = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    const { granted } = await ImagePicker.requestCameraPermissionsAsync();
 
-    if (!permissionResult.granted) {
+    if (!granted) {
       Alert.alert(
-        'Permission Required',
-        'Please grant camera permission to take a photo.'
+        'Camera Permission Required',
+        'Please enable camera access in Settings to take a photo.',
+        [{ text: 'OK' }]
       );
       return;
     }
@@ -97,6 +90,17 @@ const Avatar: React.FC<AvatarProps> = ({
   };
 
   const openImageLibrary = async () => {
+    const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!granted) {
+      Alert.alert(
+        'Photo Library Permission Required',
+        'Please enable photo library access in Settings to choose a photo.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [1, 1],
@@ -123,7 +127,7 @@ const Avatar: React.FC<AvatarProps> = ({
       source={{ uri: displayUrl }}
       style={[
         styles.image,
-        { width: size, height: size, borderRadius: size / 2 },
+        { width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surfaceVariant },
       ]}
       resizeMode="cover"
     />
@@ -131,13 +135,13 @@ const Avatar: React.FC<AvatarProps> = ({
     <View
       style={[
         styles.placeholder,
-        { width: size, height: size, borderRadius: size / 2 },
+        { width: size, height: size, borderRadius: size / 2, backgroundColor: colors.textMuted },
       ]}
     >
       {showIcon ? (
-        <IconSymbol name="person.fill" size={size * 0.5} color="#fff" />
+        <IconSymbol name="person.fill" size={size * 0.5} color={colors.textInverse} />
       ) : (
-        <ThemedText style={[styles.initials, { fontSize: size * 0.4 }]}>
+        <ThemedText style={[styles.initials, { fontSize: size * 0.4, color: colors.textInverse }]}>
           {getInitials()}
         </ThemedText>
       )}
@@ -148,8 +152,8 @@ const Avatar: React.FC<AvatarProps> = ({
     return (
       <TouchableOpacity onPress={pickImage} style={containerStyle}>
         {content}
-        <View style={styles.editOverlay}>
-          <IconSymbol name="camera.fill" size={size * 0.25} color="#fff" />
+        <View style={[styles.editOverlay, { backgroundColor: colors.primary, borderColor: colors.textInverse }]}>
+          <IconSymbol name="camera.fill" size={size * 0.25} color={colors.textInverse} />
         </View>
       </TouchableOpacity>
     );
@@ -162,30 +166,24 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
   },
-  image: {
-    backgroundColor: '#f0f0f0',
-  },
+  image: {},
   placeholder: {
-    backgroundColor: '#6B7280',
     justifyContent: 'center',
     alignItems: 'center',
   },
   initials: {
-    color: '#fff',
     fontWeight: 'bold',
   },
   editOverlay: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '#007AFF',
     borderRadius: 20,
     width: 40,
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: '#fff',
   },
 });
 
