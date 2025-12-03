@@ -3,6 +3,7 @@ import {
   calculateAudioTotals,
   calculateCurrentProgressForDeadlines,
   calculateDeadlineTotals,
+  calculateOverdueCatchUpTotals,
   calculateReadingTotals,
   calculateTodaysAudioTotals,
   calculateTodaysGoalTotals,
@@ -1008,6 +1009,448 @@ describe('deadlineAggregationUtils', () => {
 
       it('should round pages', () => {
         expect(formatDailyGoalDisplay(75.4, 'eBook')).toBe('75 pages');
+      });
+    });
+  });
+
+  describe('calculateOverdueCatchUpTotals', () => {
+    const createOverdueDeadline = (
+      id: string,
+      format: 'audio' | 'physical' | 'eBook' = 'physical'
+    ): ReadingDeadlineWithProgress => ({
+      ...createMockDeadline(id, format),
+      deadline_date: '2024-01-01', // Past date = overdue
+    });
+
+    const mockGetProgress =
+      (progressMap: Record<string, number>) =>
+      (deadline: ReadingDeadlineWithProgress) =>
+        progressMap[deadline.id] ?? 0;
+
+    describe('basic capacity calculations', () => {
+      it('should return zero capacity when pace equals active goal', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          100, // userPace
+          100, // todaysActiveGoal
+          100, // todaysActiveProgress
+          () => 0
+        );
+
+        expect(result.total).toBe(0);
+        expect(result.current).toBe(0);
+        expect(result.hasCapacity).toBe(false);
+      });
+
+      it('should return zero capacity when pace is less than active goal', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          80, // userPace less than goal
+          100, // todaysActiveGoal
+          100, // todaysActiveProgress
+          () => 0
+        );
+
+        expect(result.total).toBe(0);
+        expect(result.current).toBe(0);
+        expect(result.hasCapacity).toBe(false);
+      });
+
+      it('should calculate spare capacity when pace exceeds active goal', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150, // userPace
+          100, // todaysActiveGoal
+          100, // todaysActiveProgress (exactly at goal)
+          () => 0
+        );
+
+        expect(result.total).toBe(50); // 150 - 100 = 50
+        expect(result.current).toBe(0);
+        expect(result.hasCapacity).toBe(true);
+      });
+    });
+
+    describe('fixed goal calculation (pace - activeGoal)', () => {
+      it('should keep goal fixed regardless of active reading progress', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150, // userPace (start-of-day)
+          100, // todaysActiveGoal
+          105, // todaysActiveProgress (5 over goal) - no longer affects goal
+          () => 0
+        );
+
+        // Goal is always pace - activeGoal = 50
+        expect(result.total).toBe(50);
+        expect(result.hasCapacity).toBe(true);
+      });
+
+      it('should keep goal fixed even when active reading uses all pace', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150, // userPace (start-of-day)
+          100, // todaysActiveGoal
+          150, // todaysActiveProgress (uses all pace) - no longer affects goal
+          () => 0
+        );
+
+        // Goal is always pace - activeGoal = 50
+        expect(result.total).toBe(50);
+        expect(result.hasCapacity).toBe(true);
+      });
+
+      it('should keep goal fixed even when active reading exceeds pace', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150, // userPace (start-of-day)
+          100, // todaysActiveGoal
+          200, // todaysActiveProgress (exceeds pace) - no longer affects goal
+          () => 0
+        );
+
+        // Goal is always pace - activeGoal = 50
+        expect(result.total).toBe(50);
+        expect(result.hasCapacity).toBe(true);
+      });
+    });
+
+    describe('overdue progress tracking', () => {
+      it('should track progress on overdue books', () => {
+        const overdueDeadlines = [createOverdueDeadline('1')];
+        const result = calculateOverdueCatchUpTotals(
+          overdueDeadlines,
+          150,
+          100,
+          100,
+          mockGetProgress({ '1': 40 })
+        );
+
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(40);
+      });
+
+      it('should sum progress across multiple overdue books', () => {
+        const overdueDeadlines = [
+          createOverdueDeadline('1'),
+          createOverdueDeadline('2'),
+        ];
+        const result = calculateOverdueCatchUpTotals(
+          overdueDeadlines,
+          150,
+          100,
+          100,
+          mockGetProgress({ '1': 20, '2': 15 })
+        );
+
+        expect(result.current).toBe(35);
+      });
+
+      it('should ignore negative progress values', () => {
+        const overdueDeadlines = [createOverdueDeadline('1')];
+        const result = calculateOverdueCatchUpTotals(
+          overdueDeadlines,
+          150,
+          100,
+          100,
+          () => -10
+        );
+
+        expect(result.current).toBe(0);
+      });
+    });
+
+    describe('progress can exceed fixed goal', () => {
+      // Goal is always pace - activeGoal, progress can exceed it
+
+      it('should show progress under goal', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150, // pace (start-of-day)
+          100, // activeGoal
+          115, // activeProgress - no longer affects goal
+          mockGetProgress({ '1': 30 })
+        );
+
+        // Goal is always 50, progress is 30
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(30);
+      });
+
+      it('should show progress exceeding goal', () => {
+        const overdueDeadlines = [createOverdueDeadline('1')];
+        const result = calculateOverdueCatchUpTotals(
+          overdueDeadlines,
+          150, // pace (start-of-day)
+          100, // activeGoal
+          115, // activeProgress - no longer affects goal
+          mockGetProgress({ '1': 70 })
+        );
+
+        // Goal is always 50, progress is 70
+        // Shows 70/50 -> "+20 pages extra"
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(70);
+      });
+
+      it('should show progress exactly at goal', () => {
+        const overdueDeadlines = [createOverdueDeadline('1')];
+        const result = calculateOverdueCatchUpTotals(
+          overdueDeadlines,
+          150, // pace (start-of-day)
+          100, // activeGoal
+          105, // activeProgress - no longer affects goal
+          mockGetProgress({ '1': 50 })
+        );
+
+        // Goal is always 50, progress is 50
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(50);
+      });
+    });
+
+    describe('user scenario walkthrough (with fixed start-of-day pace)', () => {
+      // Full walkthrough - goal is always pace - activeGoal = 50
+      const pace = 150; // start-of-day pace (fixed)
+      const activeGoal = 100;
+
+      it('step 1: user meets active goal, overdue goal appears', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          pace,
+          activeGoal,
+          100, // exactly at goal
+          () => 0
+        );
+
+        // Goal is always 50
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(0);
+        expect(result.hasCapacity).toBe(true);
+      });
+
+      it('step 2: user reads 40 overdue pages', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          pace,
+          activeGoal,
+          100,
+          mockGetProgress({ '1': 40 })
+        );
+
+        // Goal is always 50
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(40);
+      });
+
+      it('step 3: user reads 5 more active pages (105 total) - goal stays fixed', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          pace,
+          activeGoal,
+          105, // active progress no longer affects goal
+          mockGetProgress({ '1': 40 })
+        );
+
+        // Goal is always 50 (fixed at start of day)
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(40);
+      });
+
+      it('step 4: user reads 10 more active pages (115 total) - goal still fixed', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          pace,
+          activeGoal,
+          115, // active progress no longer affects goal
+          mockGetProgress({ '1': 40 })
+        );
+
+        // Goal is always 50 (fixed at start of day)
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(40);
+      });
+
+      it('step 5: user reads 60 overdue pages - exceeds goal', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          pace,
+          activeGoal,
+          100,
+          mockGetProgress({ '1': 60 })
+        );
+
+        // Goal is always 50, progress can exceed it
+        // Shows 60/50 -> "+10 pages extra"
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(60);
+      });
+    });
+
+    describe('documented scenarios (with fixed start-of-day pace)', () => {
+      // Goal is now simply pace - activeGoal (fixed at start of day)
+
+      it('scenario 1: at active goal, some overdue progress', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150, // start-of-day pace
+          100, // activeGoal
+          100, // activeProgress (no longer affects goal)
+          mockGetProgress({ '1': 40 })
+        );
+
+        // Goal is always 50 (pace - activeGoal)
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(40);
+      });
+
+      it('scenario 2: active overflow, goal stays fixed', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150, // start-of-day pace
+          100, // activeGoal
+          120, // activeProgress (no longer affects goal)
+          mockGetProgress({ '1': 30 })
+        );
+
+        // Goal is always 50 (pace - activeGoal)
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(30);
+      });
+
+      it('scenario 3: active overflow, progress exceeds goal', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150, // start-of-day pace
+          100, // activeGoal
+          120, // activeProgress (no longer affects goal)
+          mockGetProgress({ '1': 70 })
+        );
+
+        // Goal is always 50, progress exceeds it
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(70);
+      });
+
+      it('scenario 4: from actual logs - fixed goal', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          144, // start-of-day pace
+          82, // activeGoal
+          142, // activeProgress (no longer affects goal)
+          mockGetProgress({ '1': 129 })
+        );
+
+        // Goal is always 62 (144 - 82), progress exceeds it
+        expect(result.total).toBe(62);
+        expect(result.current).toBe(129);
+      });
+
+      it('scenario 5: massive active overflow, goal stays fixed', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150, // start-of-day pace
+          100, // activeGoal
+          200, // activeProgress (no longer affects goal)
+          mockGetProgress({ '1': 50 })
+        );
+
+        // Goal is always 50 (pace - activeGoal)
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(50);
+      });
+
+      it('scenario 6: no overdue progress yet', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150, // start-of-day pace
+          100, // activeGoal
+          100, // activeProgress
+          () => 0
+        );
+
+        // Goal is always 50 (pace - activeGoal)
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(0);
+      });
+
+      it('scenario 7: exactly at overdue capacity', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150, // start-of-day pace
+          100, // activeGoal
+          100, // activeProgress
+          mockGetProgress({ '1': 50 })
+        );
+
+        // Goal is always 50 (pace - activeGoal)
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(50);
+      });
+    });
+
+    describe('edge cases', () => {
+      it('should handle empty overdue deadlines array', () => {
+        const result = calculateOverdueCatchUpTotals([], 150, 100, 100, () => 0);
+
+        expect(result.total).toBe(50);
+        expect(result.current).toBe(0);
+        expect(result.hasCapacity).toBe(true);
+      });
+
+      it('should handle zero pace', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          0,
+          100,
+          100,
+          () => 0
+        );
+
+        expect(result.total).toBe(0);
+        expect(result.hasCapacity).toBe(false);
+      });
+
+      it('should handle zero active goal', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150,
+          0, // no active goal
+          0,
+          () => 0
+        );
+
+        // All pace is spare capacity
+        expect(result.total).toBe(150);
+        expect(result.hasCapacity).toBe(true);
+      });
+
+      it('should round results', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1')],
+          150.7,
+          100.3,
+          100.3,
+          () => 0
+        );
+
+        // 150.7 - 100.3 = 50.4, rounded to 50
+        expect(result.total).toBe(50);
+      });
+    });
+
+    describe('audio format (minutes)', () => {
+      it('should work the same for audio deadlines', () => {
+        const result = calculateOverdueCatchUpTotals(
+          [createOverdueDeadline('1', 'audio')],
+          120, // 2 hours pace
+          60, // 1 hour goal
+          60, // at goal
+          () => 0
+        );
+
+        expect(result.total).toBe(60); // 60 minutes spare
+        expect(result.hasCapacity).toBe(true);
       });
     });
   });

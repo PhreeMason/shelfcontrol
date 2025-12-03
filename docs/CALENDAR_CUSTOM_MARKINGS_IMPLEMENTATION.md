@@ -115,7 +115,7 @@ Uses existing theme colors with opacity - **no new color tokens needed**:
 | Completed | `colors.successGreen + OPACITY.CALENDAR` | `colors.successGreen` | `colors.successGreen` |
 | On Track | `colors.good + OPACITY.CALENDAR` | `colors.good` | `colors.good` |
 | Tight | `colors.approaching + OPACITY.CALENDAR` | `colors.approaching` | `colors.approaching` |
-| Urgent/Overdue | `colors.urgent + OPACITY.CALENDAR` | `colors.urgent` | `colors.urgent` |
+| Needs Replanning | `colors.urgent + OPACITY.CALENDAR` | `colors.urgent` | `colors.urgent` |
 | Activity Only | `ACTIVITY_DOT_COLOR + OPACITY.SUBTLE` | (default) | N/A |
 | With Cover | Cover image | Black (#000000) | Urgency color (2px) |
 

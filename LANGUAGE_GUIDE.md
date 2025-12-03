@@ -5,7 +5,6 @@ Terms Users Say (ALWAYS Use)
 ✅ days left
 ✅ pages per day
 ✅ on time
-✅ overdue
 ✅ pub date
 ✅ comfortable pace
 ✅ staying on track
@@ -18,6 +17,7 @@ Terms Users Say (ALWAYS Use)
 ✅ show
 
 Terms Users DON'T Say (NEVER Use)
+❌ overdue
 ❌ deadline
 ❌ realistic / reality
 ❌ calculations

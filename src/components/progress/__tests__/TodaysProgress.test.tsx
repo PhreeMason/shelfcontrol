@@ -16,6 +16,7 @@ jest.mock('@/hooks/useThemeColor', () => ({
       text: '#000000',
       primary: '#007AFF',
       secondary: '#5856D6',
+      accent: '#E8B4B8',
     },
   }),
 }));
@@ -226,14 +227,16 @@ describe('TodaysProgress', () => {
       render(<TodaysProgress {...props} />);
 
       const progressBar = screen.getByTestId('linear-progress-bar');
-      expect(progressBar.props['data-gradient']).toBe('#815ac0,#4b2e83');
+      // At 100%: uses [colors.primary, '#4b2e83']
+      expect(progressBar.props['data-gradient']).toBe('#007AFF,#4b2e83');
     });
 
     it('should use theme colors when under 100%', () => {
       render(<TodaysProgress {...progressProps} />); // 50%
 
       const progressBar = screen.getByTestId('linear-progress-bar');
-      expect(progressBar.props['data-gradient']).toBe('#E8C2B9,#007AFF');
+      // Under 100%: uses [colors.accent, colors.primary]
+      expect(progressBar.props['data-gradient']).toBe('#E8B4B8,#007AFF');
     });
 
     it('should pass background color from utility function', () => {

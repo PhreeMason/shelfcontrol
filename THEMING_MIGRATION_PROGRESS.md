@@ -753,7 +753,7 @@ colors.error         // Error state
 colors.pending      // Activity events (#9CA3AF)
 colors.good         // On track (#7a5a8c)
 colors.approaching  // Tight deadline (#d4a46a)
-colors.urgent       // Urgent/overdue (#c8696e)
+colors.urgent       // Needs Replanning (#c8696e)
 ```
 
 ---

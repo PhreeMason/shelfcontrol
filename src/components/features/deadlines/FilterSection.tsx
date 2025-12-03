@@ -173,7 +173,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 <ThemedButton
                   title={
                     shelfId === 'applied' ||
-                    shelfId === 'active' ||
                     shelfId === 'pending'
                       ? shelf.name
                       : `${shelf.name} (${shelfCounts[shelfId]})`

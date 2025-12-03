@@ -109,6 +109,7 @@ export const MAPPING = {
   'checkmark.circle': 'check-circle-outline',
   heart: 'favorite-border',
   'tag.fill': 'label',
+  'arrow.trianglehead.counterclockwise': 'rotate-left',
 } as IconMapping;
 
 /**

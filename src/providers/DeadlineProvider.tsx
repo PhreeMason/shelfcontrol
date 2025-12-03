@@ -47,7 +47,9 @@ import {
 } from '@/utils/deadlineUtils';
 import {
   calculateUserListeningPace,
+  calculateUserListeningPaceAsOfStartOfDay,
   calculateUserPace,
+  calculateUserPaceAsOfStartOfDay,
   formatPaceDisplay,
   PaceBasedStatus,
   UserListeningPaceData,
@@ -81,6 +83,8 @@ interface DeadlineContextType {
 
   userPaceData: UserPaceData;
   userListeningPaceData: UserListeningPaceData;
+  userPaceDataAsOfStartOfDay: UserPaceData;
+  userListeningPaceDataAsOfStartOfDay: UserListeningPaceData;
   addDeadline: (
     params: {
       deadlineDetails: Omit<ReadingDeadlineInsert, 'user_id'>;
@@ -280,6 +284,15 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
 
   const userListeningPaceData = useMemo(() => {
     return calculateUserListeningPace(deadlines);
+  }, [deadlines]);
+
+  // Pace as of start of day (excluding today's progress) for overdue catch-up calculations
+  const userPaceDataAsOfStartOfDay = useMemo(() => {
+    return calculateUserPaceAsOfStartOfDay(deadlines);
+  }, [deadlines]);
+
+  const userListeningPaceDataAsOfStartOfDay = useMemo(() => {
+    return calculateUserListeningPaceAsOfStartOfDay(deadlines);
   }, [deadlines]);
 
   const getDeadlinePaceStatus = useCallback(
@@ -708,6 +721,8 @@ export const DeadlineProvider: React.FC<DeadlineProviderProps> = ({
 
     userPaceData,
     userListeningPaceData,
+    userPaceDataAsOfStartOfDay,
+    userListeningPaceDataAsOfStartOfDay,
     addDeadline,
     updateDeadline,
     updateDeadlineDate,

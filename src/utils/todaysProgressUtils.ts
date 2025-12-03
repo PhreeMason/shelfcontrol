@@ -134,7 +134,7 @@ export const getProgressBackgroundColor = (
 };
 
 /**
- * Message thresholds for overdue catch-up progress percentage
+ * Message thresholds for overdue Catch Up progress percentage
  */
 const overdueMessageForProgressPercentage: Record<number, string> = {
   100: 'Caught up!',
@@ -145,7 +145,7 @@ const overdueMessageForProgressPercentage: Record<number, string> = {
 };
 
 /**
- * Formats the display value for overdue catch-up current/total progress
+ * Formats the display value for overdue Catch Up current/total progress
  * @param current - Current progress value
  * @param total - Total capacity available
  * @param isListening - Whether this is listening (audio) or reading format
@@ -165,7 +165,7 @@ export const getOverdueDisplayValue = (
 };
 
 /**
- * Formats the remaining capacity text for overdue catch-up
+ * Formats the remaining capacity text for overdue Catch Up
  * @param current - Current progress value
  * @param total - Total capacity available
  * @param isListening - Whether this is listening (audio) or reading format
@@ -178,8 +178,17 @@ export const getOverdueRemainingText = (
 ): string => {
   const remaining = total - current;
 
-  if (remaining <= 0) {
+  if (remaining === 0) {
     return 'Goal reached!';
+  }
+
+  if (remaining < 0) {
+    const extra = Math.abs(remaining);
+    if (isListening) {
+      const extraFormatted = formatProgressDisplay('audio', extra);
+      return `+${extraFormatted} extra`;
+    }
+    return `+${extra} pages extra`;
   }
 
   if (isListening) {
@@ -190,7 +199,7 @@ export const getOverdueRemainingText = (
 };
 
 /**
- * Gets the encouragement message for overdue catch-up based on progress percentage
+ * Gets the encouragement message for overdue Catch Up based on progress percentage
  * @param progressPercentage - Progress percentage (0-infinity)
  * @returns Encouragement message string
  */

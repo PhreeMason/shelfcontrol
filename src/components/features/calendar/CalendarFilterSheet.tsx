@@ -47,7 +47,7 @@ const DUE_DATE_FILTERS: FilterConfig[] = [
   },
   { type: 'deadline_due_good', label: 'On Track', colorKey: 'good' },
   { type: 'deadline_due_approaching', label: 'Tight', colorKey: 'approaching' },
-  { type: 'deadline_due_urgent', label: 'Urgent/Overdue', colorKey: 'urgent' },
+  { type: 'deadline_due_urgent', label: 'Needs Replanning', colorKey: 'urgent' },
   { type: 'custom_date', label: 'Important Dates' },
 ];
 

@@ -63,9 +63,9 @@ export function useActivityGroup() {
         // Active statuses that can be overdue
         const activeStatuses = ['reading', 'pending', 'paused'];
 
-        // If overdue and still in an active status, show "Past due"
+        // If overdue and still in an active status, show "Overdue"
         if (isOverdue && activeStatuses.includes(status)) {
-          return `Status: Past due`;
+          return `Status: Overdue`;
         }
 
         // Otherwise show the actual status

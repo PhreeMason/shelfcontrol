@@ -47,7 +47,7 @@ describe('CalendarFilterSheet', () => {
     expect(screen.getByText('Completed')).toBeTruthy();
     expect(screen.getByText('On Track')).toBeTruthy();
     expect(screen.getByText('Tight')).toBeTruthy();
-    expect(screen.getByText('Urgent/Overdue')).toBeTruthy();
+    expect(screen.getByText('Needs Replanning')).toBeTruthy();
     // Activity event filters
     expect(screen.getByText('Activity Events')).toBeTruthy();
     expect(screen.getByText('New Books Added')).toBeTruthy();
@@ -79,7 +79,7 @@ describe('CalendarFilterSheet', () => {
       />
     );
 
-    fireEvent.press(screen.getByText('Urgent/Overdue'));
+    fireEvent.press(screen.getByText('Needs Replanning'));
     expect(mockOnExcludedActivitiesChange).toHaveBeenCalledWith([]);
   });
 

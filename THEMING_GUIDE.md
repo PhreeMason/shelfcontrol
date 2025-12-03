@@ -111,7 +111,7 @@ All typography tokens include proper `lineHeight` to prevent this issue.
 | **Urgency** | `pending` | #9CA3AF | #6B7280 | Pending/neutral |
 | | `good` | #7a5a8c | #8B5CF6 | On track |
 | | `approaching` | #d4a46a | #F59E0B | Tight deadline |
-| | `urgent` | #c8696e | #EF4444 | Urgent/overdue |
+| | `urgent` | #c8696e | #EF4444 | Needs Replanning |
 
 ### Color Token Usage
 

@@ -149,7 +149,7 @@ export function ShelvesPanel({ visible, onClose }: ShelvesPanelProps) {
               <View style={[styles.header, { paddingTop: insets.top + Spacing.lg }]}>
                 <View style={styles.headerContent}>
                   <ThemedText typography="titleLarge">Your Shelves</ThemedText>
-                  <ThemedText typography="bodySmall" color="textMuted">
+                  <ThemedText typography="bodySmall" color="secondary">
                     {shelfCounts.all} books tracked
                   </ThemedText>
                 </View>
@@ -172,38 +172,47 @@ export function ShelvesPanel({ visible, onClose }: ShelvesPanelProps) {
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
               >
-                {/* Section Label */}
-                <ThemedText typography="labelSmall" color="primary" style={styles.sectionLabel}>
-                  READING STATUS
-                </ThemedText>
-
-                {visibleShelves.map((shelf) => (
-                  <ShelfRow
-                    key={shelf.id}
-                    shelf={shelf}
-                    count={shelfCounts[shelf.id]}
-                    isSelected={selectedShelf === shelf.id}
-                    isPinned={sortedPinnedShelves.includes(shelf.id)}
-                    onSelect={() => handleSelectShelf(shelf.id)}
-                    onTogglePin={() => toggleShelfPin(shelf.id)}
-                  />
-                ))}
-
-                {/* Custom Shelves Section */}
                 <LinearGradient
-                  colors={['transparent', colors.accent, 'transparent']}
+                  colors={[colors.backgroundAccent, colors.backgroundPrimary]}
+                  style={{ flex: 1 }}
                   start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={[styles.divider, styles.sectionDivider]}
-                />
+                  end={{ x: 1, y: 1 }}
+                >
 
-                <ThemedText typography="labelSmall" color="accent" style={styles.sectionLabel}>
-                  YOUR SHELVES
-                </ThemedText>
+                  {/* Section Label */}
+                  <ThemedText typography="labelSmall" color="textOnPrimary" style={styles.sectionLabel}>
+                    READING STATUS
+                  </ThemedText>
 
-                <ThemedText typography="bodyMedium" color="textMuted" style={styles.emptyState}>
-                  No custom shelves yet
-                </ThemedText>
+                  {visibleShelves.map((shelf) => (
+                    <ShelfRow
+                      key={shelf.id}
+                      shelf={shelf}
+                      count={shelfCounts[shelf.id]}
+                      isSelected={selectedShelf === shelf.id}
+                      isPinned={sortedPinnedShelves.includes(shelf.id)}
+                      onSelect={() => handleSelectShelf(shelf.id)}
+                      onTogglePin={() => toggleShelfPin(shelf.id)}
+                    />
+                  ))}
+
+                  {/* Custom Shelves Section */}
+                  <LinearGradient
+                    colors={['transparent', colors.accent, 'transparent']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={[styles.divider, styles.sectionDivider]}
+                  />
+
+                  <ThemedText typography="labelSmall" color="textOnPrimary" style={styles.sectionLabel}>
+                    YOUR SHELVES
+                  </ThemedText>
+
+                  <ThemedText typography="bodyMedium" color="textOnPrimary" style={styles.emptyState}>
+                    No custom shelves yet
+                  </ThemedText>
+                </LinearGradient>
+
               </ScrollView>
 
               {/* Create Button */}
@@ -290,7 +299,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 80, // Space for FAB
+    // paddingBottom: 80, // Space for FAB
   },
   emptyState: {
     paddingHorizontal: Spacing.lg,

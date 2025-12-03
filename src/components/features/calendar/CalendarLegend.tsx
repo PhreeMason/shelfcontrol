@@ -84,13 +84,13 @@ export const CalendarLegend: React.FC = () => {
       {/* Legend Content */}
       {isExpanded && (
         <View style={styles.content}>
-          <LegendItem color={colors.successGreen} label="Completed due date" />
-          <LegendItem color={colors.good} label="On track due date" />
-          <LegendItem color={colors.approaching} label="Tight due date" />
-          <LegendItem color={colors.urgent} label="Urgent/Overdue due date" />
+          <LegendItem color={colors.successGreen} label="Completed" />
+          <LegendItem color={colors.good} label="On Track" />
+          <LegendItem color={colors.approaching} label="Tight" />
+          <LegendItem color={colors.urgent} label="Needs Replanning" />
           <LegendItem
             color={ACTIVITY_DOT_COLOR}
-            label="Activity event"
+            label="Activity Event"
             opacity={OPACITY.SUBTLE}
           />
 
@@ -114,7 +114,7 @@ export const CalendarLegend: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: Spacing.md,
+    marginVertical: Spacing.sm,
     overflow: 'hidden',
   },
   header: {

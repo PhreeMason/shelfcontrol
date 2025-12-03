@@ -63,7 +63,7 @@ export const DeadlineInFlightItem: React.FC<DeadlineInFlightItemProps> = ({
   if (daysLeft === 0) {
     daysText = 'Due today';
   } else if (daysLeft < 0) {
-    daysText = 'Overdue';
+    daysText = 'Past due';
   } else {
     daysText = `${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`;
   }

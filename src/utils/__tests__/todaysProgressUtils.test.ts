@@ -3,6 +3,9 @@ import {
   getRemainingText,
   getEncouragementMessage,
   getProgressBackgroundColor,
+  getOverdueRemainingText,
+  getOverdueEncouragementMessage,
+  getOverdueDisplayValue,
 } from '../todaysProgressUtils';
 
 // Mock the formatProgressDisplay function
@@ -297,6 +300,161 @@ describe('todaysProgressUtils', () => {
         const result = getProgressBackgroundColor(percentage);
         // Check background color has transparency and is valid hex
         expect(result).toMatch(/^#[0-9a-fA-F]{6}99$/);
+      });
+    });
+  });
+
+  describe('getOverdueRemainingText', () => {
+    describe('Reading format', () => {
+      it('should return pages available when under goal', () => {
+        const result = getOverdueRemainingText(150, 300, false);
+        expect(result).toBe('150 pages available');
+      });
+
+      it('should return Goal reached at exactly 100%', () => {
+        const result = getOverdueRemainingText(100, 100, false);
+        expect(result).toBe('Goal reached!');
+      });
+
+      it('should return pages extra when over goal', () => {
+        const result = getOverdueRemainingText(350, 300, false);
+        expect(result).toBe('+50 pages extra');
+      });
+
+      it('should handle 1 page extra', () => {
+        const result = getOverdueRemainingText(101, 100, false);
+        expect(result).toBe('+1 pages extra');
+      });
+
+      it('should handle large extra amounts', () => {
+        const result = getOverdueRemainingText(1500, 1000, false);
+        expect(result).toBe('+500 pages extra');
+      });
+    });
+
+    describe('Listening format', () => {
+      it('should return time available when under goal', () => {
+        const result = getOverdueRemainingText(120, 180, true);
+        expect(result).toBe('1h 0m available');
+      });
+
+      it('should return Goal reached at exactly 100%', () => {
+        const result = getOverdueRemainingText(60, 60, true);
+        expect(result).toBe('Goal reached!');
+      });
+
+      it('should return time extra when over goal', () => {
+        const result = getOverdueRemainingText(180, 120, true);
+        expect(result).toBe('+1h 0m extra');
+      });
+
+      it('should return minutes only extra when under 1 hour', () => {
+        const result = getOverdueRemainingText(105, 60, true);
+        expect(result).toBe('+45m extra');
+      });
+
+      it('should handle large extra time', () => {
+        const result = getOverdueRemainingText(1500, 60, true);
+        expect(result).toBe('+24h 0m extra');
+      });
+    });
+  });
+
+  describe('getOverdueEncouragementMessage', () => {
+    it('should return "Bonus reading today" for 0% progress', () => {
+      const result = getOverdueEncouragementMessage(0);
+      expect(result).toBe('Bonus reading today');
+    });
+
+    it('should return "Keep going!" for 20% progress', () => {
+      const result = getOverdueEncouragementMessage(20);
+      expect(result).toBe('Keep going!');
+    });
+
+    it('should return "Making progress!" for 50% progress', () => {
+      const result = getOverdueEncouragementMessage(50);
+      expect(result).toBe('Making progress!');
+    });
+
+    it('should return "Almost there!" for 75% progress', () => {
+      const result = getOverdueEncouragementMessage(75);
+      expect(result).toBe('Almost there!');
+    });
+
+    it('should return "Caught up!" for 100% progress', () => {
+      const result = getOverdueEncouragementMessage(100);
+      expect(result).toBe('Caught up!');
+    });
+
+    it('should return "Caught up!" for progress over 100%', () => {
+      const result = getOverdueEncouragementMessage(150);
+      expect(result).toBe('Caught up!');
+    });
+
+    it('should handle boundary values', () => {
+      expect(getOverdueEncouragementMessage(19.99)).toBe('Bonus reading today');
+      expect(getOverdueEncouragementMessage(20)).toBe('Keep going!');
+      expect(getOverdueEncouragementMessage(49.99)).toBe('Keep going!');
+      expect(getOverdueEncouragementMessage(50)).toBe('Making progress!');
+      expect(getOverdueEncouragementMessage(74.99)).toBe('Making progress!');
+      expect(getOverdueEncouragementMessage(75)).toBe('Almost there!');
+      expect(getOverdueEncouragementMessage(99.99)).toBe('Almost there!');
+      expect(getOverdueEncouragementMessage(100)).toBe('Caught up!');
+    });
+
+    it('should handle negative percentages', () => {
+      const result = getOverdueEncouragementMessage(-10);
+      expect(result).toBe('Bonus reading today');
+    });
+  });
+
+  describe('getOverdueDisplayValue', () => {
+    describe('Reading format', () => {
+      it('should return basic number format for reading', () => {
+        const result = getOverdueDisplayValue(40, 50, false);
+        expect(result).toBe('40/50');
+      });
+
+      it('should handle zero current progress', () => {
+        const result = getOverdueDisplayValue(0, 50, false);
+        expect(result).toBe('0/50');
+      });
+
+      it('should handle progress equal to total', () => {
+        const result = getOverdueDisplayValue(50, 50, false);
+        expect(result).toBe('50/50');
+      });
+
+      it('should handle progress exceeding total', () => {
+        const result = getOverdueDisplayValue(60, 50, false);
+        expect(result).toBe('60/50');
+      });
+    });
+
+    describe('Listening format', () => {
+      it('should format minutes only for listening', () => {
+        const result = getOverdueDisplayValue(45, 60, true);
+        expect(result).toBe('45m/1h 0m');
+      });
+
+      it('should format hours and minutes for listening', () => {
+        const result = getOverdueDisplayValue(90, 120, true);
+        expect(result).toBe('1h 30m/2h 0m');
+      });
+
+      it('should handle zero current progress', () => {
+        const result = getOverdueDisplayValue(0, 60, true);
+        expect(result).toBe('0m/1h 0m');
+      });
+
+      it('should handle progress equal to total', () => {
+        const result = getOverdueDisplayValue(60, 60, true);
+        expect(result).toBe('1h 0m/1h 0m');
+      });
+
+      it('should handle progress exceeding total', () => {
+        const result = getOverdueDisplayValue(90, 60, true);
+        expect(result).toBe('1h 30m/1h 0m');
       });
     });
   });

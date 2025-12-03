@@ -17,6 +17,8 @@ const TodaysGoals: React.FC = () => {
     calculateProgressForToday,
     userPaceData,
     userListeningPaceData,
+    userPaceDataAsOfStartOfDay,
+    userListeningPaceDataAsOfStartOfDay,
   } = useDeadlines();
   const {
     audioDeadlines,
@@ -48,46 +50,71 @@ const TodaysGoals: React.FC = () => {
   );
 
   const hasGoals = readingDeadlines.length > 0 || audioDeadlines.length > 0;
-  const averageReadingPace = Math.round(userPaceData?.averagePace || 0);
-  const averageListeningPace = Math.round(userListeningPaceData?.averagePace || 0);
+
+  // Use start-of-day pace for overdue catch-up (fixed goal throughout the day)
+  const startOfDayReadingPace = Math.round(
+    userPaceDataAsOfStartOfDay?.averagePace || 0
+  );
+  const startOfDayListeningPace = Math.round(
+    userListeningPaceDataAsOfStartOfDay?.averagePace || 0
+  );
+
+  // DEBUG: Log pace values for verification
+  const currentReadingPace = Math.round(userPaceData?.averagePace || 0);
+  const currentListeningPace = Math.round(userListeningPaceData?.averagePace || 0);
+  console.log('[TodaysGoals] ===== PACE COMPARISON =====');
+  console.log('[TodaysGoals] Current reading pace (includes today):', currentReadingPace);
+  console.log('[TodaysGoals] Start-of-day reading pace (excludes today):', startOfDayReadingPace);
+  console.log('[TodaysGoals] Note: Start-of-day can be higher if today\'s reading is below average');
+  console.log('[TodaysGoals] ===== OVERDUE GOAL CALCULATION =====');
+  console.log('[TodaysGoals] Active reading goal:', readingTotals.total);
+  console.log('[TodaysGoals] Overdue goal = startOfDayPace - activeGoal =', startOfDayReadingPace, '-', readingTotals.total, '=', startOfDayReadingPace - readingTotals.total);
+  console.log('[TodaysGoals] Reading totals:', readingTotals);
+  console.log('[TodaysGoals] Audio totals:', audioTotals);
 
   // Calculate overdue catch-up totals for reading
   const overdueReadingCatchUp = useMemo(
     () =>
       calculateOverdueCatchUpTotals(
         overdueReadingDeadlines,
-        averageReadingPace,
+        startOfDayReadingPace,
         readingTotals.total,
         readingTotals.current,
         calculateProgressForToday
       ),
     [
       overdueReadingDeadlines,
-      averageReadingPace,
+      startOfDayReadingPace,
       readingTotals,
       calculateProgressForToday,
     ]
   );
 
-  // Calculate overdue catch-up totals for listening
+  // Calculate overdue Catch Up totals for listening
   const overdueAudioCatchUp = useMemo(
     () =>
       calculateOverdueCatchUpTotals(
         overdueAudioDeadlines,
-        averageListeningPace,
+        startOfDayListeningPace,
         audioTotals.total,
         audioTotals.current,
         calculateProgressForToday
       ),
     [
       overdueAudioDeadlines,
-      averageListeningPace,
+      startOfDayListeningPace,
       audioTotals,
       calculateProgressForToday,
     ]
   );
 
-  // Show overdue reading catch-up when:
+  // DEBUG: Log overdue catch-up calculations
+  console.log('[TodaysGoals] Overdue reading catch-up:', overdueReadingCatchUp);
+  console.log('[TodaysGoals] Overdue audio catch-up:', overdueAudioCatchUp);
+  console.log('[TodaysGoals] Formula: overdueGoal = startOfDayPace - activeGoal');
+  console.log('[TodaysGoals] Reading: ', startOfDayReadingPace, '-', readingTotals.total, '=', overdueReadingCatchUp.total);
+
+  // Show overdue reading Catch Up when:
   // 1. User has active reading goals
   // 2. User has overdue reading books
   // 3. User has met their active reading goal for today
@@ -98,7 +125,7 @@ const TodaysGoals: React.FC = () => {
     readingTotals.current >= readingTotals.total &&
     overdueReadingCatchUp.hasCapacity;
 
-  // Show overdue audio catch-up when:
+  // Show overdue audio Catch Up when:
   // 1. User has active audio goals
   // 2. User has overdue audio books
   // 3. User has met their active audio goal for today

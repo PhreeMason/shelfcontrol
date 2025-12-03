@@ -40,9 +40,25 @@ jest.mock('@/providers/DeadlineProvider', () => ({
   useDeadlines: jest.fn(),
 }));
 
+const defaultMockUseTodaysDeadlines = {
+  audioDeadlines: [],
+  readingDeadlines: [],
+  allAudioDeadlines: [],
+  allReadingDeadlines: [],
+  overdueReadingDeadlines: [],
+  overdueAudioDeadlines: [],
+};
+
+const defaultMockUseDeadlines = {
+  calculateProgressForToday: jest.fn(),
+  userPaceData: { averagePace: 0 },
+  userListeningPaceData: { averagePace: 0 },
+};
+
 jest.mock('@/utils/deadlineAggregationUtils', () => ({
   calculateTodaysAudioTotals: jest.fn(),
   calculateTodaysReadingTotals: jest.fn(),
+  calculateOverdueCatchUpTotals: jest.fn(),
 }));
 
 describe('TodaysGoals', () => {
@@ -51,28 +67,29 @@ describe('TodaysGoals', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     const { useDeadlines } = require('@/providers/DeadlineProvider');
+    const { useTodaysDeadlines } = require('@/hooks/useTodaysDeadlines');
+    const {
+      calculateTodaysAudioTotals,
+      calculateTodaysReadingTotals,
+      calculateOverdueCatchUpTotals,
+    } = require('@/utils/deadlineAggregationUtils');
+
     useDeadlines.mockReturnValue({
+      ...defaultMockUseDeadlines,
       calculateProgressForToday: mockCalculateProgressForToday,
     });
+
+    useTodaysDeadlines.mockReturnValue(defaultMockUseTodaysDeadlines);
+
+    // Default mock return values for aggregation utilities
+    calculateTodaysAudioTotals.mockReturnValue({ total: 0, current: 0 });
+    calculateTodaysReadingTotals.mockReturnValue({ total: 0, current: 0 });
+    calculateOverdueCatchUpTotals.mockReturnValue({ total: 0, current: 0, hasCapacity: false });
   });
 
   describe('Empty State', () => {
     it('should display empty state when no deadlines exist', () => {
-      const { useTodaysDeadlines } = require('@/hooks/useTodaysDeadlines');
-      useTodaysDeadlines.mockReturnValue({
-        audioDeadlines: [],
-        readingDeadlines: [],
-        allAudioDeadlines: [],
-        allReadingDeadlines: [],
-      });
-
-      const {
-        calculateTodaysAudioTotals,
-        calculateTodaysReadingTotals,
-      } = require('@/utils/deadlineAggregationUtils');
-      calculateTodaysAudioTotals.mockReturnValue({ total: 0, current: 0 });
-      calculateTodaysReadingTotals.mockReturnValue({ total: 0, current: 0 });
-
+      // Uses default mocks set in beforeEach (all empty arrays)
       render(<TodaysGoals />);
 
       expect(screen.getByText('No reading goals set for today')).toBeTruthy();
@@ -86,17 +103,12 @@ describe('TodaysGoals', () => {
     it('should not display empty state when reading deadlines exist', () => {
       const { useTodaysDeadlines } = require('@/hooks/useTodaysDeadlines');
       useTodaysDeadlines.mockReturnValue({
-        audioDeadlines: [],
+        ...defaultMockUseTodaysDeadlines,
         readingDeadlines: [{ id: '1', title: 'Test Book' }],
-        allAudioDeadlines: [],
         allReadingDeadlines: [{ id: '1', title: 'Test Book' }],
       });
 
-      const {
-        calculateTodaysAudioTotals,
-        calculateTodaysReadingTotals,
-      } = require('@/utils/deadlineAggregationUtils');
-      calculateTodaysAudioTotals.mockReturnValue({ total: 0, current: 0 });
+      const { calculateTodaysReadingTotals } = require('@/utils/deadlineAggregationUtils');
       calculateTodaysReadingTotals.mockReturnValue({ total: 100, current: 50 });
 
       render(<TodaysGoals />);
@@ -108,18 +120,13 @@ describe('TodaysGoals', () => {
     it('should not display empty state when audio deadlines exist', () => {
       const { useTodaysDeadlines } = require('@/hooks/useTodaysDeadlines');
       useTodaysDeadlines.mockReturnValue({
+        ...defaultMockUseTodaysDeadlines,
         audioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
-        readingDeadlines: [],
         allAudioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
-        allReadingDeadlines: [],
       });
 
-      const {
-        calculateTodaysAudioTotals,
-        calculateTodaysReadingTotals,
-      } = require('@/utils/deadlineAggregationUtils');
+      const { calculateTodaysAudioTotals } = require('@/utils/deadlineAggregationUtils');
       calculateTodaysAudioTotals.mockReturnValue({ total: 120, current: 60 });
-      calculateTodaysReadingTotals.mockReturnValue({ total: 0, current: 0 });
 
       render(<TodaysGoals />);
 
@@ -132,6 +139,7 @@ describe('TodaysGoals', () => {
     it('should display both reading and audio progress when both exist', () => {
       const { useTodaysDeadlines } = require('@/hooks/useTodaysDeadlines');
       useTodaysDeadlines.mockReturnValue({
+        ...defaultMockUseTodaysDeadlines,
         audioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
         readingDeadlines: [{ id: '2', title: 'Test Book' }],
         allAudioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
@@ -155,17 +163,12 @@ describe('TodaysGoals', () => {
     it('should display only reading progress when only reading deadlines exist', () => {
       const { useTodaysDeadlines } = require('@/hooks/useTodaysDeadlines');
       useTodaysDeadlines.mockReturnValue({
-        audioDeadlines: [],
+        ...defaultMockUseTodaysDeadlines,
         readingDeadlines: [{ id: '1', title: 'Test Book' }],
-        allAudioDeadlines: [],
         allReadingDeadlines: [{ id: '1', title: 'Test Book' }],
       });
 
-      const {
-        calculateTodaysAudioTotals,
-        calculateTodaysReadingTotals,
-      } = require('@/utils/deadlineAggregationUtils');
-      calculateTodaysAudioTotals.mockReturnValue({ total: 0, current: 0 });
+      const { calculateTodaysReadingTotals } = require('@/utils/deadlineAggregationUtils');
       calculateTodaysReadingTotals.mockReturnValue({ total: 100, current: 75 });
 
       render(<TodaysGoals />);
@@ -177,18 +180,13 @@ describe('TodaysGoals', () => {
     it('should display only audio progress when only audio deadlines exist', () => {
       const { useTodaysDeadlines } = require('@/hooks/useTodaysDeadlines');
       useTodaysDeadlines.mockReturnValue({
+        ...defaultMockUseTodaysDeadlines,
         audioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
-        readingDeadlines: [],
         allAudioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
-        allReadingDeadlines: [],
       });
 
-      const {
-        calculateTodaysAudioTotals,
-        calculateTodaysReadingTotals,
-      } = require('@/utils/deadlineAggregationUtils');
+      const { calculateTodaysAudioTotals } = require('@/utils/deadlineAggregationUtils');
       calculateTodaysAudioTotals.mockReturnValue({ total: 180, current: 90 });
-      calculateTodaysReadingTotals.mockReturnValue({ total: 0, current: 0 });
 
       render(<TodaysGoals />);
 
@@ -199,21 +197,7 @@ describe('TodaysGoals', () => {
 
   describe('Component Structure', () => {
     it('should always display the title', () => {
-      const { useTodaysDeadlines } = require('@/hooks/useTodaysDeadlines');
-      useTodaysDeadlines.mockReturnValue({
-        audioDeadlines: [],
-        readingDeadlines: [],
-        allAudioDeadlines: [],
-        allReadingDeadlines: [],
-      });
-
-      const {
-        calculateTodaysAudioTotals,
-        calculateTodaysReadingTotals,
-      } = require('@/utils/deadlineAggregationUtils');
-      calculateTodaysAudioTotals.mockReturnValue({ total: 0, current: 0 });
-      calculateTodaysReadingTotals.mockReturnValue({ total: 0, current: 0 });
-
+      // Uses default mocks set in beforeEach (all empty arrays)
       render(<TodaysGoals />);
 
       expect(screen.getByText("TODAY'S READING GOALS")).toBeTruthy();
@@ -222,17 +206,12 @@ describe('TodaysGoals', () => {
     it('should pass correct props to TodaysProgress for reading', () => {
       const { useTodaysDeadlines } = require('@/hooks/useTodaysDeadlines');
       useTodaysDeadlines.mockReturnValue({
-        audioDeadlines: [],
+        ...defaultMockUseTodaysDeadlines,
         readingDeadlines: [{ id: '1', title: 'Test Book' }],
-        allAudioDeadlines: [],
         allReadingDeadlines: [{ id: '1', title: 'Test Book' }],
       });
 
-      const {
-        calculateTodaysAudioTotals,
-        calculateTodaysReadingTotals,
-      } = require('@/utils/deadlineAggregationUtils');
-      calculateTodaysAudioTotals.mockReturnValue({ total: 0, current: 0 });
+      const { calculateTodaysReadingTotals } = require('@/utils/deadlineAggregationUtils');
       calculateTodaysReadingTotals.mockReturnValue({
         total: 200,
         current: 150,
@@ -248,18 +227,13 @@ describe('TodaysGoals', () => {
     it('should pass correct props to TodaysProgress for audio', () => {
       const { useTodaysDeadlines } = require('@/hooks/useTodaysDeadlines');
       useTodaysDeadlines.mockReturnValue({
+        ...defaultMockUseTodaysDeadlines,
         audioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
-        readingDeadlines: [],
         allAudioDeadlines: [{ id: '1', title: 'Test Audiobook' }],
-        allReadingDeadlines: [],
       });
 
-      const {
-        calculateTodaysAudioTotals,
-        calculateTodaysReadingTotals,
-      } = require('@/utils/deadlineAggregationUtils');
+      const { calculateTodaysAudioTotals } = require('@/utils/deadlineAggregationUtils');
       calculateTodaysAudioTotals.mockReturnValue({ total: 300, current: 100 });
-      calculateTodaysReadingTotals.mockReturnValue({ total: 0, current: 0 });
 
       render(<TodaysGoals />);
 
@@ -278,6 +252,7 @@ describe('TodaysGoals', () => {
       const mockAllAudioDeadlines = [{ id: '2', title: 'Audio 1' }];
 
       useTodaysDeadlines.mockReturnValue({
+        ...defaultMockUseTodaysDeadlines,
         audioDeadlines: mockAudioDeadlines,
         readingDeadlines: mockReadingDeadlines,
         allAudioDeadlines: mockAllAudioDeadlines,

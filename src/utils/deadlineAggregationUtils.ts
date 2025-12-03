@@ -172,18 +172,18 @@ export interface DailyGoalImpact {
 }
 
 export interface OverdueCatchUpTotals {
-  /** The available capacity for overdue catch-up (the goal) */
+  /** The available capacity for overdue Catch Up (the goal) */
   total: number;
   /** Progress made on overdue books today (capped at available capacity) */
   current: number;
-  /** Whether there's any available capacity for overdue catch-up */
+  /** Whether there's any available capacity for overdue Catch Up */
   hasCapacity: boolean;
 }
 
 /**
- * Calculates the overdue catch-up totals based on user's extra reading capacity.
+ * Calculates the overdue Catch Up totals based on user's extra reading capacity.
  *
- * The overdue catch-up feature allows users to work on overdue books using their
+ * The overdue Catch Up feature allows users to work on overdue books using their
  * leftover capacity after meeting their active reading goals.
  *
  * @param overdueDeadlines - Array of overdue deadlines (filtered by format)
@@ -197,23 +197,27 @@ export const calculateOverdueCatchUpTotals = (
   overdueDeadlines: ReadingDeadlineWithProgress[],
   userPace: number,
   todaysActiveGoal: number,
-  todaysActiveProgress: number,
+  _todaysActiveProgress: number, // Kept for API compatibility, no longer used
   getProgress: (deadline: ReadingDeadlineWithProgress) => number
 ): OverdueCatchUpTotals => {
-  // Calculate extra capacity from user's average pace
-  const extraCapacity = Math.max(0, userPace - todaysActiveGoal);
-
-  // Calculate how much of the extra capacity was used by additional active reading
-  const usedByActiveReading = Math.max(0, todaysActiveProgress - todaysActiveGoal);
-
-  // Available capacity for overdue catch-up
-  const availableForOverdue = Math.max(0, extraCapacity - usedByActiveReading);
-
   // Calculate progress made on overdue books today
   const overdueProgressToday = overdueDeadlines.reduce((total, deadline) => {
     const progress = getProgress(deadline);
     return total + (progress > 0 ? progress : 0);
   }, 0);
+
+  // Goal is always pace - activeGoal (fixed based on start-of-day pace)
+  // Progress can exceed this goal, showing "+X pages extra"
+  const availableForOverdue = Math.max(0, userPace - todaysActiveGoal);
+
+  // DEBUG: Log calculation details
+  console.log('[calculateOverdueCatchUpTotals] Inputs:', {
+    overdueDeadlinesCount: overdueDeadlines.length,
+    userPace,
+    todaysActiveGoal,
+    overdueProgressToday,
+    availableForOverdue,
+  });
 
   return {
     total: Math.round(availableForOverdue),

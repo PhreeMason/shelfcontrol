@@ -462,6 +462,96 @@ export const formatListeningPaceDisplay = (pace: number): string => {
   return `${minutes}m/day`;
 };
 
+/**
+ * Calculates user's reading pace as of the start of today (excluding today's progress).
+ * Used for overdue catch-up calculations to keep the goal fixed throughout the day.
+ */
+export const calculateUserPaceAsOfStartOfDay = (
+  deadlines: ReadingDeadlineWithProgress[]
+): UserPaceData => {
+  const recentReadingDays = getRecentReadingDays(deadlines);
+
+  // Filter out today's entries
+  const today = dayjs().format('YYYY-MM-DD');
+  const readingDaysExcludingToday = recentReadingDays.filter(
+    day => day.date !== today
+  );
+
+  // DEBUG: Log what's being excluded
+  const todaysEntries = recentReadingDays.filter(day => day.date === today);
+  const todaysPagesRead = todaysEntries.reduce((sum, d) => sum + d.pagesRead, 0);
+  console.log('[calculateUserPaceAsOfStartOfDay] Today:', today);
+  console.log('[calculateUserPaceAsOfStartOfDay] Total reading days (with today):', recentReadingDays.length);
+  console.log('[calculateUserPaceAsOfStartOfDay] Today\'s pages being excluded:', todaysPagesRead);
+  console.log('[calculateUserPaceAsOfStartOfDay] Days used for calc (without today):', readingDaysExcludingToday.length);
+
+  const readingDaysCount = readingDaysExcludingToday.length;
+  if (readingDaysCount === 0) {
+    return {
+      averagePace: 0,
+      readingDaysCount,
+      isReliable: false,
+      calculationMethod: 'default_fallback',
+    };
+  }
+
+  // Convert ReadingDay[] to ActivityDay[] format
+  const activityDays: ActivityDay[] = readingDaysExcludingToday.map(day => ({
+    date: day.date,
+    amount: day.pagesRead,
+  }));
+
+  const averagePace = calculatePaceFromActivityDays(activityDays);
+
+  return {
+    averagePace,
+    readingDaysCount,
+    isReliable: true,
+    calculationMethod: 'recent_data',
+  };
+};
+
+/**
+ * Calculates user's listening pace as of the start of today (excluding today's progress).
+ * Used for overdue catch-up calculations to keep the goal fixed throughout the day.
+ */
+export const calculateUserListeningPaceAsOfStartOfDay = (
+  deadlines: ReadingDeadlineWithProgress[]
+): UserListeningPaceData => {
+  const recentDays = getRecentListeningDays(deadlines);
+
+  // Filter out today's entries
+  const today = dayjs().format('YYYY-MM-DD');
+  const listeningDaysExcludingToday = recentDays.filter(
+    day => day.date !== today
+  );
+
+  const listeningDaysCount = listeningDaysExcludingToday.length;
+  if (listeningDaysCount === 0) {
+    return {
+      averagePace: 0,
+      listeningDaysCount,
+      isReliable: false,
+      calculationMethod: 'default_fallback',
+    };
+  }
+
+  // Convert ListeningDay[] to ActivityDay[] format
+  const activityDays: ActivityDay[] = listeningDaysExcludingToday.map(day => ({
+    date: day.date,
+    amount: day.minutesListened,
+  }));
+
+  const averagePace = calculatePaceFromActivityDays(activityDays);
+
+  return {
+    averagePace,
+    listeningDaysCount,
+    isReliable: true,
+    calculationMethod: 'recent_data',
+  };
+};
+
 type PacePerDay = { value: number; label: string };
 
 export const minimumUnitsPerDayFromDeadline = (
