@@ -15,7 +15,7 @@ import { convertMsToHoursAndMinutes } from '@/utils/audiobookTimeUtils';
 import { DeadlineFormData } from '@/utils/deadlineFormSchema';
 import { toTitleCase } from '@/utils/stringUtils';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Control, Controller, useWatch } from 'react-hook-form';
 import {
   LayoutChangeEvent,
@@ -78,6 +78,7 @@ export const DeadlineFormStep2Combined = ({
   onFieldLayout,
 }: DeadlineFormStep2CombinedProps) => {
   const { colors } = useTheme();
+  const hasAutoFilledDuration = useRef(false);
 
   // Helper to track field positions for scroll-to-error
   const handleFieldLayout =
@@ -136,61 +137,38 @@ export const DeadlineFormStep2Combined = ({
   // Handle "Not right?" rejection
   const handleRejectSpotify = useCallback(() => {
     setRejectedSpotify(true);
-    // Clear the auto-filled values so Audible can fill them
+    // Reset auto-fill flag so Audible data can fill the fields
+    hasAutoFilledDuration.current = false;
     setValue('totalQuantity', 0);
     setValue('totalMinutes', 0);
   }, [setValue]);
 
-  // Reset rejection state when format changes away from audio
+  // Reset rejection state and auto-fill flag when format changes away from audio
   useEffect(() => {
     if (selectedFormat !== 'audio') {
       setRejectedSpotify(false);
     }
-  }, [selectedFormat]);
+    hasAutoFilledDuration.current = false;
+  }, [selectedFormat, watchedValues.bookTitle]);
 
-  // Consolidated auto-fill effect for both Spotify and Audible
-  // This single effect prevents competing updates and respects user choices
+  // Auto-fill duration once when data arrives
   useEffect(() => {
     if (selectedFormat !== 'audio') return;
+    if (hasAutoFilledDuration.current) return;
 
-    // Priority 1: Audible data (when user rejected Spotify)
-    if (rejectedSpotify && audibleData?.duration_ms) {
-      const { hours, minutes } = convertMsToHoursAndMinutes(
-        audibleData.duration_ms
-      );
-      setValue('totalQuantity', hours);
-      setValue('totalMinutes', minutes > 0 ? minutes : 0);
-      return;
+    const durationMs = rejectedSpotify
+      ? audibleData?.duration_ms
+      : audiobookData?.duration_ms;
+
+    if (!durationMs) return;
+
+    const { hours, minutes } = convertMsToHoursAndMinutes(durationMs);
+    setValue('totalQuantity', hours);
+    if (minutes > 0) {
+      setValue('totalMinutes', minutes);
     }
-
-    // Priority 2: Spotify data (only if not rejected and fields are empty)
-    if (!rejectedSpotify && audiobookData?.duration_ms) {
-      // Only auto-fill if user hasn't manually entered values
-      const hasManualHours =
-        watchedValues.totalQuantity && watchedValues.totalQuantity > 0;
-      const hasManualMinutes =
-        watchedValues.totalMinutes && watchedValues.totalMinutes > 0;
-
-      if (!hasManualHours) {
-        const { hours, minutes } = convertMsToHoursAndMinutes(
-          audiobookData.duration_ms
-        );
-        setValue('totalQuantity', hours);
-
-        if (minutes > 0 && !hasManualMinutes) {
-          setValue('totalMinutes', minutes);
-        }
-      }
-    }
-  }, [
-    audiobookData,
-    audibleData,
-    rejectedSpotify,
-    selectedFormat,
-    setValue,
-    watchedValues.totalQuantity,
-    watchedValues.totalMinutes,
-  ]);
+    hasAutoFilledDuration.current = true;
+  }, [audiobookData, audibleData, rejectedSpotify, selectedFormat, setValue]);
 
   // Publisher management
   const addPublisher = () => {

@@ -4,7 +4,6 @@ import { AudiobookData } from '@/types/audiobook.types';
 import React from 'react';
 import {
   ActivityIndicator,
-  Image,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -55,7 +54,7 @@ export const AudiobookDurationHelpText = ({
     );
   }
 
-  // Loading state: Initial Spotify lookup
+  // Loading state: Initial lookup
   if (isLoadingAudiobook && !rejectedSpotify) {
     return (
       <View style={styles.audiobookHelpRow}>
@@ -67,84 +66,67 @@ export const AudiobookDurationHelpText = ({
     );
   }
 
-  // Loading state: Audible lookup (after Spotify rejection)
+  // Loading state: Retry lookup
   if (rejectedSpotify && isLoadingAudible) {
     return (
       <View style={styles.audiobookHelpRow}>
         <ActivityIndicator size="small" color={colors.textMuted} />
         <ThemedText color="textMuted" style={{ lineHeight: 18 }}>
-          Checking Audible...
+          Looking up duration...
         </ThemedText>
       </View>
     );
   }
 
-  // Success state: Audible found duration
+  // Success state: Found duration after retry
   if (rejectedSpotify && audibleData?.duration_ms) {
     return (
       <View style={styles.audiobookHelpRow}>
         <ThemedText color="textMuted" style={{ lineHeight: 18 }}>
-          ✓ Duration from Audible
+          ✓ Duration auto-filled
         </ThemedText>
       </View>
     );
   }
 
-  // Error state: Audible lookup failed
+  // Error state: Retry lookup failed
   if (rejectedSpotify && !isLoadingAudible) {
     return (
       <ThemedText color="textMuted" style={{ lineHeight: 18 }}>
-        Not found on Audible - please enter duration manually
+        Not found - please enter duration manually
       </ThemedText>
     );
   }
 
-  // Success state: Spotify/Community found duration
+  // Success state: Found duration
   if (audiobookData?.duration_ms && !rejectedSpotify) {
     return (
       <View style={styles.audiobookHelpRow}>
-        {audiobookData.source === 'spotify' ? (
-          <>
-            <Image
-              source={require('@/assets/images/Spotify_Primary_Logo_RGB_Green.png')}
-              style={styles.spotifyIcon}
-            />
-            <ThemedText color="textMuted" style={{ lineHeight: 18 }}>
-              Duration from Spotify
-            </ThemedText>
-            <TouchableOpacity
-              onPress={onRejectSpotify}
-              style={styles.notRightButton}
-            >
-              <ThemedText
-                color="primary"
-                typography="bodySmall"
-                style={{ lineHeight: 18 }}
-              >
-                Not right?
-              </ThemedText>
-            </TouchableOpacity>
-          </>
-        ) : audiobookData.source === 'audible' ? (
-          <ThemedText color="textMuted" style={{ lineHeight: 18 }}>
-            ✓ Duration from Audible
+        <ThemedText color="textMuted" style={{ lineHeight: 18 }}>
+          ✓ Duration auto-filled
+        </ThemedText>
+        <TouchableOpacity
+          onPress={onRejectSpotify}
+          style={styles.notRightButton}
+        >
+          <ThemedText
+            color="primary"
+            typography="bodySmall"
+            style={{ lineHeight: 18 }}
+          >
+            Not right?
           </ThemedText>
-        ) : (
-          <ThemedText color="textMuted" style={{ lineHeight: 18 }}>
-            ✓ Duration auto-filled
-          </ThemedText>
-        )}
+        </TouchableOpacity>
       </View>
     );
   }
 
-  // No results state: Spotify lookup finished but found nothing
-  // Show "Try again?" to let user try Audible
+  // No results state: Initial lookup finished but found nothing
   if (!isLoadingAudiobook && !rejectedSpotify && !audiobookData?.duration_ms) {
     return (
       <View style={styles.audiobookHelpRow}>
         <ThemedText color="textMuted" style={{ lineHeight: 18 }}>
-          Not found on Spotify
+          Not found
         </ThemedText>
         <TouchableOpacity
           onPress={onRejectSpotify}
@@ -176,11 +158,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     flexWrap: 'wrap',
-  },
-  spotifyIcon: {
-    width: 16,
-    height: 16,
-    resizeMode: 'contain',
   },
   notRightButton: {
     marginLeft: 4,
