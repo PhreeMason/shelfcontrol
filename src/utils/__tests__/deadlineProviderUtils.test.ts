@@ -254,6 +254,73 @@ describe('deadlineProviderUtils', () => {
       expect(result.isToReview).toBe(false);
       expect(result.isArchived).toBe(false);
       expect(result.isPending).toBe(true);
+      expect(result.isActive).toBe(false);
+    });
+
+    it('should return isActive true for reading status', () => {
+      const deadlineWithReadingStatus = {
+        ...mockDeadlines[0],
+        status: [
+          {
+            id: 'status-1',
+            deadline_id: 'rd-123',
+            status: 'reading' as const,
+            created_at: '2025-01-01T00:00:00Z',
+            updated_at: '2025-01-01T00:00:00Z',
+          },
+        ],
+      };
+
+      const result = getDeadlineStatus(deadlineWithReadingStatus);
+
+      expect(result.latestStatus).toBe('reading');
+      expect(result.isActive).toBe(true);
+      expect(result.isCompleted).toBe(false);
+      expect(result.isPending).toBe(false);
+    });
+
+    it('should return isWithdrew true for withdrew status', () => {
+      const deadlineWithWithdrewStatus = {
+        ...mockDeadlines[0],
+        status: [
+          {
+            id: 'status-1',
+            deadline_id: 'rd-123',
+            status: 'withdrew' as const,
+            created_at: '2025-01-01T00:00:00Z',
+            updated_at: '2025-01-01T00:00:00Z',
+          },
+        ],
+      };
+
+      const result = getDeadlineStatus(deadlineWithWithdrewStatus);
+
+      expect(result.latestStatus).toBe('withdrew');
+      expect(result.isWithdrew).toBe(true);
+      expect(result.isCompleted).toBe(false);
+      expect(result.isArchived).toBe(false);
+    });
+
+    it('should return isRejected true for rejected status', () => {
+      const deadlineWithRejectedStatus = {
+        ...mockDeadlines[0],
+        status: [
+          {
+            id: 'status-1',
+            deadline_id: 'rd-123',
+            status: 'rejected' as const,
+            created_at: '2025-01-01T00:00:00Z',
+            updated_at: '2025-01-01T00:00:00Z',
+          },
+        ],
+      };
+
+      const result = getDeadlineStatus(deadlineWithRejectedStatus);
+
+      expect(result.latestStatus).toBe('rejected');
+      expect(result.isRejected).toBe(true);
+      expect(result.isCompleted).toBe(false);
+      expect(result.isArchived).toBe(false);
     });
   });
 

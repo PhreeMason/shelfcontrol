@@ -9,7 +9,7 @@ import { useDeadlines } from '@/providers/DeadlineProvider';
 import { useUpdateDeadlineProgress } from '@/hooks/useDeadlines';
 import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { getDeadlineStatus } from '@/utils/deadlineActionUtils';
+import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
 import { calculateProgress } from '@/utils/deadlineCore';
 import { formatProgressDisplay } from '@/utils/deadlineUtils';
 import { useRouter } from 'expo-router';
@@ -121,7 +121,7 @@ export const StatusChangeActionSheet: React.FC<
     didNotFinishDeadline,
   } = useDeadlines();
 
-  const currentStatus = getDeadlineStatus(deadline);
+  const { latestStatus: currentStatus } = getDeadlineStatus(deadline);
   const availableTransitions =
     VALID_STATUS_TRANSITIONS[
       currentStatus as keyof typeof VALID_STATUS_TRANSITIONS

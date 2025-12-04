@@ -143,7 +143,8 @@ export const DeadlineFormStep2Combined = ({
     setValue('totalMinutes', 0);
   }, [setValue]);
 
-  // Reset rejection state and auto-fill flag when format changes away from audio
+  // Reset rejection state when leaving audio format
+  // Reset auto-fill flag on any format/title change so new lookups can fill
   useEffect(() => {
     if (selectedFormat !== 'audio') {
       setRejectedSpotify(false);

@@ -30,7 +30,11 @@ export interface DeadlineStatus {
   isToReview: boolean;
   isArchived: boolean;
   isPending: boolean;
+  isApplied: boolean;
   isPaused: boolean;
+  isActive: boolean;
+  isWithdrew: boolean;
+  isRejected: boolean;
 }
 
 export interface DeadlineMetrics {
@@ -69,7 +73,11 @@ export function getDeadlineStatus(
   const isDnf = latestStatus === 'did_not_finish';
   const isToReview = latestStatus === 'to_review';
   const isPending = latestStatus === 'pending';
+  const isApplied = latestStatus === 'applied';
   const isPaused = latestStatus === 'paused';
+  const isActive = latestStatus === 'reading';
+  const isWithdrew = latestStatus === 'withdrew';
+  const isRejected = latestStatus === 'rejected';
   const isArchived = isCompleted || isDnf;
 
   return {
@@ -78,7 +86,11 @@ export function getDeadlineStatus(
     isToReview,
     isArchived,
     isPending,
+    isApplied,
     isPaused,
+    isActive,
+    isWithdrew,
+    isRejected,
   };
 }
 

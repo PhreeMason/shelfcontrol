@@ -9,9 +9,6 @@ import {
   createReadAgainPromptAlert,
   createSuccessToast,
   createUpdateDeadlinePromptAlert,
-  getDeadlineStatus,
-  getEditDeadlineUrl,
-  getStatusFlags,
   showAlert,
   showToast,
 } from '../deadlineActionUtils';
@@ -35,98 +32,6 @@ jest.mock('react-native-toast-message', () => ({
 describe('deadlineActionUtils', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  describe('getDeadlineStatus', () => {
-    it('should return reading for deadline with no status array', () => {
-      const deadline = { status: [] } as any;
-      expect(getDeadlineStatus(deadline)).toBe('reading');
-    });
-
-    it('should return reading for deadline with null status', () => {
-      const deadline = { status: null } as any;
-      expect(getDeadlineStatus(deadline)).toBe('reading');
-    });
-
-    it('should return reading for deadline with undefined status', () => {
-      const deadline = {} as any;
-      expect(getDeadlineStatus(deadline)).toBe('reading');
-    });
-
-    it('should return the latest status from status array', () => {
-      const deadline = {
-        status: [
-          { status: 'pending' },
-          { status: 'reading' },
-          { status: 'to_review' },
-        ],
-      } as any;
-      expect(getDeadlineStatus(deadline)).toBe('to_review');
-    });
-
-    it('should return single status from array', () => {
-      const deadline = {
-        status: [{ status: 'complete' }],
-      } as any;
-      expect(getDeadlineStatus(deadline)).toBe('complete');
-    });
-  });
-
-  describe('getStatusFlags', () => {
-    it('should return correct flags for complete status', () => {
-      const flags = getStatusFlags('complete');
-      expect(flags).toEqual({
-        isCompleted: true,
-        isToReview: false,
-        isActive: false,
-        isPending: false,
-        isPaused: false,
-      });
-    });
-
-    it('should return correct flags for to_review status', () => {
-      const flags = getStatusFlags('to_review');
-      expect(flags).toEqual({
-        isCompleted: false,
-        isToReview: true,
-        isActive: false,
-        isPending: false,
-        isPaused: false,
-      });
-    });
-
-    it('should return correct flags for reading status', () => {
-      const flags = getStatusFlags('reading');
-      expect(flags).toEqual({
-        isCompleted: false,
-        isToReview: false,
-        isActive: true,
-        isPending: false,
-        isPaused: false,
-      });
-    });
-
-    it('should return correct flags for pending status', () => {
-      const flags = getStatusFlags('pending');
-      expect(flags).toEqual({
-        isCompleted: false,
-        isToReview: false,
-        isActive: false,
-        isPending: true,
-        isPaused: false,
-      });
-    });
-
-    it('should return all false flags for unknown status', () => {
-      const flags = getStatusFlags('unknown');
-      expect(flags).toEqual({
-        isCompleted: false,
-        isToReview: false,
-        isActive: false,
-        isPending: false,
-        isPaused: false,
-      });
-    });
   });
 
   describe('createSuccessToast', () => {
@@ -486,23 +391,6 @@ describe('deadlineActionUtils', () => {
 
       expect(params.params.totalQuantity).toBe('250');
       expect(params.params.totalMinutes).toBeUndefined();
-    });
-  });
-
-  describe('getEditDeadlineUrl', () => {
-    it('should create edit URL with default page 3', () => {
-      const url = getEditDeadlineUrl('deadline-123');
-      expect(url).toBe('/deadline/deadline-123/edit?page=3');
-    });
-
-    it('should create edit URL with custom page', () => {
-      const url = getEditDeadlineUrl('deadline-456', 2);
-      expect(url).toBe('/deadline/deadline-456/edit?page=2');
-    });
-
-    it('should handle page 1', () => {
-      const url = getEditDeadlineUrl('deadline-789', 1);
-      expect(url).toBe('/deadline/deadline-789/edit?page=1');
     });
   });
 

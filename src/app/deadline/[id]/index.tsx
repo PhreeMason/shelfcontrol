@@ -4,6 +4,7 @@ import { DeadlineActionSheet } from '@/components/features/deadlines/DeadlineAct
 import { DeadlineActionsSection } from '@/components/features/deadlines/DeadlineActionsSection';
 import { DeadlineContactsSection } from '@/components/features/deadlines/DeadlineContactsSection';
 import { DeadlineCustomDatesSection } from '@/components/features/deadlines/DeadlineCustomDatesSection';
+import { DeadlineEditDatesSection } from '@/components/features/deadlines/DeadlineEditDatesSection';
 import DeadlineHeroSection from '@/components/features/deadlines/DeadlineHeroSection';
 import { DeadlineTagsSection } from '@/components/features/deadlines/DeadlineTagsSection';
 import DeadlineViewHeader from '@/components/features/deadlines/DeadlineViewHeader';
@@ -114,7 +115,8 @@ const DeadlineView = () => {
     );
   }
 
-  const { isPending, isPaused, latestStatus } = getDeadlineStatus(deadline);
+  const { isPending, isApplied, isPaused, latestStatus } =
+    getDeadlineStatus(deadline);
 
   const handleBack = () => {
     if (router.canGoBack()) {
@@ -130,9 +132,10 @@ const DeadlineView = () => {
 
   const shouldShowStats =
     latestStatus !== 'pending' &&
+    latestStatus !== 'applied' &&
     latestStatus !== 'reading' &&
     latestStatus !== 'paused';
-  const shouldShowProgress = !shouldShowStats && !isPending;
+  const shouldShowProgress = !shouldShowStats && !isPending && !isApplied;
   const sourceOptions = getDeadlineSourceOptions(deadline);
   const shouldShowDisclosure = sourceOptions.length > 0;
 
@@ -155,6 +158,7 @@ const DeadlineView = () => {
         >
           <DeadlineHeroSection
             isPending={isPending}
+            isApplied={isApplied}
             isPaused={isPaused}
             deadline={deadline}
           />
@@ -168,13 +172,15 @@ const DeadlineView = () => {
           <ReviewProgressSection deadline={deadline} />
           {shouldShowStats ? <ReadingStats deadline={deadline} /> : null}
 
-          {latestStatus !== 'pending' ? (
+          {latestStatus !== 'pending' && latestStatus !== 'applied' ? (
             <DailyReadingChart deadline={deadline} />
           ) : null}
 
           <DeadlineContactsSection deadline={deadline} />
 
           <DeadlineCustomDatesSection deadline={deadline} />
+
+          <DeadlineEditDatesSection deadline={deadline} />
 
           <DeadlineTagsSection deadline={deadline} />
 

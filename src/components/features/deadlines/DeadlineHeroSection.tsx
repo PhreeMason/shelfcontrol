@@ -13,12 +13,14 @@ import { DeadlineCard } from './DeadlineCard';
 interface DeadlineHeroSectionProps {
   deadline: ReadingDeadlineWithProgress;
   isPending?: boolean;
+  isApplied?: boolean;
   isPaused?: boolean;
 }
 
 const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
   deadline,
   isPending = false,
+  isApplied = false,
   isPaused = false,
 }) => {
   const { colors } = useTheme();
@@ -26,7 +28,7 @@ const DeadlineHeroSection: React.FC<DeadlineHeroSectionProps> = ({
   return (
     <ThemedView style={styles.heroCardContainer}>
       <DeadlineCard deadline={deadline} disableNavigation={true} />
-      {isPending ? (
+      {isPending || isApplied ? (
         <TouchableOpacity
           testID="primary-action-button"
           style={[

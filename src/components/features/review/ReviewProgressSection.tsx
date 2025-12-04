@@ -6,7 +6,7 @@ import { useReviewTrackingMutation } from '@/hooks/useReviewTrackingMutation';
 import { useTheme } from '@/hooks/useTheme';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { getDeadlineStatus } from '@/utils/deadlineActionUtils';
+import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
 import { calculateProgress } from '@/utils/deadlineUtils';
 import { router } from 'expo-router';
 import React, { useCallback, useState } from 'react';
@@ -24,8 +24,7 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
   deadline,
 }) => {
   const { colors } = useTheme();
-  const latestStatus = getDeadlineStatus(deadline);
-  const isToReview = latestStatus === 'to_review';
+  const { isToReview } = getDeadlineStatus(deadline);
 
   const [showMarkCompleteDialog, setShowMarkCompleteDialog] = useState(false);
 

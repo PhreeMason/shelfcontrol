@@ -1,40 +1,9 @@
 import { ROUTES } from '@/constants/routes';
-import { DEADLINE_STATUS } from '@/constants/status';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { convertMinutesToHoursAndMinutes } from './audiobookTimeUtils';
-
-export const getDeadlineStatus = (
-  deadline: ReadingDeadlineWithProgress
-): string => {
-  if (!deadline.status || deadline.status.length === 0) {
-    return DEADLINE_STATUS.READING;
-  }
-  return (
-    deadline.status[deadline.status.length - 1].status ??
-    DEADLINE_STATUS.READING
-  );
-};
-
-export interface StatusFlags {
-  isCompleted: boolean;
-  isToReview: boolean;
-  isActive: boolean;
-  isPending: boolean;
-  isPaused: boolean;
-}
-
-export const getStatusFlags = (status: string): StatusFlags => {
-  return {
-    isCompleted: status === DEADLINE_STATUS.COMPLETE,
-    isToReview: status === DEADLINE_STATUS.TO_REVIEW,
-    isActive: status === DEADLINE_STATUS.READING,
-    isPending: status === DEADLINE_STATUS.PENDING,
-    isPaused: status === DEADLINE_STATUS.PAUSED,
-  };
-};
 
 export interface ToastConfig {
   swipeable: boolean;
@@ -234,13 +203,6 @@ export const createReadAgainParams = (
       ...formatSpecificParams,
     },
   };
-};
-
-export const getEditDeadlineUrl = (
-  deadlineId: string,
-  page: number = 3
-): string => {
-  return `/deadline/${deadlineId}/edit?page=${page}`;
 };
 
 export const showToast = (config: ToastConfig): void => {

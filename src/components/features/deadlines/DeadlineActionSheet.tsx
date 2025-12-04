@@ -8,7 +8,7 @@ import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
-import { getDeadlineStatus, getStatusFlags } from '@/utils/deadlineActionUtils';
+import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -52,17 +52,21 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const [showPostReviewModal, setShowPostReviewModal] = useState(false);
   const [showProgressCheckModal, setShowProgressCheckModal] = useState(false);
 
-  const latestStatus = getDeadlineStatus(deadline);
-  const { isCompleted, isToReview, isActive, isPending, isPaused } =
-    getStatusFlags(latestStatus);
+  const {
+    latestStatus,
+    isCompleted,
+    isToReview,
+    isActive,
+    isPending,
+    isPaused,
+    isArchived,
+  } = getDeadlineStatus(deadline);
 
   const { reviewTracking, platforms } = useReviewTrackingData(
     deadline.id,
     isToReview
   );
   const { updatePlatforms } = useReviewTrackingMutation(deadline.id);
-
-  const isArchived = isCompleted || latestStatus === 'did_not_finish';
 
   useEffect(() => {
     if (visible) {
