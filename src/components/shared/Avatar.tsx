@@ -58,38 +58,6 @@ const Avatar: React.FC<AvatarProps> = ({
   const pickImage = async () => {
     if (!editable || !onImageChange) return;
 
-    // Show action sheet first, request permissions only when user makes a choice
-    Alert.alert('Change Profile Picture', 'Choose an option', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Take Photo', onPress: () => openCamera() },
-      { text: 'Choose from Library', onPress: () => openImageLibrary() },
-    ]);
-  };
-
-  const openCamera = async () => {
-    const { granted } = await ImagePicker.requestCameraPermissionsAsync();
-
-    if (!granted) {
-      Alert.alert(
-        'Camera Permission Required',
-        'Please enable camera access in Settings to take a photo.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.7,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      onImageChange?.(result.assets[0].uri);
-    }
-  };
-
-  const openImageLibrary = async () => {
     const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!granted) {
@@ -104,7 +72,8 @@ const Avatar: React.FC<AvatarProps> = ({
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.7,
+      quality: 1,
+      mediaTypes: 'images',
     });
 
     if (!result.canceled && result.assets[0]) {
@@ -127,7 +96,12 @@ const Avatar: React.FC<AvatarProps> = ({
       source={{ uri: displayUrl }}
       style={[
         styles.image,
-        { width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surfaceVariant },
+        {
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          backgroundColor: colors.surfaceVariant,
+        },
       ]}
       resizeMode="cover"
     />
@@ -135,13 +109,27 @@ const Avatar: React.FC<AvatarProps> = ({
     <View
       style={[
         styles.placeholder,
-        { width: size, height: size, borderRadius: size / 2, backgroundColor: colors.textMuted },
+        {
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          backgroundColor: colors.textMuted,
+        },
       ]}
     >
       {showIcon ? (
-        <IconSymbol name="person.fill" size={size * 0.5} color={colors.textInverse} />
+        <IconSymbol
+          name="person.fill"
+          size={size * 0.5}
+          color={colors.textInverse}
+        />
       ) : (
-        <ThemedText style={[styles.initials, { fontSize: size * 0.4, color: colors.textInverse }]}>
+        <ThemedText
+          style={[
+            styles.initials,
+            { fontSize: size * 0.4, color: colors.textInverse },
+          ]}
+        >
           {getInitials()}
         </ThemedText>
       )}
@@ -152,8 +140,20 @@ const Avatar: React.FC<AvatarProps> = ({
     return (
       <TouchableOpacity onPress={pickImage} style={containerStyle}>
         {content}
-        <View style={[styles.editOverlay, { backgroundColor: colors.primary, borderColor: colors.textInverse }]}>
-          <IconSymbol name="camera.fill" size={size * 0.25} color={colors.textInverse} />
+        <View
+          style={[
+            styles.editOverlay,
+            {
+              backgroundColor: colors.primary,
+              borderColor: colors.textInverse,
+            },
+          ]}
+        >
+          <IconSymbol
+            name="camera.fill"
+            size={size * 0.25}
+            color={colors.textInverse}
+          />
         </View>
       </TouchableOpacity>
     );

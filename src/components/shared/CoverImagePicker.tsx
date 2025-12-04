@@ -70,38 +70,9 @@ const CoverImagePicker: React.FC<CoverImagePickerProps> = ({
       return;
     }
 
-    Alert.alert('Add Cover Image', 'Choose an option', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Take Photo', onPress: () => openCamera() },
-      { text: 'Choose from Library', onPress: () => openImageLibrary() },
-    ]);
-  };
-
-  const openCamera = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-
-    if (!permissionResult.granted) {
-      Alert.alert(
-        'Permission Required',
-        'Please allow camera access to take a photo.'
-      );
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [2, 3],
-      quality: 0.7,
-    });
-
-    handleImageResult(result);
-  };
-
-  const openImageLibrary = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [2, 3],
-      quality: 0.7,
+      allowsEditing: false,
+      quality: 1,
       mediaTypes: 'images',
     });
 
