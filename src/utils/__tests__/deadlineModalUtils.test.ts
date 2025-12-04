@@ -388,6 +388,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [],
         status: [],
       };
@@ -412,6 +413,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [
           {
             id: '1',
@@ -446,6 +448,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [
           {
             id: '1',
@@ -480,6 +483,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [
           {
             id: '1',
@@ -524,6 +528,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [
           {
             id: '1',
@@ -577,6 +582,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [
           {
             id: '2',
@@ -623,6 +629,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [],
         status: [],
       };
@@ -647,6 +654,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [
           {
             id: '1',
@@ -681,6 +689,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [
           {
             id: '1',
@@ -733,6 +742,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [
           {
             id: '1',
@@ -794,6 +804,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [
           {
             id: '1',
@@ -861,6 +872,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [],
         status: [],
       };
@@ -887,6 +899,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [
           {
             id: '1',
@@ -933,6 +946,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [
           {
             id: '1',
@@ -979,6 +993,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [],
         status: [],
       };
@@ -1005,6 +1020,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [],
         status: [],
       };
@@ -1031,6 +1047,7 @@ describe('deadlineModalUtils', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [],
         status: [],
       };
@@ -1101,6 +1118,7 @@ describe('deadlineModalUtils', () => {
         created_at: new Date().toISOString(),
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [],
         status: [],
       };
@@ -1128,6 +1146,7 @@ describe('deadlineModalUtils', () => {
         created_at: twoWeeksAgo.toISOString(),
         updated_at: '2024-01-01',
         cover_image_url: null,
+        finished_at: null,
         progress: [],
         status: [],
       };

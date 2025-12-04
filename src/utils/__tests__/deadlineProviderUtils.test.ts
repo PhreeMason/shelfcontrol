@@ -442,6 +442,7 @@ describe('deadlineProviderUtils', () => {
         cover_image_url: null,
         created_at: yesterday.toISOString(),
         updated_at: yesterday.toISOString(),
+        finished_at: null,
         progress: [
           {
             id: 'p1',
@@ -479,6 +480,7 @@ describe('deadlineProviderUtils', () => {
         cover_image_url: null,
         created_at: today.toISOString(),
         updated_at: today.toISOString(),
+        finished_at: null,
         progress: [
           {
             id: 'p1',
@@ -516,6 +518,7 @@ describe('deadlineProviderUtils', () => {
         cover_image_url: null,
         created_at: new Date('2024-01-20T08:00:00Z').toISOString(),
         updated_at: new Date('2024-01-20T08:00:00Z').toISOString(),
+        finished_at: null,
         progress: [
           {
             id: 'p1',
@@ -553,6 +556,7 @@ describe('deadlineProviderUtils', () => {
         cover_image_url: null,
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
+        finished_at: null,
         progress: [
           {
             id: 'p1',
@@ -591,6 +595,7 @@ describe('deadlineProviderUtils', () => {
         cover_image_url: null,
         created_at: yesterday.toISOString(),
         updated_at: today.toISOString(),
+        finished_at: null,
         progress: [
           {
             id: 'p1',

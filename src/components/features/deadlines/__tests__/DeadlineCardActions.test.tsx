@@ -82,6 +82,7 @@ describe('DeadlineCardActions', () => {
     type: 'Personal',
     publishers: null,
     cover_image_url: null,
+    finished_at: null,
     status: [
       {
         id: 'status-1',

@@ -65,6 +65,7 @@ export function createMockDeadline(
     cover_image_url: null,
     created_at: '2024-01-01',
     updated_at: '2024-01-01',
+    finished_at: null,
     progress: progress.map((p, index) => ({
       id: `progress-${id}-${index}`,
       deadline_id: id,
