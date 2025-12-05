@@ -11,6 +11,7 @@ import { useTheme } from '@/hooks/useThemeColor';
 import { analytics } from '@/lib/analytics/client';
 import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
+import { isJsonParseError } from '@/services/auth.service';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useRouter } from 'expo-router';
 import * as Linking from 'expo-linking';
@@ -79,6 +80,11 @@ export default function SignInScreen() {
           setError('root', { message: 'Invalid email or password' });
         } else if (error.message.includes('Email not confirmed')) {
           setError('root', { message: 'Please confirm your email address' });
+        } else if (isJsonParseError(error)) {
+          setError('root', {
+            message:
+              'Connection issue. Please close the app completely and try again.',
+          });
         } else {
           setError('root', { message: error.message || 'Sign in failed' });
         }

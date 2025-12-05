@@ -11,6 +11,7 @@ import {
   calculateTotalQuantityFromForm,
 } from './deadlineCalculations';
 import { DeadlineFormData } from './deadlineFormSchema';
+import { getUserFriendlyErrorMessage } from './errorUtils';
 
 export type FormMode = 'new' | 'edit';
 
@@ -587,7 +588,8 @@ export const createSuccessToast = (mode: FormMode, newDeadlineId?: string) => {
 };
 
 /**
- * Creates error toast notification
+ * Creates error toast notification with user-friendly messages.
+ * Never shows raw error messages or HTML content to users.
  */
 export const createErrorToast = (mode: FormMode) => {
   const title =
@@ -598,7 +600,7 @@ export const createErrorToast = (mode: FormMode) => {
       swipeable: true,
       type: 'error',
       text1: title,
-      text2: error.message || 'Please try again',
+      text2: getUserFriendlyErrorMessage(error),
       autoHide: true,
       visibilityTime: 1500,
       position: 'top',

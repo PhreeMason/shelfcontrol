@@ -1,9 +1,19 @@
 import { DB_TABLES, STORAGE_BUCKETS } from '@/constants/database';
-import { supabase } from '@/lib/supabase';
+import { clearAuthCache, supabase } from '@/lib/supabase';
 import { AuthError, AuthResponse, Session } from '@supabase/supabase-js';
 import { AppState } from 'react-native';
 import { activityService } from './activity.service';
 import { storageService } from './storage.service';
+
+export const isJsonParseError = (error: unknown): boolean => {
+  if (error instanceof Error) {
+    return (
+      error.message.includes('JSON Parse error') ||
+      error.message.includes('Unexpected character')
+    );
+  }
+  return false;
+};
 
 AppState.addEventListener('change', state => {
   if (state === 'active') {
@@ -54,6 +64,9 @@ class AuthService {
 
       return { data: { user: data.user, session: data.session }, error: null };
     } catch (error) {
+      if (isJsonParseError(error)) {
+        await clearAuthCache();
+      }
       return { data: { user: null, session: null }, error: error as AuthError };
     }
   }

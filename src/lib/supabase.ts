@@ -82,4 +82,19 @@ const generateId = (prefix: string = '') => {
   return prefix + uuidv4();
 };
 
-export { generateId, supabase };
+/**
+ * Clears the Supabase auth session cache.
+ * Use this when encountering corrupted session data (e.g., JSON parse errors).
+ */
+const clearAuthCache = async () => {
+  if (Platform.OS === 'web') {
+    return;
+  }
+  const storage = new LargeSecureStore();
+  const projectRef = supabaseUrl.split('//')[1]?.split('.')[0];
+  if (projectRef) {
+    await storage.removeItem(`sb-${projectRef}-auth-token`);
+  }
+};
+
+export { clearAuthCache, generateId, supabase };

@@ -3,6 +3,7 @@ import { ThemedText, ThemedView } from '@/components/themed';
 import { Spacing } from '@/constants/Colors';
 import { usePreferences } from '@/providers/PreferencesProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { getUserFriendlyErrorMessage } from '@/utils/errorUtils';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { DeadlineCardCompact } from './DeadlineCardCompact';
@@ -41,7 +42,13 @@ const DeadlinesList: React.FC<DeadlinesListProps> = ({
             color="error"
             style={styles.errorText}
           >
-            Error loading deadlines: {error.message}
+            {getUserFriendlyErrorMessage(error)}
+          </ThemedText>
+          <ThemedText
+            typography="bodySmall"
+            style={styles.errorHint}
+          >
+            Pull down to refresh
           </ThemedText>
         </ThemedView>
       );
@@ -100,6 +107,11 @@ const styles = StyleSheet.create({
   },
   errorText: {
     textAlign: 'center',
+  },
+  errorHint: {
+    textAlign: 'center',
+    marginTop: Spacing.sm,
+    opacity: 0.6,
   },
   loadingText: {
     textAlign: 'center',
