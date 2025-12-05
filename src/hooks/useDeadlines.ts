@@ -108,6 +108,41 @@ export const useUpdateDeadlineDate = () => {
   });
 };
 
+export const useUpdateFinishedAt = () => {
+  const { session } = useAuth();
+  const userId = session?.user?.id;
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      deadlineId,
+      finishedAt,
+    }: {
+      deadlineId: string;
+      finishedAt: string;
+    }) => {
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      return deadlinesService.updateFinishedAt(userId, deadlineId, finishedAt);
+    },
+    onSuccess: (_data, variables) => {
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.DETAIL(userId, variables.deadlineId),
+        });
+      }
+    },
+    onError: (error: Error) => {
+      console.error('Error updating finished date:', error);
+      posthog.captureException(error);
+    },
+  });
+};
+
 export const useUploadDeadlineCover = () => {
   const { session } = useAuth();
   const userId = session?.user?.id;
@@ -551,7 +586,13 @@ export const useDeadlineTypes = () => {
   return result;
 };
 
-const DEFAULT_SOURCES = ['NetGalley', 'Edelweiss', 'Direct'];
+const DEFAULT_SOURCES = [
+  'NetGalley',
+  'Edelweiss',
+  'Street Team',
+  'Influencer Program',
+  'Book Mail',
+];
 
 export const useAcquisitionSources = () => {
   const { profile, session } = useAuth();

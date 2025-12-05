@@ -25,7 +25,13 @@ const mockDeadlinesService = deadlinesService as jest.Mocked<
   typeof deadlinesService
 >;
 
-const DEFAULT_SOURCES = ['NetGalley', 'Edelweiss', 'Direct'];
+const DEFAULT_SOURCES = [
+  'NetGalley',
+  'Edelweiss',
+  'Street Team',
+  'Influencer Program',
+  'Book Mail',
+];
 
 const mockUser = {
   id: 'user-123',
@@ -214,7 +220,9 @@ describe('useAcquisitionSources', () => {
         'Publisher',
         'NetGalley',
         'Edelweiss',
-        'Direct',
+        'Street Team',
+        'Influencer Program',
+        'Book Mail',
       ]);
     });
 
@@ -222,14 +230,21 @@ describe('useAcquisitionSources', () => {
       useAcquisitionSources();
 
       const queryConfig = mockUseQuery.mock.calls[0][0];
-      const userSources = ['netgalley', 'DIRECT', 'Edelweiss', 'Amazon'];
+      const userSources = ['netgalley', 'BOOK MAIL', 'Edelweiss', 'Amazon'];
       mockDeadlinesService.getUniqueAcquisitionSources.mockResolvedValue(
         userSources
       );
 
       const result = await queryConfig.queryFn();
 
-      expect(result).toEqual(['Amazon', 'NetGalley', 'Edelweiss', 'Direct']);
+      expect(result).toEqual([
+        'Amazon',
+        'NetGalley',
+        'Edelweiss',
+        'Street Team',
+        'Influencer Program',
+        'Book Mail',
+      ]);
     });
 
     it('should sort user sources alphabetically before defaults', async () => {
@@ -249,7 +264,9 @@ describe('useAcquisitionSources', () => {
         'Zebra Source',
         'NetGalley',
         'Edelweiss',
-        'Direct',
+        'Street Team',
+        'Influencer Program',
+        'Book Mail',
       ]);
     });
 
@@ -343,7 +360,9 @@ describe('useAcquisitionSources', () => {
         'Re-sell Shop',
         'NetGalley',
         'Edelweiss',
-        'Direct',
+        'Street Team',
+        'Influencer Program',
+        'Book Mail',
       ]);
     });
 
@@ -363,7 +382,9 @@ describe('useAcquisitionSources', () => {
         longSourceName,
         'NetGalley',
         'Edelweiss',
-        'Direct',
+        'Street Team',
+        'Influencer Program',
+        'Book Mail',
       ]);
     });
 
@@ -382,7 +403,7 @@ describe('useAcquisitionSources', () => {
         [...userSources].sort((a, b) => a.localeCompare(b))
       );
       expect(result.slice(4)).toEqual(DEFAULT_SOURCES);
-      expect(result).toHaveLength(7);
+      expect(result).toHaveLength(9);
     });
 
     it('should handle large number of user sources', async () => {
@@ -399,7 +420,7 @@ describe('useAcquisitionSources', () => {
 
       const result = await queryConfig.queryFn();
 
-      expect(result).toHaveLength(53);
+      expect(result).toHaveLength(55);
       expect(result.slice(0, 50)).toEqual(userSources.sort());
       expect(result.slice(50)).toEqual(DEFAULT_SOURCES);
     });
@@ -422,7 +443,9 @@ describe('useAcquisitionSources', () => {
         'Valid Source',
         'NetGalley',
         'Edelweiss',
-        'Direct',
+        'Street Team',
+        'Influencer Program',
+        'Book Mail',
       ]);
     });
 
@@ -443,7 +466,9 @@ describe('useAcquisitionSources', () => {
         'Librairie 📚',
         'NetGalley',
         'Edelweiss',
-        'Direct',
+        'Street Team',
+        'Influencer Program',
+        'Book Mail',
       ]);
     });
   });
