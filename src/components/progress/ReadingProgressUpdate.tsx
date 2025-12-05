@@ -299,12 +299,20 @@ const ReadingProgressUpdate = ({
   // Handle quick update from QuickActionButtons (+/- increments)
   const handleQuickUpdate = useCallback(
     (increment: number) => {
-      const newValue = clamp(scrubberValue + increment, 0, totalQuantity);
+      // Convert percentage increment to absolute value when in percentage mode
+      // Use ceil to ensure at least 1 page/minute change for small books
+      const actualIncrement =
+        inputMode === 'percentage'
+          ? Math.sign(increment) *
+            Math.ceil(Math.abs((increment / 100) * totalQuantity))
+          : increment;
+
+      const newValue = clamp(scrubberValue + actualIncrement, 0, totalQuantity);
       setScrubberValue(newValue);
       setValue('currentProgress', newValue, { shouldValidate: false });
       offset.value = newValue;
     },
-    [scrubberValue, totalQuantity, setValue, offset]
+    [scrubberValue, totalQuantity, setValue, offset, inputMode]
   );
 
   // Pan gesture for direct 1:1 scrubbing
@@ -438,10 +446,12 @@ const ReadingProgressUpdate = ({
 
           {/* Quick Action Buttons - BELOW scrubber, ABOVE Update button */}
           <View style={styles.quickButtonsSection}>
-            <ThemedText variant="muted" style={styles.quickActionLabel}>
-              {deadline.format === 'audio'
-                ? 'Quick update (minutes):'
-                : 'Quick update pages:'}
+            <ThemedText variant="secondary" style={styles.quickActionLabel}>
+              {inputMode === 'percentage'
+                ? 'Quick update %:'
+                : deadline.format === 'audio'
+                  ? 'Quick update (minutes):'
+                  : 'Quick update pages:'}
             </ThemedText>
             <QuickActionButtons
               onQuickUpdate={handleQuickUpdate}
