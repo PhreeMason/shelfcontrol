@@ -2,7 +2,11 @@
  * Utility functions for statistics and hero section calculations
  */
 
-import { STATS_CONSTANTS } from '@/constants/statsConstants';
+import {
+  DAY_ABBREVS,
+  DAY_NAMES,
+  STATS_CONSTANTS,
+} from '@/constants/statsConstants';
 import { dayjs } from '@/lib/dayjs';
 import type {
   ProductivityDataResult,
@@ -249,84 +253,6 @@ export const getCompletionDateThisWeek = (
 };
 
 /**
- * Filters progress entries to those created within a specified date range, optionally up to a completion date
- *
- * This function applies inclusive date boundaries (isSameOrAfter/isSameOrBefore) to ensure
- * progress entries exactly at week boundaries are included.
- *
- * **Filtering Rules**:
- * - Excludes entries with `ignore_in_calcs = true`
- * - Includes entries from start date to end date (inclusive)
- * - If completion date provided, only includes entries before or at completion time
- *
- * **Timezone Handling**:
- * - Server timestamps are normalized to local timezone via `normalizeServerDate()`
- * - Week boundaries are computed in local timezone
- * - Comparison uses `.isSameOrAfter(start)` and `.isSameOrBefore(end)` which compare
- *   dates in the same timezone (both local)
- * - This ensures entries at exactly the boundary timestamps are included
- * - No timezone conversion occurs during comparison (both sides are local)
- *
- * **Edge Cases Handled**:
- * - Progress entry exactly at start time → Included (isSameOrAfter)
- * - Progress entry exactly at end time → Included (isSameOrBefore)
- * - Mid-week completion: Only counts progress up to completion timestamp
- *
- * @param deadline - The deadline with progress entries to filter
- * @param dateRange - The date range to filter progress entries (start and end Dayjs instances)
- * @param completionDate - Optional completion date to filter progress before (for mid-week completions)
- * @returns Array of progress entries from the specified date range, excluding ignored entries
- */
-const getProgressEntriesInDateRange = (
-  deadline: ReadingDeadlineWithProgress,
-  dateRange: { start: Dayjs; end: Dayjs },
-  completionDate?: string | null
-): ReadingDeadlineProgress[] => {
-  const { start, end } = dateRange;
-
-  return deadline.progress.filter(entry => {
-    if (entry.ignore_in_calcs) return false;
-
-    const entryDate = normalizeServerDate(entry.created_at);
-
-    // Must be within the date range (inclusive of boundaries)
-    if (!entryDate.isSameOrAfter(start) || !entryDate.isSameOrBefore(end)) {
-      return false;
-    }
-
-    // If book was completed during this period, only count progress before or at completion
-    if (completionDate) {
-      const completion = normalizeServerDate(completionDate);
-      if (entryDate.isAfter(completion)) {
-        return false;
-      }
-    }
-
-    return true;
-  });
-};
-
-/**
- * Filters progress entries to those created this week, optionally up to a completion date
- *
- * This is a convenience wrapper around `getProgressEntriesInDateRange` that uses the current week.
- *
- * @param deadline - The deadline with progress entries to filter
- * @param completionDate - Optional completion date to filter progress before (for mid-week completions)
- * @returns Array of progress entries from this week, excluding ignored entries
- */
-const getProgressEntriesThisWeek = (
-  deadline: ReadingDeadlineWithProgress,
-  completionDate?: string | null
-): ReadingDeadlineProgress[] => {
-  return getProgressEntriesInDateRange(
-    deadline,
-    getWeekDateRange(),
-    completionDate
-  );
-};
-
-/**
  * Counts unique days with reading activity from progress entries
  * @param progress - Array of progress entries
  * @returns Count of unique days (0-7)
@@ -340,12 +266,270 @@ const countDaysWithActivity = (progress: ReadingDeadlineProgress[]): number => {
   return uniqueDays.size;
 };
 
+// ============================================================================
+// Helper Functions for Weekly Stats
+// ============================================================================
+
 /**
- * Calculates the weekly goal (units needed) for a specific deadline within a date range
+ * Filters deadlines by format type (reading vs audio)
+ *
+ * @param deadlines - Array of deadlines to filter
+ * @param format - 'reading' for physical/eBook, 'audio' for audiobooks
+ * @returns Filtered array of deadlines matching the format
+ */
+export const filterDeadlinesByFormat = (
+  deadlines: ReadingDeadlineWithProgress[],
+  format: 'reading' | 'audio'
+): ReadingDeadlineWithProgress[] => {
+  if (format === 'reading') {
+    return deadlines.filter(
+      d => d.format === 'physical' || d.format === 'eBook'
+    );
+  }
+  return deadlines.filter(d => d.format === 'audio');
+};
+
+/**
+ * Filters progress entries to those within a date range (inclusive)
+ * Excludes entries with ignore_in_calcs=true
+ *
+ * @param progress - Array of progress entries to filter
+ * @param range - Date range with start and end
+ * @returns Filtered progress entries within the range
+ */
+const filterProgressInRange = (
+  progress: ReadingDeadlineProgress[],
+  range: { start: Dayjs; end: Dayjs }
+): ReadingDeadlineProgress[] =>
+  progress.filter(p => {
+    if (p.ignore_in_calcs) return false;
+    const entryDate = normalizeServerDate(p.created_at);
+    return (
+      entryDate.isSameOrAfter(range.start) &&
+      entryDate.isSameOrBefore(range.end)
+    );
+  });
+
+/**
+ * Filters progress entries to those before a given date
+ * Excludes entries with ignore_in_calcs=true
+ *
+ * @param progress - Array of progress entries to filter
+ * @param beforeDate - Date to filter before
+ * @returns Filtered progress entries before the date
+ */
+const filterProgressBeforeDate = (
+  progress: ReadingDeadlineProgress[],
+  beforeDate: Dayjs
+): ReadingDeadlineProgress[] =>
+  progress.filter(p => {
+    if (p.ignore_in_calcs) return false;
+    return normalizeServerDate(p.created_at).isBefore(beforeDate);
+  });
+
+/**
+ * Gets max progress value from an array of progress entries
+ * Returns 0 if array is empty
+ */
+const getMaxProgress = (progress: ReadingDeadlineProgress[]): number =>
+  progress.length > 0
+    ? Math.max(...progress.map(p => p.current_progress))
+    : 0;
+
+/**
+ * Calculates progress made this week for a single deadline
+ *
+ * Progress is calculated as: max(progress this week) - max(progress before week)
+ * This handles backwards tracking (corrections) correctly by using max values.
+ *
+ * @param deadline - The deadline to calculate progress for
+ * @param weekRange - The week's start and end dates
+ * @returns Units (pages or minutes) read/listened this week for this deadline
+ */
+export const calculateWeekProgressForDeadline = (
+  deadline: ReadingDeadlineWithProgress,
+  weekRange: { start: Dayjs; end: Dayjs }
+): number => {
+  const progressAtEndOfWeek = getMaxProgress(
+    filterProgressInRange(deadline.progress, weekRange)
+  );
+  const progressAtStartOfWeek = getMaxProgress(
+    filterProgressBeforeDate(deadline.progress, weekRange.start)
+  );
+
+  return Math.max(0, progressAtEndOfWeek - progressAtStartOfWeek);
+};
+
+/**
+ * Calculates total progress this week from ALL deadlines (regardless of status)
+ *
+ * This counts all progress logged this week, whether the book is active,
+ * overdue, paused, completed, DNF, etc. If you read 20 pages then paused
+ * the book, those 20 pages still count.
+ *
+ * @param allDeadlines - All deadlines (any status)
+ * @param format - 'reading' for physical/eBook, 'audio' for audiobooks
+ * @param weekRange - Optional pre-computed week range (avoids redundant calls)
+ * @returns Total units read/listened this week across all books
+ */
+export const calculateTotalProgressThisWeek = (
+  allDeadlines: ReadingDeadlineWithProgress[],
+  format: 'reading' | 'audio',
+  weekRange?: { start: Dayjs; end: Dayjs }
+): number => {
+  const range = weekRange ?? getWeekDateRange();
+  const filteredDeadlines = filterDeadlinesByFormat(allDeadlines, format);
+
+  return filteredDeadlines.reduce((total, deadline) => {
+    return total + calculateWeekProgressForDeadline(deadline, range);
+  }, 0);
+};
+
+/**
+ * Calculates days with activity this week from ALL deadlines
+ *
+ * @param allDeadlines - All deadlines (any status)
+ * @param format - 'reading' for physical/eBook, 'audio' for audiobooks
+ * @param weekRange - Optional pre-computed week range (avoids redundant calls)
+ * @returns Number of unique days with reading/listening activity (0-7)
+ */
+export const calculateDaysWithActivityThisWeek = (
+  allDeadlines: ReadingDeadlineWithProgress[],
+  format: 'reading' | 'audio',
+  weekRange?: { start: Dayjs; end: Dayjs }
+): number => {
+  const range = weekRange ?? getWeekDateRange();
+  const filteredDeadlines = filterDeadlinesByFormat(allDeadlines, format);
+
+  const allWeekProgress = filteredDeadlines.flatMap(deadline =>
+    filterProgressInRange(deadline.progress, range)
+  );
+
+  return countDaysWithActivity(allWeekProgress);
+};
+
+/**
+ * Interface for the goal calculation results
+ */
+export interface WeeklyGoalResult {
+  unitsNeeded: number;
+  requiredDailyPace: number;
+}
+
+/**
+ * Calculates weekly goal based on active deadlines only
+ *
+ * Goals are based on books that were active at the beginning of the week,
+ * giving users a stable target to work toward.
+ *
+ * @param activeDeadlines - Active deadlines (status='reading')
+ * @param completedDeadlines - Completed deadlines (to include books completed this week)
+ * @param format - 'reading' for physical/eBook, 'audio' for audiobooks
+ * @param weekRange - Optional pre-computed week range (avoids redundant calls)
+ * @returns Weekly goal (units needed) and required daily pace
+ */
+export const calculateWeeklyGoalForActiveDeadlines = (
+  activeDeadlines: ReadingDeadlineWithProgress[],
+  completedDeadlines: ReadingDeadlineWithProgress[],
+  format: 'reading' | 'audio',
+  weekRange?: { start: Dayjs; end: Dayjs }
+): WeeklyGoalResult => {
+  const range = weekRange ?? getWeekDateRange();
+
+  // Filter active books by format and status
+  const activeBooks = filterDeadlinesByFormat(activeDeadlines, format).filter(
+    d => {
+      const latestStatus =
+        d.status && d.status.length > 0
+          ? d.status[d.status.length - 1]?.status
+          : null;
+      return latestStatus === 'reading';
+    }
+  );
+
+  // Get books completed this week (they contributed to goals earlier)
+  const completedThisWeekBooks = filterDeadlinesByFormat(
+    completedDeadlines,
+    format
+  ).filter(d => getCompletionDateThisWeek(d) !== null);
+
+  const allRelevantBooks = [...activeBooks, ...completedThisWeekBooks];
+
+  if (allRelevantBooks.length === 0) {
+    return { unitsNeeded: 0, requiredDailyPace: 0 };
+  }
+
+  let totalUnitsNeeded = 0;
+  let totalRequiredDailyPace = 0;
+
+  for (const deadline of allRelevantBooks) {
+    const readingStartDate = getReadingStartDate(deadline);
+    if (!readingStartDate) continue;
+
+    const startDate = normalizeServerDate(readingStartDate).startOf('day');
+    const deadlineDate = normalizeServerDate(deadline.deadline_date).startOf(
+      'day'
+    );
+
+    const totalTimelineDays = deadlineDate.diff(startDate, 'day');
+    if (totalTimelineDays <= 0) continue;
+
+    // Check if completed this week
+    const completionDate = getCompletionDateThisWeek(deadline);
+
+    // Find progress before this week started to calculate remaining
+    const progressAtStartOfWeek = getMaxProgress(
+      filterProgressBeforeDate(deadline.progress, range.start)
+    );
+
+    // Calculate forward-looking daily pace from start of week
+    const remainingAtStartOfWeek =
+      deadline.total_quantity - progressAtStartOfWeek;
+    const daysLeftFromWeekStart = deadlineDate.diff(range.start, 'day');
+    const requiredDailyPace =
+      daysLeftFromWeekStart > 0
+        ? remainingAtStartOfWeek / daysLeftFromWeekStart
+        : remainingAtStartOfWeek;
+    totalRequiredDailyPace += requiredDailyPace;
+
+    // Calculate weekly goal (adjusted if completed mid-week)
+    const weeklyGoal = calculateWeeklyGoalForDeadline(
+      requiredDailyPace,
+      range.start,
+      completionDate
+    );
+    totalUnitsNeeded += weeklyGoal;
+  }
+
+  return {
+    unitsNeeded: totalUnitsNeeded,
+    requiredDailyPace: totalRequiredDailyPace,
+  };
+};
+
+/**
+ * Determines overall status based on progress percentage
+ *
+ * @param progressPercentage - Progress as percentage of goal (0-100+)
+ * @returns Status: 'ahead', 'onTrack', or 'behind'
+ */
+export const calculateOverallStatus = (
+  progressPercentage: number
+): 'ahead' | 'onTrack' | 'behind' => {
+  if (progressPercentage >= STATS_CONSTANTS.AHEAD_THRESHOLD) {
+    return 'ahead';
+  } else if (progressPercentage >= STATS_CONSTANTS.ON_TRACK_THRESHOLD) {
+    return 'onTrack';
+  }
+  return 'behind';
+};
+
+/**
+ * Calculates the weekly goal (units needed) for a specific deadline
  *
  * For books still in progress, the weekly goal is simply the daily pace × 7.
- * For books completed mid-period, the goal is prorated to only include days
- * from the period start until completion.
+ * For books completed mid-week, the goal is prorated to only include days
+ * from week start until completion.
  *
  * **Example**:
  * - Book requires 10 pages/day
@@ -355,22 +539,20 @@ const countDaysWithActivity = (progress: ReadingDeadlineProgress[]): number => {
  * This prevents penalizing users for books completed earlier in the week.
  *
  * @param requiredDailyPace - Required daily pace for this book (pages or minutes per day)
- * @param dateRange - The date range to calculate the goal for
- * @param completionDate - Optional completion date if completed during this period
- * @returns Units needed for this period (prorated if completed mid-period)
+ * @param weekStart - Start of the week (Sunday)
+ * @param completionDate - Optional completion date if completed during this week
+ * @returns Units needed for this week (prorated if completed mid-week)
  */
 const calculateWeeklyGoalForDeadline = (
   requiredDailyPace: number,
-  dateRange: { start: Dayjs; end: Dayjs },
+  weekStart: Dayjs,
   completionDate?: string | null
 ): number => {
-  const { start } = dateRange;
-
   if (completionDate) {
-    // Book was completed during this period - calculate days from period start to completion
+    // Book was completed during this week - calculate days from week start to completion
     const completion = normalizeServerDate(completionDate).startOf('day');
-    const daysInPeriodUntilCompletion = completion.diff(start, 'day') + 1;
-    return requiredDailyPace * Math.max(1, daysInPeriodUntilCompletion);
+    const daysInWeekUntilCompletion = completion.diff(weekStart, 'day') + 1;
+    return requiredDailyPace * Math.max(1, daysInWeekUntilCompletion);
   } else {
     // Book is still reading - full week goal
     return requiredDailyPace * 7;
@@ -378,347 +560,116 @@ const calculateWeeklyGoalForDeadline = (
 };
 
 /**
- * Calculates weekly reading statistics for physical and eBook formats
- *
- * This function analyzes reading progress for the current week (Sunday to Saturday)
- * and aggregates statistics across all relevant books.
+ * Generic function to calculate weekly stats for any format
  *
  * **Calculation Method**:
+ * - Progress: Counts ALL progress logged this week from ANY book (regardless of status)
+ * - Goals: Based on active books only (books that were active at week start)
  * - Uses max() instead of latest progress entry to handle backwards tracking
- * - Progress this week = max(progress entries this week) - max(progress before week)
- * - Required pace calculated from deadline timeline (total / days from start to deadline)
- * - Weekly goal = required daily pace × 7 (adjusted for mid-week completions)
+ *
+ * **Why Progress Counts All Books**:
+ * If you read/listen then pause the book, that progress still counts toward
+ * your weekly total. Same for overdue, DNF, or any other status.
  *
  * **Status Determination**:
  * - `ahead`: Progress >= 100% of weekly goal
  * - `onTrack`: Progress >= 95% of weekly goal
  * - `behind`: Progress < 95% of weekly goal
- *
- * **Included Books**:
- * - Active books with status='reading' and format='physical' or 'eBook'
- * - Books completed or moved to 'to_review' this week (physical/eBook only)
- *
- * **Edge Cases**:
- * - Mid-week completions: Weekly goal is prorated based on completion date
- * - Progress entries marked with `ignore_in_calcs` are excluded
- * - Books without reading start date are skipped
- * - Books with deadline before or at start date are skipped
- *
- * @param activeDeadlines - All active deadlines
- * @param completedDeadlines - All completed deadlines
- * @returns Weekly reading statistics with progress, pace, and status
  */
-export const calculateWeeklyReadingStats = (
+const calculateWeeklyStatsForFormat = (
   activeDeadlines: ReadingDeadlineWithProgress[],
-  completedDeadlines: ReadingDeadlineWithProgress[]
+  completedDeadlines: ReadingDeadlineWithProgress[],
+  allDeadlines: ReadingDeadlineWithProgress[],
+  format: 'reading' | 'audio'
 ): WeeklyStats => {
-  // Get active reading books
-  const activeReadingBooks = activeDeadlines.filter(d => {
-    const latestStatus =
-      d.status && d.status.length > 0
-        ? d.status[d.status.length - 1]?.status
-        : null;
-    return (
-      latestStatus === 'reading' &&
-      (d.format === 'physical' || d.format === 'eBook')
-    );
-  });
+  // Compute week range once and pass to all helpers
+  const weekRange = getWeekDateRange();
 
-  // Get books completed THIS WEEK (physical/eBook only)
-  const completedThisWeekBooks = completedDeadlines.filter(d => {
-    if (d.format !== 'physical' && d.format !== 'eBook') return false;
-    return getCompletionDateThisWeek(d) !== null;
-  });
+  // Progress from ALL deadlines (regardless of status)
+  const totalProgress = calculateTotalProgressThisWeek(
+    allDeadlines,
+    format,
+    weekRange
+  );
 
-  // Combine both lists
-  const allRelevantBooks = [...activeReadingBooks, ...completedThisWeekBooks];
+  // Goals from active deadlines only (gives users a stable target)
+  const { unitsNeeded, requiredDailyPace } = calculateWeeklyGoalForActiveDeadlines(
+    activeDeadlines,
+    completedDeadlines,
+    format,
+    weekRange
+  );
 
-  if (allRelevantBooks.length === 0) {
-    return {
-      unitsReadThisWeek: 0,
-      unitsNeededThisWeek: 0,
-      unitsAheadBehind: 0,
-      averagePerDay: 0,
-      requiredDailyPace: 0,
-      daysWithActivity: 0,
-      daysElapsedThisWeek: getDaysElapsedThisWeek(),
-      progressPercentage: 0,
-      overallStatus: 'onTrack',
-    };
-  }
+  // Activity days from all deadlines
+  const daysWithActivity = calculateDaysWithActivityThisWeek(
+    allDeadlines,
+    format,
+    weekRange
+  );
 
-  let totalPagesReadThisWeek = 0;
-  let totalPagesNeededThisWeek = 0;
-  let totalRequiredDailyPace = 0;
-  const allWeekProgress: ReadingDeadlineProgress[] = [];
-
-  for (const deadline of allRelevantBooks) {
-    const readingStartDate = getReadingStartDate(deadline);
-    if (!readingStartDate) continue;
-
-    const startDate = normalizeServerDate(readingStartDate).startOf('day');
-    const deadlineDate = normalizeServerDate(deadline.deadline_date).startOf(
-      'day'
-    );
-
-    const totalTimelineDays = deadlineDate.diff(startDate, 'day');
-    if (totalTimelineDays <= 0) continue;
-
-    // Check if completed this week
-    const completionDate = getCompletionDateThisWeek(deadline);
-
-    // Get progress THIS WEEK (up to completion if applicable)
-    const weekProgress = getProgressEntriesThisWeek(deadline, completionDate);
-
-    // Calculate pages read this week:
-    // Find the highest progress value from this week
-    // Subtract the progress value at the start of the week
-    const progressAtEndOfWeek =
-      weekProgress.length > 0
-        ? Math.max(...weekProgress.map(p => p.current_progress))
-        : 0;
-
-    // Find progress before this week started
-    const { start: weekStart } = getWeekDateRange();
-    const progressBeforeWeek = deadline.progress
-      .filter(p => {
-        const entryDate = normalizeServerDate(p.created_at);
-        return entryDate.isBefore(weekStart) && !p.ignore_in_calcs;
-      })
-      .map(p => p.current_progress);
-    const progressAtStartOfWeek =
-      progressBeforeWeek.length > 0 ? Math.max(...progressBeforeWeek) : 0;
-
-    // Calculate forward-looking daily pace from start of week (like daily goals)
-    // This calculates what's needed from the start of this week, not from the original start date
-    const remainingAtStartOfWeek =
-      deadline.total_quantity - progressAtStartOfWeek;
-    const daysLeftFromWeekStart = deadlineDate.diff(weekStart, 'day');
-    const requiredDailyPace =
-      daysLeftFromWeekStart > 0
-        ? remainingAtStartOfWeek / daysLeftFromWeekStart
-        : remainingAtStartOfWeek;
-    totalRequiredDailyPace += requiredDailyPace;
-
-    const pagesThisWeek = Math.max(
-      0,
-      progressAtEndOfWeek - progressAtStartOfWeek
-    );
-    totalPagesReadThisWeek += pagesThisWeek;
-
-    // Add to overall activity tracking
-    allWeekProgress.push(...weekProgress);
-
-    // Calculate weekly goal (adjusted if completed mid-week)
-    const weekRange = getWeekDateRange();
-    const weeklyGoal = calculateWeeklyGoalForDeadline(
-      requiredDailyPace,
-      weekRange,
-      completionDate
-    );
-    totalPagesNeededThisWeek += weeklyGoal;
-  }
-
-  const pagesAheadBehind = totalPagesReadThisWeek - totalPagesNeededThisWeek;
-  const daysWithActivity = countDaysWithActivity(allWeekProgress);
-  const averagePagesPerDay =
-    getDaysElapsedThisWeek() > 0
-      ? totalPagesReadThisWeek / getDaysElapsedThisWeek()
-      : 0;
+  // Derived stats
+  const daysElapsed = getDaysElapsedThisWeek();
+  const unitsAheadBehind = totalProgress - unitsNeeded;
+  const averagePerDay = daysElapsed > 0 ? totalProgress / daysElapsed : 0;
   const progressPercentage =
-    totalPagesNeededThisWeek > 0
-      ? (totalPagesReadThisWeek / totalPagesNeededThisWeek) * 100
-      : 0;
+    unitsNeeded > 0 ? (totalProgress / unitsNeeded) * 100 : 0;
 
-  // Determine status based on defined thresholds
-  let overallStatus: 'ahead' | 'onTrack' | 'behind';
-  if (progressPercentage >= STATS_CONSTANTS.AHEAD_THRESHOLD) {
-    overallStatus = 'ahead';
-  } else if (progressPercentage >= STATS_CONSTANTS.ON_TRACK_THRESHOLD) {
-    overallStatus = 'onTrack';
-  } else {
-    overallStatus = 'behind';
-  }
+  // If there's no goal, you're on track (nothing required)
+  const overallStatus =
+    unitsNeeded === 0 ? 'onTrack' : calculateOverallStatus(progressPercentage);
 
   return {
-    unitsReadThisWeek: Math.round(totalPagesReadThisWeek),
-    unitsNeededThisWeek: Math.round(totalPagesNeededThisWeek),
-    unitsAheadBehind: Math.round(pagesAheadBehind),
-    averagePerDay: Math.round(averagePagesPerDay),
-    requiredDailyPace: Math.round(totalRequiredDailyPace),
+    unitsReadThisWeek: Math.round(totalProgress),
+    unitsNeededThisWeek: Math.round(unitsNeeded),
+    unitsAheadBehind: Math.round(unitsAheadBehind),
+    averagePerDay: Math.round(averagePerDay),
+    requiredDailyPace: Math.round(requiredDailyPace),
     daysWithActivity,
-    daysElapsedThisWeek: getDaysElapsedThisWeek(),
+    daysElapsedThisWeek: daysElapsed,
     progressPercentage: Math.round(progressPercentage),
     overallStatus,
   };
 };
 
 /**
+ * Calculates weekly reading statistics for physical and eBook formats
+ *
+ * @param activeDeadlines - Active deadlines (for goal calculation)
+ * @param completedDeadlines - Completed deadlines (for goal calculation)
+ * @param allDeadlines - All deadlines (for progress calculation - any status counts)
+ * @returns Weekly reading statistics with progress, pace, and status
+ */
+export const calculateWeeklyReadingStats = (
+  activeDeadlines: ReadingDeadlineWithProgress[],
+  completedDeadlines: ReadingDeadlineWithProgress[],
+  allDeadlines: ReadingDeadlineWithProgress[]
+): WeeklyStats =>
+  calculateWeeklyStatsForFormat(
+    activeDeadlines,
+    completedDeadlines,
+    allDeadlines,
+    'reading'
+  );
+
+/**
  * Calculates weekly listening statistics for audio format
  *
- * This function mirrors `calculateWeeklyReadingStats` but specifically for audiobooks,
- * tracking minutes listened instead of pages read.
- *
- * **Calculation Method**:
- * - Uses max() instead of latest progress entry to handle backwards tracking
- * - Minutes this week = max(progress entries this week) - max(progress before week)
- * - Required pace calculated from deadline timeline (total minutes / days from start to deadline)
- * - Weekly goal = required daily pace × 7 (adjusted for mid-week completions)
- *
- * **Status Determination**:
- * - `ahead`: Progress >= 100% of weekly goal
- * - `onTrack`: Progress >= 95% of weekly goal
- * - `behind`: Progress < 95% of weekly goal
- *
- * **Included Books**:
- * - Active books with status='reading' and format='audio'
- * - Books completed or moved to 'to_review' this week (audio only)
- *
- * **Edge Cases**:
- * - Mid-week completions: Weekly goal is prorated based on completion date
- * - Progress entries marked with `ignore_in_calcs` are excluded
- * - Books without reading start date are skipped
- * - Books with deadline before or at start date are skipped
- *
- * @param activeDeadlines - All active deadlines
- * @param completedDeadlines - All completed deadlines
+ * @param activeDeadlines - Active deadlines (for goal calculation)
+ * @param completedDeadlines - Completed deadlines (for goal calculation)
+ * @param allDeadlines - All deadlines (for progress calculation - any status counts)
  * @returns Weekly listening statistics with progress, pace, and status
  */
 export const calculateWeeklyListeningStats = (
   activeDeadlines: ReadingDeadlineWithProgress[],
-  completedDeadlines: ReadingDeadlineWithProgress[]
-): WeeklyStats => {
-  // Get active audio books
-  const activeAudioBooks = activeDeadlines.filter(d => {
-    const latestStatus =
-      d.status && d.status.length > 0
-        ? d.status[d.status.length - 1]?.status
-        : null;
-    return latestStatus === 'reading' && d.format === 'audio';
-  });
-
-  // Get audio books completed THIS WEEK
-  const completedThisWeekBooks = completedDeadlines.filter(d => {
-    if (d.format !== 'audio') return false;
-    return getCompletionDateThisWeek(d) !== null;
-  });
-
-  // Combine both lists
-  const allRelevantBooks = [...activeAudioBooks, ...completedThisWeekBooks];
-
-  if (allRelevantBooks.length === 0) {
-    return {
-      unitsReadThisWeek: 0,
-      unitsNeededThisWeek: 0,
-      unitsAheadBehind: 0,
-      averagePerDay: 0,
-      requiredDailyPace: 0,
-      daysWithActivity: 0,
-      daysElapsedThisWeek: getDaysElapsedThisWeek(),
-      progressPercentage: 0,
-      overallStatus: 'onTrack',
-    };
-  }
-
-  let totalMinutesListenedThisWeek = 0;
-  let totalMinutesNeededThisWeek = 0;
-  let totalRequiredDailyPace = 0;
-  const allWeekProgress: ReadingDeadlineProgress[] = [];
-
-  for (const deadline of allRelevantBooks) {
-    const readingStartDate = getReadingStartDate(deadline);
-    if (!readingStartDate) continue;
-
-    const startDate = normalizeServerDate(readingStartDate).startOf('day');
-    const deadlineDate = normalizeServerDate(deadline.deadline_date).startOf(
-      'day'
-    );
-
-    const totalTimelineDays = deadlineDate.diff(startDate, 'day');
-    if (totalTimelineDays <= 0) continue;
-
-    // REUSE hero card calculation for daily pace
-    const requiredDailyPace = deadline.total_quantity / totalTimelineDays;
-    totalRequiredDailyPace += requiredDailyPace;
-
-    // Check if completed this week
-    const completionDate = getCompletionDateThisWeek(deadline);
-
-    // Get progress THIS WEEK (up to completion if applicable)
-    const weekProgress = getProgressEntriesThisWeek(deadline, completionDate);
-
-    // Calculate minutes listened this week:
-    // Find the highest progress value from this week
-    // Subtract the progress value at the start of the week
-    const progressAtEndOfWeek =
-      weekProgress.length > 0
-        ? Math.max(...weekProgress.map(p => p.current_progress))
-        : 0;
-
-    // Find progress before this week started
-    const { start: weekStart } = getWeekDateRange();
-    const progressBeforeWeek = deadline.progress
-      .filter(p => {
-        const entryDate = normalizeServerDate(p.created_at);
-        return entryDate.isBefore(weekStart) && !p.ignore_in_calcs;
-      })
-      .map(p => p.current_progress);
-    const progressAtStartOfWeek =
-      progressBeforeWeek.length > 0 ? Math.max(...progressBeforeWeek) : 0;
-
-    const minutesThisWeek = Math.max(
-      0,
-      progressAtEndOfWeek - progressAtStartOfWeek
-    );
-    totalMinutesListenedThisWeek += minutesThisWeek;
-
-    // Add to overall activity tracking
-    allWeekProgress.push(...weekProgress);
-
-    // Calculate weekly goal (adjusted if completed mid-week)
-    const weekRange = getWeekDateRange();
-    const weeklyGoal = calculateWeeklyGoalForDeadline(
-      requiredDailyPace,
-      weekRange,
-      completionDate
-    );
-    totalMinutesNeededThisWeek += weeklyGoal;
-  }
-
-  const minutesAheadBehind =
-    totalMinutesListenedThisWeek - totalMinutesNeededThisWeek;
-  const daysWithActivity = countDaysWithActivity(allWeekProgress);
-  const averageMinutesPerDay =
-    getDaysElapsedThisWeek() > 0
-      ? totalMinutesListenedThisWeek / getDaysElapsedThisWeek()
-      : 0;
-  const progressPercentage =
-    totalMinutesNeededThisWeek > 0
-      ? (totalMinutesListenedThisWeek / totalMinutesNeededThisWeek) * 100
-      : 0;
-
-  // Determine status based on defined thresholds
-  let overallStatus: 'ahead' | 'onTrack' | 'behind';
-  if (progressPercentage >= STATS_CONSTANTS.AHEAD_THRESHOLD) {
-    overallStatus = 'ahead';
-  } else if (progressPercentage >= STATS_CONSTANTS.ON_TRACK_THRESHOLD) {
-    overallStatus = 'onTrack';
-  } else {
-    overallStatus = 'behind';
-  }
-
-  return {
-    unitsReadThisWeek: Math.round(totalMinutesListenedThisWeek),
-    unitsNeededThisWeek: Math.round(totalMinutesNeededThisWeek),
-    unitsAheadBehind: Math.round(minutesAheadBehind),
-    averagePerDay: Math.round(averageMinutesPerDay),
-    requiredDailyPace: Math.round(totalRequiredDailyPace),
-    daysWithActivity,
-    daysElapsedThisWeek: getDaysElapsedThisWeek(),
-    progressPercentage: Math.round(progressPercentage),
-    overallStatus,
-  };
-};
+  completedDeadlines: ReadingDeadlineWithProgress[],
+  allDeadlines: ReadingDeadlineWithProgress[]
+): WeeklyStats =>
+  calculateWeeklyStatsForFormat(
+    activeDeadlines,
+    completedDeadlines,
+    allDeadlines,
+    'audio'
+  );
 
 /**
  * Gets the date range for historical productivity analysis
@@ -771,7 +722,7 @@ export const getHistoricalProductivityDateRange = (): {
 const groupProgressByDayOfWeek = (
   deadlines: ReadingDeadlineWithProgress[],
   dateRange: { start: Dayjs; end: Dayjs },
-  format: 'reading' | 'listening'
+  format: 'reading' | 'audio'
 ): Map<number, ReadingDeadlineProgress[]> => {
   const dayMap = new Map<number, ReadingDeadlineProgress[]>();
 
@@ -900,38 +851,32 @@ const calculateTotalUnitsByDay = (
 };
 
 /**
- * Calculates the most productive days for reading (physical and eBook)
+ * Generic function to calculate most productive days for any format
  *
- * Analyzes reading activity across the last 2 weeks (excluding current week)
+ * Analyzes activity across the last 2 weeks (excluding current week)
  * to identify which days of the week tend to be most productive.
  *
  * **Methodology**:
- * 1. Filters to physical and eBook deadlines only
- * 2. Groups all progress entries by day of week (Mon-Sun)
- * 3. Calculates total pages read on each day across all books
- * 4. Ranks days by total pages
- * 5. Returns top 3 days
+ * 1. Filters deadlines by format
+ * 2. Groups all progress entries by day of week (Sun-Sat)
+ * 3. Calculates total units on each day across all books
+ * 4. Ranks days by total units
+ * 5. Returns top 3 days with activity
  *
- * **Use Cases**:
- * - Help users identify their natural reading patterns
- * - Suggest optimal days for scheduling reading time
- * - Provide data-driven insights for habit formation
- *
- * @param activeDeadlines - Currently active reading deadlines
- * @param completedDeadlines - Completed reading deadlines
- * @returns Statistics for the top 3 most productive reading days
+ * @param activeDeadlines - Currently active deadlines
+ * @param completedDeadlines - Completed deadlines
+ * @param format - 'reading' for physical/eBook, 'audio' for audiobooks
+ * @returns Statistics for the top 3 most productive days
  */
-export const calculateMostProductiveReadingDays = (
+const calculateMostProductiveDays = (
   activeDeadlines: ReadingDeadlineWithProgress[],
-  completedDeadlines: ReadingDeadlineWithProgress[]
+  completedDeadlines: ReadingDeadlineWithProgress[],
+  format: 'reading' | 'audio'
 ): ProductiveDaysStats => {
   const dateRange = getHistoricalProductivityDateRange();
   const allDeadlines = [...activeDeadlines, ...completedDeadlines];
 
-  // Group progress by day of week
-  const dayMap = groupProgressByDayOfWeek(allDeadlines, dateRange, 'reading');
-
-  // Calculate total pages per day
+  const dayMap = groupProgressByDayOfWeek(allDeadlines, dateRange, format);
   const totalsByDay = calculateTotalUnitsByDay(dayMap, allDeadlines);
 
   // Count total data points
@@ -950,29 +895,14 @@ export const calculateMostProductiveReadingDays = (
     };
   }
 
-  // Day names
-  const dayNames = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
-  const dayAbbrevs = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
   // Create DayProductivity objects
-  const allDays: DayProductivity[] = [];
-  for (let i = 0; i < 7; i++) {
-    allDays.push({
-      dayName: dayNames[i],
-      dayAbbrev: dayAbbrevs[i],
-      dayIndex: i,
-      totalUnits: totalsByDay.get(i) || 0,
-      percentOfMax: 0, // Will calculate after sorting
-    });
-  }
+  const allDays: DayProductivity[] = DAY_NAMES.map((dayName, i) => ({
+    dayName,
+    dayAbbrev: DAY_ABBREVS[i],
+    dayIndex: i,
+    totalUnits: totalsByDay.get(i) || 0,
+    percentOfMax: 0,
+  }));
 
   // Sort by total units (descending)
   allDays.sort((a, b) => b.totalUnits - a.totalUnits);
@@ -997,22 +927,20 @@ export const calculateMostProductiveReadingDays = (
 };
 
 /**
+ * Calculates the most productive days for reading (physical and eBook)
+ *
+ * @param activeDeadlines - Currently active reading deadlines
+ * @param completedDeadlines - Completed reading deadlines
+ * @returns Statistics for the top 3 most productive reading days
+ */
+export const calculateMostProductiveReadingDays = (
+  activeDeadlines: ReadingDeadlineWithProgress[],
+  completedDeadlines: ReadingDeadlineWithProgress[]
+): ProductiveDaysStats =>
+  calculateMostProductiveDays(activeDeadlines, completedDeadlines, 'reading');
+
+/**
  * Calculates the most productive days for listening (audiobooks)
- *
- * Analyzes listening activity across the last 2 weeks (excluding current week)
- * to identify which days of the week tend to be most productive.
- *
- * **Methodology**:
- * 1. Filters to audio format deadlines only
- * 2. Groups all progress entries by day of week (Mon-Sun)
- * 3. Calculates total minutes listened on each day across all books
- * 4. Ranks days by total minutes
- * 5. Returns top 3 days
- *
- * **Use Cases**:
- * - Help users identify their natural listening patterns
- * - Suggest optimal days for scheduling audiobook time
- * - Provide data-driven insights for habit formation
  *
  * @param activeDeadlines - Currently active reading deadlines
  * @param completedDeadlines - Completed reading deadlines
@@ -1021,77 +949,8 @@ export const calculateMostProductiveReadingDays = (
 export const calculateMostProductiveListeningDays = (
   activeDeadlines: ReadingDeadlineWithProgress[],
   completedDeadlines: ReadingDeadlineWithProgress[]
-): ProductiveDaysStats => {
-  const dateRange = getHistoricalProductivityDateRange();
-  const allDeadlines = [...activeDeadlines, ...completedDeadlines];
-
-  // Group progress by day of week
-  const dayMap = groupProgressByDayOfWeek(allDeadlines, dateRange, 'listening');
-
-  // Calculate total minutes per day
-  const totalsByDay = calculateTotalUnitsByDay(dayMap, allDeadlines);
-
-  // Count total data points
-  let totalDataPoints = 0;
-  for (const entries of dayMap.values()) {
-    totalDataPoints += entries.length;
-  }
-
-  // Check if we have enough data (at least 3 progress entries)
-  if (totalDataPoints < 3) {
-    return {
-      topDays: [],
-      hasData: false,
-      totalDataPoints,
-      dateRangeText: dateRange.description,
-    };
-  }
-
-  // Day names
-  const dayNames = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
-  const dayAbbrevs = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-  // Create DayProductivity objects
-  const allDays: DayProductivity[] = [];
-  for (let i = 0; i < 7; i++) {
-    allDays.push({
-      dayName: dayNames[i],
-      dayAbbrev: dayAbbrevs[i],
-      dayIndex: i,
-      totalUnits: totalsByDay.get(i) || 0,
-      percentOfMax: 0, // Will calculate after sorting
-    });
-  }
-
-  // Sort by total units (descending)
-  allDays.sort((a, b) => b.totalUnits - a.totalUnits);
-
-  // Calculate percentOfMax based on top day
-  const maxUnits = allDays[0].totalUnits;
-  if (maxUnits > 0) {
-    for (const day of allDays) {
-      day.percentOfMax = (day.totalUnits / maxUnits) * 100;
-    }
-  }
-
-  // Get top 3 days with activity only
-  const topDays = allDays.slice(0, 3).filter(day => day.totalUnits > 0);
-
-  return {
-    topDays,
-    hasData: topDays.length > 0,
-    totalDataPoints,
-    dateRangeText: dateRange.description,
-  };
-};
+): ProductiveDaysStats =>
+  calculateMostProductiveDays(activeDeadlines, completedDeadlines, 'audio');
 
 // ============================================================================
 // NEW: Optimized productivity calculations using service data
@@ -1218,29 +1077,14 @@ export const calculateProductiveDaysFromService = (
     };
   }
 
-  // Day names
-  const dayNames = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
-  const dayAbbrevs = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
   // Create DayProductivity objects
-  const allDays: DayProductivity[] = [];
-  for (let i = 0; i < 7; i++) {
-    allDays.push({
-      dayName: dayNames[i],
-      dayAbbrev: dayAbbrevs[i],
-      dayIndex: i,
-      totalUnits: totalsByDay.get(i) || 0,
-      percentOfMax: 0,
-    });
-  }
+  const allDays: DayProductivity[] = DAY_NAMES.map((dayName, i) => ({
+    dayName,
+    dayAbbrev: DAY_ABBREVS[i],
+    dayIndex: i,
+    totalUnits: totalsByDay.get(i) || 0,
+    percentOfMax: 0,
+  }));
 
   // Sort by total units (descending)
   allDays.sort((a, b) => b.totalUnits - a.totalUnits);

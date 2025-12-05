@@ -17,11 +17,11 @@ jest.mock('@/utils/statsUtils', () => ({
 
 // Mock the base component
 jest.mock('../WeeklyStatsCard', () => ({
-  WeeklyStatsCard: ({ headerLabel, type, formatValue }: any) => {
+  WeeklyStatsCard: ({ headerLabel, formatValue }: any) => {
     const React = require('react');
     return React.createElement(
       'View',
-      { testID: `weekly-stats-card-${type}` },
+      { testID: 'weekly-stats-card' },
       [
         React.createElement('Text', { key: 'header' }, headerLabel),
         React.createElement('Text', { key: 'formatted' }, formatValue(75)),
@@ -43,10 +43,11 @@ describe('WeeklyListeningCard', () => {
     overallStatus: 'ahead',
   };
 
-  it('should render WeeklyStatsCard with listening type', () => {
+  it('should render WeeklyStatsCard with listening header', () => {
     render(<WeeklyListeningCard stats={mockStats} />);
 
-    expect(screen.getByTestId('weekly-stats-card-listening')).toBeTruthy();
+    expect(screen.getByTestId('weekly-stats-card')).toBeTruthy();
+    expect(screen.getByText('Audiobooks This Week')).toBeTruthy();
   });
 
   it('should pass correct header label for listening', () => {
@@ -65,6 +66,6 @@ describe('WeeklyListeningCard', () => {
   it('should pass stats prop to base component', () => {
     const { getByTestId } = render(<WeeklyListeningCard stats={mockStats} />);
 
-    expect(getByTestId('weekly-stats-card-listening')).toBeTruthy();
+    expect(getByTestId('weekly-stats-card')).toBeTruthy();
   });
 });

@@ -43,8 +43,6 @@ const getStatusIconLabel = (status: 'ahead' | 'onTrack' | 'behind'): string => {
 interface WeeklyStatsCardProps {
   /** Weekly statistics data */
   stats: WeeklyStats;
-  /** Type of stats ('reading' for pages, 'listening' for audio time) */
-  type: 'reading' | 'listening';
   /** Label for the card header */
   headerLabel: string;
   /** Label for units read (e.g., 'read', 'listened') */

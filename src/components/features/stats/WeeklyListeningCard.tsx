@@ -33,7 +33,6 @@ export function WeeklyListeningCard({ stats }: WeeklyListeningCardProps) {
   return (
     <WeeklyStatsCard
       stats={stats}
-      type="listening"
       headerLabel="Audiobooks This Week"
       unitsReadLabel="listened"
       unitsNeededLabel="needed"

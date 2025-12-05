@@ -115,6 +115,7 @@ describe('Stats Screen', () => {
   };
 
   const defaultDeadlineData = {
+    deadlines: [],
     activeDeadlines: [],
     completedDeadlines: [],
     isLoading: false,
@@ -260,7 +261,8 @@ describe('Stats Screen', () => {
 
       expect(statsUtils.calculateWeeklyReadingStats).toHaveBeenCalledWith(
         defaultDeadlineData.activeDeadlines,
-        defaultDeadlineData.completedDeadlines
+        defaultDeadlineData.completedDeadlines,
+        defaultDeadlineData.deadlines
       );
     });
 
@@ -269,7 +271,8 @@ describe('Stats Screen', () => {
 
       expect(statsUtils.calculateWeeklyListeningStats).toHaveBeenCalledWith(
         defaultDeadlineData.activeDeadlines,
-        defaultDeadlineData.completedDeadlines
+        defaultDeadlineData.completedDeadlines,
+        defaultDeadlineData.deadlines
       );
     });
 
@@ -303,9 +306,14 @@ describe('Stats Screen', () => {
       const customCompletedDeadlines = [
         { id: '2', book_title: 'Completed Book' },
       ];
+      const customAllDeadlines = [
+        ...customActiveDeadlines,
+        ...customCompletedDeadlines,
+      ];
 
       useDeadlines.mockReturnValue({
         ...defaultDeadlineData,
+        deadlines: customAllDeadlines,
         activeDeadlines: customActiveDeadlines,
         completedDeadlines: customCompletedDeadlines,
       });
@@ -314,11 +322,13 @@ describe('Stats Screen', () => {
 
       expect(statsUtils.calculateWeeklyReadingStats).toHaveBeenCalledWith(
         customActiveDeadlines,
-        customCompletedDeadlines
+        customCompletedDeadlines,
+        customAllDeadlines
       );
       expect(statsUtils.calculateWeeklyListeningStats).toHaveBeenCalledWith(
         customActiveDeadlines,
-        customCompletedDeadlines
+        customCompletedDeadlines,
+        customAllDeadlines
       );
       expect(deadlineUtils.getCompletedThisYear).toHaveBeenCalledWith(
         customCompletedDeadlines

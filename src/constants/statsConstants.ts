@@ -2,6 +2,24 @@
  * Constants for statistics and weekly stats card components
  */
 
+/**
+ * Day names indexed by day of week (0 = Sunday, 6 = Saturday)
+ */
+export const DAY_NAMES = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+] as const;
+
+/**
+ * Day abbreviations indexed by day of week (0 = Sunday, 6 = Saturday)
+ */
+export const DAY_ABBREVS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+
 export const STATS_CONSTANTS = {
   /**
    * Height of the progress bar in weekly stats cards

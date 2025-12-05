@@ -11,6 +11,12 @@ import {
   getHistoricalProductivityDateRange,
   calculateMostProductiveReadingDays,
   calculateMostProductiveListeningDays,
+  filterDeadlinesByFormat,
+  calculateWeekProgressForDeadline,
+  calculateTotalProgressThisWeek,
+  calculateDaysWithActivityThisWeek,
+  calculateWeeklyGoalForActiveDeadlines,
+  calculateOverallStatus,
   type ThemeColors,
 } from '../statsUtils';
 import { createMockDeadline } from '../testHelpers';
@@ -321,7 +327,7 @@ describe('statsUtils', () => {
     });
 
     it('should return zero stats when no reading books', () => {
-      const result = calculateWeeklyReadingStats([], []);
+      const result = calculateWeeklyReadingStats([], [], []);
 
       expect(result.unitsReadThisWeek).toBe(0);
       expect(result.unitsNeededThisWeek).toBe(0);
@@ -348,7 +354,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
       // Progress is cumulative, so we read 80 pages total this week
       expect(result.unitsReadThisWeek).toBe(80);
@@ -386,7 +392,7 @@ describe('statsUtils', () => {
         },
       ];
 
-      const result = calculateWeeklyReadingStats([deadline], []);
+      const result = calculateWeeklyReadingStats([deadline], [], [deadline]);
 
       expect(result.unitsReadThisWeek).toBe(30); // Only the non-ignored entry
     });
@@ -406,7 +412,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
       // Pages read THIS WEEK = 80 (end) - 50 (start) = 30 pages
       expect(result.unitsReadThisWeek).toBe(30);
@@ -431,7 +437,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
       expect(result.requiredDailyPace).toBe(13);
       expect(result.unitsNeededThisWeek).toBe(88);
@@ -454,7 +460,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
       expect(result.unitsAheadBehind).toBeGreaterThanOrEqual(12);
       expect(result.unitsAheadBehind).toBeLessThanOrEqual(13);
@@ -477,7 +483,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
       // 90 pages / 3 days = 30 pages/day
       expect(result.averagePerDay).toBe(30);
@@ -500,7 +506,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
       // Only 2 unique days even though 3 entries
       expect(result.daysWithActivity).toBe(2);
@@ -518,7 +524,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
       // Weekly goal = 91 pages, read 35 = 38.5% ≈ 38-40%
       expect(result.progressPercentage).toBeGreaterThanOrEqual(38);
@@ -539,7 +545,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
       expect(result.progressPercentage).toBeGreaterThanOrEqual(100);
       expect(result.overallStatus).toBe('ahead');
@@ -559,7 +565,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
       // 85 / 88 = ~97%
       expect(result.progressPercentage).toBeGreaterThanOrEqual(95);
@@ -579,7 +585,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
       // 30 / 70 = ~43%
       expect(result.progressPercentage).toBeLessThan(95);
@@ -606,7 +612,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
       // Book 1: 300 pages remaining / 24 days = 12.5→13 pages/day * 7 = 91 pages needed
       // Book 2: 200 pages remaining / 14 days = 14.3→14 pages/day * 7 = 98 pages needed
@@ -628,13 +634,14 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
       expect(result.unitsReadThisWeek).toBe(0);
       expect(result.unitsNeededThisWeek).toBe(0);
     });
 
-    it('should exclude non-reading status books', () => {
+    it('should count progress from all books regardless of status', () => {
+      // Progress counts even when book is paused - those pages were still read!
       const deadlines = [
         createMockDeadline(
           '1',
@@ -646,9 +653,12 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats(deadlines, []);
+      const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
-      expect(result.unitsReadThisWeek).toBe(0);
+      // Progress counts from all books - paused books still contribute pages read
+      expect(result.unitsReadThisWeek).toBe(50);
+      // But goals don't count for paused books (no 'reading' status)
+      expect(result.unitsNeededThisWeek).toBe(0);
     });
 
     it('should include books completed this week', () => {
@@ -669,7 +679,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats([], completedDeadlines);
+      const result = calculateWeeklyReadingStats([], completedDeadlines, completedDeadlines);
 
       expect(result.unitsReadThisWeek).toBe(60);
     });
@@ -689,7 +699,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats([], completedDeadlines);
+      const result = calculateWeeklyReadingStats([], completedDeadlines, completedDeadlines);
 
       expect(result.unitsReadThisWeek).toBe(50);
     });
@@ -709,12 +719,15 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats([], completedDeadlines);
+      const result = calculateWeeklyReadingStats([], completedDeadlines, completedDeadlines);
 
       expect(result.unitsReadThisWeek).toBe(0);
     });
 
-    it('should only count progress before completion date', () => {
+    it('should count all progress this week regardless of completion time', () => {
+      // Progress counts based on max value reached this week, regardless of
+      // when the book was marked complete. This simplifies the calculation
+      // and matches user expectation that all logged progress counts.
       const completedDeadlines = [
         createMockDeadline(
           '1',
@@ -733,10 +746,10 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats([], completedDeadlines);
+      const result = calculateWeeklyReadingStats([], completedDeadlines, completedDeadlines);
 
-      // Should only count the first two entries (before noon)
-      expect(result.unitsReadThisWeek).toBe(60);
+      // All progress entries count - max reached is 90
+      expect(result.unitsReadThisWeek).toBe(90);
     });
 
     it('should adjust weekly goal for books completed mid-week', () => {
@@ -757,7 +770,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyReadingStats([], completedDeadlines);
+      const result = calculateWeeklyReadingStats([], completedDeadlines, completedDeadlines);
 
       // Goal should be 3 days (Sun-Mon-Tue) * 13 = 39 pages
       expect(result.unitsNeededThisWeek).toBeGreaterThanOrEqual(38);
@@ -793,7 +806,8 @@ describe('statsUtils', () => {
 
       const result = calculateWeeklyReadingStats(
         activeDeadlines,
-        completedDeadlines
+        completedDeadlines,
+        [...activeDeadlines, ...completedDeadlines]
       );
 
       // Active: 50 pages, Completed: 40 pages
@@ -827,7 +841,7 @@ describe('statsUtils', () => {
           ),
         ];
 
-        const result = calculateWeeklyReadingStats(deadlines, []);
+        const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
         // Should include the progress entry at exact week boundary
         expect(result.unitsReadThisWeek).toBe(50);
@@ -848,7 +862,7 @@ describe('statsUtils', () => {
           ),
         ];
 
-        const result = calculateWeeklyReadingStats(deadlines, []);
+        const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
         // Should include the progress entry at exact week boundary
         expect(result.unitsReadThisWeek).toBe(75);
@@ -871,7 +885,7 @@ describe('statsUtils', () => {
           ),
         ];
 
-        const result = calculateWeeklyReadingStats(deadlines, []);
+        const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
         // Should only count progress from Sunday onward: 80 - 30 = 50
         expect(result.unitsReadThisWeek).toBe(50);
@@ -894,7 +908,7 @@ describe('statsUtils', () => {
           ),
         ];
 
-        const result = calculateWeeklyReadingStats(deadlines, []);
+        const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
         // Should not include next week's entry
         expect(result.unitsReadThisWeek).toBe(50);
@@ -923,7 +937,7 @@ describe('statsUtils', () => {
           ),
         ];
 
-        const result = calculateWeeklyReadingStats(deadlines, []);
+        const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
         // Max this week (90) - Max before week (20) = 70 pages
         expect(result.unitsReadThisWeek).toBe(70);
@@ -948,7 +962,7 @@ describe('statsUtils', () => {
           ),
         ];
 
-        const result = calculateWeeklyReadingStats(deadlines, []);
+        const result = calculateWeeklyReadingStats(deadlines, [], deadlines);
 
         // The max value should be used: 75
         expect(result.unitsReadThisWeek).toBe(75);
@@ -972,7 +986,7 @@ describe('statsUtils', () => {
           ),
         ];
 
-        const result = calculateWeeklyReadingStats([], completedDeadlines);
+        const result = calculateWeeklyReadingStats([], completedDeadlines, completedDeadlines);
 
         // Book completed on Saturday (day 7 of week)
         // Should count full week's progress
@@ -996,7 +1010,7 @@ describe('statsUtils', () => {
           ),
         ];
 
-        const result = calculateWeeklyReadingStats([], completedDeadlines);
+        const result = calculateWeeklyReadingStats([], completedDeadlines, completedDeadlines);
 
         // Book completed on Sunday (day 1 of week)
         // Should still count the progress
@@ -1018,7 +1032,7 @@ describe('statsUtils', () => {
     });
 
     it('should return zero stats when no audio books', () => {
-      const result = calculateWeeklyListeningStats([], []);
+      const result = calculateWeeklyListeningStats([], [], []);
 
       expect(result.unitsReadThisWeek).toBe(0);
       expect(result.overallStatus).toBe('onTrack');
@@ -1039,7 +1053,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyListeningStats(deadlines, []);
+      const result = calculateWeeklyListeningStats(deadlines, [], deadlines);
 
       expect(result.unitsReadThisWeek).toBe(200);
     });
@@ -1064,7 +1078,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyListeningStats(deadlines, []);
+      const result = calculateWeeklyListeningStats(deadlines, [], deadlines);
 
       expect(result.unitsReadThisWeek).toBe(0);
     });
@@ -1084,14 +1098,18 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyListeningStats([], completedDeadlines);
+      const result = calculateWeeklyListeningStats([], completedDeadlines, completedDeadlines);
 
       expect(result.unitsReadThisWeek).toBe(150);
     });
 
-    it('should calculate required minutes based on daily pace', () => {
-      // 600 minutes, 30 days = 20 min/day
-      // Weekly goal = 20 * 7 = 140 minutes
+    it('should calculate required minutes based on forward-looking pace', () => {
+      // Forward-looking pace from week start (Jan 7):
+      // - Progress at start of week = 0
+      // - Remaining = 600 minutes
+      // - Days left from Jan 7 to Jan 31 = 24 days
+      // - Required pace = 600 / 24 = 25 min/day
+      // - Weekly goal = 25 * 7 = 175 minutes
       const deadlines = [
         createMockDeadline(
           '1',
@@ -1103,10 +1121,10 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyListeningStats(deadlines, []);
+      const result = calculateWeeklyListeningStats(deadlines, [], deadlines);
 
-      expect(result.requiredDailyPace).toBe(20);
-      expect(result.unitsNeededThisWeek).toBe(140);
+      expect(result.requiredDailyPace).toBe(25);
+      expect(result.unitsNeededThisWeek).toBe(175);
     });
 
     it('should determine ahead status correctly', () => {
@@ -1121,7 +1139,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyListeningStats(deadlines, []);
+      const result = calculateWeeklyListeningStats(deadlines, [], deadlines);
 
       // 200 > 140 needed
       expect(result.overallStatus).toBe('ahead');
@@ -1148,7 +1166,7 @@ describe('statsUtils', () => {
         ),
       ];
 
-      const result = calculateWeeklyListeningStats(deadlines, []);
+      const result = calculateWeeklyListeningStats(deadlines, [], deadlines);
 
       expect(result.unitsReadThisWeek).toBe(250);
     });
@@ -1559,6 +1577,516 @@ describe('statsUtils', () => {
         day => day.totalUnits === 0
       );
       expect(hasZeroActivityDay).toBe(false);
+    });
+  });
+
+  // ============================================================================
+  // Helper Function Tests
+  // ============================================================================
+
+  describe('filterDeadlinesByFormat', () => {
+    it('should return only physical and eBook deadlines for reading format', () => {
+      const deadlines = [
+        createMockDeadline('1', 'physical', 300, '2024-01-31', [], []),
+        createMockDeadline('2', 'eBook', 200, '2024-01-31', [], []),
+        createMockDeadline('3', 'audio', 600, '2024-01-31', [], []),
+      ];
+
+      const result = filterDeadlinesByFormat(deadlines, 'reading');
+
+      expect(result).toHaveLength(2);
+      expect(result.map(d => d.format)).toEqual(['physical', 'eBook']);
+    });
+
+    it('should return only audio deadlines for audio format', () => {
+      const deadlines = [
+        createMockDeadline('1', 'physical', 300, '2024-01-31', [], []),
+        createMockDeadline('2', 'eBook', 200, '2024-01-31', [], []),
+        createMockDeadline('3', 'audio', 600, '2024-01-31', [], []),
+      ];
+
+      const result = filterDeadlinesByFormat(deadlines, 'audio');
+
+      expect(result).toHaveLength(1);
+      expect(result[0].format).toBe('audio');
+    });
+
+    it('should return empty array when no matching formats', () => {
+      const deadlines = [
+        createMockDeadline('1', 'physical', 300, '2024-01-31', [], []),
+      ];
+
+      const result = filterDeadlinesByFormat(deadlines, 'audio');
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('should return empty array for empty input', () => {
+      expect(filterDeadlinesByFormat([], 'reading')).toHaveLength(0);
+      expect(filterDeadlinesByFormat([], 'audio')).toHaveLength(0);
+    });
+  });
+
+  describe('calculateWeekProgressForDeadline', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2024-01-10')); // Wednesday
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should calculate progress from start to end of week', () => {
+      const deadline = createMockDeadline(
+        '1',
+        'physical',
+        300,
+        '2024-01-31',
+        [
+          { current_progress: 50, created_at: '2024-01-06' }, // Before week
+          { current_progress: 100, created_at: '2024-01-09' }, // This week
+        ],
+        []
+      );
+
+      const weekRange = getWeekDateRange();
+      const result = calculateWeekProgressForDeadline(deadline, weekRange);
+
+      // 100 (end of week) - 50 (start of week) = 50 pages
+      expect(result).toBe(50);
+    });
+
+    it('should return 0 when no progress this week', () => {
+      const deadline = createMockDeadline(
+        '1',
+        'physical',
+        300,
+        '2024-01-31',
+        [{ current_progress: 50, created_at: '2024-01-05' }], // Before week only
+        []
+      );
+
+      const weekRange = getWeekDateRange();
+      const result = calculateWeekProgressForDeadline(deadline, weekRange);
+
+      expect(result).toBe(0);
+    });
+
+    it('should handle multiple progress entries this week using max', () => {
+      const deadline = createMockDeadline(
+        '1',
+        'physical',
+        300,
+        '2024-01-31',
+        [
+          { current_progress: 30, created_at: '2024-01-08' },
+          { current_progress: 60, created_at: '2024-01-09' },
+          { current_progress: 90, created_at: '2024-01-10' },
+        ],
+        []
+      );
+
+      const weekRange = getWeekDateRange();
+      const result = calculateWeekProgressForDeadline(deadline, weekRange);
+
+      // Max this week (90) - 0 (nothing before week) = 90
+      expect(result).toBe(90);
+    });
+
+    it('should exclude entries with ignore_in_calcs=true', () => {
+      const deadline = createMockDeadline('1', 'physical', 300, '2024-01-31', [], []);
+      deadline.progress = [
+        {
+          id: 'p1',
+          deadline_id: '1',
+          current_progress: 100,
+          created_at: '2024-01-09',
+          updated_at: '2024-01-09',
+          time_spent_reading: null,
+          ignore_in_calcs: true, // Should be excluded
+        },
+        {
+          id: 'p2',
+          deadline_id: '1',
+          current_progress: 50,
+          created_at: '2024-01-09',
+          updated_at: '2024-01-09',
+          time_spent_reading: null,
+          ignore_in_calcs: false,
+        },
+      ];
+
+      const weekRange = getWeekDateRange();
+      const result = calculateWeekProgressForDeadline(deadline, weekRange);
+
+      expect(result).toBe(50); // Only non-ignored entry counts
+    });
+
+    it('should never return negative values', () => {
+      const deadline = createMockDeadline(
+        '1',
+        'physical',
+        300,
+        '2024-01-31',
+        [
+          { current_progress: 100, created_at: '2024-01-06' }, // High before week
+          { current_progress: 50, created_at: '2024-01-09' }, // Lower this week (correction)
+        ],
+        []
+      );
+
+      const weekRange = getWeekDateRange();
+      const result = calculateWeekProgressForDeadline(deadline, weekRange);
+
+      expect(result).toBe(0); // Should be 0, not negative
+    });
+  });
+
+  describe('calculateTotalProgressThisWeek', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2024-01-10'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should sum progress from all reading deadlines', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-31',
+          [{ current_progress: 50, created_at: '2024-01-09' }],
+          []
+        ),
+        createMockDeadline(
+          '2',
+          'eBook',
+          200,
+          '2024-01-31',
+          [{ current_progress: 30, created_at: '2024-01-09' }],
+          []
+        ),
+      ];
+
+      const result = calculateTotalProgressThisWeek(deadlines, 'reading');
+
+      expect(result).toBe(80); // 50 + 30
+    });
+
+    it('should sum progress from all audio deadlines', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'audio',
+          600,
+          '2024-01-31',
+          [{ current_progress: 120, created_at: '2024-01-09' }],
+          []
+        ),
+        createMockDeadline(
+          '2',
+          'audio',
+          400,
+          '2024-01-31',
+          [{ current_progress: 60, created_at: '2024-01-09' }],
+          []
+        ),
+      ];
+
+      const result = calculateTotalProgressThisWeek(deadlines, 'audio');
+
+      expect(result).toBe(180); // 120 + 60
+    });
+
+    it('should only include matching format', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-31',
+          [{ current_progress: 50, created_at: '2024-01-09' }],
+          []
+        ),
+        createMockDeadline(
+          '2',
+          'audio',
+          600,
+          '2024-01-31',
+          [{ current_progress: 120, created_at: '2024-01-09' }],
+          []
+        ),
+      ];
+
+      expect(calculateTotalProgressThisWeek(deadlines, 'reading')).toBe(50);
+      expect(calculateTotalProgressThisWeek(deadlines, 'audio')).toBe(120);
+    });
+
+    it('should return 0 for empty array', () => {
+      expect(calculateTotalProgressThisWeek([], 'reading')).toBe(0);
+      expect(calculateTotalProgressThisWeek([], 'audio')).toBe(0);
+    });
+  });
+
+  describe('calculateDaysWithActivityThisWeek', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2024-01-10'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should count unique days with activity', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-31',
+          [
+            { current_progress: 30, created_at: '2024-01-08' }, // Monday
+            { current_progress: 60, created_at: '2024-01-09' }, // Tuesday
+            { current_progress: 90, created_at: '2024-01-10' }, // Wednesday
+          ],
+          []
+        ),
+      ];
+
+      const result = calculateDaysWithActivityThisWeek(deadlines, 'reading');
+
+      expect(result).toBe(3);
+    });
+
+    it('should count same day only once even with multiple entries', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-31',
+          [
+            { current_progress: 30, created_at: '2024-01-08T10:00:00' }, // Monday AM
+            { current_progress: 60, created_at: '2024-01-08T18:00:00' }, // Monday PM
+          ],
+          []
+        ),
+      ];
+
+      const result = calculateDaysWithActivityThisWeek(deadlines, 'reading');
+
+      expect(result).toBe(1); // Same day = 1
+    });
+
+    it('should count days across multiple deadlines', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-31',
+          [{ current_progress: 30, created_at: '2024-01-08' }], // Monday
+          []
+        ),
+        createMockDeadline(
+          '2',
+          'eBook',
+          200,
+          '2024-01-31',
+          [{ current_progress: 20, created_at: '2024-01-09' }], // Tuesday
+          []
+        ),
+      ];
+
+      const result = calculateDaysWithActivityThisWeek(deadlines, 'reading');
+
+      expect(result).toBe(2); // Monday + Tuesday
+    });
+
+    it('should not double-count if two books have activity on same day', () => {
+      const deadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-31',
+          [{ current_progress: 30, created_at: '2024-01-08' }],
+          []
+        ),
+        createMockDeadline(
+          '2',
+          'eBook',
+          200,
+          '2024-01-31',
+          [{ current_progress: 20, created_at: '2024-01-08' }], // Same day
+          []
+        ),
+      ];
+
+      const result = calculateDaysWithActivityThisWeek(deadlines, 'reading');
+
+      expect(result).toBe(1); // Same day, both books = still 1 unique day
+    });
+
+    it('should return 0 for empty array', () => {
+      expect(calculateDaysWithActivityThisWeek([], 'reading')).toBe(0);
+    });
+  });
+
+  describe('calculateWeeklyGoalForActiveDeadlines', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2024-01-10'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should return zero when no active deadlines', () => {
+      const result = calculateWeeklyGoalForActiveDeadlines([], [], 'reading');
+
+      expect(result.unitsNeeded).toBe(0);
+      expect(result.requiredDailyPace).toBe(0);
+    });
+
+    it('should calculate goal from active reading status deadlines', () => {
+      const activeDeadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-31',
+          [],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+      ];
+
+      const result = calculateWeeklyGoalForActiveDeadlines(
+        activeDeadlines,
+        [],
+        'reading'
+      );
+
+      expect(result.unitsNeeded).toBeGreaterThan(0);
+      expect(result.requiredDailyPace).toBeGreaterThan(0);
+    });
+
+    it('should only include matching format', () => {
+      const activeDeadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-31',
+          [],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+        createMockDeadline(
+          '2',
+          'audio',
+          600,
+          '2024-01-31',
+          [],
+          [{ status: 'reading', created_at: '2024-01-01' }]
+        ),
+      ];
+
+      const readingResult = calculateWeeklyGoalForActiveDeadlines(
+        activeDeadlines,
+        [],
+        'reading'
+      );
+      const audioResult = calculateWeeklyGoalForActiveDeadlines(
+        activeDeadlines,
+        [],
+        'audio'
+      );
+
+      // Both should have goals, and they should be different
+      expect(readingResult.unitsNeeded).toBeGreaterThan(0);
+      expect(audioResult.unitsNeeded).toBeGreaterThan(0);
+    });
+
+    it('should exclude deadlines with non-reading status', () => {
+      const activeDeadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-31',
+          [],
+          [{ status: 'paused', created_at: '2024-01-01' }]
+        ),
+      ];
+
+      const result = calculateWeeklyGoalForActiveDeadlines(
+        activeDeadlines,
+        [],
+        'reading'
+      );
+
+      expect(result.unitsNeeded).toBe(0);
+      expect(result.requiredDailyPace).toBe(0);
+    });
+
+    it('should include completed deadlines that were completed this week', () => {
+      const completedDeadlines = [
+        createMockDeadline(
+          '1',
+          'physical',
+          300,
+          '2024-01-31',
+          [{ current_progress: 100, created_at: '2024-01-09' }],
+          [
+            { status: 'reading', created_at: '2024-01-01' },
+            { status: 'complete', created_at: '2024-01-09' }, // Completed this week
+          ]
+        ),
+      ];
+
+      const result = calculateWeeklyGoalForActiveDeadlines(
+        [],
+        completedDeadlines,
+        'reading'
+      );
+
+      // Should have a prorated goal for days up to completion
+      expect(result.unitsNeeded).toBeGreaterThan(0);
+    });
+  });
+
+  describe('calculateOverallStatus', () => {
+    it('should return ahead when >= 100%', () => {
+      expect(calculateOverallStatus(100)).toBe('ahead');
+      expect(calculateOverallStatus(110)).toBe('ahead');
+      expect(calculateOverallStatus(200)).toBe('ahead');
+    });
+
+    it('should return onTrack when 95-99%', () => {
+      expect(calculateOverallStatus(95)).toBe('onTrack');
+      expect(calculateOverallStatus(97)).toBe('onTrack');
+      expect(calculateOverallStatus(99)).toBe('onTrack');
+      expect(calculateOverallStatus(99.9)).toBe('onTrack');
+    });
+
+    it('should return behind when < 95%', () => {
+      expect(calculateOverallStatus(94)).toBe('behind');
+      expect(calculateOverallStatus(50)).toBe('behind');
+      expect(calculateOverallStatus(0)).toBe('behind');
+    });
+
+    it('should handle edge cases at thresholds', () => {
+      expect(calculateOverallStatus(94.99)).toBe('behind');
+      expect(calculateOverallStatus(95)).toBe('onTrack');
+      expect(calculateOverallStatus(99.99)).toBe('onTrack');
+      expect(calculateOverallStatus(100)).toBe('ahead');
     });
   });
 });

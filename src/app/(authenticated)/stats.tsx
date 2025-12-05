@@ -27,19 +27,28 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Stats() {
   const { colors } = useTheme();
-  const { activeDeadlines, completedDeadlines, isLoading, error, refetch } =
-    useDeadlines();
+  const {
+    deadlines,
+    activeDeadlines,
+    completedDeadlines,
+    isLoading,
+    error,
+    refetch,
+  } = useDeadlines();
 
   const completedThisYear = getCompletedThisYear(completedDeadlines);
 
   // Calculate weekly stats for reading and audio
+  // Progress counts ALL deadlines (any status), goals count only active deadlines
   const weeklyReadingStats = React.useMemo(
-    () => calculateWeeklyReadingStats(activeDeadlines, completedDeadlines),
-    [activeDeadlines, completedDeadlines]
+    () =>
+      calculateWeeklyReadingStats(activeDeadlines, completedDeadlines, deadlines),
+    [activeDeadlines, completedDeadlines, deadlines]
   );
   const weeklyListeningStats = React.useMemo(
-    () => calculateWeeklyListeningStats(activeDeadlines, completedDeadlines),
-    [activeDeadlines, completedDeadlines]
+    () =>
+      calculateWeeklyListeningStats(activeDeadlines, completedDeadlines, deadlines),
+    [activeDeadlines, completedDeadlines, deadlines]
   );
 
   // Refetch data whenever the page comes into focus
