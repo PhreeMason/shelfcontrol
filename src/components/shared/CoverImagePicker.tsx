@@ -15,11 +15,22 @@ import React from 'react';
 import {
   Alert,
   Image,
+  Platform,
   StyleSheet,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+
+// Platform-specific image picker options
+// iOS: Skip editing (no freeform crop support) - uploads full image as-is
+// Android: Enable editing with freeform crop (aspect: null)
+const IMAGE_PICKER_OPTIONS = {
+  allowsEditing: Platform.OS !== 'ios',
+  aspect: Platform.OS === 'ios' ? undefined : (null as [number, number] | null),
+  quality: 1,
+  mediaTypes: 'images' as const,
+};
 
 interface CoverImagePickerProps {
   value?: string | null;
@@ -70,11 +81,7 @@ const CoverImagePicker: React.FC<CoverImagePickerProps> = ({
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: false,
-      quality: 1,
-      mediaTypes: 'images',
-    });
+    const result = await ImagePicker.launchImageLibraryAsync(IMAGE_PICKER_OPTIONS);
 
     handleImageResult(result);
   };
