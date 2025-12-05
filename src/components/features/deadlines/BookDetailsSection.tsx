@@ -4,6 +4,7 @@ import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { formatTimeDisplay } from '@/utils/deadlineProviderUtils';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
@@ -75,6 +76,22 @@ const BookDetailsSection = ({
             {deadline.format.toLowerCase() === 'ebook'
               ? 'eBook'
               : makeUpperCaseFirstLetter(deadline.format)}
+          </ThemedText>
+        </ThemedView>
+        <ThemedView
+          style={[
+            styles.detailRow,
+            {
+              backgroundColor: colors.surfaceContainer,
+              borderColor: colors.outline + '50',
+            },
+          ]}
+        >
+          <ThemedText variant="secondary">Length</ThemedText>
+          <ThemedText typography="bodyLarge" style={styles.detailsValue}>
+            {deadline.format === 'audio'
+              ? formatTimeDisplay(deadline.total_quantity)
+              : `${deadline.total_quantity} pages`}
           </ThemedText>
         </ThemedView>
         <ThemedView
