@@ -11,7 +11,7 @@ import {
   getUnitForFormat,
   separateDeadlines,
 } from '../deadlineUtils';
-import { sortDeadlines } from '../sortUtils';
+import { sortDeadlines, sortByLastProgressUpdate } from '../sortUtils';
 
 const createMockDeadline = (
   id: string,
@@ -62,6 +62,102 @@ const createMockDeadline = (
 });
 
 describe('deadlineUtils', () => {
+  describe('sortByLastProgressUpdate', () => {
+    it('should sort by most recent progress update first', () => {
+      const deadline1 = createMockDeadline(
+        '1',
+        '2024-01-01',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 100, created_at: '2024-01-05T00:00:00Z' }]
+      );
+      const deadline2 = createMockDeadline(
+        '2',
+        '2024-01-01',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 50, created_at: '2024-01-10T00:00:00Z' }]
+      );
+
+      const result = [deadline1, deadline2].sort(sortByLastProgressUpdate);
+
+      expect(result[0].id).toBe('2'); // Most recent progress
+      expect(result[1].id).toBe('1');
+    });
+
+    it('should use latest progress entry when multiple exist', () => {
+      const deadline1 = createMockDeadline(
+        '1',
+        '2024-01-01',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [
+          { current_progress: 50, created_at: '2024-01-05T00:00:00Z' },
+          { current_progress: 100, created_at: '2024-01-15T00:00:00Z' },
+        ]
+      );
+      const deadline2 = createMockDeadline(
+        '2',
+        '2024-01-01',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 200, created_at: '2024-01-10T00:00:00Z' }]
+      );
+
+      const result = [deadline1, deadline2].sort(sortByLastProgressUpdate);
+
+      expect(result[0].id).toBe('1'); // Latest entry is Jan 15
+      expect(result[1].id).toBe('2'); // Jan 10
+    });
+
+    it('should sort deadlines with no progress to the end', () => {
+      const deadlineWithProgress = createMockDeadline(
+        '1',
+        '2024-01-01',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 100, created_at: '2024-01-05T00:00:00Z' }]
+      );
+      const deadlineNoProgress = createMockDeadline(
+        '2',
+        '2024-01-01',
+        '2024-01-01T00:00:00Z',
+        undefined,
+        []
+      );
+
+      const result = [deadlineNoProgress, deadlineWithProgress].sort(
+        sortByLastProgressUpdate
+      );
+
+      expect(result[0].id).toBe('1'); // Has progress
+      expect(result[1].id).toBe('2'); // No progress
+    });
+
+    it('should fall back to sortDeadlines when progress timestamps are equal', () => {
+      const deadline1 = createMockDeadline(
+        '1',
+        '2024-02-01', // Later deadline date
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 100, created_at: '2024-01-05T00:00:00Z' }]
+      );
+      const deadline2 = createMockDeadline(
+        '2',
+        '2024-01-01', // Earlier deadline date
+        '2024-01-01T00:00:00Z',
+        undefined,
+        [{ current_progress: 50, created_at: '2024-01-05T00:00:00Z' }]
+      );
+
+      const result = [deadline1, deadline2].sort(sortByLastProgressUpdate);
+
+      // Same progress date, falls back to deadline date (earliest first)
+      expect(result[0].id).toBe('2');
+      expect(result[1].id).toBe('1');
+    });
+  });
+
   describe('sortDeadlines', () => {
     it('should sort by deadline date (earliest first)', () => {
       const deadline1 = createMockDeadline('1', '2024-02-01');
@@ -276,7 +372,7 @@ describe('deadlineUtils', () => {
       expect(result.toReview[1].id).toBe('1');
     });
 
-    it('should sort overdue deadlines by pages remaining (least remaining first)', () => {
+    it('should sort overdue deadlines by last progress update (most recent first)', () => {
       const overdueDeadline1 = createMockDeadline(
         '1',
         '2023-01-01',
@@ -284,25 +380,22 @@ describe('deadlineUtils', () => {
         undefined,
         [{ current_progress: 250, created_at: '2023-01-05T00:00:00Z' }]
       );
-      overdueDeadline1.total_quantity = 300;
 
       const overdueDeadline2 = createMockDeadline(
         '2',
         '2023-01-01',
         '2023-01-01T00:00:00Z',
         undefined,
-        [{ current_progress: 100, created_at: '2023-01-05T00:00:00Z' }]
+        [{ current_progress: 100, created_at: '2023-01-10T00:00:00Z' }]
       );
-      overdueDeadline2.total_quantity = 400;
 
       const overdueDeadline3 = createMockDeadline(
         '3',
         '2023-01-01',
         '2023-01-01T00:00:00Z',
         undefined,
-        [{ current_progress: 180, created_at: '2023-01-05T00:00:00Z' }]
+        [{ current_progress: 180, created_at: '2023-01-08T00:00:00Z' }]
       );
-      overdueDeadline3.total_quantity = 200;
 
       const result = separateDeadlines([
         overdueDeadline1,
@@ -310,42 +403,39 @@ describe('deadlineUtils', () => {
         overdueDeadline3,
       ]);
 
-      expect(result.overdue[0].id).toBe('3');
-      expect(result.overdue[1].id).toBe('1');
-      expect(result.overdue[2].id).toBe('2');
+      // Most recently updated first
+      expect(result.overdue[0].id).toBe('2'); // Jan 10
+      expect(result.overdue[1].id).toBe('3'); // Jan 8
+      expect(result.overdue[2].id).toBe('1'); // Jan 5
     });
 
-    it('should handle overdue deadlines with audio format (minutes remaining)', () => {
-      const overdueAudioDeadline1 = createMockDeadline(
+    it('should sort overdue deadlines with no progress to the end', () => {
+      const overdueWithProgress = createMockDeadline(
         '1',
         '2023-01-01',
         '2023-01-01T00:00:00Z',
         undefined,
-        [{ current_progress: 120, created_at: '2023-01-05T00:00:00Z' }]
+        [{ current_progress: 100, created_at: '2023-01-05T00:00:00Z' }]
       );
-      overdueAudioDeadline1.format = 'audio';
-      overdueAudioDeadline1.total_quantity = 180;
 
-      const overdueAudioDeadline2 = createMockDeadline(
+      const overdueNoProgress = createMockDeadline(
         '2',
         '2023-01-01',
         '2023-01-01T00:00:00Z',
         undefined,
-        [{ current_progress: 200, created_at: '2023-01-05T00:00:00Z' }]
+        []
       );
-      overdueAudioDeadline2.format = 'audio';
-      overdueAudioDeadline2.total_quantity = 250;
 
       const result = separateDeadlines([
-        overdueAudioDeadline1,
-        overdueAudioDeadline2,
+        overdueNoProgress,
+        overdueWithProgress,
       ]);
 
-      expect(result.overdue[0].id).toBe('2');
-      expect(result.overdue[1].id).toBe('1');
+      expect(result.overdue[0].id).toBe('1'); // Has progress
+      expect(result.overdue[1].id).toBe('2'); // No progress
     });
 
-    it('should fall back to default sorting when pages remaining are equal', () => {
+    it('should fall back to default sorting when last progress dates are equal', () => {
       const overdueDeadline1 = createMockDeadline(
         '1',
         '2023-01-02',
@@ -353,7 +443,6 @@ describe('deadlineUtils', () => {
         undefined,
         [{ current_progress: 100, created_at: '2023-01-05T00:00:00Z' }]
       );
-      overdueDeadline1.total_quantity = 200;
 
       const overdueDeadline2 = createMockDeadline(
         '2',
@@ -362,12 +451,12 @@ describe('deadlineUtils', () => {
         undefined,
         [{ current_progress: 150, created_at: '2023-01-05T00:00:00Z' }]
       );
-      overdueDeadline2.total_quantity = 250;
 
       const result = separateDeadlines([overdueDeadline1, overdueDeadline2]);
 
-      expect(result.overdue[0].id).toBe('2');
-      expect(result.overdue[1].id).toBe('1');
+      // Same progress date, falls back to deadline date (earliest first)
+      expect(result.overdue[0].id).toBe('2'); // Jan 1
+      expect(result.overdue[1].id).toBe('1'); // Jan 2
     });
   });
 

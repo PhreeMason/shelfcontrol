@@ -4,7 +4,6 @@ import {
   normalizeServerDate,
   normalizeServerDateStartOfDay,
 } from './dateNormalization';
-import { calculateTotalQuantity } from './deadlineCalculations';
 
 type DateField = 'created_at' | 'updated_at';
 type SortOrder = 'asc' | 'desc';
@@ -73,30 +72,29 @@ export const sortByStatusDate = (
   return bDate.valueOf() - aDate.valueOf();
 };
 
-export const sortByPagesRemaining = (
+export const sortByLastProgressUpdate = (
   a: ReadingDeadlineWithProgress,
-  b: ReadingDeadlineWithProgress,
-  calculateProgress: (deadline: ReadingDeadlineWithProgress) => number
+  b: ReadingDeadlineWithProgress
 ) => {
-  const aProgress = calculateProgress(a);
-  const aTotal = calculateTotalQuantity(
-    a.format,
-    a.total_quantity,
-    (a as any).total_minutes
-  );
-  const aRemaining = aTotal - aProgress;
+  const getLatestProgressTimestamp = (
+    deadline: ReadingDeadlineWithProgress
+  ): number => {
+    if (!deadline.progress || deadline.progress.length === 0) return 0;
 
-  const bProgress = calculateProgress(b);
-  const bTotal = calculateTotalQuantity(
-    b.format,
-    b.total_quantity,
-    (b as any).total_minutes
-  );
-  const bRemaining = bTotal - bProgress;
+    return deadline.progress.reduce((latest, current) => {
+      const currentTs = normalizeServerDate(current.created_at || '').valueOf();
+      return currentTs > latest ? currentTs : latest;
+    }, 0);
+  };
 
-  if (aRemaining !== bRemaining) {
-    return aRemaining - bRemaining;
+  const aTimestamp = getLatestProgressTimestamp(a);
+  const bTimestamp = getLatestProgressTimestamp(b);
+
+  // Most recent first (descending)
+  if (aTimestamp !== bTimestamp) {
+    return bTimestamp - aTimestamp;
   }
 
+  // Tiebreaker: use standard deadline sort
   return sortDeadlines(a, b);
 };

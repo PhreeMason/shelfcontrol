@@ -9,7 +9,7 @@ import {
   sortByDateField,
   sortDeadlines,
   sortByStatusDate,
-  sortByPagesRemaining,
+  sortByLastProgressUpdate,
 } from './sortUtils';
 import {
   calculateRequiredPace,
@@ -88,7 +88,7 @@ export const separateDeadlines = (deadlines: ReadingDeadlineWithProgress[]) => {
   });
 
   active.sort(sortDeadlines);
-  overdue.sort((a, b) => sortByPagesRemaining(a, b, calculateProgress));
+  overdue.sort(sortByLastProgressUpdate);
   completed.sort(sortByStatusDate);
   toReview.sort(sortByStatusDate);
   didNotFinish.sort(sortByStatusDate);
