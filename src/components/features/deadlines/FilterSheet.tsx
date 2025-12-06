@@ -3,6 +3,7 @@ import { ThemedText } from '@/components/themed/ThemedText';
 import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useGetAllDeadlineTags, useGetAllTags } from '@/hooks/useTags';
 import { useTheme } from '@/hooks/useThemeColor';
+import { usePreferences } from '@/providers/PreferencesProvider';
 import {
   BookFormat,
   PageRangeFilter,
@@ -18,6 +19,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -27,6 +29,74 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// Consolidated label maps for all filter types
+const FILTER_LABELS = {
+  format: { physical: 'Physical', eBook: 'eBook', audio: 'Audio' } as const,
+  pageRange: {
+    under300: '<300 pages',
+    '300to500': '300-500 pages',
+    over500: '500+ pages',
+  } as const,
+  timeRange: { all: 'All Time', thisWeek: 'This Week', thisMonth: 'This Month' } as const,
+  status: {
+    applied: 'Applied',
+    active: 'Active',
+    pending: 'Pending',
+    paused: 'Paused',
+    overdue: 'Past due',
+    toReview: 'To Review',
+    completed: 'Completed',
+    didNotFinish: 'DNF',
+  } as const,
+  sort: {
+    default: 'Default',
+    soonest: 'Soonest First',
+    latest: 'Latest First',
+    lowestPace: 'Lowest Pace',
+    highestPace: 'Highest Pace',
+    shortestFirst: 'Shortest First',
+    longestFirst: 'Longest First',
+  } as const,
+  shelf: {
+    applied: 'Applied',
+    pending: 'Pending',
+    active: 'Active',
+    paused: 'Paused',
+    overdue: 'Past due',
+    toReview: 'To Review',
+    completed: 'Completed',
+    didNotFinish: 'DNF',
+    rejected: 'Rejected',
+    withdrew: 'Withdrew',
+    all: 'All',
+  } as const,
+} as const;
+
+// Shared helper to check if a deadline matches a page range filter
+const matchesPageRange = (
+  deadline: ReadingDeadlineWithProgress,
+  range: PageRangeFilter
+): boolean => {
+  if (deadline.format === 'audio') return false;
+  const pages = deadline.total_quantity;
+  if (range === 'under300') return pages < 300;
+  if (range === '300to500') return pages >= 300 && pages <= 500;
+  if (range === 'over500') return pages > 500;
+  return false;
+};
+
+// Shared helper to check if a deadline matches a time range filter
+const matchesTimeRange = (
+  deadline: ReadingDeadlineWithProgress,
+  range: TimeRangeFilter
+): boolean => {
+  if (range === 'all') return true;
+  if (!deadline.deadline_date) return false;
+  if (range === 'thisWeek') return isDateThisWeek(deadline.deadline_date);
+  if (range === 'thisMonth') return isDateThisMonth(deadline.deadline_date);
+  return true;
+};
 
 interface FilterSheetProps {
   visible: boolean;
@@ -61,6 +131,57 @@ interface FilterSheetProps {
   availableTypes: string[];
 }
 
+// Helper to split items into two rows for horizontal scrolling
+const splitIntoTwoRows = <T,>(items: T[]): [T[], T[]] => {
+  const midpoint = Math.ceil(items.length / 2);
+  return [items.slice(0, midpoint), items.slice(midpoint)];
+};
+
+// Generic toggle handler factory to reduce duplication
+const createToggleHandler = <T,>(
+  selected: T[],
+  onChange: (items: T[]) => void
+) => {
+  return (item: T) => {
+    if (selected.includes(item)) {
+      onChange(selected.filter(i => i !== item));
+    } else {
+      onChange([...selected, item]);
+    }
+  };
+};
+
+// Reusable two-row horizontal scroll component
+interface TwoRowFilterScrollProps {
+  items: React.ReactNode[];
+}
+
+const TwoRowFilterScroll = ({ items }: TwoRowFilterScrollProps) => {
+  const [row1, row2] = splitIntoTwoRows(items);
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.filterScrollContent}
+    >
+      <View style={styles.twoRowContainer}>
+        <View style={styles.filterRow}>{row1}</View>
+        {row2.length > 0 && <View style={styles.filterRow}>{row2}</View>}
+      </View>
+    </ScrollView>
+  );
+};
+
+// Reusable section wrapper to reduce duplication
+const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <View style={styles.section}>
+    <ThemedText typography="titleMedium" style={styles.sectionTitle}>
+      {title}
+    </ThemedText>
+    {children}
+  </View>
+);
+
 export const FilterSheet: React.FC<FilterSheetProps> = ({
   visible,
   onClose,
@@ -84,25 +205,16 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   availableTypes,
 }) => {
   const { colors } = useTheme();
+  const {
+    showPaceOnCards,
+    setShowPaceOnCards,
+    showPaceOnCovers,
+    setShowPaceOnCovers,
+  } = usePreferences();
   const insets = useSafeAreaInsets();
   const translateY = useSharedValue(1000);
   const { data: allTags = [] } = useGetAllTags();
   const { data: deadlineTags = [] } = useGetAllDeadlineTags();
-
-  const getFilterDisplayName = (filter: string): string => {
-    const displayNames: Record<string, string> = {
-      applied: 'Applied',
-      pending: 'Pending',
-      active: 'Active',
-      paused: 'Paused',
-      overdue: 'Past due',
-      toReview: 'To Review',
-      completed: 'Completed',
-      didNotFinish: 'DNF',
-      all: 'All',
-    };
-    return displayNames[filter] || 'All';
-  };
 
   useEffect(() => {
     if (visible) {
@@ -116,45 +228,12 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     transform: [{ translateY: translateY.value }],
   }));
 
-  const toggleFormat = (format: BookFormat) => {
-    if (selectedFormats.includes(format)) {
-      onFormatsChange(selectedFormats.filter(f => f !== format));
-    } else {
-      onFormatsChange([...selectedFormats, format]);
-    }
-  };
-
-  const togglePageRange = (range: PageRangeFilter) => {
-    if (selectedPageRanges.includes(range)) {
-      onPageRangesChange(selectedPageRanges.filter(r => r !== range));
-    } else {
-      onPageRangesChange([...selectedPageRanges, range]);
-    }
-  };
-
-  const toggleType = (type: string) => {
-    if (selectedTypes.includes(type)) {
-      onTypesChange(selectedTypes.filter(t => t !== type));
-    } else {
-      onTypesChange([...selectedTypes, type]);
-    }
-  };
-
-  const toggleTag = (tagId: string) => {
-    if (selectedTags.includes(tagId)) {
-      onTagsChange(selectedTags.filter(t => t !== tagId));
-    } else {
-      onTagsChange([...selectedTags, tagId]);
-    }
-  };
-
-  const toggleExcludedStatus = (status: SystemShelfId) => {
-    if (excludedStatuses.includes(status)) {
-      onExcludedStatusesChange(excludedStatuses.filter(s => s !== status));
-    } else {
-      onExcludedStatusesChange([...excludedStatuses, status]);
-    }
-  };
+  // Use generic toggle handler factory for all toggle functions
+  const toggleFormat = createToggleHandler(selectedFormats, onFormatsChange);
+  const togglePageRange = createToggleHandler(selectedPageRanges, onPageRangesChange);
+  const toggleType = createToggleHandler(selectedTypes, onTypesChange);
+  const toggleTag = createToggleHandler(selectedTags, onTagsChange);
+  const toggleExcludedStatus = createToggleHandler(excludedStatuses, onExcludedStatusesChange);
 
   const getFormatCount = (format: BookFormat): number => {
     return deadlines.filter(d => d.format === format).length;
@@ -172,30 +251,11 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
   };
 
   const getPageRangeCount = (range: PageRangeFilter): number => {
-    return deadlines.filter(d => {
-      if (d.format === 'audio') return false;
-      const pages = d.total_quantity;
-      if (range === 'under300') return pages < 300;
-      if (range === '300to500') return pages >= 300 && pages <= 500;
-      if (range === 'over500') return pages > 500;
-      return false;
-    }).length;
+    return deadlines.filter(d => matchesPageRange(d, range)).length;
   };
 
   const getTimeRangeCount = (range: TimeRangeFilter): number => {
-    if (range === 'all') {
-      return deadlines.length;
-    }
-    return deadlines.filter(deadline => {
-      if (!deadline.deadline_date) return false;
-      if (range === 'thisWeek') {
-        return isDateThisWeek(deadline.deadline_date);
-      }
-      if (range === 'thisMonth') {
-        return isDateThisMonth(deadline.deadline_date);
-      }
-      return true;
-    }).length;
+    return deadlines.filter(d => matchesTimeRange(d, range)).length;
   };
 
   const applyFilters = (
@@ -204,40 +264,25 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     let filtered = deadlines;
 
     if (timeRangeFilter !== 'all') {
-      filtered = filtered.filter(deadline => {
-        if (!deadline.deadline_date) return false;
-        if (timeRangeFilter === 'thisWeek') {
-          return isDateThisWeek(deadline.deadline_date);
-        }
-        if (timeRangeFilter === 'thisMonth') {
-          return isDateThisMonth(deadline.deadline_date);
-        }
-        return true;
-      });
+      filtered = filtered.filter(d => matchesTimeRange(d, timeRangeFilter));
     }
 
     if (selectedFormats.length > 0) {
-      filtered = filtered.filter(deadline =>
-        selectedFormats.includes(deadline.format as BookFormat)
+      filtered = filtered.filter(d =>
+        selectedFormats.includes(d.format as BookFormat)
       );
     }
 
     if (selectedPageRanges.length > 0) {
-      filtered = filtered.filter(deadline => {
-        if (deadline.format === 'audio') return true;
-        const pages = deadline.total_quantity;
-        return selectedPageRanges.some(range => {
-          if (range === 'under300') return pages < 300;
-          if (range === '300to500') return pages >= 300 && pages <= 500;
-          if (range === 'over500') return pages > 500;
-          return false;
-        });
+      filtered = filtered.filter(d => {
+        if (d.format === 'audio') return true;
+        return selectedPageRanges.some(range => matchesPageRange(d, range));
       });
     }
 
     if (selectedTypes.length > 0) {
       filtered = filtered.filter(
-        deadline => deadline.type && selectedTypes.includes(deadline.type)
+        d => d.type && selectedTypes.includes(d.type)
       );
     }
 
@@ -250,10 +295,10 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
         deadlineIdsByTag.set(tagId, new Set(deadlineIds));
       });
 
-      filtered = filtered.filter(deadline => {
+      filtered = filtered.filter(d => {
         return selectedTags.some(tagId => {
           const deadlineIds = deadlineIdsByTag.get(tagId);
-          return deadlineIds?.has(deadline.id);
+          return deadlineIds?.has(d.id);
         });
       });
     }
@@ -302,17 +347,20 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
     onSortOrderChange('default');
   };
 
-  const formatLabels: Record<BookFormat, string> = {
-    physical: 'Physical',
-    eBook: 'eBook',
-    audio: 'Audio',
-  };
-
-  const pageRangeLabels: Record<PageRangeFilter, string> = {
-    under300: '<300 pages',
-    '300to500': '300-500 pages',
-    over500: '500+ pages',
-  };
+  // Helper to create "All X" reset buttons
+  const createAllButton = (
+    selectedItems: unknown[],
+    onClear: () => void,
+    count: number = deadlines.length
+  ) => (
+    <ThemedButton
+      key="all"
+      title={`All ${count}`}
+      style={styles.filterPill}
+      variant={selectedItems.length === 0 ? 'primary' : 'outline'}
+      onPress={onClear}
+    />
+  );
 
   return (
     <Modal
@@ -344,7 +392,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
           >
             <View style={styles.header}>
               <ThemedText typography="titleSubLarge" style={styles.title}>
-                Filter {getFilterDisplayName(selectedShelf)}
+                Filter {FILTER_LABELS.shelf[selectedShelf] || 'All'}
               </ThemedText>
               <View style={styles.headerActions}>
                 {hasActiveFilters && (
@@ -371,254 +419,149 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
               </View>
             </View>
 
-            <View style={styles.section}>
-              <ThemedText typography="titleMedium" style={styles.sectionTitle}>
-                Due Date
-              </ThemedText>
-              <View style={styles.filterRow}>
-                {(['all', 'thisWeek', 'thisMonth'] as TimeRangeFilter[]).map(
-                  range => {
-                    const count = getTimeRangeCount(range);
-                    const label =
-                      range === 'all'
-                        ? 'All Time'
-                        : range === 'thisWeek'
-                          ? 'This Week'
-                          : 'This Month';
-                    return (
-                      <ThemedButton
-                        key={range}
-                        title={`${label} ${count}`}
-                        style={styles.filterPill}
-                        variant={
-                          timeRangeFilter === range ? 'primary' : 'outline'
-                        }
-                        onPress={() => onTimeRangeChange(range)}
-                      />
-                    );
-                  }
-                )}
-              </View>
-            </View>
-
-            <View style={styles.section}>
-              <ThemedText typography="titleMedium" style={styles.sectionTitle}>
-                Format
-              </ThemedText>
-              <View style={styles.filterRow}>
-                <ThemedButton
-                  title={`All ${deadlines.length}`}
-                  style={styles.filterPill}
-                  variant={selectedFormats.length === 0 ? 'primary' : 'outline'}
-                  onPress={() => onFormatsChange([])}
-                />
-                {(['physical', 'eBook', 'audio'] as BookFormat[]).map(
-                  format => {
-                    const count = getFormatCount(format);
-                    return (
-                      <ThemedButton
-                        key={format}
-                        title={`${formatLabels[format]} ${count}`}
-                        style={styles.filterPill}
-                        variant={
-                          selectedFormats.includes(format)
-                            ? 'primary'
-                            : 'outline'
-                        }
-                        onPress={() => toggleFormat(format)}
-                      />
-                    );
-                  }
-                )}
-              </View>
-            </View>
-
-            <View style={styles.section}>
-              <ThemedText typography="titleMedium" style={styles.sectionTitle}>
-                Page Count
-              </ThemedText>
-              <View style={styles.filterRow}>
-                <ThemedButton
-                  title={`All ${deadlines.length}`}
-                  style={styles.filterPill}
-                  variant={
-                    selectedPageRanges.length === 0 ? 'primary' : 'outline'
-                  }
-                  onPress={() => onPageRangesChange([])}
-                />
-                {(['under300', '300to500', 'over500'] as PageRangeFilter[]).map(
-                  range => {
-                    const count = getPageRangeCount(range);
-                    return (
-                      <ThemedButton
-                        key={range}
-                        title={`${pageRangeLabels[range]} ${count}`}
-                        style={styles.filterPill}
-                        variant={
-                          selectedPageRanges.includes(range)
-                            ? 'primary'
-                            : 'outline'
-                        }
-                        onPress={() => togglePageRange(range)}
-                      />
-                    );
-                  }
-                )}
-              </View>
-            </View>
-
-            <View style={styles.section}>
-              <ThemedText typography="titleMedium" style={styles.sectionTitle}>
-                Type
-              </ThemedText>
-              <View style={styles.filterRow}>
-                <ThemedButton
-                  title={`All ${deadlines.length}`}
-                  style={styles.filterPill}
-                  variant={selectedTypes.length === 0 ? 'primary' : 'outline'}
-                  onPress={() => onTypesChange([])}
-                />
-                {availableTypes.map(type => {
-                  const count = getTypeCount(type);
-                  if (count === 0) return null;
-                  return (
+            <Section title="Due Date">
+              <TwoRowFilterScroll
+                items={(['all', 'thisWeek', 'thisMonth'] as TimeRangeFilter[]).map(
+                  range => (
                     <ThemedButton
-                      key={type}
-                      title={`${type} ${count}`}
+                      key={range}
+                      title={`${FILTER_LABELS.timeRange[range]} ${getTimeRangeCount(range)}`}
                       style={styles.filterPill}
-                      variant={
-                        selectedTypes.includes(type) ? 'primary' : 'outline'
-                      }
-                      onPress={() => toggleType(type)}
+                      variant={timeRangeFilter === range ? 'primary' : 'outline'}
+                      onPress={() => onTimeRangeChange(range)}
                     />
-                  );
-                })}
-              </View>
-            </View>
+                  )
+                )}
+              />
+            </Section>
 
-            <View style={styles.section}>
-              <ThemedText typography="titleMedium" style={styles.sectionTitle}>
-                Tags
-              </ThemedText>
-              <ScrollView
-                style={styles.tagsScrollView}
-                showsVerticalScrollIndicator={true}
-                nestedScrollEnabled={true}
-              >
-                <View style={styles.filterRow}>
-                  <ThemedButton
-                    title={`All ${deadlines.length}`}
-                    style={styles.filterPill}
-                    variant={selectedTags.length === 0 ? 'primary' : 'outline'}
-                    onPress={() => onTagsChange([])}
-                  />
-                  {[...allTags]
+            <Section title="Format">
+              <TwoRowFilterScroll
+                items={[
+                  createAllButton(selectedFormats, () => onFormatsChange([])),
+                  ...(['physical', 'eBook', 'audio'] as BookFormat[]).map(format => (
+                    <ThemedButton
+                      key={format}
+                      title={`${FILTER_LABELS.format[format]} ${getFormatCount(format)}`}
+                      style={styles.filterPill}
+                      variant={selectedFormats.includes(format) ? 'primary' : 'outline'}
+                      onPress={() => toggleFormat(format)}
+                    />
+                  )),
+                ]}
+              />
+            </Section>
+
+            <Section title="Page Count">
+              <TwoRowFilterScroll
+                items={[
+                  createAllButton(selectedPageRanges, () => onPageRangesChange([])),
+                  ...(['under300', '300to500', 'over500'] as PageRangeFilter[]).map(range => (
+                    <ThemedButton
+                      key={range}
+                      title={`${FILTER_LABELS.pageRange[range]} ${getPageRangeCount(range)}`}
+                      style={styles.filterPill}
+                      variant={selectedPageRanges.includes(range) ? 'primary' : 'outline'}
+                      onPress={() => togglePageRange(range)}
+                    />
+                  )),
+                ]}
+              />
+            </Section>
+
+            <Section title="Type">
+              <TwoRowFilterScroll
+                items={[
+                  createAllButton(selectedTypes, () => onTypesChange([])),
+                  ...availableTypes
+                    .filter(type => getTypeCount(type) > 0)
+                    .map(type => (
+                      <ThemedButton
+                        key={type}
+                        title={`${type} ${getTypeCount(type)}`}
+                        style={styles.filterPill}
+                        variant={selectedTypes.includes(type) ? 'primary' : 'outline'}
+                        onPress={() => toggleType(type)}
+                      />
+                    )),
+                ]}
+              />
+            </Section>
+
+            <Section title="Tags">
+              <TwoRowFilterScroll
+                items={[
+                  createAllButton(selectedTags, () => onTagsChange([])),
+                  ...[...allTags]
                     .sort((a, b) => a.name.localeCompare(b.name))
-                    .map(tag => {
-                      const count = getTagCount(tag.id);
-                      if (count === 0) return null;
-                      return (
-                        <ThemedButton
-                          key={tag.id}
-                          title={`${tag.name} ${count}`}
-                          style={styles.filterPill}
-                          variant={
-                            selectedTags.includes(tag.id)
-                              ? 'primary'
-                              : 'outline'
-                          }
-                          onPress={() => toggleTag(tag.id)}
-                        />
-                      );
-                    })}
-                </View>
-              </ScrollView>
-            </View>
+                    .filter(tag => getTagCount(tag.id) > 0)
+                    .map(tag => (
+                      <ThemedButton
+                        key={tag.id}
+                        title={`${tag.name} ${getTagCount(tag.id)}`}
+                        style={styles.filterPill}
+                        variant={selectedTags.includes(tag.id) ? 'primary' : 'outline'}
+                        onPress={() => toggleTag(tag.id)}
+                      />
+                    )),
+                ]}
+              />
+            </Section>
 
             {selectedShelf === 'all' && (
-              <View style={styles.section}>
-                <ThemedText
-                  typography="titleMedium"
-                  style={styles.sectionTitle}
-                >
-                  Exclude Statuses
-                </ThemedText>
-                <View style={styles.filterRow}>
-                  {(
-                    [
-                      'applied',
-                      'active',
-                      'pending',
-                      'paused',
-                      'pastDue',
-                      'toReview',
-                      'completed',
-                      'didNotFinish',
-                    ] as SystemShelfId[]
-                  ).map(status => {
-                    const statusLabels: Record<string, string> = {
-                      applied: 'Applied',
-                      active: 'Active',
-                      pending: 'Pending',
-                      paused: 'Paused',
-                      pastDue: 'Past due',
-                      toReview: 'To Review',
-                      completed: 'Completed',
-                      didNotFinish: 'DNF',
-                    };
-                    const count = statusCounts?.[status] ?? 0;
-                    return (
-                      <ThemedButton
-                        key={status}
-                        title={`${statusLabels[status]} ${count}`}
-                        style={styles.filterPill}
-                        variant={
-                          excludedStatuses.includes(status)
-                            ? 'primary'
-                            : 'outline'
-                        }
-                        onPress={() => toggleExcludedStatus(status)}
-                      />
-                    );
-                  })}
-                </View>
-              </View>
+              <Section title="Exclude Statuses">
+                <TwoRowFilterScroll
+                  items={(
+                    ['applied', 'active', 'pending', 'paused', 'overdue', 'toReview', 'completed', 'didNotFinish'] as const
+                  ).map(status => (
+                    <ThemedButton
+                      key={status}
+                      title={`${FILTER_LABELS.status[status]} ${statusCounts?.[status] ?? 0}`}
+                      style={styles.filterPill}
+                      variant={excludedStatuses.includes(status) ? 'primary' : 'outline'}
+                      onPress={() => toggleExcludedStatus(status)}
+                    />
+                  ))}
+                />
+              </Section>
             )}
 
-            <View style={styles.section}>
-              <ThemedText typography="titleMedium" style={styles.sectionTitle}>
-                Sort By
-              </ThemedText>
-              <View style={styles.filterRow}>
-                {(selectedShelf === 'all'
-                  ? [
-                      'default',
-                      'soonest',
-                      'latest',
-                      'lowestPace',
-                      'highestPace',
-                    ]
-                  : ['default', 'lowestPace', 'highestPace']
-                ).map(order => {
-                  const sortLabels: Record<SortOrder, string> = {
-                    default: 'Default',
-                    soonest: 'Soonest First',
-                    latest: 'Latest First',
-                    lowestPace: 'Lowest Pace',
-                    highestPace: 'Highest Pace',
-                  };
-                  return (
-                    <ThemedButton
-                      key={order}
-                      title={sortLabels[order as SortOrder]}
-                      style={styles.filterPill}
-                      variant={sortOrder === order ? 'primary' : 'outline'}
-                      onPress={() => onSortOrderChange(order as SortOrder)}
-                    />
-                  );
-                })}
+            <Section title="Sort By">
+              <TwoRowFilterScroll
+                items={(
+                  selectedShelf === 'all'
+                    ? ['default', 'soonest', 'latest', 'lowestPace', 'highestPace', 'shortestFirst', 'longestFirst']
+                    : ['default', 'lowestPace', 'highestPace', 'shortestFirst', 'longestFirst']
+                ).map(order => (
+                  <ThemedButton
+                    key={order}
+                    title={FILTER_LABELS.sort[order as SortOrder]}
+                    style={styles.filterPill}
+                    variant={sortOrder === order ? 'primary' : 'outline'}
+                    onPress={() => onSortOrderChange(order as SortOrder)}
+                  />
+                ))}
+              />
+            </Section>
+
+            <Section title="Display Options">
+              <View style={styles.toggleRow}>
+                <ThemedText typography="labelLarge">Show pace on cards</ThemedText>
+                <Switch
+                  value={showPaceOnCards}
+                  onValueChange={setShowPaceOnCards}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                />
               </View>
-            </View>
+              <View style={styles.toggleRow}>
+                <ThemedText typography="labelLarge">Show pace on covers</ThemedText>
+                <Switch
+                  value={showPaceOnCovers}
+                  onValueChange={setShowPaceOnCovers}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                />
+              </View>
+            </Section>
           </ScrollView>
 
           <View style={[styles.footer, { borderTopColor: colors.border }]}>
@@ -689,9 +632,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: Spacing.md,
   },
+  filterScrollContent: {
+    paddingRight: Spacing.lg,
+  },
+  twoRowContainer: {
+    gap: Spacing.sm,
+  },
   filterRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: Spacing.sm,
   },
   filterPill: {
@@ -699,8 +647,11 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     minWidth: 'auto',
   },
-  tagsScrollView: {
-    maxHeight: 150,
+  toggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
   },
   footer: {
     paddingHorizontal: Spacing.lg,

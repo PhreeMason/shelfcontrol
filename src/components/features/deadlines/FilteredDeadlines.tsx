@@ -179,6 +179,14 @@ const FilteredDeadlines: React.FC<FilteredDeadlinesProps> = ({
       return [...deadlines].sort((a, b) => sortByPace(a, b, 'desc'));
     }
 
+    if (sortOrder === 'shortestFirst') {
+      return [...deadlines].sort((a, b) => a.total_quantity - b.total_quantity);
+    }
+
+    if (sortOrder === 'longestFirst') {
+      return [...deadlines].sort((a, b) => b.total_quantity - a.total_quantity);
+    }
+
     return [...deadlines].sort((a, b) => {
       const dateA = a.deadline_date
         ? normalizeServerDate(a.deadline_date).valueOf()

@@ -53,7 +53,9 @@ export type SortOrder =
   | 'soonest'
   | 'latest'
   | 'lowestPace'
-  | 'highestPace';
+  | 'highestPace'
+  | 'shortestFirst'
+  | 'longestFirst';
 
 /**
  * Urgency levels for deadline pace visualization.
