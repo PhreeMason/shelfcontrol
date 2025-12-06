@@ -29,6 +29,7 @@ import { analytics } from '@/lib/analytics/client';
 import { posthog } from '@/lib/posthog';
 import { useAuth } from '@/providers/AuthProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
+import { ReviewFormData, reviewFormSchema } from '@/utils/reviewFormSchema';
 import {
   createPlatformRequiredToast,
   createReviewTrackingErrorToast,
@@ -36,8 +37,8 @@ import {
   createSkipSuccessToast,
   validatePlatformSelection,
 } from '@/utils/reviewFormUtils';
-import { ReviewFormData, reviewFormSchema } from '@/utils/reviewFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -327,65 +328,72 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
       backgroundColor: colors.surfaceVariant,
     },
     actionBar: {
-      backgroundColor: 'transparent',
+      // backgroundColor: 'transparent',
       borderTopColor: colors.border,
     },
   };
 
   return (
-    <ThemedView
+
+    <LinearGradient
+      colors={[colors.backgroundAccent, colors.backgroundPrimary]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={[
         styles.container,
         dynamicStyles.container,
         {
-          paddingBottom: insets.bottom,
-          paddingLeft: insets.left,
-          paddingRight: insets.right,
+          // paddingBottom: insets.bottom,
+          paddingTop: insets.top,
+          // paddingLeft: insets.left,
+          // paddingRight: insets.right,
         },
       ]}
       testID="review-form-container"
     >
-      <View
-        style={[
-          styles.header,
-          { paddingTop: insets.top, backgroundColor: 'transparent' },
-        ]}
-      >
-        <ThemedView style={[styles.bookCard, dynamicStyles.bookCard]}>
-          <View style={styles.bookCardContent}>
-            {bookData?.cover_image_url ? (
-              <Image
-                source={{ uri: bookData.cover_image_url }}
-                style={styles.bookCover}
-                resizeMode="cover"
-              />
-            ) : (
-              <View
-                style={[
-                  styles.bookCoverPlaceholder,
-                  dynamicStyles.bookCoverPlaceholder,
-                ]}
-              >
-                <IconSymbol name="book.fill" size={24} color="#FFFFFF" />
-              </View>
-            )}
-            <View style={styles.bookInfoText}>
-              <ThemedText typography="titleSmall" numberOfLines={1}>
-                {deadline.book_title}
-              </ThemedText>
-              <ThemedText typography="bodySmall" color="textSecondary">
-                by {deadline.author || 'Unknown Author'}
-              </ThemedText>
-            </View>
-          </View>
-        </ThemedView>
-      </View>
-
       <ThemedKeyboardAwareScrollView
         style={[styles.scrollView, { backgroundColor: 'transparent' }]}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
+
+        <View
+          style={[
+            styles.header,
+            { backgroundColor: 'transparent' },
+          ]}
+        >
+
+          <ThemedView style={[styles.bookCard, dynamicStyles.bookCard]}>
+            <View style={styles.bookCardContent}>
+              {bookData?.cover_image_url ? (
+                <Image
+                  source={{ uri: bookData.cover_image_url }}
+                  style={styles.bookCover}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View
+                  style={[
+                    styles.bookCoverPlaceholder,
+                    dynamicStyles.bookCoverPlaceholder,
+                  ]}
+                >
+                  <IconSymbol name="book.fill" size={24} color="#FFFFFF" />
+                </View>
+              )}
+              <View style={styles.bookInfoText}>
+                <ThemedText typography="titleMedium" numberOfLines={1}>
+                  {deadline.book_title}
+                </ThemedText>
+                <ThemedText typography="bodySmall" color="secondary" numberOfLines={1}>
+                  by {deadline.author || 'Unknown Author'}
+                </ThemedText>
+              </View>
+            </View>
+          </ThemedView>
+        </View>
+
         <ThemedView
           style={[styles.content, { backgroundColor: 'transparent' }]}
         >
@@ -438,7 +446,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
         {mode === 'edit' && (
           <ThemedButton
             title="Cancel"
-            variant="ghost"
+            variant="outline"
             onPress={() =>
               router.canGoBack() ? router.back() : router.replace(ROUTES.HOME)
             }
@@ -459,7 +467,7 @@ const CompletionFormStep3: React.FC<CompletionFormStep3Props> = ({
           </ThemedText>
         )}
       </ThemedView>
-    </ThemedView>
+    </LinearGradient>
   );
 };
 
@@ -468,7 +476,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.sm,
     paddingBottom: Spacing.md,
   },
   bookCard: {
@@ -518,14 +526,13 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   content: {
-    padding: Spacing.lg,
+    padding: Spacing.sm,
     gap: Spacing.md,
   },
   actionBar: {
     flexDirection: 'column',
     alignItems: 'center',
     padding: Spacing.lg,
-    paddingBottom: 0,
     borderTopWidth: 1,
     gap: Spacing.md,
   },

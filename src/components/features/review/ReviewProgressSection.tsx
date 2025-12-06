@@ -134,7 +134,7 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
         {isToReview && (
           <>
             <ThemedText
-              typography="labelSmall"
+              typography="labelMedium"
               color="textSecondary"
               style={styles.reminderText}
             >
@@ -146,6 +146,12 @@ const ReviewProgressSection: React.FC<ReviewProgressSectionProps> = ({
               variant="primary"
               onPress={() => setShowMarkCompleteDialog(true)}
               style={styles.actionButton}
+              />
+            <ThemedButton
+              style={styles.actionButton}
+              title="Edit Review Tracking"
+              variant="outline"
+              onPress={() => router.push(`/deadline/${deadline.id}/edit-review-tracking`)}
             />
           </>
         )}
@@ -166,7 +172,6 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
-    marginBottom: Spacing.md,
     ...Shadows.subtle,
   },
   loadingContainer: {
@@ -182,6 +187,7 @@ const styles = StyleSheet.create({
   reminderText: {
     textAlign: 'center',
     marginBottom: Spacing.negative.sm,
+    marginTop: Spacing.sm,
   },
   actionButton: {
     paddingVertical: Spacing.md,
