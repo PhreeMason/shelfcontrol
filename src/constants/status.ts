@@ -53,6 +53,19 @@ export const VALID_STATUS_TRANSITIONS: Record<
   withdrew: [],
 };
 
+/**
+ * Statuses that should be treated as "completed" for calendar filtering.
+ * These bypass urgency calculation and show in the Completed filter.
+ *
+ * Note: did_not_finish is NOT included because it already gets 'good' urgency
+ * from getDeadlineCalculations (via isArchived check).
+ */
+export const CALENDAR_COMPLETED_STATUSES: readonly DeadlineStatusEnum[] = [
+  'complete',
+  'withdrew',
+  'rejected',
+] as const;
+
 export type DeadlineStatus = DeadlineStatusEnum;
 export type ActivityState =
   (typeof ACTIVITY_STATE)[keyof typeof ACTIVITY_STATE];

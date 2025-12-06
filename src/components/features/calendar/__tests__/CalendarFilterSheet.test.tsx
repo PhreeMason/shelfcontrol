@@ -108,6 +108,7 @@ describe('CalendarFilterSheet', () => {
       'note',
       'review',
       'review_due',
+      'reviews_pending',
     ]);
   });
 

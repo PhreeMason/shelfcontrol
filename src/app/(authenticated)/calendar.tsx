@@ -5,11 +5,14 @@ import { CustomDateCalendarCard } from '@/components/features/calendar/CustomDat
 import { CustomDayComponent } from '@/components/features/calendar/CustomDayComponent';
 import { DeadlineDueCard } from '@/components/features/calendar/DeadlineDueCard';
 import { ReviewDueCard } from '@/components/features/calendar/ReviewDueCard';
+import { ReviewsPendingCard } from '@/components/features/calendar/ReviewsPendingCard';
 import AppHeader from '@/components/shared/AppHeader';
 import { ThemedText } from '@/components/themed';
 import { CalendarFilterType } from '@/constants/activityTypes';
 import { Spacing } from '@/constants/Colors';
+import { CALENDAR_COMPLETED_STATUSES } from '@/constants/status';
 import { useGetDailyActivities } from '@/hooks/useCalendar';
+import { useReviewsPendingActivities } from '@/hooks/useReviewsPending';
 import { useTheme } from '@/hooks/useTheme';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { usePreferences } from '@/providers/PreferencesProvider';
@@ -24,6 +27,7 @@ import {
   transformActivitiesToAgendaItems,
 } from '@/utils/calendarUtils';
 import { getCoverImageUrl } from '@/utils/coverImageUtils';
+import { normalizeServerDate } from '@/utils/dateNormalization';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
@@ -74,9 +78,19 @@ export default function CalendarScreen() {
   } = useGetDailyActivities(startDate, endDate);
 
   // Validate and transform activities from database (validates types and structure)
-  const activities = useMemo(
+  const validatedActivities = useMemo(
     () => validateDailyActivities(rawActivities),
     [rawActivities]
+  );
+
+  // Get reviews pending activities (daily reminders for books with un-posted reviews)
+  const { activities: reviewsPendingActivities } =
+    useReviewsPendingActivities();
+
+  // Merge RPC activities with synthetic reviews pending activities
+  const activities = useMemo(
+    () => [...validatedActivities, ...reviewsPendingActivities],
+    [validatedActivities, reviewsPendingActivities]
   );
 
   // Get deadline calculations (must be before filteredActivities)
@@ -89,15 +103,28 @@ export default function CalendarScreen() {
     urgencyLevel: UrgencyLevel,
     deadline: ReadingDeadlineWithProgress
   ): CalendarFilterType => {
-    // Get latest status (status array is sorted ASC by created_at, so last element is most recent)
+    // Defensively sort status array by created_at ASC (oldest first, newest last)
     const statusArray = deadline.status;
-    const currentStatus =
+    const sortedStatuses =
       statusArray && statusArray.length > 0
-        ? statusArray[statusArray.length - 1].status
+        ? [...statusArray].sort(
+            (a, b) =>
+              normalizeServerDate(a.created_at).valueOf() -
+              normalizeServerDate(b.created_at).valueOf()
+          )
+        : [];
+
+    const currentStatus =
+      sortedStatuses.length > 0
+        ? sortedStatuses[sortedStatuses.length - 1].status
         : undefined;
 
-    // Check if deadline is completed (status-based, not urgency-based)
-    if (currentStatus === 'complete') {
+    // Check if deadline is completed or terminal (status-based, not urgency-based)
+    // Withdrew and rejected are terminal states - user is no longer working on these
+    if (
+      currentStatus &&
+      CALENDAR_COMPLETED_STATUSES.includes(currentStatus as any)
+    ) {
       return 'deadline_due_completed';
     }
 
@@ -148,6 +175,11 @@ export default function CalendarScreen() {
           // Check regular progress filter for other progress events
           return !excludedCalendarActivities.includes('progress');
         }
+      }
+
+      // Special handling for reviews_pending - check daily reminder filter
+      if (activity.activity_type === 'reviews_pending') {
+        return !excludedCalendarActivities.includes('reviews_pending');
       }
 
       // For other activities, check directly against activity type
@@ -252,6 +284,15 @@ export default function CalendarScreen() {
     [selectedDateActivities]
   );
 
+  // Separate reviews_pending activities (daily reminders)
+  const reviewsPendingCardActivities = useMemo(
+    () =>
+      selectedDateActivities.filter(
+        item => item.activityType === 'reviews_pending'
+      ),
+    [selectedDateActivities]
+  );
+
   const otherActivities = useMemo(
     () =>
       selectedDateActivities
@@ -259,7 +300,8 @@ export default function CalendarScreen() {
           item =>
             item.activityType !== 'deadline_due' &&
             item.activityType !== 'review_due' &&
-            item.activityType !== 'custom_date'
+            item.activityType !== 'custom_date' &&
+            item.activityType !== 'reviews_pending'
         )
         .sort(
           (a, b) =>
@@ -339,7 +381,7 @@ export default function CalendarScreen() {
         onBack={NOOP}
         showBackButton={false}
         rightElement={<CalendarFilterToggle />}
-        headerStyle={{paddingBottom: Spacing.md}}
+        headerStyle={{ paddingBottom: Spacing.md }}
       />
       <View style={styles.content}>
         <View
@@ -426,6 +468,21 @@ export default function CalendarScreen() {
                   key={generateAgendaItemKey(
                     item.activity.deadline_id,
                     'review_due',
+                    index
+                  )}
+                  activity={item.activity}
+                  onPress={() =>
+                    router.push(`/deadline/${item.activity.deadline_id}`)
+                  }
+                />
+              ))}
+
+              {/* Reviews Pending Items (Daily Reminders) */}
+              {reviewsPendingCardActivities.map((item, index) => (
+                <ReviewsPendingCard
+                  key={generateAgendaItemKey(
+                    item.activity.deadline_id,
+                    'reviews_pending',
                     index
                   )}
                   activity={item.activity}
