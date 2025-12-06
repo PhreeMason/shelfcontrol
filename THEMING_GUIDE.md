@@ -13,11 +13,12 @@ A comprehensive guide to using the ShelfControl token-based theming system for c
 3. [Color Tokens](#color-tokens)
 4. [Spacing Tokens](#spacing-tokens)
 5. [Shadow Tokens](#shadow-tokens)
-6. [ThemedText Component](#themedtext-component)
-7. [ThemedView Component](#themedview-component)
-8. [Migration Patterns](#migration-patterns)
-9. [Anti-Patterns](#anti-patterns)
-10. [Examples](#examples)
+6. [Opacity Tokens](#opacity-tokens)
+7. [ThemedText Component](#themedtext-component)
+8. [ThemedView Component](#themedview-component)
+9. [Migration Patterns](#migration-patterns)
+10. [Anti-Patterns](#anti-patterns)
+11. [Examples](#examples)
 
 ---
 
@@ -781,6 +782,107 @@ const styles = StyleSheet.create({
 ```
 
 **Note:** Prefer using `Shadows` directly for clarity about which shadow level you're using.
+
+---
+
+## Opacity Tokens
+
+ShelfControl has **two opacity systems** for different use cases:
+
+### 1. Hex OPACITY (for Color Transparency)
+
+Located in `@/utils/formatters`, these are hex string suffixes for adding transparency to colors:
+
+| Token | Hex Value | Opacity % | Use Case |
+|-------|-----------|-----------|----------|
+| **OPACITY.SUBTLE** | '20' | 12.5% | Subtle backgrounds, light tints |
+| **OPACITY.CALENDAR** | '40' | 25% | Calendar cell backgrounds |
+| **OPACITY.MEDIUM** | '80' | 50% | Disabled state backgrounds |
+| **OPACITY.HIGH** | 'C0' | 75% | Hover states, stronger tints |
+
+#### Hex OPACITY Usage
+
+```typescript
+import { OPACITY } from '@/utils/formatters';
+
+// Append to any hex color for transparency
+const styles = StyleSheet.create({
+  calendarCell: {
+    backgroundColor: urgencyColor + OPACITY.CALENDAR,  // e.g., '#B8A9D940'
+  },
+  subtleBackground: {
+    backgroundColor: colors.primary + OPACITY.SUBTLE,  // e.g., '#B8A9D920'
+  },
+});
+```
+
+### 2. Numeric Opacity (for StyleSheet opacity)
+
+Located in `@/constants/Colors`, these are numeric values for the `opacity` style property:
+
+| Token | Value | Use Case |
+|-------|-------|----------|
+| **Opacity.full** | 1 | Full visibility (default) |
+| **Opacity.high** | 0.85 | Slightly reduced (pressed states) |
+| **Opacity.muted** | 0.7 | Muted text, secondary info |
+| **Opacity.secondary** | 0.6 | Secondary hints, helper text |
+| **Opacity.disabled** | 0.5 | Disabled states |
+| **Opacity.faint** | 0.4 | Very faint elements |
+| **Opacity.hairline** | 0.15 | Subtle dividers, barely visible |
+
+#### Numeric Opacity Usage
+
+```typescript
+import { Opacity } from '@/constants/Colors';
+
+const styles = StyleSheet.create({
+  // ❌ DON'T DO THIS - Hardcoded opacity
+  hint: {
+    opacity: 0.6,
+  },
+
+  // ✅ DO THIS - Use opacity token
+  hint: {
+    opacity: Opacity.secondary,
+  },
+
+  disabledButton: {
+    opacity: Opacity.disabled,
+  },
+
+  mutedText: {
+    opacity: Opacity.muted,
+  },
+});
+```
+
+### When to Use Which
+
+| Need | Use | Import |
+|------|-----|--------|
+| Transparent background color | Hex `OPACITY` | `@/utils/formatters` |
+| Element/text visibility | Numeric `Opacity` | `@/constants/Colors` |
+
+```typescript
+// Transparent background = Hex OPACITY
+backgroundColor: colors.primary + OPACITY.SUBTLE
+
+// Element visibility = Numeric Opacity
+opacity: Opacity.muted
+```
+
+### Common Value Mappings
+
+When migrating existing code:
+
+| Old Value | Token | Notes |
+|-----------|-------|-------|
+| 0.85, 0.8 | `Opacity.high` | Pressed states |
+| 0.7 | `Opacity.muted` | Most common for secondary text |
+| 0.6 | `Opacity.secondary` | Helper text, hints |
+| 0.5 | `Opacity.disabled` | Disabled states |
+| 0.4, 0.3 | `Opacity.faint` | Very subtle elements |
+| 0.15, 0.1 | `Opacity.hairline` | Dividers, hairlines |
 
 ---
 

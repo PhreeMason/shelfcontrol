@@ -1,6 +1,6 @@
 import { DeadlineCard } from '@/components/features/deadlines/DeadlineCard';
 import { ThemedText, ThemedView } from '@/components/themed';
-import { Spacing } from '@/constants/Colors';
+import { Opacity, Spacing } from '@/constants/Colors';
 import { usePreferences } from '@/providers/PreferencesProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getUserFriendlyErrorMessage } from '@/utils/errorUtils';
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: 'center',
     fontStyle: 'italic',
-    opacity: 0.7,
+    opacity: Opacity.muted,
   },
   errorText: {
     textAlign: 'center',
@@ -111,11 +111,11 @@ const styles = StyleSheet.create({
   errorHint: {
     textAlign: 'center',
     marginTop: Spacing.sm,
-    opacity: 0.6,
+    opacity: Opacity.secondary,
   },
   loadingText: {
     textAlign: 'center',
-    opacity: 0.7,
+    opacity: Opacity.muted,
   },
 });
 

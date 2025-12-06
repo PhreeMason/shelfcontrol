@@ -108,6 +108,7 @@ export const Colors = {
     didNotFinish: '#9CA3AF',
     backupPurple: '#d8b4fe',
     backupPink: '#f9a8d4',
+    reviewsPending: '#14B8A6', // Teal - daily reminders
 
     // Destructive action colors
     scaryRed: '#FF0000',
@@ -216,6 +217,7 @@ export const Colors = {
     didNotFinish: '#9CA3AF',
     backupPurple: '#d8b4fe',
     backupPink: '#f9a8d4',
+    reviewsPending: '#14B8A6', // Teal - daily reminders
 
     // Destructive action colors
     scaryRed: '#FF0000',
@@ -331,6 +333,7 @@ export const Typography = {
 
 // Spacing scale
 export const Spacing = {
+  xxs: 2,
   xs: 4,
   sm: 8,
   md: 14,
@@ -358,4 +361,28 @@ export const BorderRadius = {
   xl: 16,
   xxl: 24,
   full: 9999,
+} as const;
+
+/**
+ * Opacity values for StyleSheet opacity property
+ * Use for muted text, disabled states, and subtle UI elements
+ *
+ * Note: For adding transparency to colors (e.g., backgroundColor),
+ * use the hex OPACITY from '@/utils/formatters' instead.
+ */
+export const Opacity = {
+  /** Full visibility */
+  full: 1,
+  /** Slightly reduced (pressed states) - 0.85 */
+  high: 0.85,
+  /** Muted text, secondary info - 0.7 */
+  muted: 0.7,
+  /** Secondary hints, helper text - 0.6 */
+  secondary: 0.6,
+  /** Disabled states - 0.5 */
+  disabled: 0.5,
+  /** Very faint elements - 0.4 */
+  faint: 0.4,
+  /** Subtle dividers, barely visible - 0.15 */
+  hairline: 0.15,
 } as const;
