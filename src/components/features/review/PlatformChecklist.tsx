@@ -4,11 +4,11 @@ import { ThemedIconButton } from '@/components/themed/ThemedIconButton';
 import { BorderRadius, Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import { analytics } from '@/lib/analytics/client';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  platformUrlSchema,
   PlatformUrlFormData,
+  platformUrlSchema,
 } from '@/utils/platformUrlSchema';
+import { zodResolver } from '@hookform/resolvers/zod';
 import * as Clipboard from 'expo-clipboard';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -294,8 +294,8 @@ const styles = StyleSheet.create({
   },
   urlInput: {
     flex: 1,
-    borderRadius: BorderRadius.lg,
-    paddingHorizontal: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+    paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     fontSize: 12,
     borderWidth: 1,
