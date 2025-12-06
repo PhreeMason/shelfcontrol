@@ -240,7 +240,7 @@ export const DeadlineCustomDatesSection = ({
                 color="textSecondary"
                 style={styles.emptyCta}
               >
-                Add cover reveal, blog tour, or press release date
+                Add cover reveal, blog tour, etc. dates to track here
               </ThemedText>
             </Pressable>
           )}
