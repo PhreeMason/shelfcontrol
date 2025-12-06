@@ -6,7 +6,10 @@ import { DEADLINE_STATUS, VALID_STATUS_TRANSITIONS } from '@/constants/status';
 import { Shadows } from '@/constants/Theme';
 import { useTheme } from '@/hooks/useThemeColor';
 import { useDeadlines } from '@/providers/DeadlineProvider';
-import { useUpdateDeadlineProgress } from '@/hooks/useDeadlines';
+import {
+  useIsStatusMutating,
+  useUpdateDeadlineProgress,
+} from '@/hooks/useDeadlines';
 import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
@@ -134,6 +137,7 @@ export const StatusChangeActionSheet: React.FC<
 
   // Hooks for status changes and data fetching
   const { mutate: updateProgress } = useUpdateDeadlineProgress();
+  const isStatusMutating = useIsStatusMutating();
 
   // Conditionally fetch review tracking data only when needed
   const shouldFetchReviewData = dialogState.type === 'mark_complete';
@@ -631,7 +635,8 @@ export const StatusChangeActionSheet: React.FC<
                   currentProgress,
                   totalQuantity
                 );
-                const isDisabled = option.disabled || false;
+                // Disable if option is disabled OR if a status mutation is in progress
+                const isDisabled = option.disabled || isStatusMutating;
 
                 return (
                   <TouchableOpacity

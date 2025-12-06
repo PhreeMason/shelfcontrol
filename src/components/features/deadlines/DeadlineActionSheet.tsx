@@ -2,6 +2,7 @@ import { ThemedText } from '@/components/themed/ThemedText';
 import { ActionSheetOption } from '@/components/ui/ActionSheet';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { BorderRadius, Spacing } from '@/constants/Colors';
+import { useIsStatusMutating } from '@/hooks/useDeadlines';
 import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { useReviewTrackingMutation } from '@/hooks/useReviewTrackingMutation';
 import { useTheme } from '@/hooks/useThemeColor';
@@ -47,6 +48,7 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
   const translateY = useSharedValue(500);
   const { startReadingDeadline, resumeDeadline, pauseDeadline } =
     useDeadlines();
+  const isStatusMutating = useIsStatusMutating();
   const [showUpdateDateModal, setShowUpdateDateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPostReviewModal, setShowPostReviewModal] = useState(false);
@@ -269,6 +271,16 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
     },
   });
 
+  actions.push({
+    label: 'Edit History',
+    icon: 'clock.arrow.circlepath',
+    iconColor: colors.textSecondary,
+    showChevron: true,
+    onPress: () => {
+      router.push(`/deadline/${deadline.id}/edit-history`);
+    },
+  });
+
   return (
     <>
       <Modal
@@ -321,17 +333,29 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
                 testID="primary-action-button"
                 style={[
                   styles.primaryActionButton,
-                  { backgroundColor: colors.primary },
+                  {
+                    backgroundColor: isStatusMutating
+                      ? colors.disabled
+                      : colors.primary,
+                  },
                 ]}
                 onPress={actionButton.onPress}
+                disabled={isStatusMutating}
               >
                 <IconSymbol
                   name={actionButton.icon}
                   size={20}
-                  color={colors.surface}
+                  color={isStatusMutating ? colors.disabledText : colors.surface}
                 />
                 <ThemedText
-                  style={[styles.primaryActionText, { color: colors.surface }]}
+                  style={[
+                    styles.primaryActionText,
+                    {
+                      color: isStatusMutating
+                        ? colors.disabledText
+                        : colors.surface,
+                    },
+                  ]}
                 >
                   {actionButton.label}
                 </ThemedText>

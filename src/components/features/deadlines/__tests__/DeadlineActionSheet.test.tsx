@@ -19,7 +19,6 @@ const mockDeadline: ReadingDeadlineWithProgress = {
   type: 'Personal',
   publishers: null,
   cover_image_url: null,
-  finished_at: null,
   progress: [],
   status: [],
 };
@@ -77,6 +76,10 @@ jest.mock('@/providers/DeadlineProvider', () => ({
     startReadingDeadline: mockStartReadingDeadline,
     reactivateDeadline: mockReactivateDeadline,
   })),
+}));
+
+jest.mock('@/hooks/useDeadlines', () => ({
+  useIsStatusMutating: jest.fn(() => false),
 }));
 
 jest.mock('@/hooks/useReviewTrackingData', () => ({

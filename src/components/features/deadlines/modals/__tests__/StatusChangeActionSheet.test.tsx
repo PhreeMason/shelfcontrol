@@ -31,6 +31,7 @@ jest.mock('@/hooks/useThemeColor', () => ({
 
 jest.mock('@/hooks/useDeadlines', () => ({
   useUpdateDeadlineProgress: jest.fn(),
+  useIsStatusMutating: jest.fn(() => false),
 }));
 
 jest.mock('@/hooks/useReviewTrackingData', () => ({

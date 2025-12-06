@@ -10,7 +10,13 @@ import {
 import { Database } from '@/types/database.types';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { mergeWithDefaults } from '@/utils/typeaheadUtils';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useIsMutating,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
 export const useAddDeadline = () => {
   const { session } = useAuth();
@@ -103,41 +109,6 @@ export const useUpdateDeadlineDate = () => {
     },
     onError: (error: Error) => {
       console.error('Error updating deadline date:', error);
-      posthog.captureException(error);
-    },
-  });
-};
-
-export const useUpdateFinishedAt = () => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      deadlineId,
-      finishedAt,
-    }: {
-      deadlineId: string;
-      finishedAt: string;
-    }) => {
-      if (!userId) {
-        throw new Error('User not authenticated');
-      }
-      return deadlinesService.updateFinishedAt(userId, deadlineId, finishedAt);
-    },
-    onSuccess: (_data, variables) => {
-      if (userId) {
-        queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
-        });
-        queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.DEADLINES.DETAIL(userId, variables.deadlineId),
-        });
-      }
-    },
-    onError: (error: Error) => {
-      console.error('Error updating finished date:', error);
       posthog.captureException(error);
     },
   });
@@ -360,6 +331,8 @@ const useUpdateDeadlineStatus = (
       }
 
       try {
+        // All status transitions are now validated against VALID_STATUS_TRANSITIONS
+        // Terminal statuses skip refetch as a performance optimization (data is refetched via cache invalidation)
         const isTerminalStatus =
           status === DEADLINE_STATUS.COMPLETE ||
           status === DEADLINE_STATUS.DID_NOT_FINISH;
@@ -368,9 +341,7 @@ const useUpdateDeadlineStatus = (
           userId,
           deadlineId,
           status,
-          isTerminalStatus
-            ? { skipValidation: true, skipRefetch: true }
-            : undefined
+          isTerminalStatus ? { skipRefetch: true } : undefined
         );
 
         return result;
@@ -388,6 +359,29 @@ const useUpdateDeadlineStatus = (
     },
     onError: (error: Error) => {
       console.error(`Error ${actionName} deadline:`, error);
+
+      // Handle invalid status transition errors gracefully
+      if (error.message?.includes('Invalid status transition')) {
+        Toast.show({
+          type: 'info',
+          text1: 'Status changed',
+          text2: 'This book was updated elsewhere. Refreshing...',
+        });
+        // Refresh deadline data to get the current state
+        if (userId) {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+          });
+        }
+      } else {
+        // For other errors, show a generic error message
+        Toast.show({
+          type: 'error',
+          text1: `Failed ${actionName}`,
+          text2: 'Please try again',
+        });
+      }
+
       posthog.captureException(error);
     },
   });
@@ -431,6 +425,28 @@ export const useCompleteDeadline = () => {
     },
     onError: (error: Error) => {
       console.error('Error completing deadline:', error);
+
+      // Handle invalid status transition errors gracefully
+      if (error.message?.includes('Invalid status transition')) {
+        Toast.show({
+          type: 'info',
+          text1: 'Status changed',
+          text2: 'This book was updated elsewhere. Refreshing...',
+        });
+        // Refresh deadline data to get the current state
+        if (userId) {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+          });
+        }
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Failed to complete',
+          text2: 'Please try again',
+        });
+      }
+
       posthog.captureException(error);
     },
   });
@@ -462,6 +478,25 @@ export const useWithdrawDeadline = () =>
 
 export const useMarkAppliedDeadline = () =>
   useUpdateDeadlineStatus(DEADLINE_STATUS.APPLIED);
+
+/**
+ * Hook to check if any deadline status mutation is in progress.
+ * Use this to disable status action buttons while a mutation is pending
+ * to prevent race conditions from rapid clicks.
+ */
+export const useIsStatusMutating = () => {
+  const statusMutating = useIsMutating({
+    mutationKey: [MUTATION_KEYS.DEADLINES.UPDATE_STATUS],
+  });
+  const completeMutating = useIsMutating({
+    mutationKey: [MUTATION_KEYS.DEADLINES.COMPLETE],
+  });
+  const dnfMutating = useIsMutating({
+    mutationKey: [MUTATION_KEYS.DEADLINES.DID_NOT_FINISH],
+  });
+
+  return statusMutating + completeMutating + dnfMutating > 0;
+};
 
 export const useGetDeadlineById = (deadlineId: string | undefined) => {
   const { session } = useAuth();
@@ -627,4 +662,90 @@ export const useAcquisitionSources = () => {
   }
 
   return result;
+};
+
+export const useUpdateProgressTimestamp = () => {
+  const { session } = useAuth();
+  const userId = session?.user?.id;
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: [MUTATION_KEYS.DEADLINES.UPDATE_PROGRESS_TIMESTAMP],
+    mutationFn: async ({
+      progressId,
+      deadlineId,
+      newCreatedAt,
+    }: {
+      progressId: string;
+      deadlineId: string;
+      newCreatedAt: string;
+    }) => {
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      return deadlinesService.updateProgressTimestamp(
+        userId,
+        progressId,
+        deadlineId,
+        newCreatedAt
+      );
+    },
+    onSuccess: (_data, variables) => {
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.DETAIL(userId, variables.deadlineId),
+        });
+      }
+    },
+    onError: (error: Error) => {
+      console.error('Error updating progress timestamp:', error);
+      posthog.captureException(error);
+    },
+  });
+};
+
+export const useUpdateStatusTimestamp = () => {
+  const { session } = useAuth();
+  const userId = session?.user?.id;
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: [MUTATION_KEYS.DEADLINES.UPDATE_STATUS_TIMESTAMP],
+    mutationFn: async ({
+      statusId,
+      deadlineId,
+      newCreatedAt,
+    }: {
+      statusId: string;
+      deadlineId: string;
+      newCreatedAt: string;
+    }) => {
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      return deadlinesService.updateStatusTimestamp(
+        userId,
+        statusId,
+        deadlineId,
+        newCreatedAt
+      );
+    },
+    onSuccess: (_data, variables) => {
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.DETAIL(userId, variables.deadlineId),
+        });
+      }
+    },
+    onError: (error: Error) => {
+      console.error('Error updating status timestamp:', error);
+      posthog.captureException(error);
+    },
+  });
 };

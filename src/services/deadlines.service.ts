@@ -629,13 +629,20 @@ class DeadlinesService {
 
       const deadlineData = deadline as unknown as {
         id: string;
-        status: { status: string }[];
+        status: { status: string; created_at: string }[];
       };
       const currentStatusArray = deadlineData.status;
-      const currentStatusData =
+      // Sort by created_at descending to get the most recent status first
+      const sortedStatuses =
         currentStatusArray && currentStatusArray.length > 0
-          ? currentStatusArray[currentStatusArray.length - 1]
-          : null;
+          ? [...currentStatusArray].sort(
+              (a, b) =>
+                new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime()
+            )
+          : [];
+      const currentStatusData =
+        sortedStatuses.length > 0 ? sortedStatuses[0] : null;
 
       if (currentStatusData && currentStatusData.status) {
         const currentStatus = currentStatusData.status;
@@ -741,6 +748,8 @@ class DeadlinesService {
         ? Math.max(...deadline.progress.map(p => p.current_progress))
         : 0;
 
+    const now = new Date().toISOString();
+
     if (latestProgress < deadline.total_quantity) {
       const finalProgressId = generateId('rdp');
       const { error: progressError } = await supabase
@@ -749,20 +758,21 @@ class DeadlinesService {
           id: finalProgressId,
           deadline_id: deadlineId,
           current_progress: deadline.total_quantity,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          created_at: now,
+          updated_at: now,
         });
 
       if (progressError) throw progressError;
     }
 
+    // Validate the status transition (no longer skipping validation)
+    // This ensures we can't complete from invalid states like 'pending' or 'applied'
     const result = await this.updateDeadlineStatus(
       userId,
       deadlineId,
       DEADLINE_STATUS.COMPLETE,
       {
-        skipValidation: true,
-        skipRefetch: true,
+        skipRefetch: true, // Skip refetch for performance, data is refetched via cache invalidation
       }
     );
 
@@ -945,6 +955,93 @@ class DeadlinesService {
       throw err;
     }
   }
+
+  /**
+   * Update the created_at timestamp for a progress record
+   */
+  async updateProgressTimestamp(
+    userId: string,
+    progressId: string,
+    deadlineId: string,
+    newCreatedAt: string
+  ) {
+    // Verify user owns the deadline
+    const { data: deadline, error: deadlineError } = await supabase
+      .from(DB_TABLES.DEADLINES)
+      .select('id')
+      .eq('id', deadlineId)
+      .eq('user_id', userId)
+      .single();
+
+    if (deadlineError || !deadline) {
+      throw new Error('Book not found or access denied');
+    }
+
+    const { data, error } = await supabase
+      .from(DB_TABLES.DEADLINE_PROGRESS)
+      .update({
+        created_at: newCreatedAt,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', progressId)
+      .eq('deadline_id', deadlineId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    activityService.trackUserActivity(
+      'progress_timestamp_updated',
+      { progressId, deadlineId, newCreatedAt },
+      userId
+    );
+
+    return data;
+  }
+
+  /**
+   * Update the created_at timestamp for a status record
+   */
+  async updateStatusTimestamp(
+    userId: string,
+    statusId: string,
+    deadlineId: string,
+    newCreatedAt: string
+  ) {
+    // Verify user owns the deadline
+    const { data: deadline, error: deadlineError } = await supabase
+      .from(DB_TABLES.DEADLINES)
+      .select('id')
+      .eq('id', deadlineId)
+      .eq('user_id', userId)
+      .single();
+
+    if (deadlineError || !deadline) {
+      throw new Error('Book not found or access denied');
+    }
+
+    const { data, error } = await supabase
+      .from(DB_TABLES.DEADLINE_STATUS)
+      .update({
+        created_at: newCreatedAt,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', statusId)
+      .eq('deadline_id', deadlineId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    activityService.trackUserActivity(
+      'status_timestamp_updated',
+      { statusId, deadlineId, newCreatedAt },
+      userId
+    );
+
+    return data;
+  }
+
 }
 
 export const deadlinesService = new DeadlinesService();
