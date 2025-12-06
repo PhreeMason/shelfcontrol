@@ -106,8 +106,8 @@ export const DeadlineFormStep2Combined = ({
     deadline: useWatch({ control, name: 'deadline' }),
   };
 
-  // Audiobook duration auto-fill
-  const audiobookRequest =
+  // Primary: Audible lookup (with community cache + similarity check)
+  const audibleRequest =
     selectedFormat === 'audio' && watchedValues.bookTitle && mode === 'new'
       ? {
           bookId: watchedBookId || undefined,
@@ -116,28 +116,34 @@ export const DeadlineFormStep2Combined = ({
         }
       : null;
 
-  const { data: audiobookData, isLoading: isLoadingAudiobook } =
-    useGetAudiobookDuration(audiobookRequest);
-
-  // Track if user rejected Spotify result to trigger Audible fallback
-  const [rejectedSpotify, setRejectedSpotify] = useState(false);
-
-  // Audible fallback - only query when user rejects Spotify result
-  const audibleRequest =
-    rejectedSpotify && watchedValues.bookTitle
-      ? {
-          title: watchedValues.bookTitle,
-          author: watchedValues.bookAuthor || undefined,
-        }
-      : null;
-
   const { data: audibleData, isLoading: isLoadingAudible } =
-    useGetAudiobookFromAudible(audibleRequest, rejectedSpotify);
+    useGetAudiobookFromAudible(audibleRequest);
+
+  // Track if user rejected Audible result to trigger Spotify fallback
+  const [rejectedAudible, setRejectedAudible] = useState(false);
+
+  // Fallback: Spotify lookup - only when Audible fails or is rejected
+  const shouldTrySpotify =
+    selectedFormat === 'audio' &&
+    watchedValues.bookTitle &&
+    mode === 'new' &&
+    (rejectedAudible || (!isLoadingAudible && !audibleData));
+
+  const spotifyRequest = shouldTrySpotify
+    ? {
+        bookId: watchedBookId || undefined,
+        title: watchedValues.bookTitle,
+        author: watchedValues.bookAuthor || undefined,
+      }
+    : null;
+
+  const { data: spotifyData, isLoading: isLoadingSpotify } =
+    useGetAudiobookDuration(spotifyRequest);
 
   // Handle "Not right?" rejection
-  const handleRejectSpotify = useCallback(() => {
-    setRejectedSpotify(true);
-    // Reset auto-fill flag so Audible data can fill the fields
+  const handleRejectAudible = useCallback(() => {
+    setRejectedAudible(true);
+    // Reset auto-fill flag so Spotify data can fill the fields
     hasAutoFilledDuration.current = false;
     setValue('totalQuantity', 0);
     setValue('totalMinutes', 0);
@@ -147,19 +153,20 @@ export const DeadlineFormStep2Combined = ({
   // Reset auto-fill flag on any format/title change so new lookups can fill
   useEffect(() => {
     if (selectedFormat !== 'audio') {
-      setRejectedSpotify(false);
+      setRejectedAudible(false);
     }
     hasAutoFilledDuration.current = false;
   }, [selectedFormat, watchedValues.bookTitle]);
 
-  // Auto-fill duration once when data arrives
+  // Auto-fill duration once when data arrives (prefer Audible, then Spotify)
   useEffect(() => {
     if (selectedFormat !== 'audio') return;
     if (hasAutoFilledDuration.current) return;
 
-    const durationMs = rejectedSpotify
-      ? audibleData?.duration_ms
-      : audiobookData?.duration_ms;
+    // Use Audible data unless rejected, then use Spotify
+    const durationMs = rejectedAudible
+      ? spotifyData?.duration_ms
+      : audibleData?.duration_ms || spotifyData?.duration_ms;
 
     if (!durationMs) return;
 
@@ -169,7 +176,7 @@ export const DeadlineFormStep2Combined = ({
       setValue('totalMinutes', minutes);
     }
     hasAutoFilledDuration.current = true;
-  }, [audiobookData, audibleData, rejectedSpotify, selectedFormat, setValue]);
+  }, [audibleData, spotifyData, rejectedAudible, selectedFormat, setValue]);
 
   // Publisher management
   const addPublisher = () => {
@@ -403,13 +410,13 @@ export const DeadlineFormStep2Combined = ({
         <View style={{ marginTop: -Spacing.md }}>
           <AudiobookDurationHelpText
             selectedFormat={selectedFormat}
-            audiobookRequest={audiobookRequest}
-            isLoadingAudiobook={isLoadingAudiobook}
+            audibleRequest={audibleRequest}
             isLoadingAudible={isLoadingAudible}
-            rejectedSpotify={rejectedSpotify}
-            audiobookData={audiobookData}
+            isLoadingSpotify={isLoadingSpotify}
+            rejectedAudible={rejectedAudible}
             audibleData={audibleData}
-            onRejectSpotify={handleRejectSpotify}
+            spotifyData={spotifyData}
+            onRejectAudible={handleRejectAudible}
           />
         </View>
       </View>
@@ -454,7 +461,7 @@ export const DeadlineFormStep2Combined = ({
           control={control}
           name="acquisition_source"
           testID="input-acquisition-source"
-          placeholder="Select a source or add a new one"
+          placeholder="Select a source or type in a new one"
         />
       </View>
 
