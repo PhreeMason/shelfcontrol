@@ -501,7 +501,6 @@ export type Database = {
           disclosure_source_name: string | null;
           disclosure_template_id: string | null;
           disclosure_text: string | null;
-          finished_at: string | null;
           flexibility: Database['public']['Enums']['deadline_flexibility'];
           format: Database['public']['Enums']['book_format_enum'];
           id: string;
@@ -522,7 +521,6 @@ export type Database = {
           disclosure_source_name?: string | null;
           disclosure_template_id?: string | null;
           disclosure_text?: string | null;
-          finished_at?: string | null;
           flexibility: Database['public']['Enums']['deadline_flexibility'];
           format: Database['public']['Enums']['book_format_enum'];
           id?: string;
@@ -543,7 +541,6 @@ export type Database = {
           disclosure_source_name?: string | null;
           disclosure_template_id?: string | null;
           disclosure_text?: string | null;
-          finished_at?: string | null;
           flexibility?: Database['public']['Enums']['deadline_flexibility'];
           format?: Database['public']['Enums']['book_format_enum'];
           id?: string;
@@ -1054,6 +1051,23 @@ export type Database = {
         Returns: {
           count: number;
           profile_date: string;
+        }[];
+      };
+      get_progress_over_time: {
+        Args: {
+          p_days?: number;
+          p_exclude_user_ids?: string[];
+          p_offset_minutes?: number;
+          p_user_ids?: string[];
+        };
+        Returns: {
+          email: string;
+          first_name: string;
+          last_name: string;
+          pages_read: number;
+          progress_date: string;
+          user_id: string;
+          username: string;
         }[];
       };
       get_reading_notes_csv: {
