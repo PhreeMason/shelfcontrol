@@ -4,7 +4,6 @@ import { DeadlineActionSheet } from '@/components/features/deadlines/DeadlineAct
 import { DeadlineActionsSection } from '@/components/features/deadlines/DeadlineActionsSection';
 import { DeadlineContactsSection } from '@/components/features/deadlines/DeadlineContactsSection';
 import { DeadlineCustomDatesSection } from '@/components/features/deadlines/DeadlineCustomDatesSection';
-import { DeadlineEditDatesSection } from '@/components/features/deadlines/DeadlineEditDatesSection';
 import DeadlineHeroSection from '@/components/features/deadlines/DeadlineHeroSection';
 import { DeadlineTagsSection } from '@/components/features/deadlines/DeadlineTagsSection';
 import DeadlineViewHeader from '@/components/features/deadlines/DeadlineViewHeader';
@@ -179,8 +178,6 @@ const DeadlineView = () => {
           <DeadlineContactsSection deadline={deadline} />
 
           <DeadlineCustomDatesSection deadline={deadline} />
-
-          <DeadlineEditDatesSection deadline={deadline} />
 
           <DeadlineTagsSection deadline={deadline} />
 

@@ -24,6 +24,10 @@ export default function DeadlineLayout() {
         name="[id]/notes"
         options={{ headerShown: false, presentation: 'modal' }}
       />
+      <Stack.Screen
+        name="[id]/edit-history"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 }

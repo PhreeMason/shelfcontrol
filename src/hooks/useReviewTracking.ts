@@ -116,6 +116,46 @@ export const useUpdateReviewTracking = () => {
   });
 };
 
+export const useUpdateReviewDueDate = () => {
+  const { session } = useAuth();
+  const userId = session?.user?.id;
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      deadlineId,
+      reviewDueDate,
+    }: {
+      deadlineId: string;
+      reviewDueDate: string | null;
+    }) => {
+      if (!userId) throw new Error('User not authenticated');
+      return reviewTrackingService.updateReviewDueDate(
+        userId,
+        deadlineId,
+        reviewDueDate
+      );
+    },
+    onSuccess: (_data, variables) => {
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.REVIEW_TRACKING.BY_DEADLINE(
+            userId,
+            variables.deadlineId
+          ),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.DEADLINES.ALL(userId),
+        });
+      }
+    },
+    onError: (error: Error) => {
+      console.error('Error updating review due date:', error);
+      posthog.captureException(error);
+    },
+  });
+};
+
 export const useUserPlatforms = () => {
   const { session } = useAuth();
   const userId = session?.user?.id;

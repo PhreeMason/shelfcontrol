@@ -43,7 +43,6 @@ const createMockDeadline = (
   created_at: createdAt,
   updated_at: createdAt,
   cover_image_url: null,
-  finished_at: null,
   progress: progress.map(p => ({
     id: `progress-${Date.now()}-${Math.random()}`,
     deadline_id: id,

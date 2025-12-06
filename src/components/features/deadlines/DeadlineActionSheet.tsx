@@ -7,6 +7,7 @@ import { useReviewTrackingData } from '@/hooks/useReviewTrackingData';
 import { useReviewTrackingMutation } from '@/hooks/useReviewTrackingMutation';
 import { useTheme } from '@/hooks/useThemeColor';
 import { dayjs } from '@/lib/dayjs';
+import { posthog } from '@/lib/posthog';
 import { useDeadlines } from '@/providers/DeadlineProvider';
 import { ReadingDeadlineWithProgress } from '@/types/deadline.types';
 import { getDeadlineStatus } from '@/utils/deadlineProviderUtils';
@@ -271,15 +272,17 @@ export const DeadlineActionSheet: React.FC<DeadlineActionSheetProps> = ({
     },
   });
 
-  actions.push({
-    label: 'Edit History',
-    icon: 'clock.arrow.circlepath',
-    iconColor: colors.textSecondary,
-    showChevron: true,
-    onPress: () => {
-      router.push(`/deadline/${deadline.id}/edit-history`);
-    },
-  });
+  if (posthog.isFeatureEnabled('edit-history')) {
+    actions.push({
+      label: 'Edit History',
+      icon: 'clock.arrow.circlepath',
+      iconColor: colors.textSecondary,
+      showChevron: true,
+      onPress: () => {
+        router.push(`/deadline/${deadline.id}/edit-history`);
+      },
+    });
+  }
 
   return (
     <>

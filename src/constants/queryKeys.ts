@@ -102,6 +102,8 @@ export const MUTATION_KEYS = {
     DELETE_FUTURE_PROGRESS: 'deleteFutureProgress',
     UPLOAD_COVER: 'uploadDeadlineCover',
     DELETE_COVER: 'deleteDeadlineCover',
+    UPDATE_PROGRESS_TIMESTAMP: 'updateProgressTimestamp',
+    UPDATE_STATUS_TIMESTAMP: 'updateStatusTimestamp',
   },
   NOTES: {
     ADD: 'addNote',

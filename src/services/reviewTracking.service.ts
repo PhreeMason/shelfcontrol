@@ -569,6 +569,31 @@ class ReviewTrackingService {
       posted_platform_names: postedPlatformNames,
     };
   }
+
+  /**
+   * Update only the review due date for existing review tracking.
+   * RLS policies on review_tracking table enforce user ownership via deadline relationship.
+   */
+  async updateReviewDueDate(
+    _userId: string,
+    deadlineId: string,
+    reviewDueDate: string | null
+  ) {
+    const { data, error } = await supabase
+      .from(DB_TABLES.REVIEW_TRACKING)
+      .update({
+        review_due_date: reviewDueDate,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('deadline_id', deadlineId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return { ...data, deadline_id: deadlineId };
+  }
+
 }
 
 export const reviewTrackingService = new ReviewTrackingService();
