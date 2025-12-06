@@ -12,7 +12,8 @@ export type ActivityType =
   | 'note'
   | 'review'
   | 'review_due'
-  | 'custom_date';
+  | 'custom_date'
+  | 'reviews_pending';
 
 /**
  * Calendar filter types - extends ActivityType with granular deadline_due filters
@@ -24,7 +25,8 @@ export type CalendarFilterType =
   | 'deadline_due_approaching'
   | 'deadline_due_urgent'
   | 'progress_complete' // Progress events at 100%
-  | Exclude<ActivityType, 'deadline_due'>;
+  | 'reviews_pending' // Daily reminder for books with un-posted reviews
+  | Exclude<ActivityType, 'deadline_due' | 'reviews_pending'>;
 
 /**
  * Configuration for each activity type including icon, color, and label
@@ -79,6 +81,11 @@ export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
     icon: 'calendar.badge.plus',
     color: Colors.light.accent, // Accent - important dates
     label: 'Custom Date',
+  },
+  reviews_pending: {
+    icon: 'square.and.pencil',
+    color: Colors.light.reviewsPending, // Teal - daily reminders
+    label: 'Reviews Pending',
   },
 } as const;
 

@@ -1,12 +1,13 @@
 import { ThemedText } from '@/components/themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ACTIVITY_TYPE_CONFIG } from '@/constants/activityTypes';
-import { BorderRadius, Spacing } from '@/constants/Colors';
+import { Spacing } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import { DeadlineDueCardProps } from '@/types/calendar.types';
 import { formatStatus, OPACITY } from '@/utils/formatters';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { calendarCardStyles } from './calendarCardStyles';
 
 /**
  * DeadlineDueCard Component
@@ -43,20 +44,23 @@ export const DeadlineDueCard: React.FC<DeadlineDueCardProps> = React.memo(
     return (
       <Pressable
         testID="deadline-due-card"
-        style={({ pressed }) => [styles.container, pressed && styles.pressed]}
+        style={({ pressed }) => [
+          calendarCardStyles.container,
+          pressed && calendarCardStyles.pressed,
+        ]}
         onPress={onPress}
         disabled={!onPress}
       >
-        <View style={styles.timeColumn}>
+        <View style={calendarCardStyles.timeColumn}>
           <ThemedText typography="labelMedium" color="textMuted">
             Due Today
           </ThemedText>
         </View>
 
-        <View style={styles.timelineColumn}>
+        <View style={calendarCardStyles.timelineColumn}>
           <View
             style={[
-              styles.iconCircle,
+              calendarCardStyles.iconCircle,
               {
                 backgroundColor: calculations.urgencyColor + OPACITY.SUBTLE,
                 borderColor: calculations.urgencyColor,
@@ -72,10 +76,10 @@ export const DeadlineDueCard: React.FC<DeadlineDueCardProps> = React.memo(
         </View>
 
         {/* Content Column */}
-        <View style={[styles.content, { borderColor: colors.border }]}>
+        <View style={[calendarCardStyles.content, { borderColor: colors.border }]}>
           <ThemedText
             typography="bodyLarge"
-            style={styles.bookTitle}
+            style={calendarCardStyles.bookTitle}
             numberOfLines={1}
           >
             {deadline.book_title}
@@ -93,44 +97,8 @@ export const DeadlineDueCard: React.FC<DeadlineDueCardProps> = React.memo(
   }
 );
 
+// Component-specific styles (shared styles imported from calendarCardStyles)
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 6,
-    gap: 10,
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  timeColumn: {
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-  },
-  timelineColumn: {
-    alignItems: 'center',
-    position: 'relative',
-  },
-  iconCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1, // Ensure icon appears above the line
-    borderWidth: 2, // Thicker border for urgency color
-  },
-  content: {
-    flex: 1,
-    paddingLeft: Spacing.md,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderWidth: 1,
-    borderRadius: BorderRadius.md,
-  },
-  bookTitle: {
-    marginBottom: 4,
-  },
   metadataRow: {
     flexDirection: 'row',
     alignItems: 'center',

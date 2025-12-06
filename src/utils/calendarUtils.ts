@@ -144,11 +144,13 @@ export function enrichDeadlineActivity(
 export function sortActivitiesByTime(
   activities: EnrichedActivity[]
 ): EnrichedActivity[] {
-  const deadlineDue = activities.filter(
-    a => a.activity_type === 'deadline_due' || a.activity_type === 'custom_date'
+  // All-day items: deadline_due, custom_date, reviews_pending
+  const allDayTypes = ['deadline_due', 'custom_date', 'reviews_pending'];
+  const deadlineDue = activities.filter(a =>
+    allDayTypes.includes(a.activity_type)
   );
   const otherActivities = activities.filter(
-    a => a.activity_type !== 'deadline_due' && a.activity_type !== 'custom_date'
+    a => !allDayTypes.includes(a.activity_type)
   );
 
   // Sort deadline_due alphabetically by book title
@@ -236,10 +238,8 @@ export function transformActivitiesToAgendaItems(
       }
 
       // Add formatted timestamp for timed activities (not all-day events)
-      if (
-        activity.activity_type !== 'deadline_due' &&
-        activity.activity_type !== 'custom_date'
-      ) {
+      const allDayTypes = ['deadline_due', 'custom_date', 'reviews_pending'];
+      if (!allDayTypes.includes(activity.activity_type)) {
         agendaItem.timestamp = formatActivityTime(activity.activity_timestamp);
       }
 
@@ -378,17 +378,20 @@ function buildDeadlineMarking(
 }
 
 /**
- * Builds marking for a date with custom_date activities (no deadline_due)
- * Uses the custom_date color for styling
+ * Builds marking for all-day activity types (custom_date, reviews_pending)
+ * Uses the activity type's color for styling
  */
-function buildCustomDateMarking(
-  customDateActivities: DailyActivity[],
+function buildAllDayMarking(
+  activities: DailyActivity[],
+  activityType: 'custom_date' | 'reviews_pending',
   deadlines: ReadingDeadlineWithProgress[],
   otherActivitiesCount: number
 ): MarkedDatesConfig[string] {
-  // Get cover image from the first custom date's deadline
+  const color = ACTIVITY_TYPE_CONFIG[activityType].color;
+
+  // Get cover image from the first activity's deadline
   let primaryCoverUrl: string | null = null;
-  const firstActivity = customDateActivities[0];
+  const firstActivity = activities[0];
 
   if (firstActivity) {
     const deadline = deadlines.find(d => d.id === firstActivity.deadline_id);
@@ -399,14 +402,13 @@ function buildCustomDateMarking(
     }
   }
 
-  // Build activity bars for custom_date (treat as non-deadline bars)
+  // Build activity bars
   const activityBars: ActivityBarInfo[] = [];
-  const customDateColor = ACTIVITY_TYPE_CONFIG.custom_date.color;
-  const totalBars = Math.min(customDateActivities.length, MAX_ACTIVITY_BARS);
+  const totalBars = Math.min(activities.length, MAX_ACTIVITY_BARS);
 
   for (let i = 0; i < totalBars; i++) {
     activityBars.push({
-      color: customDateColor,
+      color,
       isDeadline: false,
     });
   }
@@ -422,12 +424,11 @@ function buildCustomDateMarking(
   return {
     customStyles: {
       container: {
-        backgroundColor:
-          ACTIVITY_TYPE_CONFIG.custom_date.color + OPACITY.CALENDAR,
+        backgroundColor: color + OPACITY.CALENDAR,
         borderRadius: 4,
       },
       text: {
-        color: ACTIVITY_TYPE_CONFIG.custom_date.color,
+        color,
         fontWeight: '600' as const,
       },
       coverImageUrl: primaryCoverUrl,
@@ -471,7 +472,8 @@ function buildActivityOnlyMarking(
   return {
     customStyles: {
       container: {
-        backgroundColor: ACTIVITY_TYPE_CONFIG.custom_date.color + OPACITY.SUBTLE,
+        backgroundColor:
+          ACTIVITY_TYPE_CONFIG.custom_date.color + OPACITY.SUBTLE,
         borderRadius: 4,
       },
       coverImageUrl: activityCoverUrl,
@@ -497,8 +499,14 @@ function buildMarkingForDate(
   const customDateActivities = dateActivities.filter(
     a => a.activity_type === 'custom_date'
   );
+  const reviewsPendingActivities = dateActivities.filter(
+    a => a.activity_type === 'reviews_pending'
+  );
   const nonDeadlineActivities = dateActivities.filter(
-    a => a.activity_type !== 'deadline_due' && a.activity_type !== 'custom_date'
+    a =>
+      a.activity_type !== 'deadline_due' &&
+      a.activity_type !== 'custom_date' &&
+      a.activity_type !== 'reviews_pending'
   );
 
   // Priority 1: Dates with deadline_due activities
@@ -520,14 +528,25 @@ function buildMarkingForDate(
 
   // Priority 2: Dates with custom_date activities
   if (customDateActivities.length > 0) {
-    return buildCustomDateMarking(
+    return buildAllDayMarking(
       customDateActivities,
+      'custom_date',
+      deadlines,
+      nonDeadlineActivities.length + reviewsPendingActivities.length
+    );
+  }
+
+  // Priority 3: Dates with reviews_pending activities (daily reminders)
+  if (reviewsPendingActivities.length > 0) {
+    return buildAllDayMarking(
+      reviewsPendingActivities,
+      'reviews_pending',
       deadlines,
       nonDeadlineActivities.length
     );
   }
 
-  // Priority 3: Dates with other activities only
+  // Priority 4: Dates with other activities only
   if (nonDeadlineActivities.length > 0) {
     return buildActivityOnlyMarking(nonDeadlineActivities, deadlines);
   }

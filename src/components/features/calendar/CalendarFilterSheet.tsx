@@ -33,8 +33,8 @@ interface CalendarFilterSheetProps {
 interface FilterConfig {
   type: CalendarFilterType;
   label: string;
-  /** Theme color key for urgency-based colors (due date filters only) */
-  colorKey?: 'successGreen' | 'good' | 'approaching' | 'urgent';
+  /** Theme color key for urgency-based colors (due date filters) or feature colors */
+  colorKey?: 'successGreen' | 'good' | 'approaching' | 'urgent' | 'reviewsPending' | 'accent';
 }
 
 // Due date filters with urgency-based coloring (matching calendar legend)
@@ -47,8 +47,12 @@ const DUE_DATE_FILTERS: FilterConfig[] = [
   },
   { type: 'deadline_due_good', label: 'On Track', colorKey: 'good' },
   { type: 'deadline_due_approaching', label: 'Tight', colorKey: 'approaching' },
-  { type: 'deadline_due_urgent', label: 'Needs Replanning', colorKey: 'urgent' },
-  { type: 'custom_date', label: 'Important Dates' },
+  {
+    type: 'deadline_due_urgent',
+    label: 'Needs Replanning',
+    colorKey: 'urgent',
+  },
+  { type: 'custom_date', label: 'Important Dates', colorKey: 'accent' },
 ];
 
 // Activity event filters (no color boxes, just labels)
@@ -62,10 +66,16 @@ const ACTIVITY_FILTERS: FilterConfig[] = [
   { type: 'review_due', label: 'Review Due Dates' },
 ];
 
+// Daily reminder filters (show on today's date)
+const DAILY_REMINDER_FILTERS: FilterConfig[] = [
+  { type: 'reviews_pending', label: 'Reviews Pending', colorKey: 'reviewsPending' },
+];
+
 // All filter types combined for Clear All / Select All functionality
 const ALL_FILTER_TYPES: CalendarFilterType[] = [
   ...DUE_DATE_FILTERS.map(f => f.type),
   ...ACTIVITY_FILTERS.map(f => f.type),
+  ...DAILY_REMINDER_FILTERS.map(f => f.type),
 ];
 
 export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
@@ -263,6 +273,16 @@ export const CalendarFilterSheet: React.FC<CalendarFilterSheetProps> = ({
               </ThemedText>
               <View style={styles.filterRow}>
                 {ACTIVITY_FILTERS.map(renderFilterItem)}
+              </View>
+            </View>
+
+            {/* Daily Reminders Section */}
+            <View style={styles.section}>
+              <ThemedText typography="titleMedium" style={styles.sectionTitle}>
+                Daily Reminders
+              </ThemedText>
+              <View style={styles.filterRow}>
+                {DAILY_REMINDER_FILTERS.map(renderFilterItem)}
               </View>
             </View>
 
