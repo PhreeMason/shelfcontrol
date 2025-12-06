@@ -27,7 +27,7 @@ export const LinkSubmissionSection: React.FC<LinkSubmissionSectionProps> = ({
       testID="link-submission-section"
     >
       <ThemedView style={styles.section}>
-        <ThemedText typography="titleMedium" style={styles.sectionHeader}>
+        <ThemedText typography="titleMediumPlus" style={styles.sectionHeader}>
           Will you need to submit review links?
         </ThemedText>
         <ThemedView style={styles.radioGroup}>
